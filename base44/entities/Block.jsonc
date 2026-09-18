@@ -1,0 +1,28 @@
+{
+  "name": "Block",
+  "type": "object",
+  "properties": {
+    "wellenId": {
+      "type": "string",
+      "title": "Wellen ID"
+    },
+    "titel": {
+      "type": "string",
+      "title": "Titel"
+    },
+    "reihenfolge": {
+      "type": "number",
+      "default": 0,
+      "title": "Reihenfolge"
+    },
+    "motivationstext": {
+      "type": "string",
+      "title": "Motivationstext",
+      "format": "textarea"
+    }
+  },
+  "required": [
+    "wellenId",
+    "titel"
+  ]
+}

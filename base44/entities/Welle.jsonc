@@ -1,0 +1,63 @@
+{
+  "name": "Welle",
+  "type": "object",
+  "properties": {
+    "projektId": {
+      "type": "string",
+      "title": "Projekt ID"
+    },
+    "name": {
+      "type": "string",
+      "title": "Name"
+    },
+    "zielgruppe": {
+      "type": "string",
+      "enum": [
+        "geschaeftsfuehrung",
+        "mitarbeiter",
+        "kunden",
+        "partner"
+      ],
+      "default": "mitarbeiter",
+      "title": "Zielgruppe"
+    },
+    "linkToken": {
+      "type": "string",
+      "title": "Link Token"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "entwurf",
+        "live",
+        "geschlossen"
+      ],
+      "default": "entwurf",
+      "title": "Status"
+    },
+    "mindestTeilnehmer": {
+      "type": "number",
+      "default": 6,
+      "title": "Mindestteilnehmer"
+    },
+    "begruessungstext": {
+      "type": "string",
+      "title": "Begr\u00fc\u00dfungstext",
+      "format": "textarea"
+    },
+    "abschlusstext": {
+      "type": "string",
+      "title": "Abschlusstext",
+      "format": "textarea"
+    },
+    "geschaetzteDauerMinuten": {
+      "type": "number",
+      "default": 10,
+      "title": "Gesch\u00e4tzte Dauer (Minuten)"
+    }
+  },
+  "required": [
+    "projektId",
+    "name"
+  ]
+}

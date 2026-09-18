@@ -1,0 +1,63 @@
+{
+  "name": "Projekt",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Name"
+    },
+    "kundenname": {
+      "type": "string",
+      "title": "Kundenname"
+    },
+    "briefing": {
+      "type": "string",
+      "title": "Briefing",
+      "format": "textarea"
+    },
+    "theme": {
+      "type": "string",
+      "enum": [
+        "rittler",
+        "neutral",
+        "kunde"
+      ],
+      "default": "neutral",
+      "title": "Theme"
+    },
+    "logoUrl": {
+      "type": "string",
+      "title": "Logo URL"
+    },
+    "farbePrimaer": {
+      "type": "string",
+      "title": "Prim\u00e4rfarbe"
+    },
+    "farbeSekundaer": {
+      "type": "string",
+      "title": "Sekund\u00e4rfarbe"
+    },
+    "ansprache": {
+      "type": "string",
+      "enum": [
+        "du",
+        "sie"
+      ],
+      "default": "du",
+      "title": "Ansprache"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "entwurf",
+        "aktiv",
+        "archiviert"
+      ],
+      "default": "entwurf",
+      "title": "Status"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

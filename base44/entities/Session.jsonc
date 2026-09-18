@@ -1,0 +1,41 @@
+{
+  "name": "Session",
+  "type": "object",
+  "properties": {
+    "wellenId": {
+      "type": "string",
+      "title": "Wellen ID"
+    },
+    "token": {
+      "type": "string",
+      "title": "Session Token"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "gestartet",
+        "abgeschlossen"
+      ],
+      "default": "gestartet",
+      "title": "Status"
+    },
+    "startedAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Gestartet am"
+    },
+    "completedAt": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Abgeschlossen am"
+    },
+    "letzteFrageId": {
+      "type": "string",
+      "title": "Letzte Frage ID"
+    }
+  },
+  "required": [
+    "wellenId",
+    "token"
+  ]
+}

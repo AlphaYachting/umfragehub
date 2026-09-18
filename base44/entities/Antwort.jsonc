@@ -1,0 +1,48 @@
+{
+  "name": "Antwort",
+  "type": "object",
+  "properties": {
+    "sessionId": {
+      "type": "string",
+      "title": "Session ID"
+    },
+    "frageId": {
+      "type": "string",
+      "title": "Frage ID"
+    },
+    "auswahl": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Auswahl"
+    },
+    "zahl": {
+      "type": "number",
+      "title": "Zahl"
+    },
+    "text": {
+      "type": "string",
+      "title": "Text",
+      "format": "textarea"
+    },
+    "eingabeart": {
+      "type": "string",
+      "enum": [
+        "tippen",
+        "sprache"
+      ],
+      "default": "tippen",
+      "title": "Eingabeart"
+    },
+    "transkriptKorrigiert": {
+      "type": "boolean",
+      "default": false,
+      "title": "Transkript korrigiert"
+    }
+  },
+  "required": [
+    "sessionId",
+    "frageId"
+  ]
+}

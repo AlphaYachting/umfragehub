@@ -1,0 +1,81 @@
+{
+  "name": "Frage",
+  "type": "object",
+  "properties": {
+    "blockId": {
+      "type": "string",
+      "title": "Block ID"
+    },
+    "reihenfolge": {
+      "type": "number",
+      "default": 0,
+      "title": "Reihenfolge"
+    },
+    "typ": {
+      "type": "string",
+      "enum": [
+        "single_choice",
+        "multi_choice",
+        "skala",
+        "werte_auswahl",
+        "limbic",
+        "freitext",
+        "ja_nein"
+      ],
+      "title": "Fragetyp"
+    },
+    "text": {
+      "type": "string",
+      "title": "Fragetext",
+      "format": "textarea"
+    },
+    "hilfetext": {
+      "type": "string",
+      "title": "Hilfetext"
+    },
+    "pflicht": {
+      "type": "boolean",
+      "default": true,
+      "title": "Pflichtfrage"
+    },
+    "optionen": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Optionen"
+    },
+    "skalaMin": {
+      "type": "number",
+      "default": 1,
+      "title": "Skala Min"
+    },
+    "skalaMax": {
+      "type": "number",
+      "default": 5,
+      "title": "Skala Max"
+    },
+    "skalaLabelLinks": {
+      "type": "string",
+      "title": "Skala-Label links"
+    },
+    "skalaLabelRechts": {
+      "type": "string",
+      "title": "Skala-Label rechts"
+    },
+    "auswertungstag": {
+      "type": "string",
+      "title": "Auswertungs-Tag"
+    },
+    "sprachantwortErlaubt": {
+      "type": "boolean",
+      "default": false,
+      "title": "Sprachantwort erlaubt"
+    }
+  },
+  "required": [
+    "blockId",
+    "typ",
+    "text"
+  ]
+}
