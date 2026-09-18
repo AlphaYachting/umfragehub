@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --farbe-text: #2d2d2d;
+  --farbe-bg: #ffffff;
+  --farbe-akzent: #ff3764;
+  --farbe-gut: #45d085;
+  --farbe-grau: #f5f5f5;
+  --farbe-grau-mid: #999999;
+  --schrift: 'Inter', 'Gilroy', 'Helvetica Neue', Arial, sans-serif;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -88,5 +100,64 @@
 
   body {
     @apply bg-background text-foreground font-body;
+    font-family: var(--schrift);
   }
+}
+
+@layer components {
+  .interview-btn-akzent {
+    background-color: var(--farbe-akzent);
+    color: #ffffff;
+    text-transform: uppercase;
+    border-radius: 4px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    min-height: 48px;
+    transition: opacity 0.15s ease;
+  }
+  .interview-btn-akzent:hover {
+    opacity: 0.9;
+  }
+  .interview-btn-akzent:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .interview-auswahl-karte {
+    background-color: var(--farbe-grau);
+    border: 2px solid transparent;
+    border-radius: 4px;
+    min-height: 48px;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+    cursor: pointer;
+  }
+  .interview-auswahl-karte:hover {
+    background-color: #efefef;
+  }
+  .interview-auswahl-karte-aktiv {
+    border-color: var(--farbe-akzent);
+    background-color: #fff;
+  }
+  .interview-skala-btn {
+    background-color: var(--farbe-grau);
+    border: 2px solid transparent;
+    border-radius: 4px;
+    min-height: 56px;
+    min-width: 56px;
+    font-weight: 600;
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+  .interview-skala-btn-aktiv {
+    background-color: var(--farbe-akzent);
+    color: #fff;
+    border-color: var(--farbe-akzent);
+  }
+  .frage-uebergang-enter {
+    animation: frageEinblenden 0.2s ease-out;
+  }
+}
+
+@keyframes frageEinblenden {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
