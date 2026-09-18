@@ -1,113 +1,90 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Mic, Square, Loader2 } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { Mic, Square } from "lucide-react";
 
 export default function SprachAufnahme({ onTranskript, ansprache }) {
   const [aufnimmt, setAufnimmt] = useState(false);
-  const [sekunden, setSekunden] = useState(0);
-  const [pegel, setPegel] = useState(0);
-  const [verarbeitet, setVerarbeitet] = useState(false);
   const [fehler, setFehler] = useState(false);
+  const [unterstuetzt, setUnterstuetzt] = useState(true);
 
-  const mediaRecorderRef = useRef(null);
-  const chunksRef = useRef([]);
-  const streamRef = useRef(null);
-  const audioCtxRef = useRef(null);
-  const analyserRef = useRef(null);
-  const rafRef = useRef(null);
-  const timerRef = useRef(null);
+  const recognitionRef = useRef(null);
+  const finalTextRef = useRef("");
+  const aufnimmtRef = useRef(false);
 
   useEffect(() => {
-    return () => stoppeAlles();
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) setUnterstuetzt(false);
+    return () => stoppe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function stoppeAlles() {
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((t) => t.stop());
+  function start() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      setUnterstuetzt(false);
+      return;
     }
-    if (audioCtxRef.current && audioCtxRef.current.state !== "closed") {
-      audioCtxRef.current.close().catch(() => {});
-    }
-  }
-
-  async function start() {
     setFehler(false);
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      streamRef.current = stream;
+    finalTextRef.current = "";
 
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      audioCtxRef.current = audioCtx;
-      const source = audioCtx.createMediaStreamSource(stream);
-      const analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 256;
-      source.connect(analyser);
-      analyserRef.current = analyser;
+    const rec = new SR();
+    rec.lang = "de-AT";
+    rec.continuous = true;
+    rec.interimResults = true;
 
-      const dataArray = new Uint8Array(analyser.frequencyBinCount);
-      const pegelLoop = () => {
-        analyser.getByteTimeDomainData(dataArray);
-        let sum = 0;
-        for (let i = 0; i < dataArray.length; i++) {
-          const v = (dataArray[i] - 128) / 128;
-          sum += v * v;
-        }
-        setPegel(Math.min(1, Math.sqrt(sum / dataArray.length) * 3));
-        rafRef.current = requestAnimationFrame(pegelLoop);
-      };
-      pegelLoop();
-
-      const mr = new MediaRecorder(stream);
-      mediaRecorderRef.current = mr;
-      chunksRef.current = [];
-      mr.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data);
-      };
-      mr.start();
-      setAufnimmt(true);
-      setSekunden(0);
-      timerRef.current = setInterval(() => setSekunden((s) => s + 1), 1000);
-    } catch (e) {
-      setFehler(true);
-    }
-  }
-
-  async function stop() {
-    const mr = mediaRecorderRef.current;
-    if (!mr) return;
-    setAufnimmt(false);
-    setVerarbeitet(true);
-    stoppeAlles();
-
-    mr.onstop = async () => {
-      const blob = new Blob(chunksRef.current, { type: "audio/webm" });
-      const file = new File([blob], "aufnahme.webm", { type: "audio/webm" });
-      try {
-        const { file_uri } = await base44.integrations.Core.UploadPrivateFile({ file });
-        const res = await base44.functions.invoke("transkribiere", { file_uri });
-        const transkript = res?.data?.transkript || "";
-        if (transkript) {
-          onTranskript(transkript);
+    rec.onresult = (e) => {
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const r = e.results[i];
+        if (r.isFinal) {
+          finalTextRef.current += r[0].transcript;
         } else {
-          setFehler(true);
+          interim += r[0].transcript;
         }
-      } catch (e) {
-        setFehler(true);
-      } finally {
-        setVerarbeitet(false);
+      }
+      onTranskript((finalTextRef.current + " " + interim).trim());
+    };
+
+    rec.onerror = (e) => {
+      if (e.error === "no-speech" || e.error === "aborted") return;
+      setFehler(true);
+    };
+
+    rec.onend = () => {
+      if (aufnimmtRef.current) {
+        try {
+          rec.start();
+        } catch {}
+      } else {
+        onTranskript(finalTextRef.current.trim());
       }
     };
-    mr.stop();
+
+    recognitionRef.current = rec;
+    aufnimmtRef.current = true;
+    try {
+      rec.start();
+      setAufnimmt(true);
+    } catch {
+      setFehler(true);
+      aufnimmtRef.current = false;
+    }
   }
 
-  const mm = String(Math.floor(sekunden / 60)).padStart(2, "0");
-  const ss = String(sekunden % 60).padStart(2, "0");
+  function stoppe() {
+    aufnimmtRef.current = false;
+    setAufnimmt(false);
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch {}
+    }
+  }
+
+  if (!unterstuetzt) return null;
 
   return (
     <div className="mt-3">
-      {!aufnimmt && !verarbeitet && (
+      {!aufnimmt ? (
         <button
           type="button"
           onClick={start}
@@ -122,42 +99,35 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
           </span>
           Per Sprache antworten
         </button>
-      )}
-
-      {aufnimmt && (
+      ) : (
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={stop}
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white"
+            onClick={stoppe}
+            className="w-10 h-10 rounded-full flex items-center justify-center text-white animate-pulse"
             style={{ background: "var(--farbe-akzent)" }}
           >
             <Square size={16} />
           </button>
           <div className="flex-1">
-            <div className="text-xs text-slate-500 mb-1">{mm}:{ss} · Aufnahme läuft</div>
-            <div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--farbe-grau)" }}>
-              <div
-                className="h-full transition-all"
-                style={{ width: `${pegel * 100}%`, background: "var(--farbe-akzent)" }}
-              />
+            <div className="text-xs text-slate-500">
+              Lausche… {ansprache === "sie" ? "Sprechen Sie" : "Sprich"} jetzt
             </div>
           </div>
-          <button type="button" onClick={stop} className="text-sm text-slate-500" style={{ minHeight: 48 }}>
+          <button
+            type="button"
+            onClick={stoppe}
+            className="text-sm text-slate-500"
+            style={{ minHeight: 48 }}
+          >
             Stoppen
           </button>
         </div>
       )}
 
-      {verarbeitet && (
-        <div className="flex items-center gap-2 text-sm text-slate-500">
-          <Loader2 size={16} className="animate-spin" /> Wird transkribiert…
-        </div>
-      )}
-
-      {fehler && !aufnimmt && !verarbeitet && (
+      {fehler && !aufnimmt && (
         <p className="text-xs text-slate-400 mt-2">
-          Die Sprachaufnahme konnte leider nicht verarbeitet werden. {ansprache === "sie" ? "Sie können" : "Du kannst"} die Antwort einfach eintippen.
+          Die Spracherkennung ist leider nicht verfügbar. {ansprache === "sie" ? "Sie können" : "Du kannst"} die Antwort einfach eintippen.
         </p>
       )}
     </div>

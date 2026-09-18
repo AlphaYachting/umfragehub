@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Check } from "lucide-react";
+import { Check, Asterisk } from "lucide-react";
 import SprachAufnahme from "./SprachAufnahme";
 
 const LIMBIC_FARBEN = [
@@ -283,13 +283,19 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
           style={{ borderColor: "var(--farbe-grau-mid)", background: "#fff", minHeight: 120 }}
         />
         {frage.sprachantwortErlaubt && (
-          <SprachAufnahme
-            ansprache={ansprache}
-            onTranskript={(t) => {
-              onChange({ ...v, text: t, transkriptKorrigiert: false, eingabeart: "sprache" });
-              setKorrigiert(false);
-            }}
-          />
+          <>
+            <p className="text-xs text-slate-400 mt-2 flex items-start gap-1.5">
+              <Asterisk size={12} className="mt-0.5 shrink-0" style={{ color: "var(--farbe-akzent)" }} />
+              <span>Die Sprache wird nicht aufgezeichnet, sondern nur live in einen Text umgewandelt.</span>
+            </p>
+            <SprachAufnahme
+              ansprache={ansprache}
+              onTranskript={(t) => {
+                onChange({ ...v, text: t, transkriptKorrigiert: false, eingabeart: "sprache" });
+                setKorrigiert(false);
+              }}
+            />
+          </>
         )}
         {v.eingabeart === "sprache" && v.text && (
           <p className="text-xs text-slate-400 mt-2">
