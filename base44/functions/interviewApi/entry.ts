@@ -26,16 +26,16 @@ export default async function(req) {
     if (aktion === "complete") {
       return await completeSession(base44, body);
     }
-    return Response.json({ error: "Unbekannte Aktion." }, { status: 400 });
+    return Response.json({ error: "Unbekannte Aktion." });
   } catch (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ error: error.message });
   }
 }
 
 async function loadInterview(base44, { linkToken, sessionToken }) {
   const wellen = await base44.asServiceRole.entities.Welle.filter({ linkToken });
   if (!wellen.length) {
-    return Response.json({ error: "nicht_gefunden" }, { status: 404 });
+    return Response.json({ error: "nicht_gefunden" });
   }
   const welle = wellen[0];
   const projekt = await base44.asServiceRole.entities.Projekt.get(welle.projektId);
@@ -77,14 +77,14 @@ function generiereToken(length = 24) {
 async function startSession(base44, { linkToken }) {
   const wellen = await base44.asServiceRole.entities.Welle.filter({ linkToken });
   if (!wellen.length) {
-    return Response.json({ error: "nicht_gefunden" }, { status: 404 });
+    return Response.json({ error: "nicht_gefunden" });
   }
   const welle = wellen[0];
   if (welle.status === "entwurf") {
-    return Response.json({ error: "entwurf" }, { status: 403 });
+    return Response.json({ error: "entwurf" });
   }
   if (welle.status === "geschlossen") {
-    return Response.json({ error: "geschlossen" }, { status: 403 });
+    return Response.json({ error: "geschlossen" });
   }
   const token = generiereToken();
   const jetzt = new Date().toISOString();
@@ -101,7 +101,7 @@ async function startSession(base44, { linkToken }) {
 async function resumeSession(base44, { sessionToken }) {
   const sListe = await base44.asServiceRole.entities.Session.filter({ token: sessionToken });
   if (!sListe.length) {
-    return Response.json({ error: "nicht_gefunden" }, { status: 404 });
+    return Response.json({ error: "nicht_gefunden" });
   }
   const session = sListe[0];
   const antworten = await base44.asServiceRole.entities.Antwort.filter({ sessionId: session.id });
@@ -111,11 +111,11 @@ async function resumeSession(base44, { sessionToken }) {
 async function saveAnswer(base44, { sessionToken, frageId, data }) {
   const sListe = await base44.asServiceRole.entities.Session.filter({ token: sessionToken });
   if (!sListe.length) {
-    return Response.json({ error: "nicht_gefunden" }, { status: 404 });
+    return Response.json({ error: "nicht_gefunden" });
   }
   const session = sListe[0];
   if (session.status === "abgeschlossen") {
-    return Response.json({ error: "abgeschlossen" }, { status: 403 });
+    return Response.json({ error: "abgeschlossen" });
   }
   const existing = await base44.asServiceRole.entities.Antwort.filter({ sessionId: session.id, frageId });
   const daten = {
@@ -137,7 +137,7 @@ async function saveAnswer(base44, { sessionToken, frageId, data }) {
 async function completeSession(base44, { sessionToken }) {
   const sListe = await base44.asServiceRole.entities.Session.filter({ token: sessionToken });
   if (!sListe.length) {
-    return Response.json({ error: "nicht_gefunden" }, { status: 404 });
+    return Response.json({ error: "nicht_gefunden" });
   }
   const session = sListe[0];
   await base44.asServiceRole.entities.Session.update(session.id, {
