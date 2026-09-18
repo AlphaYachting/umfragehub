@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Mic, Square } from "lucide-react";
+import { Mic, Square, X } from "lucide-react";
 
 export default function SprachAufnahme({ onTranskript, ansprache }) {
   const [aufnimmt, setAufnimmt] = useState(false);
@@ -80,6 +80,18 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
     }
   }
 
+  function verwerfen() {
+    finalTextRef.current = "";
+    aufnimmtRef.current = false;
+    setAufnimmt(false);
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch {}
+    }
+    onTranskript("");
+  }
+
   if (!unterstuetzt) return null;
 
   return (
@@ -121,6 +133,15 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
             style={{ minHeight: 48 }}
           >
             Stoppen
+          </button>
+          <button
+            type="button"
+            onClick={verwerfen}
+            className="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700"
+            style={{ background: "var(--farbe-grau)" }}
+            aria-label="Verwerfen"
+          >
+            <X size={16} />
           </button>
         </div>
       )}
