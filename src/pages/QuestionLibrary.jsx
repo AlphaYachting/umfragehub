@@ -23,6 +23,7 @@ export default function QuestionLibrary() {
   const [suche, setSuche] = useState("");
   const [bearbeiten, setBearbeiten] = useState(null); // id oder "neu"
   const [neu, setNeu] = useState(null);
+  const [importiert, setImportiert] = useState(false);
   const importRef = useRef(null);
 
   async function laden() {
@@ -122,6 +123,7 @@ export default function QuestionLibrary() {
   async function importieren(e) {
     const file = e.target.files?.[0];
     if (!file) return;
+    setImportiert(true);
     try {
       const text = await file.text();
       const liste = JSON.parse(text);
@@ -151,6 +153,7 @@ export default function QuestionLibrary() {
     } catch (err) {
       toast.error("Import fehlgeschlagen: ungültiges JSON.");
     } finally {
+      setImportiert(false);
       if (importRef.current) importRef.current.value = "";
     }
   }
@@ -166,7 +169,9 @@ export default function QuestionLibrary() {
         </div>
         <div className="flex gap-2 flex-wrap">
           <Button variant="outline" size="sm" onClick={exportieren}><Download size={15} className="mr-1" /> Export</Button>
-          <Button variant="outline" size="sm" onClick={() => importRef.current?.click()}><Upload size={15} className="mr-1" /> Import</Button>
+          <Button variant="outline" size="sm" onClick={() => importRef.current?.click()} disabled={importiert}>
+            {importiert ? <><span className="w-3 h-3 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin inline-block mr-2" /> Import läuft…</> : <><Upload size={15} className="mr-1" /> Import</>}
+          </Button>
           <input ref={importRef} type="file" accept="application/json" className="hidden" onChange={importieren} />
           <Button size="sm" onClick={neueFrageOeffnen}><Plus size={15} className="mr-1" /> Neue Frage</Button>
         </div>
