@@ -339,8 +339,7 @@ export default function Interview() {
     }
     kapitelUebersicht[item.blockIndex].anzahl++;
   });
-  const kapitelGefiltert = kapitelUebersicht.filter((k) => k && k.titel && k.titel !== "Neuer Block");
-  const zeigeKapitel = kapitelGefiltert.length > 1;
+  const kapitelListe = kapitelUebersicht.filter(Boolean);
   const totalBloecke = kapitelUebersicht.filter(Boolean).length;
   const zielgruppeText = {
     geschaeftsfuehrung: "Geschäftsführungsbefragung",
@@ -418,13 +417,11 @@ export default function Interview() {
 
   if (screen === "welcome") {
     const zusicherungen = [
-      { icon: Shield, text: `Vollständig anonym — wir können nicht sehen, wer ${a.duSie} ${a.bistSind}. Einzelantworten sind erst ab ${welle.mindestTeilnehmer || 6} Teilnehmern sichtbar.` },
-      { icon: Heart, text: "Es gibt kein richtig und kein falsch — und zu jeder Frage gibt es eine kurze Erklärung, warum wir sie stellen." },
-      { icon: Clock, text: `Dauert etwa ${welle.geschaetzteDauerMinuten || 10} Minuten — eine Frage pro Seite, jederzeit zurück.` },
+      { icon: Shield, lead: "Vollständig anonym.", text: `Wir sehen nicht, wer ${a.duSie} ${a.bistSind}. Es werden weder Name noch E-Mail noch Gerät gespeichert. Einzelantworten werden erst ab ${welle.mindestTeilnehmer || 6} abgeschlossenen Befragungen überhaupt sichtbar.` },
+      { icon: Heart, lead: "Kein richtig, kein falsch.", text: `Zu jeder Frage gibt es eine Erklärung, warum wir sie stellen – einfach auf „Warum fragen wir das?“ tippen.` },
+      { icon: Clock, lead: `Etwa ${welle.geschaetzteDauerMinuten || 10} Minuten.`, text: `Eine Frage pro Seite, ${a.duSie} ${a.kannstKönnen} jederzeit zurück.` },
+      { icon: PauseCircle, lead: "Pausieren geht.", text: `${a.duSie === "Sie" ? "Schließen Sie" : "Schließ"} den Tab einfach — auf demselben Gerät geht es später dort weiter, wo ${a.duSie} aufgehört ${a.hastHaben}.` },
     ];
-    if (kannFortsetzen) {
-      zusicherungen.push({ icon: PauseCircle, text: "Pausieren möglich — auf diesem Gerät geht es später genau da weiter, wo du aufgehört hast." });
-    }
     return (
       <div className="min-h-screen flex items-center justify-center p-5" style={{ background: "var(--farbe-bg)" }}>
         <div className="max-w-[560px] w-full">
@@ -445,13 +442,27 @@ export default function Interview() {
             </p>
           )}
 
-          {zeigeKapitel && (
+          <div style={{ border: "1px solid var(--farbe-linie)", borderRadius: 12, overflow: "hidden", marginBottom: 26 }}>
+            {zusicherungen.map((z, i) => {
+              const Icon = z.icon;
+              return (
+                <div key={i} className="flex items-start gap-3" style={{ padding: 16, borderBottom: i < zusicherungen.length - 1 ? "1px solid var(--farbe-linie)" : "none" }}>
+                  <Icon size={20} style={{ color: "var(--farbe-akzent)" }} className="shrink-0 mt-0.5" />
+                  <span style={{ fontSize: "14.5px", color: "var(--farbe-text)", lineHeight: 1.5 }}>
+                    <strong style={{ fontWeight: 700 }}>{z.lead}</strong> {z.text}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          {kapitelListe.length > 0 && (
             <div style={{ marginBottom: 26 }}>
               <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--farbe-grau-mid)", marginBottom: 12 }}>
-                So ist die Befragung aufgebaut
+                {a.duSie === "Sie" ? "Das erwartet Sie" : "Das erwartet dich"}
               </div>
               <div style={{ borderTop: "1px solid var(--farbe-linie)" }}>
-                {kapitelGefiltert.map((k) => (
+                {kapitelListe.map((k) => (
                   <div key={k.nr} className="flex items-center gap-3" style={{ padding: "12px 0", borderBottom: "1px solid var(--farbe-linie)" }}>
                     <span className="flex items-center justify-center shrink-0" style={{ width: 26, height: 26, borderRadius: "50%", background: "var(--farbe-grau)", fontSize: "12.5px", fontWeight: 700, color: "var(--farbe-text)" }}>{k.nr}</span>
                     <span className="flex-1" style={{ fontSize: "14.5px", fontWeight: 600, color: "var(--farbe-text)" }}>{k.titel}</span>
@@ -461,18 +472,6 @@ export default function Interview() {
               </div>
             </div>
           )}
-
-          <div style={{ border: "1px solid var(--farbe-linie)", borderRadius: 12, overflow: "hidden", marginBottom: 26 }}>
-            {zusicherungen.map((z, i) => {
-              const Icon = z.icon;
-              return (
-                <div key={i} className="flex items-start gap-3" style={{ padding: 16, borderBottom: i < zusicherungen.length - 1 ? "1px solid var(--farbe-linie)" : "none" }}>
-                  <Icon size={20} style={{ color: "var(--farbe-akzent)" }} className="shrink-0 mt-0.5" />
-                  <span style={{ fontSize: "14.5px", color: "var(--farbe-text)", lineHeight: 1.5 }}>{z.text}</span>
-                </div>
-              );
-            })}
-          </div>
 
           <div className="space-y-3">
             <div className="flex justify-center">
