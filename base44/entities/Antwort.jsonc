@@ -26,6 +26,13 @@
       "title": "Text",
       "format": "textarea"
     },
+    "matrixWerte": {
+      "type": "object",
+      "title": "Matrix-Werte",
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
     "eingabeart": {
       "type": "string",
       "enum": [

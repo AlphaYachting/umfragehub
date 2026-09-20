@@ -37,6 +37,30 @@
       "type": "string",
       "title": "Sekund\u00e4rfarbe"
     },
+    "farbeText": {
+      "type": "string",
+      "title": "Textfarbe"
+    },
+    "farbeHintergrund": {
+      "type": "string",
+      "title": "Hintergrundfarbe"
+    },
+    "schriftFamilie": {
+      "type": "string",
+      "title": "Schriftfamilie"
+    },
+    "schriftUrl": {
+      "type": "string",
+      "title": "Schrift-URL"
+    },
+    "datenschutzUrl": {
+      "type": "string",
+      "title": "Datenschutz-URL"
+    },
+    "impressumUrl": {
+      "type": "string",
+      "title": "Impressum-URL"
+    },
     "ansprache": {
       "type": "string",
       "enum": [

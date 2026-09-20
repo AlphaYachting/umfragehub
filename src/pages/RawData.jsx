@@ -4,7 +4,7 @@ import { ArrowLeft, Download, Lock } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { FRAGETYP_LABELS } from "@/lib/interview";
+import { FRAGETYP_LABELS, sternchenEntfernen } from "@/lib/interview";
 
 export default function RawData() {
   const { id } = useParams();
@@ -53,7 +53,11 @@ export default function RawData() {
 
   function antwortWert(a, f) {
     if (!a) return "";
-    if (f.typ === "skala" || f.typ === "ja_nein") return String(a.zahl ?? "");
+    if (["skala", "ja_nein", "schieberegler", "gegensatzpaar"].includes(f.typ)) return String(a.zahl ?? "");
+    if (f.typ === "matrix") {
+      const mw = a.matrixWerte || {};
+      return (f.matrixZeilen || []).map((z, i) => `${z}: ${mw[String(i)] ?? ""}`).join(" | ");
+    }
     if (f.typ === "freitext") return a.text || "";
     if (a.auswahl && a.auswahl.length) return a.auswahl.join("; ");
     return "";
@@ -69,10 +73,11 @@ export default function RawData() {
       const s = sessions.find((x) => x.id === a.sessionId);
       return {
         session_token: s?.token,
-        frage_text: f?.text,
+        frage_text: sternchenEntfernen(f?.text),
         frage_typ: f?.typ,
         auswahl: a.auswahl,
         zahl: a.zahl,
+        matrix_werte: a.matrixWerte || null,
         text: a.text,
         eingabeart: a.eingabeart,
         transkript_korrigiert: a.transkriptKorrigiert,
@@ -92,17 +97,19 @@ export default function RawData() {
       toast.error("Export gesperrt — Mindestteilnehmerzahl noch nicht erreicht.");
       return;
     }
-    const headers = ["session_token", "frage", "fragetyp", "auswahl", "zahl", "text", "eingabeart", "transkript_korrigiert"];
+    const headers = ["session_token", "frage", "fragetyp", "auswahl", "zahl", "matrix_werte", "text", "eingabeart", "transkript_korrigiert"];
     const lines = [headers.join(",")];
     for (const a of antworten) {
       const f = fragen.find((x) => x.id === a.frageId);
       const s = sessions.find((x) => x.id === a.sessionId);
+      const matrixStr = a.matrixWerte ? Object.entries(a.matrixWerte).map(([k, v]) => `${k}:${v}`).join("; ") : "";
       const row = [
         s?.token || "",
-        (f?.text || "").replace(/"/g, '""'),
+        sternchenEntfernen(f?.text || "").replace(/"/g, '""'),
         f?.typ || "",
         (a.auswahl || []).join("; ").replace(/"/g, '""'),
         a.zahl ?? "",
+        matrixStr.replace(/"/g, '""'),
         (a.text || "").replace(/"/g, '""').replace(/\n/g, " "),
         a.eingabeart || "",
         a.transkriptKorrigiert ? "ja" : "nein",
@@ -177,7 +184,7 @@ export default function RawData() {
                   return (
                     <tr key={a.id} className="hover:bg-slate-50">
                       <td className="px-3 py-2 text-xs text-slate-400 font-mono">{s?.token?.slice(0, 8)}…</td>
-                      <td className="px-3 py-2 text-slate-700 max-w-xs truncate">{f?.text}</td>
+                      <td className="px-3 py-2 text-slate-700 max-w-xs truncate">{sternchenEntfernen(f?.text)}</td>
                       <td className="px-3 py-2 text-xs text-slate-500">{f ? FRAGETYP_LABELS[f.typ] : ""}</td>
                       <td className="px-3 py-2 text-slate-800 max-w-md">{antwortWert(a, f)}</td>
                       <td className="px-3 py-2 text-xs text-slate-500">{a.eingabeart}</td>

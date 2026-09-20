@@ -21,11 +21,15 @@ export function geschaetzteFrageDauerSekunden(typ) {
     case "multi_choice":
       return 20;
     case "skala":
+    case "schieberegler":
+    case "gegensatzpaar":
       return 15;
     case "werte_auswahl":
       return 45;
     case "limbic":
       return 35;
+    case "matrix":
+      return 30;
     case "freitext":
       return 60;
     default:
@@ -54,6 +58,9 @@ export function themeVariablenSetzen(projekt) {
   if (!projekt) {
     root.style.removeProperty("--farbe-akzent");
     root.style.removeProperty("--farbe-gut");
+    root.style.removeProperty("--farbe-text");
+    root.style.removeProperty("--farbe-bg");
+    root.style.removeProperty("--schrift");
     return;
   }
   if (projekt.theme === "kunde") {
@@ -66,6 +73,27 @@ export function themeVariablenSetzen(projekt) {
     // rittler — Standardwerte
     root.style.setProperty("--farbe-akzent", "#ff3764");
     root.style.setProperty("--farbe-gut", "#45d085");
+  }
+  // Optionale Branding-Felder — fehlen sie, gelten die bisherigen Werte
+  if (projekt.farbeText) root.style.setProperty("--farbe-text", projekt.farbeText);
+  else root.style.removeProperty("--farbe-text");
+  if (projekt.farbeHintergrund) root.style.setProperty("--farbe-bg", projekt.farbeHintergrund);
+  else root.style.removeProperty("--farbe-bg");
+  if (projekt.schriftFamilie) root.style.setProperty("--schrift", projekt.schriftFamilie);
+  else root.style.removeProperty("--schrift");
+  // Google-Fonts-URL als <link> injizieren, falls vorhanden
+  if (projekt.schriftUrl) {
+    let link = document.getElementById("interview-schrift");
+    if (!link) {
+      link = document.createElement("link");
+      link.id = "interview-schrift";
+      link.rel = "stylesheet";
+      document.head.appendChild(link);
+    }
+    if (link.href !== projekt.schriftUrl) link.href = projekt.schriftUrl;
+  } else {
+    const link = document.getElementById("interview-schrift");
+    if (link) link.remove();
   }
 }
 
@@ -93,6 +121,24 @@ export function anspracheFormen(ansprache) {
     kannstKönnen: "kannst",
     klein: "du"
   };
+}
+
+// Sternchen-Markierung aus dem Fragetext entfernen (für aria-label, Export, Editor-Vorschau)
+export function sternchenEntfernen(text) {
+  if (!text) return "";
+  return String(text).replace(/\*([^*]+)\*/g, "$1");
+}
+
+// Fragetext als HTML rendern — HTML escapen, dann *wort* zu <span class="frage-akzent">wort</span>
+export function renderFragetext(text) {
+  if (!text) return "";
+  const escaped = String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+  return escaped.replace(/\*([^*]+)\*/g, '<span class="frage-akzent">$1</span>');
 }
 
 // Datum formatieren TT.MM.JJJJ
@@ -142,5 +188,8 @@ export const FRAGETYP_LABELS = {
   werte_auswahl: "Werte-Auswahl",
   limbic: "Limbic",
   freitext: "Freitext",
-  ja_nein: "Ja / Nein"
+  ja_nein: "Ja / Nein",
+  schieberegler: "Schieberegler",
+  gegensatzpaar: "Gegensatzpaar",
+  matrix: "Matrix"
 };

@@ -75,6 +75,12 @@ export default function ProjectDetail() {
         logoUrl: projekt.logoUrl,
         farbePrimaer: projekt.farbePrimaer,
         farbeSekundaer: projekt.farbeSekundaer,
+        farbeText: projekt.farbeText,
+        farbeHintergrund: projekt.farbeHintergrund,
+        schriftFamilie: projekt.schriftFamilie,
+        schriftUrl: projekt.schriftUrl,
+        datenschutzUrl: projekt.datenschutzUrl,
+        impressumUrl: projekt.impressumUrl,
         ansprache: projekt.ansprache,
         status: projekt.status,
       });
@@ -245,6 +251,65 @@ export default function ProjectDetail() {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="bg-white border border-slate-200 rounded-lg p-6 mb-8">
+        <h2 className="font-semibold mb-4">Schrift &amp; Rechtliches</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Schriftfamilie (CSS-Font-Stack, optional)</Label>
+            <Input
+              value={projekt.schriftFamilie || ""}
+              onChange={(e) => feldAendern("schriftFamilie", e.target.value)}
+              placeholder="z. B. 'Inter', 'Helvetica Neue', sans-serif"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Schrift-URL (Google Fonts, optional)</Label>
+            <Input
+              value={projekt.schriftUrl || ""}
+              onChange={(e) => feldAendern("schriftUrl", e.target.value)}
+              placeholder="https://fonts.googleapis.com/css2?family=Inter&display=swap"
+            />
+          </div>
+          {projekt.theme === "kunde" && (
+            <>
+              <div className="space-y-2">
+                <Label>Textfarbe (optional)</Label>
+                <div className="flex items-center gap-2">
+                  <input type="color" value={projekt.farbeText || "#2d2d2d"} onChange={(e) => feldAendern("farbeText", e.target.value)} className="h-9 w-12 rounded border border-slate-200" />
+                  <Input value={projekt.farbeText || ""} onChange={(e) => feldAendern("farbeText", e.target.value)} placeholder="#2d2d2d" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Hintergrundfarbe (optional)</Label>
+                <div className="flex items-center gap-2">
+                  <input type="color" value={projekt.farbeHintergrund || "#ffffff"} onChange={(e) => feldAendern("farbeHintergrund", e.target.value)} className="h-9 w-12 rounded border border-slate-200" />
+                  <Input value={projekt.farbeHintergrund || ""} onChange={(e) => feldAendern("farbeHintergrund", e.target.value)} placeholder="#ffffff" />
+                </div>
+              </div>
+            </>
+          )}
+          <div className="space-y-2">
+            <Label>Datenschutz-URL (optional)</Label>
+            <Input
+              value={projekt.datenschutzUrl || ""}
+              onChange={(e) => feldAendern("datenschutzUrl", e.target.value)}
+              placeholder="https://…/datenschutz"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Impressum-URL (optional)</Label>
+            <Input
+              value={projekt.impressumUrl || ""}
+              onChange={(e) => feldAendern("impressumUrl", e.target.value)}
+              placeholder="https://…/impressum"
+            />
+          </div>
+        </div>
+        <p className="text-xs text-slate-400 mt-3">
+          Sind Datenschutz- und Impressum-URL gesetzt, erscheinen sie als Fußzeile im Teilnehmer-Frontend.
+        </p>
       </div>
 
       <div className="flex justify-end mb-8">

@@ -1,10 +1,50 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Check, Asterisk } from "lucide-react";
 import SprachAufnahme from "./SprachAufnahme";
 
 const LIMBIC_FARBEN = [
   "#fce4ec", "#e3f2fd", "#e8f5e9", "#fff3e0", "#f3e5f5", "#e0f7fa"
 ];
+
+const REDUZIERTE_BEWEGUNG = typeof window !== "undefined" &&
+  window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// Spürbares Einrasten — Vibration auf Android, visuelle Mikrobewegung auf iOS
+function einrastenSpuerbar(element) {
+  if (REDUZIERTE_BEWEGUNG) return;
+  try {
+    if (navigator.vibrate) navigator.vibrate(10);
+  } catch (e) { /* nicht überall vorhanden */ }
+  if (element && !navigator.vibrate) {
+    element.classList.remove("interview-einrasten");
+    void element.offsetWidth;
+    element.classList.add("interview-einrasten");
+  }
+}
+
+// Verbale Stufe für einen Reglerwert aus stufenWorte
+function stufenWort(frage, wert) {
+  const stufen = (frage.stufenWorte || []).slice().sort((a, b) => (a.bis ?? 0) - (b.bis ?? 0));
+  for (const s of stufen) {
+    if (wert <= (s.bis ?? Infinity)) return s.wort;
+  }
+  return stufen.length ? stufen[stufen.length - 1].wort : "";
+}
+
+// Verbale Verortung für das Gegensatzpaar (0–100)
+function gegensatzVerortung(pos) {
+  if (pos <= 50) {
+    const d = 50 - pos;
+    if (d === 0) return "genau in der Mitte";
+    if (d < 15) return "leicht links der Mitte";
+    if (d < 35) return "mitte-links";
+    return "deutlich links";
+  }
+  const d = pos - 50;
+  if (d < 15) return "leicht rechts der Mitte";
+  if (d < 35) return "mitte-rechts";
+  return "deutlich rechts";
+}
 
 export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
   const v = wert || {};
@@ -13,6 +53,12 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
   const [werteStep, setWerteStep] = useState(1);
   const [ranking, setRanking] = useState(v.ranking || []);
   const [korrigiert, setKorrigiert] = useState(v.transkriptKorrigiert || false);
+  const [reglerBeruehrt, setReglerBeruehrt] = useState(v.zahl !== undefined && v.zahl !== null);
+  const reglerRef = useRef(null);
+
+  useEffect(() => {
+    setReglerBeruehrt(v.zahl !== undefined && v.zahl !== null);
+  }, [frage.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function setAuswahl(neu) {
     onChange({ ...v, auswahl: neu, ranking: [] });
@@ -30,7 +76,8 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
             <button
               key={opt}
               type="button"
-              onClick={() => onChange({ ...v, auswahl: [opt] })}
+              aria-pressed={aktiv}
+              onClick={(e) => { einrastenSpuerbar(e.currentTarget); onChange({ ...v, auswahl: [opt] }); }}
               className={`w-full text-left px-4 py-4 text-base interview-auswahl-karte ${aktiv ? "interview-auswahl-karte-aktiv" : ""}`}
             >
               {opt}
@@ -58,7 +105,8 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
             <button
               key={opt}
               type="button"
-              onClick={() => toggle(opt)}
+              aria-pressed={aktiv}
+              onClick={(e) => { einrastenSpuerbar(e.currentTarget); toggle(opt); }}
               className={`w-full text-left px-4 py-4 text-base interview-auswahl-karte flex items-center justify-between ${aktiv ? "interview-auswahl-karte-aktiv" : ""}`}
             >
               <span>{opt}</span>
@@ -80,7 +128,8 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
             <button
               key={opt}
               type="button"
-              onClick={() => onChange({ ...v, auswahl: [opt], zahl: opt === "Ja" ? 1 : 0 })}
+              aria-pressed={aktiv}
+              onClick={(e) => { einrastenSpuerbar(e.currentTarget); onChange({ ...v, auswahl: [opt], zahl: opt === "Ja" ? 1 : 0 }); }}
               className={`px-4 py-6 text-lg font-semibold interview-auswahl-karte ${aktiv ? "interview-auswahl-karte-aktiv" : ""}`}
             >
               {opt}
@@ -106,7 +155,9 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
               <button
                 key={p}
                 type="button"
-                onClick={() => onChange({ ...v, zahl: p })}
+                aria-pressed={aktiv}
+                aria-label={`${p}`}
+                onClick={(e) => { einrastenSpuerbar(e.currentTarget); onChange({ ...v, zahl: p }); }}
                 className={`interview-skala-btn ${aktiv ? "interview-skala-btn-aktiv" : ""}`}
               >
                 {p}
@@ -114,10 +165,154 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
             );
           })}
         </div>
-        <div className="flex justify-between mt-3 text-xs text-slate-400">
+        <div className="flex justify-between mt-3 text-xs" style={{ color: "var(--farbe-grau-mid)" }}>
           <span>{frage.skalaLabelLinks || ""}</span>
           <span>{frage.skalaLabelRechts || ""}</span>
         </div>
+      </div>
+    );
+  }
+
+  // schieberegler
+  if (frage.typ === "schieberegler") {
+    const min = frage.skalaMin ?? 0;
+    const max = frage.skalaMax ?? 100;
+    const wertZahl = v.zahl;
+    const unberuehrt = !reglerBeruehrt;
+    const prozent = unberuehrt ? 0 : ((wertZahl - min) / (max - min)) * 100;
+    return (
+      <div className="px-1">
+        <div className="text-center mb-4">
+          {unberuehrt ? (
+            <span className="text-base" style={{ color: "var(--farbe-grau-mid)" }}>
+              Noch keine Antwort — zieh den Regler.
+            </span>
+          ) : (
+            <>
+              <div className="text-4xl font-bold" style={{ color: "var(--farbe-akzent)" }}>
+                {Math.round(wertZahl)}
+              </div>
+              {stufenWort(frage, wertZahl) && (
+                <div className="text-sm mt-1" style={{ color: "var(--farbe-text-daempft)" }}>
+                  {stufenWort(frage, wertZahl)}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+        <input
+          ref={reglerRef}
+          type="range"
+          min={min}
+          max={max}
+          value={unberuehrt ? min : wertZahl}
+          onChange={(e) => {
+            if (!reglerBeruehrt) setReglerBeruehrt(true);
+            onChange({ ...v, zahl: Number(e.target.value) });
+          }}
+          className={`interview-regel ${unberuehrt ? "interview-regel-unberuehrt" : ""}`}
+          style={{ "--regler-fuellung": `${prozent}%` }}
+          aria-label="Schieberegler"
+        />
+        <div className="flex justify-between mt-3 text-xs" style={{ color: "var(--farbe-grau-mid)" }}>
+          <span>{frage.skalaLabelLinks || min}</span>
+          <span>{frage.skalaLabelRechts || max}</span>
+        </div>
+      </div>
+    );
+  }
+
+  // gegensatzpaar
+  if (frage.typ === "gegensatzpaar") {
+    const min = 0;
+    const max = 100;
+    const wertZahl = v.zahl;
+    const unberuehrt = !reglerBeruehrt;
+    const prozent = unberuehrt ? 0 : wertZahl;
+    return (
+      <div className="px-1">
+        <div className="text-center mb-4">
+          {unberuehrt ? (
+            <span className="text-base" style={{ color: "var(--farbe-grau-mid)" }}>
+              Noch keine Antwort — zieh den Regler.
+            </span>
+          ) : (
+            <div className="text-base font-medium" style={{ color: "var(--farbe-text-daempft)" }}>
+              {gegensatzVerortung(wertZahl)}
+            </div>
+          )}
+        </div>
+        <input
+          ref={reglerRef}
+          type="range"
+          min={min}
+          max={max}
+          value={unberuehrt ? 50 : wertZahl}
+          onChange={(e) => {
+            if (!reglerBeruehrt) setReglerBeruehrt(true);
+            onChange({ ...v, zahl: Number(e.target.value) });
+          }}
+          className={`interview-regel ${unberuehrt ? "interview-regel-unberuehrt" : ""}`}
+          style={{ "--regler-fuellung": `${prozent}%` }}
+          aria-label="Gegensatzpaar-Regler"
+        />
+        <div className="flex justify-between mt-3 text-xs font-medium" style={{ color: "var(--farbe-grau-mid)" }}>
+          <span>{frage.skalaLabelLinks || "links"}</span>
+          <span>{frage.skalaLabelRechts || "rechts"}</span>
+        </div>
+      </div>
+    );
+  }
+
+  // matrix
+  if (frage.typ === "matrix") {
+    const min = frage.skalaMin ?? 1;
+    const max = frage.skalaMax ?? 5;
+    const punkte = [];
+    for (let i = min; i <= max; i++) punkte.push(i);
+    const matrixWerte = v.matrixWerte || {};
+    const zeilen = frage.matrixZeilen || [];
+    const alleBeantwortet = zeilen.length > 0 && zeilen.every((_, idx) => matrixWerte[String(idx)] !== undefined);
+    function setZeile(idx, stufe, element) {
+      einrastenSpuerbar(element);
+      onChange({ ...v, matrixWerte: { ...matrixWerte, [String(idx)]: stufe } });
+    }
+    return (
+      <div>
+        <div className="flex justify-between mb-3 text-xs" style={{ color: "var(--farbe-grau-mid)" }}>
+          <span>{frage.skalaLabelLinks || min}</span>
+          <span>{frage.skalaLabelRechts || max}</span>
+        </div>
+        <div className="space-y-5">
+          {zeilen.map((zeile, idx) => (
+            <div key={idx}>
+              <div className="text-sm mb-2" style={{ color: "var(--farbe-text)" }}>{zeile}</div>
+              <div className="grid grid-cols-5 gap-2">
+                {punkte.map((p) => {
+                  const aktiv = matrixWerte[String(idx)] === p;
+                  return (
+                    <button
+                      key={p}
+                      type="button"
+                      aria-pressed={aktiv}
+                      aria-label={`${zeile} — Stufe ${p}`}
+                      onClick={(e) => setZeile(idx, p, e.currentTarget)}
+                      className={`interview-skala-btn ${aktiv ? "interview-skala-btn-aktiv" : ""}`}
+                      style={{ minHeight: 48 }}
+                    >
+                      {p}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+        {!alleBeantwortet && zeilen.length > 0 && (
+          <p className="text-xs mt-3" style={{ color: "var(--farbe-grau-mid)" }}>
+            Bitte alle Aussagen bewerten.
+          </p>
+        )}
       </div>
     );
   }
@@ -154,7 +349,8 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
                   <button
                     key={opt}
                     type="button"
-                    onClick={() => toggle(opt)}
+                    aria-pressed={aktiv}
+                    onClick={(e) => { einrastenSpuerbar(e.currentTarget); toggle(opt); }}
                     className={`w-full text-left px-4 py-3 text-base interview-auswahl-karte flex items-center justify-between ${aktiv ? "interview-auswahl-karte-aktiv" : ""}`}
                   >
                     <span>{opt}</span>
@@ -187,7 +383,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
                   <button
                     key={opt}
                     type="button"
-                    onClick={() => rank(opt)}
+                    onClick={(e) => { einrastenSpuerbar(e.currentTarget); rank(opt); }}
                     className="w-full text-left px-4 py-3 text-base interview-auswahl-karte flex items-center justify-between"
                     style={place >= 0 ? { borderColor: "var(--farbe-akzent)", borderWidth: 2 } : {}}
                   >
@@ -241,7 +437,9 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
                     <button
                       key={b}
                       type="button"
-                      onClick={() => {
+                      aria-pressed={aktiv}
+                      onClick={(e) => {
+                        einrastenSpuerbar(e.currentTarget);
                         if (auswahl.includes(b)) setAuswahl(auswahl.filter((x) => x !== b));
                         else setAuswahl([...auswahl, b]);
                       }}

@@ -16,7 +16,10 @@
         "werte_auswahl",
         "limbic",
         "freitext",
-        "ja_nein"
+        "ja_nein",
+        "schieberegler",
+        "gegensatzpaar",
+        "matrix"
       ],
       "title": "Fragetyp"
     },
@@ -28,6 +31,11 @@
     "hilfetext": {
       "type": "string",
       "title": "Hilfetext"
+    },
+    "erklaerung": {
+      "type": "string",
+      "title": "Erkl\u00e4rung",
+      "format": "textarea"
     },
     "pflicht": {
       "type": "boolean",
@@ -58,6 +66,34 @@
     "skalaLabelRechts": {
       "type": "string",
       "title": "Skala-Label rechts"
+    },
+    "stufenWorte": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "bis": {
+            "type": "number",
+            "title": "Bis Wert"
+          },
+          "wort": {
+            "type": "string",
+            "title": "Wort"
+          }
+        },
+        "required": [
+          "bis",
+          "wort"
+        ]
+      },
+      "title": "Stufen-Worte"
+    },
+    "matrixZeilen": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Matrix-Zeilen"
     },
     "auswertungstag": {
       "type": "string",

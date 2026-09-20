@@ -32,8 +32,34 @@ export default function FrageForm({ frage, onChange }) {
     feld("optionen", (frage.optionen || []).filter((_, i) => i !== idx));
   }
 
+  function matrixZeileAendern(idx, wert) {
+    const neu = [...(frage.matrixZeilen || [])];
+    neu[idx] = wert;
+    feld("matrixZeilen", neu);
+  }
+  function matrixZeileHinzu() {
+    feld("matrixZeilen", [...(frage.matrixZeilen || []), ""]);
+  }
+  function matrixZeileWeg(idx) {
+    feld("matrixZeilen", (frage.matrixZeilen || []).filter((_, i) => i !== idx));
+  }
+
+  function stufeAendern(idx, f, wert) {
+    const neu = [...(frage.stufenWorte || [])];
+    neu[idx] = { ...neu[idx], [f]: wert };
+    feld("stufenWorte", neu);
+  }
+  function stufeHinzu() {
+    feld("stufenWorte", [...(frage.stufenWorte || []), { bis: 0, wort: "" }]);
+  }
+  function stufeWeg(idx) {
+    feld("stufenWorte", (frage.stufenWorte || []).filter((_, i) => i !== idx));
+  }
+
   const brauchtOptionen = ["single_choice", "multi_choice", "werte_auswahl", "limbic"].includes(frage.typ);
-  const brauchtSkala = frage.typ === "skala";
+  const brauchtSkala = ["skala", "schieberegler", "gegensatzpaar", "matrix"].includes(frage.typ);
+  const brauchtMatrixZeilen = frage.typ === "matrix";
+  const brauchtStufenWorte = ["schieberegler", "gegensatzpaar"].includes(frage.typ);
   const istFreitext = frage.typ === "freitext";
 
   return (
@@ -46,6 +72,9 @@ export default function FrageForm({ frage, onChange }) {
           rows={2}
           placeholder="Wie lautet die Frage?"
         />
+        <p className="text-xs text-slate-400">
+          Wort in Sternchen setzen, um es hervorzuheben — z.&nbsp;B. „Welche Werte *erlebst* du wirklich?&ldquo;
+        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -68,6 +97,19 @@ export default function FrageForm({ frage, onChange }) {
             placeholder="Optional, kleiner Hinweis"
           />
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Erklärung — „Warum fragen wir das?&ldquo; (optional)</Label>
+        <Textarea
+          value={frage.erklaerung || ""}
+          onChange={(e) => feld("erklaerung", e.target.value)}
+          rows={3}
+          placeholder="Warum stellen wir diese Frage? Was soll der Befragte dabei bedenken?"
+        />
+        <p className="text-xs text-slate-400">
+          Mehrere Absätze durch eine Leerzeile trennen. Wird den Teilnehmern aufklappbar angezeigt.
+        </p>
       </div>
 
       <div className="flex items-center gap-6 pt-1">
@@ -100,6 +142,55 @@ export default function FrageForm({ frage, onChange }) {
           ))}
           <Button variant="outline" size="sm" onClick={optionHinzu}>
             <Plus size={14} className="mr-1" /> Option hinzufügen
+          </Button>
+        </div>
+      )}
+
+      {brauchtMatrixZeilen && (
+        <div className="space-y-2">
+          <Label>Matrix-Aussagen</Label>
+          {(frage.matrixZeilen || []).map((zeile, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <Input
+                value={zeile}
+                onChange={(e) => matrixZeileAendern(i, e.target.value)}
+                placeholder={`Aussage ${i + 1}`}
+              />
+              <Button variant="ghost" size="sm" onClick={() => matrixZeileWeg(i)} className="text-red-500">
+                <X size={16} />
+              </Button>
+            </div>
+          ))}
+          <Button variant="outline" size="sm" onClick={matrixZeileHinzu}>
+            <Plus size={14} className="mr-1" /> Aussage hinzufügen
+          </Button>
+        </div>
+      )}
+
+      {brauchtStufenWorte && (
+        <div className="space-y-2">
+          <Label>Stufen-Worte (verbale Beschriftung, aufsteigend)</Label>
+          {(frage.stufenWorte || []).map((stufe, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <Input
+                type="number"
+                value={stufe.bis ?? 0}
+                onChange={(e) => stufeAendern(i, "bis", Number(e.target.value))}
+                placeholder="bis Wert"
+                className="w-28"
+              />
+              <Input
+                value={stufe.wort || ""}
+                onChange={(e) => stufeAendern(i, "wort", e.target.value)}
+                placeholder="Wort z. B. „deutlich spürbar&ldquo;"
+              />
+              <Button variant="ghost" size="sm" onClick={() => stufeWeg(i)} className="text-red-500">
+                <X size={16} />
+              </Button>
+            </div>
+          ))}
+          <Button variant="outline" size="sm" onClick={stufeHinzu}>
+            <Plus size={14} className="mr-1" /> Stufe hinzufügen
           </Button>
         </div>
       )}

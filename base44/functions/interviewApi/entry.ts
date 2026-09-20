@@ -108,6 +108,53 @@ async function resumeSession(base44, { sessionToken }) {
   return Response.json({ session, antworten });
 }
 
+// Lädt alle Fragen einer Welle (über ihre Blöcke) und indiziert sie nach ID
+async function fragenDerWelle(base44, welle) {
+  const bloecke = await base44.asServiceRole.entities.Block.filter({ wellenId: welle.id });
+  const fragen = {};
+  for (const b of bloecke) {
+    const liste = await base44.asServiceRole.entities.Frage.filter({ blockId: b.id });
+    for (const f of liste) fragen[f.id] = f;
+  }
+  return fragen;
+}
+
+// Serverseitige Mindestprüfung einer Antwort gegen den Fragetyp
+function validiereAntwort(frage, data) {
+  const typ = frage.typ;
+  const min = frage.skalaMin ?? 1;
+  const max = frage.skalaMax ?? 5;
+  if (typ === "single_choice" || typ === "multi_choice" || typ === "werte_auswahl" || typ === "limbic" || typ === "ja_nein") {
+    // Auswahl muss Teil der erlaubten Optionen sein (bei ja_nein: Ja/Nein)
+    const erlaubt = typ === "ja_nein" ? ["Ja", "Nein"] : (frage.optionen || []);
+    const auswahl = data.auswahl || [];
+    for (const a of auswahl) {
+      if (!erlaubt.includes(a)) return `Ungültige Auswahl: ${a}`;
+    }
+  }
+  if (typ === "skala" || typ === "schieberegler" || typ === "gegensatzpaar") {
+    if (data.zahl !== undefined && data.zahl !== null && data.zahl !== "") {
+      const z = Number(data.zahl);
+      if (isNaN(z)) return "Wert ist keine Zahl";
+      const gMin = typ === "gegensatzpaar" ? 0 : min;
+      const gMax = typ === "gegensatzpaar" ? 100 : max;
+      if (z < gMin || z > gMax) return `Wert außerhalb des Bereichs (${gMin}–${gMax})`;
+    }
+  }
+  if (typ === "matrix") {
+    const werte = data.matrixWerte || {};
+    const zeilen = frage.matrixZeilen || [];
+    for (const [idx, stufe] of Object.entries(werte)) {
+      const s = Number(stufe);
+      if (isNaN(s) || s < min || s > max) return `Matrix-Stufe für Zeile ${idx} außerhalb des Bereichs`;
+    }
+    if (zeilen.length && !zeilen.every((_, i) => werte[String(i)] === undefined || werte[String(i)] === null)) {
+      // teilweise beantwortet ist erlaubt — nur Bereich prüfen
+    }
+  }
+  return null;
+}
+
 async function saveAnswer(base44, { sessionToken, frageId, data }) {
   const sListe = await base44.asServiceRole.entities.Session.filter({ token: sessionToken });
   if (!sListe.length) {
@@ -117,11 +164,24 @@ async function saveAnswer(base44, { sessionToken, frageId, data }) {
   if (session.status === "abgeschlossen") {
     return Response.json({ error: "abgeschlossen" });
   }
+  // Frage muss zu dieser Welle gehören
+  const welle = await base44.asServiceRole.entities.Welle.get(session.wellenId);
+  const fragen = await fragenDerWelle(base44, welle);
+  const frage = fragen[frageId];
+  if (!frage) {
+    return Response.json({ error: "frage_nicht_in_welle" });
+  }
+  // Werttyp prüfen
+  const fehler = validiereAntwort(frage, data);
+  if (fehler) {
+    return Response.json({ error: `antwort_ungueltig`, details: fehler });
+  }
   const existing = await base44.asServiceRole.entities.Antwort.filter({ sessionId: session.id, frageId });
   const daten = {
     auswahl: data.auswahl || [],
     zahl: data.zahl,
     text: data.text || "",
+    matrixWerte: data.matrixWerte || null,
     eingabeart: data.eingabeart || "tippen",
     transkriptKorrigiert: !!data.transkriptKorrigiert,
   };
