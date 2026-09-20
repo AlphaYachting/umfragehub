@@ -3,7 +3,12 @@ import { Check, Asterisk } from "lucide-react";
 import SprachAufnahme from "./SprachAufnahme";
 
 const LIMBIC_FARBEN = [
-  "#fce4ec", "#e3f2fd", "#e8f5e9", "#fff3e0", "#f3e5f5", "#e0f7fa"
+  "color-mix(in srgb, var(--farbe-akzent) 6%, var(--farbe-bg))",
+  "color-mix(in srgb, var(--farbe-akzent) 10%, var(--farbe-bg))",
+  "color-mix(in srgb, var(--farbe-akzent) 14%, var(--farbe-bg))",
+  "color-mix(in srgb, var(--farbe-akzent) 18%, var(--farbe-bg))",
+  "color-mix(in srgb, var(--farbe-akzent) 22%, var(--farbe-bg))",
+  "color-mix(in srgb, var(--farbe-akzent) 26%, var(--farbe-bg))",
 ];
 
 const REDUZIERTE_BEWEGUNG = typeof window !== "undefined" &&
@@ -78,9 +83,12 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
               type="button"
               aria-pressed={aktiv}
               onClick={(e) => { einrastenSpuerbar(e.currentTarget); onChange({ ...v, auswahl: [opt] }); }}
-              className={`w-full text-left px-4 py-4 text-base interview-auswahl-karte ${aktiv ? "interview-auswahl-karte-aktiv" : ""}`}
+              className={`interview-auswahl-karte ${aktiv ? "interview-auswahl-karte-aktiv" : ""}`}
             >
-              {opt}
+              <span className={`interview-marker ${aktiv ? "interview-marker-aktiv" : ""}`}>
+                <Check className="interview-marker-haken" size={12} strokeWidth={3} />
+              </span>
+              <span>{opt}</span>
             </button>
           );
         })}
@@ -107,10 +115,12 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
               type="button"
               aria-pressed={aktiv}
               onClick={(e) => { einrastenSpuerbar(e.currentTarget); toggle(opt); }}
-              className={`w-full text-left px-4 py-4 text-base interview-auswahl-karte flex items-center justify-between ${aktiv ? "interview-auswahl-karte-aktiv" : ""}`}
+              className={`interview-auswahl-karte ${aktiv ? "interview-auswahl-karte-aktiv" : ""}`}
             >
+              <span className={`interview-marker interview-marker-eckig ${aktiv ? "interview-marker-aktiv" : ""}`}>
+                <Check className="interview-marker-haken" size={12} strokeWidth={3} />
+              </span>
               <span>{opt}</span>
-              {aktiv && <Check size={18} style={{ color: "var(--farbe-akzent)" }} />}
             </button>
           );
         })}
@@ -130,9 +140,13 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
               type="button"
               aria-pressed={aktiv}
               onClick={(e) => { einrastenSpuerbar(e.currentTarget); onChange({ ...v, auswahl: [opt], zahl: opt === "Ja" ? 1 : 0 }); }}
-              className={`px-4 py-6 text-lg font-semibold interview-auswahl-karte ${aktiv ? "interview-auswahl-karte-aktiv" : ""}`}
+              className={`interview-auswahl-karte ${aktiv ? "interview-auswahl-karte-aktiv" : ""}`}
+              style={{ justifyContent: "center", fontSize: "16px", fontWeight: 600 }}
             >
-              {opt}
+              <span className={`interview-marker ${aktiv ? "interview-marker-aktiv" : ""}`}>
+                <Check className="interview-marker-haken" size={12} strokeWidth={3} />
+              </span>
+              <span>{opt}</span>
             </button>
           );
         })}
@@ -181,19 +195,19 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
     const unberuehrt = !reglerBeruehrt;
     const prozent = unberuehrt ? 0 : ((wertZahl - min) / (max - min)) * 100;
     return (
-      <div className="px-1">
-        <div className="text-center mb-4">
+      <div style={{ padding: "0 15px" }}>
+        <div className="text-center mb-4" style={{ minHeight: 64, display: "flex", flexDirection: "column", justifyContent: "center" }}>
           {unberuehrt ? (
-            <span className="text-base" style={{ color: "var(--farbe-grau-mid)" }}>
+            <span style={{ color: "var(--farbe-grau-mid)", fontSize: "15.5px" }}>
               Noch keine Antwort — zieh den Regler.
             </span>
           ) : (
             <>
-              <div className="text-4xl font-bold" style={{ color: "var(--farbe-akzent)" }}>
+              <div style={{ color: "var(--farbe-akzent)", fontSize: 38, fontWeight: 800, letterSpacing: "-0.03em", fontVariantNumeric: "tabular-nums", lineHeight: 1.1 }}>
                 {Math.round(wertZahl)}
               </div>
               {stufenWort(frage, wertZahl) && (
-                <div className="text-sm mt-1" style={{ color: "var(--farbe-text-daempft)" }}>
+                <div style={{ color: "var(--farbe-text-daempft)", fontSize: "14.5px", fontWeight: 600, marginTop: 2 }}>
                   {stufenWort(frage, wertZahl)}
                 </div>
               )}
@@ -207,8 +221,20 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
           max={max}
           value={unberuehrt ? min : wertZahl}
           onChange={(e) => {
+            const neu = Number(e.target.value);
             if (!reglerBeruehrt) setReglerBeruehrt(true);
-            onChange({ ...v, zahl: Number(e.target.value) });
+            if (stufenWort(frage, v.zahl) !== stufenWort(frage, neu)) einrastenSpuerbar(reglerRef.current);
+            onChange({ ...v, zahl: neu });
+          }}
+          onPointerDown={() => {
+            if (!reglerBeruehrt) {
+              setReglerBeruehrt(true);
+              onChange({ ...v, zahl: Number(reglerRef.current.value) });
+            }
+          }}
+          onKeyDown={(e) => {
+            if (!reglerBeruehrt && ["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Home","End"].includes(e.key))
+              setReglerBeruehrt(true);
           }}
           className={`interview-regel ${unberuehrt ? "interview-regel-unberuehrt" : ""}`}
           style={{ "--regler-fuellung": `${prozent}%` }}
@@ -230,14 +256,14 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
     const unberuehrt = !reglerBeruehrt;
     const prozent = unberuehrt ? 0 : wertZahl;
     return (
-      <div className="px-1">
-        <div className="text-center mb-4">
+      <div style={{ padding: "0 15px" }}>
+        <div className="text-center mb-4" style={{ minHeight: 64, display: "flex", alignItems: "center", justifyContent: "center" }}>
           {unberuehrt ? (
-            <span className="text-base" style={{ color: "var(--farbe-grau-mid)" }}>
+            <span style={{ color: "var(--farbe-grau-mid)", fontSize: "15.5px" }}>
               Noch keine Antwort — zieh den Regler.
             </span>
           ) : (
-            <div className="text-base font-medium" style={{ color: "var(--farbe-text-daempft)" }}>
+            <div style={{ color: "var(--farbe-text-daempft)", fontSize: "15.5px", fontWeight: 500 }}>
               {gegensatzVerortung(wertZahl)}
             </div>
           )}
@@ -249,8 +275,20 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
           max={max}
           value={unberuehrt ? 50 : wertZahl}
           onChange={(e) => {
+            const neu = Number(e.target.value);
             if (!reglerBeruehrt) setReglerBeruehrt(true);
-            onChange({ ...v, zahl: Number(e.target.value) });
+            if (gegensatzVerortung(v.zahl) !== gegensatzVerortung(neu)) einrastenSpuerbar(reglerRef.current);
+            onChange({ ...v, zahl: neu });
+          }}
+          onPointerDown={() => {
+            if (!reglerBeruehrt) {
+              setReglerBeruehrt(true);
+              onChange({ ...v, zahl: Number(reglerRef.current.value) });
+            }
+          }}
+          onKeyDown={(e) => {
+            if (!reglerBeruehrt && ["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Home","End"].includes(e.key))
+              setReglerBeruehrt(true);
           }}
           className={`interview-regel ${unberuehrt ? "interview-regel-unberuehrt" : ""}`}
           style={{ "--regler-fuellung": `${prozent}%` }}
@@ -279,15 +317,15 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
     }
     return (
       <div>
-        <div className="flex justify-between mb-3 text-xs" style={{ color: "var(--farbe-grau-mid)" }}>
+        <div className="flex justify-between pb-3 mb-3 text-xs" style={{ color: "var(--farbe-grau-mid)", borderBottom: "1px solid var(--farbe-linie)" }}>
           <span>{frage.skalaLabelLinks || min}</span>
           <span>{frage.skalaLabelRechts || max}</span>
         </div>
-        <div className="space-y-5">
+        <div style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
           {zeilen.map((zeile, idx) => (
             <div key={idx}>
-              <div className="text-sm mb-2" style={{ color: "var(--farbe-text)" }}>{zeile}</div>
-              <div className="grid grid-cols-5 gap-2">
+              <div style={{ color: "var(--farbe-text)", fontSize: "15px", fontWeight: 600, marginBottom: "10px" }}>{zeile}</div>
+              <div style={{ display: "grid", gridTemplateColumns: `repeat(${punkte.length}, 1fr)`, gap: "7px" }}>
                 {punkte.map((p) => {
                   const aktiv = matrixWerte[String(idx)] === p;
                   return (
@@ -298,7 +336,6 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
                       aria-label={`${zeile} — Stufe ${p}`}
                       onClick={(e) => setZeile(idx, p, e.currentTarget)}
                       className={`interview-skala-btn ${aktiv ? "interview-skala-btn-aktiv" : ""}`}
-                      style={{ minHeight: 48 }}
                     >
                       {p}
                     </button>
@@ -341,7 +378,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
       <div className="space-y-3">
         {werteStep === 1 && (
           <>
-            <p className="text-sm text-slate-500">Wähle mehrere Werte aus, die {ansprache === "sie" ? "Sie" : "du"} als wichtig empfindest.</p>
+            <p className="text-sm text-slate-500">Wähle die drei Werte aus, die {ansprache === "sie" ? "Sie" : "du"} als am wichtigsten empfindest.</p>
             <div className="space-y-2">
               {(frage.optionen || []).map((opt) => {
                 const aktiv = auswahl.includes(opt);
@@ -351,24 +388,25 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
                     type="button"
                     aria-pressed={aktiv}
                     onClick={(e) => { einrastenSpuerbar(e.currentTarget); toggle(opt); }}
-                    className={`w-full text-left px-4 py-3 text-base interview-auswahl-karte flex items-center justify-between ${aktiv ? "interview-auswahl-karte-aktiv" : ""}`}
+                    className={`interview-auswahl-karte ${aktiv ? "interview-auswahl-karte-aktiv" : ""}`}
                   >
+                    <span className={`interview-marker interview-marker-eckig ${aktiv ? "interview-marker-aktiv" : ""}`}>
+                      <Check className="interview-marker-haken" size={12} strokeWidth={3} />
+                    </span>
                     <span>{opt}</span>
-                    {aktiv && <Check size={18} style={{ color: "var(--farbe-akzent)" }} />}
                   </button>
                 );
               })}
             </div>
-            {auswahl.length >= 2 && (
-              <button
-                type="button"
-                onClick={() => setWerteStep(2)}
-                className="text-sm font-medium"
-                style={{ color: "var(--farbe-akzent)" }}
-              >
-                Weiter zur Reihenfolge →
-              </button>
-            )}
+            <button
+              type="button"
+              disabled={auswahl.length < 3}
+              onClick={() => setWerteStep(2)}
+              className="text-sm font-medium"
+              style={{ color: auswahl.length < 3 ? "var(--farbe-grau-mid)" : "var(--farbe-akzent)" }}
+            >
+              {auswahl.length < 3 ? `Noch ${3 - auswahl.length} wählen` : "Weiter zur Reihenfolge →"}
+            </button>
           </>
         )}
         {werteStep === 2 && (
@@ -384,18 +422,12 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
                     key={opt}
                     type="button"
                     onClick={(e) => { einrastenSpuerbar(e.currentTarget); rank(opt); }}
-                    className="w-full text-left px-4 py-3 text-base interview-auswahl-karte flex items-center justify-between"
-                    style={place >= 0 ? { borderColor: "var(--farbe-akzent)", borderWidth: 2 } : {}}
+                    className={`interview-auswahl-karte ${place >= 0 ? "interview-auswahl-karte-aktiv" : ""}`}
                   >
-                    <span>{opt}</span>
-                    {place >= 0 && (
-                      <span
-                        className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white"
-                        style={{ background: "var(--farbe-akzent)" }}
-                      >
-                        {place + 1}
-                      </span>
-                    )}
+                    <span className={`interview-marker interview-marker-eckig ${place >= 0 ? "interview-marker-aktiv" : ""}`}>
+                      {place >= 0 && <span style={{ color: "#fff", fontSize: "12px", fontWeight: 700, lineHeight: 1 }}>{place + 1}</span>}
+                    </span>
+                    <span style={{ flex: 1 }}>{opt}</span>
                   </button>
                 );
               })}
@@ -473,7 +505,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
             if (korrigiert) setKorrigiert(false);
           }}
           onBlur={() => {
-            if (v.text) { setKorrigiert(true); onChange({ ...v, text: v.text, transkriptKorrigiert: true }); }
+            if (v.text && v.eingabeart === "sprache") { setKorrigiert(true); onChange({ ...v, text: v.text, transkriptKorrigiert: true }); }
           }}
           rows={5}
           placeholder={ansprache === "sie" ? "Ihre Antwort…" : "Deine Antwort…"}

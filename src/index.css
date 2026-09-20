@@ -6,12 +6,16 @@
 
 :root {
   --farbe-text: #2d2d2d;
-  --farbe-bg: #ffffff;
-  --farbe-akzent: #ff3764;
-  --farbe-gut: #45d085;
-  --farbe-grau: #f5f5f5;
-  --farbe-grau-mid: #767676;
   --farbe-text-daempft: #5a5a5a;
+  --farbe-grau-mid: #767676;
+  --farbe-linie: #e8e6e4;
+  --farbe-linie-kraeftig: #d6d3d0;
+  --farbe-grau: #f6f5f4;
+  --farbe-akzent: #ff3764;
+  --farbe-akzent-tief: #e02551;
+  --farbe-akzent-hauch: #fff0f3;
+  --farbe-bg: #ffffff;
+  --farbe-gut: #45d085;
   --schrift: 'Inter', 'Gilroy', 'Helvetica Neue', Arial, sans-serif;
 }
 
@@ -109,65 +113,158 @@
   .interview-btn-akzent {
     background-color: var(--farbe-akzent);
     color: #ffffff;
-    text-transform: uppercase;
-    border-radius: 4px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
+    border-radius: 10px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
     min-height: 48px;
-    transition: opacity 0.15s ease;
+    transition: background-color 0.16s ease, transform 0.1s ease;
   }
   .interview-btn-akzent:hover {
-    opacity: 0.9;
+    background-color: var(--farbe-akzent-tief);
+  }
+  .interview-btn-akzent:active {
+    transform: scale(0.98);
   }
   .interview-btn-akzent:disabled {
     opacity: 0.4;
     cursor: not-allowed;
+    transform: none;
   }
+
   .interview-auswahl-karte {
-    background-color: var(--farbe-grau);
-    border: 2px solid transparent;
-    border-radius: 4px;
-    min-height: 48px;
-    transition: border-color 0.15s ease, background-color 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    width: 100%;
+    min-height: 58px;
+    padding: 14px 16px;
+    background: var(--farbe-bg);
+    border: 1.5px solid var(--farbe-linie);
+    border-radius: 10px;
+    text-align: left;
+    font-size: 15.5px;
+    line-height: 1.4;
+    color: var(--farbe-text);
+    transition: border-color 0.16s ease, background 0.16s ease, transform 0.1s ease;
     cursor: pointer;
   }
   .interview-auswahl-karte:hover {
-    background-color: #efefef;
+    border-color: var(--farbe-linie-kraeftig);
+  }
+  .interview-auswahl-karte:active {
+    transform: scale(0.99);
   }
   .interview-auswahl-karte-aktiv {
     border-color: var(--farbe-akzent);
-    background-color: #fff;
+    background: var(--farbe-akzent-hauch);
   }
+
+  .interview-marker {
+    width: 22px;
+    height: 22px;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid var(--farbe-linie-kraeftig);
+    border-radius: 50%;
+    background: var(--farbe-bg);
+    transition: background 0.16s ease, border-color 0.16s ease;
+  }
+  .interview-marker-eckig {
+    border-radius: 6px;
+  }
+  .interview-marker-aktiv {
+    background: var(--farbe-akzent);
+    border-color: var(--farbe-akzent);
+  }
+  .interview-marker-haken {
+    color: #fff;
+    opacity: 0;
+    transform: scale(0);
+    transition: opacity 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.4), transform 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.4);
+  }
+  .interview-marker-aktiv .interview-marker-haken {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .interview-trennpunkt {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--farbe-grau-mid);
+    display: inline-block;
+    flex: none;
+  }
+
   .interview-skala-btn {
-    background-color: var(--farbe-grau);
-    border: 2px solid transparent;
-    border-radius: 4px;
-    min-height: 56px;
-    min-width: 56px;
+    background-color: var(--farbe-bg);
+    border: 1.5px solid var(--farbe-linie);
+    border-radius: 9px;
+    min-height: 48px;
+    min-width: 48px;
     font-weight: 600;
+    color: var(--farbe-text);
     transition: all 0.15s ease;
     cursor: pointer;
+  }
+  .interview-skala-btn:hover {
+    border-color: var(--farbe-linie-kraeftig);
   }
   .interview-skala-btn-aktiv {
     background-color: var(--farbe-akzent);
     color: #fff;
     border-color: var(--farbe-akzent);
   }
+
   .frage-uebergang-enter {
-    animation: frageEinblenden 0.2s ease-out;
+    animation: frageEinblenden 0.34s cubic-bezier(0.2, 0.7, 0.3, 1) both;
   }
   .frage-akzent {
     color: var(--farbe-akzent);
   }
+
+  .interview-fragetext {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.28;
+    text-wrap: balance;
+  }
+  @media (max-width: 420px) {
+    .interview-fragetext { font-size: 21px; }
+  }
+
+  .interview-welcome-heading {
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+  @media (max-width: 420px) {
+    .interview-welcome-heading { font-size: 26px; }
+  }
+
   .interview-regel {
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
-    height: 8px;
-    border-radius: 999px;
-    background: linear-gradient(to right, var(--farbe-akzent) var(--regler-fuellung, 0%), var(--farbe-grau) var(--regler-fuellung, 0%));
-    outline: none;
+    background: transparent;
     margin: 0;
+    padding: 14px 0;
+    display: block;
+  }
+  .interview-regel::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--farbe-akzent) var(--regler-fuellung, 0%), var(--farbe-linie) var(--regler-fuellung, 0%));
+  }
+  .interview-regel::-moz-range-track {
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--farbe-akzent) var(--regler-fuellung, 0%), var(--farbe-linie) var(--regler-fuellung, 0%));
   }
   .interview-regel::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -175,34 +272,48 @@
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: var(--farbe-akzent);
-    cursor: pointer;
-    border: 3px solid #fff;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    margin-top: -12px;
+    background: var(--farbe-bg);
+    border: 2.5px solid var(--farbe-akzent);
+    box-shadow: 0 2px 8px rgba(45, 45, 45, 0.18);
+    transition: transform 0.12s ease;
   }
   .interview-regel::-moz-range-thumb {
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: var(--farbe-akzent);
-    cursor: pointer;
-    border: 3px solid #fff;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    background: var(--farbe-bg);
+    border: 2.5px solid var(--farbe-akzent);
+    box-shadow: 0 2px 8px rgba(45, 45, 45, 0.18);
+    transition: transform 0.12s ease;
+  }
+  .interview-regel:active::-webkit-slider-thumb {
+    transform: scale(1.14);
+  }
+  .interview-regel:active::-moz-range-thumb {
+    transform: scale(1.14);
   }
   .interview-regel-unberuehrt::-webkit-slider-thumb {
-    background: var(--farbe-grau-mid);
+    border-color: var(--farbe-linie-kraeftig);
   }
   .interview-regel-unberuehrt::-moz-range-thumb {
-    background: var(--farbe-grau-mid);
+    border-color: var(--farbe-linie-kraeftig);
   }
+
   .interview-einrasten {
     animation: einrasten 120ms ease-out;
   }
+
   .interview-fusszeile {
     position: sticky;
     bottom: 0;
-    padding-bottom: env(safe-area-inset-bottom);
+    z-index: 30;
+    flex: none;
+    background: var(--farbe-bg);
+    border-top: 1px solid var(--farbe-linie);
+    padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px));
   }
+
   .interview-erklaerung {
     border-left: 3px solid var(--farbe-akzent);
     padding-left: 12px;
@@ -216,6 +327,13 @@
 }
 
 @keyframes frageEinblenden {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

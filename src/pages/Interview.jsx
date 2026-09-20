@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { ArrowLeft, Shield, Heart, Clock, PauseCircle } from "lucide-react";
+import { ArrowLeft, Shield, Heart, Clock, PauseCircle, Check } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import {
   themeVariablenSetzen,
@@ -118,7 +118,7 @@ export default function Interview() {
     if (screen === "frage" && frageHeadingRef.current) {
       frageHeadingRef.current.focus({ preventScroll: true });
     }
-    if (screen === "frage") {
+    if (screen === "frage" || screen === "blockuebergang") {
       window.scrollTo({ top: 0, behavior: "auto" });
     }
   }, [screen, currentIndex, animKey]);
@@ -165,9 +165,10 @@ export default function Interview() {
   }
 
   async function sendenEinmalig(frage, wert) {
-    const finaleAuswahl = (frage.typ === "werte_auswahl" && (wert.ranking || []).length)
-      ? wert.ranking
-      : (wert.auswahl || []);
+    const w = wert || {};
+    const finaleAuswahl = (frage.typ === "werte_auswahl" && (w.ranking || []).length)
+      ? w.ranking
+      : (w.auswahl || []);
     try {
       await base44.functions.invoke("interviewApi", {
         aktion: "saveAnswer",
@@ -175,11 +176,11 @@ export default function Interview() {
         frageId: frage.id,
         data: {
           auswahl: finaleAuswahl,
-          zahl: wert.zahl,
-          text: wert.text || "",
-          matrixWerte: wert.matrixWerte || null,
-          eingabeart: wert.eingabeart || "tippen",
-          transkriptKorrigiert: !!wert.transkriptKorrigiert,
+          zahl: w.zahl,
+          text: w.text || "",
+          matrixWerte: w.matrixWerte || null,
+          eingabeart: w.eingabeart || "tippen",
+          transkriptKorrigiert: !!w.transkriptKorrigiert,
         },
       });
       return true;
@@ -222,7 +223,7 @@ export default function Interview() {
       return gesetzt === zeilen.length;
     }
     if (frage.typ === "freitext") return !!(wert.text && wert.text.trim());
-    if (frage.typ === "werte_auswahl") return (wert.ranking || []).length >= 1;
+    if (frage.typ === "werte_auswahl") return (wert.ranking || []).length === 3;
     return (wert.auswahl || []).length > 0;
   }
 
@@ -338,6 +339,16 @@ export default function Interview() {
     }
     kapitelUebersicht[item.blockIndex].anzahl++;
   });
+  const kapitelGefiltert = kapitelUebersicht.filter((k) => k && k.titel && k.titel !== "Neuer Block");
+  const zeigeKapitel = kapitelGefiltert.length > 1;
+  const totalBloecke = kapitelUebersicht.filter(Boolean).length;
+  const zielgruppeText = {
+    geschaeftsfuehrung: "Geschäftsführungsbefragung",
+    mitarbeiter: "Mitarbeiterbefragung",
+    kunden: "Kundenbefragung",
+    partner: "Partnerbefragung",
+    allgemein: "Befragung",
+  }[welle?.zielgruppe] || "Befragung";
 
   if (loading) {
     return (
@@ -415,46 +426,49 @@ export default function Interview() {
       zusicherungen.push({ icon: PauseCircle, text: "Pausieren möglich — auf diesem Gerät geht es später genau da weiter, wo du aufgehört hast." });
     }
     return (
-      <div className="min-h-screen flex items-center justify-center p-6" style={{ background: "var(--farbe-bg)" }}>
-        <div className="max-w-xl w-full">
+      <div className="min-h-screen flex items-center justify-center p-5" style={{ background: "var(--farbe-bg)" }}>
+        <div className="max-w-[560px] w-full">
           {projekt?.logoUrl && (
-            <div className="flex justify-center mb-8">
-              <img src={projekt.logoUrl} alt="" className="h-16 w-auto object-contain" />
+            <div className="flex justify-center mb-6">
+              <img src={projekt.logoUrl} alt="" style={{ height: 52, width: "auto" }} className="object-contain" />
             </div>
           )}
-          <h1 className="text-3xl font-bold tracking-tight mb-4 text-center" style={{ color: "var(--farbe-text)" }}>
+          <div className="text-center mb-5" style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "var(--farbe-akzent)" }}>
+            {zielgruppeText}
+          </div>
+          <h1 className="interview-welcome-heading text-center" style={{ color: "var(--farbe-text)", marginBottom: 26 }}>
             {welle.name}
           </h1>
           {welle.begruessungstext && (
-            <p className="text-base mb-8 text-center" style={{ color: "var(--farbe-text-daempft)", lineHeight: 1.6 }}>
+            <p className="text-center" style={{ color: "var(--farbe-text-daempft)", fontSize: "16.5px", lineHeight: 1.65, marginBottom: 26 }}>
               {welle.begruessungstext}
             </p>
           )}
 
-          {kapitelUebersicht.length > 0 && (
-            <div className="mb-8">
-              <div className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "var(--farbe-grau-mid)" }}>
+          {zeigeKapitel && (
+            <div style={{ marginBottom: 26 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--farbe-grau-mid)", marginBottom: 12 }}>
                 So ist die Befragung aufgebaut
               </div>
-              <div className="space-y-2">
-                {kapitelUebersicht.map((k) => (
-                  <div key={k.nr} className="flex items-baseline gap-3 text-sm" style={{ color: "var(--farbe-text)" }}>
-                    <span className="font-bold w-6 shrink-0" style={{ color: "var(--farbe-akzent)" }}>{k.nr}</span>
-                    <span className="flex-1">{k.titel}</span>
-                    <span className="text-xs" style={{ color: "var(--farbe-grau-mid)" }}>{k.anzahl} {k.anzahl === 1 ? "Frage" : "Fragen"}</span>
+              <div style={{ borderTop: "1px solid var(--farbe-linie)" }}>
+                {kapitelGefiltert.map((k) => (
+                  <div key={k.nr} className="flex items-center gap-3" style={{ padding: "12px 0", borderBottom: "1px solid var(--farbe-linie)" }}>
+                    <span className="flex items-center justify-center shrink-0" style={{ width: 26, height: 26, borderRadius: "50%", background: "var(--farbe-grau)", fontSize: "12.5px", fontWeight: 700, color: "var(--farbe-text)" }}>{k.nr}</span>
+                    <span className="flex-1" style={{ fontSize: "14.5px", fontWeight: 600, color: "var(--farbe-text)" }}>{k.titel}</span>
+                    <span style={{ fontSize: "12.5px", color: "var(--farbe-grau-mid)" }}>{k.anzahl} {k.anzahl === 1 ? "Frage" : "Fragen"}</span>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          <div className="divide-y mb-8" style={{ borderColor: "var(--farbe-grau)" }}>
+          <div style={{ border: "1px solid var(--farbe-linie)", borderRadius: 12, overflow: "hidden", marginBottom: 26 }}>
             {zusicherungen.map((z, i) => {
               const Icon = z.icon;
               return (
-                <div key={i} className="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
+                <div key={i} className="flex items-start gap-3" style={{ padding: 16, borderBottom: i < zusicherungen.length - 1 ? "1px solid var(--farbe-linie)" : "none" }}>
                   <Icon size={20} style={{ color: "var(--farbe-akzent)" }} className="shrink-0 mt-0.5" />
-                  <span className="text-sm" style={{ color: "var(--farbe-text)" }}>{z.text}</span>
+                  <span style={{ fontSize: "14.5px", color: "var(--farbe-text)", lineHeight: 1.5 }}>{z.text}</span>
                 </div>
               );
             })}
@@ -462,7 +476,7 @@ export default function Interview() {
 
           <div className="space-y-3">
             <div className="flex justify-center">
-              <button onClick={starten} className="interview-btn-akzent px-10 py-4 text-base">
+              <button onClick={starten} className="interview-btn-akzent" style={{ height: 58, fontSize: 17, paddingLeft: 38, paddingRight: 38 }}>
                 {kannFortsetzen ? "Weitermachen" : "Interview starten"}
               </button>
             </div>
@@ -479,26 +493,31 @@ export default function Interview() {
   }
 
   if (screen === "blockuebergang") {
-    const item = fragenListe[currentIndex];
+    const naechstesItem = fragenListe[currentIndex + 1];
+    const naechsterBlockIdx = naechstesItem?.blockIndex ?? 0;
+    const blockNr = naechsterBlockIdx + 1;
+    const blockTitel = naechsterBlock?.titel;
+    const titelAnzeigen = blockTitel && blockTitel !== "Neuer Block";
     return (
-      <div className="min-h-screen flex items-center justify-center p-6" style={{ background: "var(--farbe-bg)" }}>
-        <div className="max-w-lg w-full text-center">
-          <div className="mb-6">
-            <div className="w-12 h-12 rounded-full mx-auto flex items-center justify-center" style={{ background: "var(--farbe-gut)" }}>
-              <Heart size={22} className="text-white" />
-            </div>
+      <div className="min-h-screen flex items-center justify-center p-5" style={{ background: "var(--farbe-bg)" }}>
+        <div className="max-w-[560px] w-full text-center">
+          <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "var(--farbe-akzent)", marginBottom: 16 }}>
+            Kapitel {blockNr} von {totalBloecke}
           </div>
-          {item?.block?.motivationstext && (
-            <p className="text-lg mb-6" style={{ color: "var(--farbe-text)", lineHeight: 1.6 }}>
-              {item.block.motivationstext}
+          <div className="mx-auto mb-6" style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--farbe-akzent-hauch)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ fontSize: 19, fontWeight: 800, color: "var(--farbe-akzent)" }}>{blockNr}</span>
+          </div>
+          {titelAnzeigen && (
+            <h2 className="interview-welcome-heading" style={{ color: "var(--farbe-text)", marginBottom: 16 }}>
+              {blockTitel}
+            </h2>
+          )}
+          {naechsterBlock?.motivationstext && (
+            <p style={{ color: "var(--farbe-text-daempft)", fontSize: "16.5px", lineHeight: 1.65, marginBottom: 26 }}>
+              {naechsterBlock.motivationstext}
             </p>
           )}
-          {naechsterBlock && (
-            <p className="text-sm mb-8" style={{ color: "var(--farbe-grau-mid)" }}>
-              Weiter geht es mit: <span className="font-medium" style={{ color: "var(--farbe-text)" }}>{naechsterBlock.titel}</span>
-            </p>
-          )}
-          <button onClick={blockuebergangWeiter} className="interview-btn-akzent px-8 py-3">
+          <button onClick={blockuebergangWeiter} className="interview-btn-akzent" style={{ paddingLeft: 32, paddingRight: 32 }}>
             Weiter
           </button>
         </div>
@@ -508,19 +527,22 @@ export default function Interview() {
 
   if (screen === "abschluss") {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6" style={{ background: "var(--farbe-bg)" }}>
-        <div className="max-w-lg w-full text-center">
-          <div className="w-14 h-14 rounded-full mx-auto flex items-center justify-center mb-6" style={{ background: "var(--farbe-gut)" }}>
-            <Heart size={26} className="text-white" />
+      <div className="min-h-screen flex items-center justify-center p-5" style={{ background: "var(--farbe-bg)" }}>
+        <div className="max-w-[560px] w-full text-center">
+          <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "var(--farbe-akzent)", marginBottom: 16 }}>
+            Geschafft
           </div>
-          <h1 className="text-2xl font-bold mb-4" style={{ color: "var(--farbe-text)" }}>
-            Vielen Dank!
+          <div className="mx-auto mb-6" style={{ width: 72, height: 72, borderRadius: "50%", background: "var(--farbe-gut)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Check size={32} strokeWidth={2.6} className="text-white" />
+          </div>
+          <h1 className="interview-welcome-heading" style={{ color: "var(--farbe-text)", marginBottom: 16 }}>
+            Vielen <span style={{ color: "var(--farbe-akzent)" }}>Dank</span>!
           </h1>
-          <p className="text-base mb-6" style={{ color: "var(--farbe-text-daempft)", lineHeight: 1.6 }}>
+          <p style={{ color: "var(--farbe-text-daempft)", fontSize: "16.5px", lineHeight: 1.65, marginBottom: 26 }}>
             {a.duSie.charAt(0).toUpperCase() + a.duSie.slice(1)} {a.hastHaben} {a.deinIhr}e Antworten wertvoll geteilt. Sie fließen anonymisiert in die Auswertung ein.
           </p>
           {welle.abschlusstext && (
-            <p className="text-sm mb-6" style={{ color: "var(--farbe-grau-mid)", lineHeight: 1.6 }}>
+            <p style={{ color: "var(--farbe-grau-mid)", fontSize: "14.5px", lineHeight: 1.65, marginBottom: 26 }}>
               {welle.abschlusstext}
             </p>
           )}
@@ -544,28 +566,30 @@ export default function Interview() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "var(--farbe-bg)" }}>
-      <div className="w-full h-1" style={{ background: "var(--farbe-grau)" }}>
+      <div className="w-full h-1" style={{ background: "var(--farbe-linie)" }}>
         <div className="h-full transition-all duration-300" style={{ width: `${fortschritt}%`, background: "var(--farbe-akzent)" }} />
       </div>
 
-      <div className="flex-1 flex items-start justify-center px-6 pt-8 pb-32">
-        <div key={animKey} className="max-w-[640px] w-full frage-uebergang-enter">
-          <div className="text-xs mb-6 flex items-center gap-2" style={{ color: "var(--farbe-grau-mid)" }}>
-            <span>Frage {currentIndex + 1} von {gesamt}</span>
-            <span>·</span>
-            <span className="hidden sm:inline">{item.block.titel} · </span>
+      <div className="flex-1 flex items-start justify-center px-5 pt-6 pb-6">
+        <div key={animKey} className="max-w-[560px] w-full frage-uebergang-enter">
+          <div className="mb-6 flex items-center gap-2" style={{ color: "var(--farbe-grau-mid)", fontSize: "12.5px" }}>
+            <span className="sm:hidden">Kapitel {blockNr}</span>
+            <span className="hidden sm:inline">{item.block.titel}</span>
+            <span className="interview-trennpunkt" />
+            <span>Frage {currentIndex + 1}/{gesamt}</span>
+            <span className="interview-trennpunkt" />
             <span>noch etwa {verbleibendeMin} Min.</span>
           </div>
           <h2
             ref={frageHeadingRef}
             tabIndex={-1}
-            className="text-2xl font-bold tracking-tight mb-3 outline-none"
-            style={{ color: "var(--farbe-text)", lineHeight: 1.3 }}
+            className="interview-fragetext outline-none"
+            style={{ color: "var(--farbe-text)", marginBottom: 12 }}
             dangerouslySetInnerHTML={{ __html: renderFragetext(frage.text) }}
             aria-label={sternchenEntfernen(frage.text)}
           />
           {frage.hilfetext && (
-            <p className="text-sm mb-4" style={{ color: "var(--farbe-grau-mid)", lineHeight: 1.6 }}>
+            <p style={{ color: "var(--farbe-text-daempft)", fontSize: "14.5px", lineHeight: 1.6, marginBottom: 16 }}>
               {frage.hilfetext}
             </p>
           )}
@@ -574,7 +598,7 @@ export default function Interview() {
             offen={!!erklaerungOffen[frage.id]}
             onToggle={(offen) => setErklaerungOffen({ ...erklaerungOffen, [frage.id]: offen })}
           />
-          <div className="mt-6 mb-6">
+          <div className="mt-8">
             <FrageAntwort
               frage={frage}
               wert={wert}
@@ -585,8 +609,8 @@ export default function Interview() {
         </div>
       </div>
 
-      <div className="interview-fusszeile px-6 py-4" style={{ background: "var(--farbe-bg)", borderTop: "1px solid var(--farbe-grau)" }}>
-        <div className="max-w-[640px] mx-auto flex items-center justify-between gap-3">
+      <div className="interview-fusszeile">
+        <div className="max-w-[560px] mx-auto flex items-center justify-between gap-3">
           <div>
             {currentIndex > 0 && (
               <button onClick={zurueck} className="inline-flex items-center text-sm hover:opacity-70" style={{ color: "var(--farbe-grau-mid)", minHeight: 48 }}>
@@ -603,14 +627,15 @@ export default function Interview() {
             <button
               onClick={weiter}
               disabled={frage.pflicht && !istBeantwortet(frage, wert)}
-              className="interview-btn-akzent px-8 py-3"
+              className="interview-btn-akzent"
+              style={{ paddingLeft: 28, paddingRight: 28 }}
             >
               {currentIndex === gesamt - 1 ? "Abschließen" : "Weiter"}
             </button>
           </div>
         </div>
         {offlineHinweis && (
-          <div className="max-w-[640px] mx-auto mt-2 text-center text-xs" style={{ color: "var(--farbe-grau-mid)" }}>
+          <div className="max-w-[560px] mx-auto mt-2 text-center text-xs" style={{ color: "var(--farbe-grau-mid)" }}>
             Verbindung unterbrochen, {a.deinIhr}e Antworten werden gleich nachgesendet.
           </div>
         )}
