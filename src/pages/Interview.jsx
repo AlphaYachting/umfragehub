@@ -231,7 +231,7 @@ export default function Interview() {
     const item = fragenListe[currentIndex];
     if (!item) return;
     const wert = answers[item.frage.id];
-    if (item.frage.pflicht && !istBeantwortet(item.frage, wert)) return;
+    if (!testModus && item.frage.pflicht && !istBeantwortet(item.frage, wert)) return;
 
     await antwortSpeichern(item.frage, wert);
     // vor dem Weiter eventuell noch offene Antworten nachsenden
@@ -569,6 +569,12 @@ export default function Interview() {
         <div className="h-full transition-all duration-300" style={{ width: `${fortschritt}%`, background: "var(--farbe-akzent)" }} />
       </div>
 
+      {testModus && (
+        <div className="w-full text-center py-1.5 text-xs font-medium" style={{ background: "var(--farbe-akzent-hauch)", color: "var(--farbe-akzent-tief)" }}>
+          Vorschau-Modus — keine Antworten werden gespeichert
+        </div>
+      )}
+
       <div className="flex-1 flex items-start justify-center px-5 pt-6 pb-6">
         <div key={animKey} className="max-w-[560px] w-full frage-uebergang-enter">
           <div className="mb-6 flex items-center gap-2" style={{ color: "var(--farbe-grau-mid)", fontSize: "12.5px" }}>
@@ -618,14 +624,14 @@ export default function Interview() {
             )}
           </div>
           <div className="flex items-center gap-4">
-            {!frage.pflicht && (
+            {(!frage.pflicht || testModus) && (
               <button onClick={ueberspringen} className="text-sm hover:opacity-70" style={{ color: "var(--farbe-grau-mid)", minHeight: 48 }}>
                 Überspringen
               </button>
             )}
             <button
               onClick={weiter}
-              disabled={frage.pflicht && !istBeantwortet(frage, wert)}
+              disabled={!testModus && frage.pflicht && !istBeantwortet(frage, wert)}
               className="interview-btn-akzent"
               style={{ paddingLeft: 28, paddingRight: 28 }}
             >
