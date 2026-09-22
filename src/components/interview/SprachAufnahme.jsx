@@ -11,6 +11,13 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
   const aufnimmtRef = useRef(false);
   const startZeitRef = useRef(0);
   const limitTimerRef = useRef(null);
+  const onTranskriptRef = useRef(onTranskript);
+
+  // Ref hält immer die aktuellste Callback, damit die einmal beim Start
+  // gebundenen Speech-Recognition-Handler nicht mit veralteter Closure arbeiten.
+  useEffect(() => {
+    onTranskriptRef.current = onTranskript;
+  }, [onTranskript]);
 
   useEffect(() => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -37,27 +44,36 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
       let interim = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const r = e.results[i];
+        if (!r || !r[0]) continue;
         if (r.isFinal) {
           finalTextRef.current += r[0].transcript;
         } else {
           interim += r[0].transcript;
         }
       }
-      onTranskript((finalTextRef.current + " " + interim).trim());
+      onTranskriptRef.current((finalTextRef.current + " " + interim).trim());
     };
 
     rec.onerror = (e) => {
       if (e.error === "no-speech" || e.error === "aborted") return;
+      // Schwerwiegender Fehler (z. B. not-allowed, network, audio-capture) —
+      // Aufnahme beenden und Hinweis zeigen, sonst hängt die UI in "Lausche…"
       setFehler(true);
+      stoppe();
     };
 
     rec.onend = () => {
       if (aufnimmtRef.current && Date.now() - startZeitRef.current < 180000) {
-        try {
-          rec.start();
-        } catch {}
+        // Kurze Pause vor Neustart, sonst wirft start() InvalidStateError
+        setTimeout(() => {
+          if (aufnimmtRef.current) {
+            try {
+              rec.start();
+            } catch {}
+          }
+        }, 200);
       } else {
-        onTranskript(finalTextRef.current.trim());
+        onTranskriptRef.current(finalTextRef.current.trim());
       }
     };
 
@@ -90,18 +106,8 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
 
   function verwerfen() {
     finalTextRef.current = "";
-    aufnimmtRef.current = false;
-    setAufnimmt(false);
-    if (limitTimerRef.current) {
-      clearTimeout(limitTimerRef.current);
-      limitTimerRef.current = null;
-    }
-    if (recognitionRef.current) {
-      try {
-        recognitionRef.current.stop();
-      } catch {}
-    }
-    onTranskript("");
+    stoppe();
+    onTranskriptRef.current("");
   }
 
   if (!unterstuetzt) {
