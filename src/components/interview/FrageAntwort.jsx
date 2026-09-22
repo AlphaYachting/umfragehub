@@ -516,7 +516,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
           <>
             <p className="text-xs text-slate-400 mt-2 flex items-start gap-1.5">
               <Asterisk size={12} className="mt-0.5 shrink-0" style={{ color: "var(--farbe-akzent)" }} />
-              <span>Die Sprache wird nicht aufgezeichnet, sondern nur live in einen Text umgewandelt.</span>
+              <span>Es wird keine Audiodatei gespeichert. Die Umwandlung in Text übernimmt die Spracherkennung {ansprache === "sie" ? "Ihres" : "deines"} Browsers — dabei wird die Aufnahme kurzzeitig an dessen Dienst übertragen. Gespeichert wird bei uns nur der Text, den {ansprache === "sie" ? "Sie" : "du"} danach {ansprache === "sie" ? "sehen und korrigieren können" : "siehst und korrigieren kannst"}.</span>
             </p>
             <SprachAufnahme
               ansprache={ansprache}

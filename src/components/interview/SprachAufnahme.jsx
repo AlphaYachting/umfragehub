@@ -9,6 +9,8 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
   const recognitionRef = useRef(null);
   const finalTextRef = useRef("");
   const aufnimmtRef = useRef(false);
+  const startZeitRef = useRef(0);
+  const limitTimerRef = useRef(null);
 
   useEffect(() => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -50,7 +52,7 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
     };
 
     rec.onend = () => {
-      if (aufnimmtRef.current) {
+      if (aufnimmtRef.current && Date.now() - startZeitRef.current < 180000) {
         try {
           rec.start();
         } catch {}
@@ -59,6 +61,8 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
       }
     };
 
+    startZeitRef.current = Date.now();
+    limitTimerRef.current = setTimeout(() => stoppe(), 180000);
     recognitionRef.current = rec;
     aufnimmtRef.current = true;
     try {
@@ -73,6 +77,10 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
   function stoppe() {
     aufnimmtRef.current = false;
     setAufnimmt(false);
+    if (limitTimerRef.current) {
+      clearTimeout(limitTimerRef.current);
+      limitTimerRef.current = null;
+    }
     if (recognitionRef.current) {
       try {
         recognitionRef.current.stop();
@@ -84,6 +92,10 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
     finalTextRef.current = "";
     aufnimmtRef.current = false;
     setAufnimmt(false);
+    if (limitTimerRef.current) {
+      clearTimeout(limitTimerRef.current);
+      limitTimerRef.current = null;
+    }
     if (recognitionRef.current) {
       try {
         recognitionRef.current.stop();
@@ -92,7 +104,13 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
     onTranskript("");
   }
 
-  if (!unterstuetzt) return null;
+  if (!unterstuetzt) {
+    return (
+      <p className="text-xs text-slate-400 mt-2">
+        Die Spracherkennung wird von diesem Browser nicht unterstützt — in Chrome funktioniert sie. Sonst einfach eintippen.
+      </p>
+    );
+  }
 
   return (
     <div className="mt-3">

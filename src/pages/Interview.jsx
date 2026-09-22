@@ -435,6 +435,7 @@ export default function Interview() {
             <p>Deine Antworten werden unter einem zufälligen Code gespeichert, der nur auf diesem Gerät liegt. So kannst du pausieren und später weitermachen — aber niemand kann die Antworten {a.dichSie} zuordnen.</p>
             <p>Einzelantworten sind für uns erst ab {welle.mindestTeilnehmer || 6} abgeschlossenen Interviews einsehbar. Darunter bleiben alle Antworten gesperrt, damit niemand aus einer kleinen Gruppe Rückschlüsse ziehen kann.</p>
             <p>Es gibt kein richtig und kein falsch. {a.duSie.charAt(0).toUpperCase() + a.duSie.slice(1)} {a.kannstKönnen} jede Frage überspringen (außer Pflichtfragen) und jederzeit mit „Zurück&ldquo; zu einer vorherigen Antwort zurückkehren.</p>
+            <p>Wenn {a.duSie} eine Frage per Sprache {a.duSie === "Sie" ? "beantworten" : "beantwortest"} (sofern angeboten), wird keine Audiodatei gespeichert. Die Umwandlung in Text übernimmt die Spracherkennung {a.duSie === "Sie" ? "Ihres" : "deines"} Browsers — dabei wird die Aufnahme kurzzeitig an dessen Dienst übertragen. Gespeichert wird bei uns nur der Text, den {a.duSie} danach {a.duSie === "Sie" ? "sehen und korrigieren können" : "siehst und korrigieren kannst"}.</p>
           </div>
           <RechtlicheFusszeile projekt={projekt} />
         </div>
