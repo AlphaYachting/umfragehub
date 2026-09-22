@@ -38,7 +38,28 @@ async function loadInterview(base44, { linkToken, sessionToken }) {
     return Response.json({ error: "nicht_gefunden" });
   }
   const welle = wellen[0];
+  // LÜCKE 1: Statusprüfung vor Auslieferung jeglicher Inhalte
+  if (welle.status === "geschlossen") {
+    return Response.json({ error: "geschlossen" });
+  }
+  if (welle.status === "entwurf") {
+    return Response.json({ error: "entwurf" });
+  }
   const projekt = await base44.asServiceRole.entities.Projekt.get(welle.projektId);
+  // LÜCKE 2: reduziertes Projekt-Objekt — kein Briefing, kein Kundenname, kein Name/Status/ID
+  const projektReduziert = {
+    theme: projekt.theme,
+    logoUrl: projekt.logoUrl,
+    farbePrimaer: projekt.farbePrimaer,
+    farbeSekundaer: projekt.farbeSekundaer,
+    farbeText: projekt.farbeText,
+    farbeHintergrund: projekt.farbeHintergrund,
+    schriftFamilie: projekt.schriftFamilie,
+    schriftUrl: projekt.schriftUrl,
+    datenschutzUrl: projekt.datenschutzUrl,
+    impressumUrl: projekt.impressumUrl,
+    ansprache: projekt.ansprache,
+  };
   const bloecke = await base44.asServiceRole.entities.Block.filter({ wellenId: welle.id });
   bloecke.sort((a, b) => (a.reihenfolge ?? 0) - (b.reihenfolge ?? 0));
   const bloeckeMitFragen = [];
@@ -58,7 +79,7 @@ async function loadInterview(base44, { linkToken, sessionToken }) {
   }
   return Response.json({
     welle,
-    projekt,
+    projekt: projektReduziert,
     bloecke: bloeckeMitFragen,
     session,
     antworten,
@@ -166,6 +187,10 @@ async function saveAnswer(base44, { sessionToken, frageId, data }) {
   }
   // Frage muss zu dieser Welle gehören
   const welle = await base44.asServiceRole.entities.Welle.get(session.wellenId);
+  // LÜCKE 1: geschlossene Welle nimmt keine neuen Antworten an
+  if (welle.status === "geschlossen") {
+    return Response.json({ error: "geschlossen" });
+  }
   const fragen = await fragenDerWelle(base44, welle);
   const frage = fragen[frageId];
   if (!frage) {
@@ -200,6 +225,13 @@ async function completeSession(base44, { sessionToken }) {
     return Response.json({ error: "nicht_gefunden" });
   }
   const session = sListe[0];
+  // LÜCKE 1: Eine bereits laufende Session darf auch nach Schließen der Welle
+  // noch abgeschlossen werden — der Teilnehmer reicht bereits erhobene Antworten
+  // ein. Neue Sessions (startSession) und neue Antworten (saveAnswer) werden bei
+  // geschlossener Welle blockiert, der Abschluss hingegen nicht.
+  if (session.status === "abgeschlossen") {
+    return Response.json({ ok: true });
+  }
   await base44.asServiceRole.entities.Session.update(session.id, {
     status: "abgeschlossen",
     completedAt: new Date().toISOString(),
