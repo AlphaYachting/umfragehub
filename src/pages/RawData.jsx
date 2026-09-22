@@ -53,6 +53,7 @@ export default function RawData() {
 
   function antwortWert(a, f) {
     if (!a) return "";
+    if (!f) return "";
     if (["skala", "ja_nein", "schieberegler", "gegensatzpaar"].includes(f.typ)) return String(a.zahl ?? "");
     if (f.typ === "matrix") {
       const mw = a.matrixWerte || {};
@@ -184,7 +185,9 @@ export default function RawData() {
                   return (
                     <tr key={a.id} className="hover:bg-slate-50">
                       <td className="px-3 py-2 text-xs text-slate-400 font-mono">{s?.token?.slice(0, 8)}…</td>
-                      <td className="px-3 py-2 text-slate-700 max-w-xs truncate">{sternchenEntfernen(f?.text)}</td>
+                      <td className="px-3 py-2 max-w-xs truncate">
+                        {f ? sternchenEntfernen(f.text) : <span className="text-slate-400 italic">(Frage gelöscht)</span>}
+                      </td>
                       <td className="px-3 py-2 text-xs text-slate-500">{f ? FRAGETYP_LABELS[f.typ] : ""}</td>
                       <td className="px-3 py-2 text-slate-800 max-w-md">{antwortWert(a, f)}</td>
                       <td className="px-3 py-2 text-xs text-slate-500">{a.eingabeart}</td>

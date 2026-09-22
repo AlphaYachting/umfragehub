@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { FRAGETYP_LABELS } from "@/lib/interview";
+import { FRAGETYP_LABELS, sternchenEntfernen } from "@/lib/interview";
 import BlockEditor from "@/components/welle/BlockEditor";
 import BibliothekDialog from "@/components/welle/BibliothekDialog";
 
@@ -22,6 +22,7 @@ export default function WaveEditor() {
   const [bibDialog, setBibDialog] = useState(false);
   const [bibZielBlock, setBibZielBlock] = useState(null);
   const [speichern, setSpeichern] = useState(false);
+  const [sessionCount, setSessionCount] = useState(0);
 
   const laden = useCallback(async () => {
     setLoading(true);
@@ -33,6 +34,8 @@ export default function WaveEditor() {
       const bs = await base44.entities.Block.filter({ wellenId: id });
       bs.sort((a, b) => (a.reihenfolge ?? 0) - (b.reihenfolge ?? 0));
       setBloecke(bs);
+      const ss = await base44.entities.Session.filter({ wellenId: id });
+      setSessionCount(ss.length);
       const fMap = {};
       for (const b of bs) {
         const fs = await base44.entities.Frage.filter({ blockId: b.id });
@@ -158,11 +161,22 @@ export default function WaveEditor() {
 
   async function frageLoeschen(f) {
     try {
+      const vorhandene = await base44.entities.Antwort.filter({ frageId: f.id });
+      const n = vorhandene.length;
+      let msg = `Frage "${sternchenEntfernen(f.text) || "(leere Frage)"}" löschen?`;
+      if (n > 0) {
+        msg += `\n\nZu dieser Frage liegen bereits ${n} ${n === 1 ? "Antwort" : "Antworten"} vor. Beim Löschen gehen sie unwiderruflich verloren.`;
+      }
+      if (!confirm(msg)) return;
+      if (n > 0) {
+        await base44.entities.Antwort.deleteMany({ frageId: f.id });
+      }
       await base44.entities.Frage.delete(f.id);
       setFragen({
         ...fragen,
         [f.blockId]: (fragen[f.blockId] || []).filter((x) => x.id !== f.id),
       });
+      toast.success("Frage gelöscht.");
     } catch (e) {
       toast.error("Löschen fehlgeschlagen.");
     }
@@ -255,6 +269,12 @@ export default function WaveEditor() {
 
       <h1 className="text-2xl font-bold tracking-tight mb-1">{welle.name}</h1>
       <p className="text-sm text-slate-500 mb-6">Wellen-Editor</p>
+
+      {welle.status === "live" && sessionCount > 0 && (
+        <div className="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6 text-sm text-amber-900">
+          <strong>Hinweis:</strong> Diese Welle läuft bereits und hat {sessionCount} Teilnehmer. Änderungen an Fragen verfälschen die Auswertung. Fragen ergänzen ist unbedenklich, umformulieren oder löschen nicht.
+        </div>
+      )}
 
       {/* Wellen-Einstellungen */}
       <div className="bg-white border border-slate-200 rounded-lg p-6 mb-6 space-y-4">
