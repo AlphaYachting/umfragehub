@@ -42,6 +42,8 @@ export default function Interview() {
   const frageHeadingRef = useRef(null);
   const weiterRef = useRef(null);
   const autoWeiterStateRef = useRef({});
+  // FEHLER 1: blockiert Auto-Weiter bei Fragen, die beim Betreten schon beantwortet waren
+  const beimBetretenBeantwortetRef = useRef(false);
 
   const kannFortsetzen = !testModus && !!localStorage.getItem(`interview_${linkToken}`);
 
@@ -88,6 +90,18 @@ export default function Interview() {
           };
         });
         setAnswers(aMap);
+        // FEHLER 1: Auto-Weiter-Gedächtnis für bereits beantwortete Fragen vorbelegen
+        (d.antworten || []).forEach((a) => {
+          const w = {
+            auswahl: a.auswahl || [],
+            zahl: a.zahl,
+            text: a.text || "",
+            matrixWerte: a.matrixWerte || {},
+            eingabeart: a.eingabeart,
+            transkriptKorrigiert: a.transkriptKorrigiert,
+          };
+          autoWeiterStateRef.current[a.frageId] = JSON.stringify(w);
+        });
         setBeantwortetCount((d.antworten || []).length);
         setStartZeit(new Date(d.session.startedAt).getTime());
         if (d.session.status === "abgeschlossen") {
@@ -121,7 +135,12 @@ export default function Interview() {
     if (screen === "frage" || screen === "blockuebergang") {
       window.scrollTo({ top: 0, behavior: "auto" });
     }
-  }, [screen, currentIndex, animKey]);
+    // FEHLER 1: merken, ob die Frage beim Betreten schon beantwortet war
+    if (screen === "frage") {
+      const item = fragenListe[currentIndex];
+      beimBetretenBeantwortetRef.current = !!(item && istBeantwortet(item.frage, answers[item.frage.id]));
+    }
+  }, [screen, currentIndex, animKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function starten() {
     if (testModus) {
@@ -227,10 +246,10 @@ export default function Interview() {
     return (wert.auswahl || []).length > 0;
   }
 
-  const weiter = useCallback(async () => {
+  const weiter = useCallback(async (expliziterWert) => {
     const item = fragenListe[currentIndex];
     if (!item) return;
-    const wert = answers[item.frage.id];
+    const wert = expliziterWert !== undefined ? expliziterWert : answers[item.frage.id];
     if (!testModus && item.frage.pflicht && !istBeantwortet(item.frage, wert)) return;
 
     await antwortSpeichern(item.frage, wert);
@@ -264,6 +283,8 @@ export default function Interview() {
     if (typ !== "single_choice" && typ !== "ja_nein") return;
     const wert = answers[item.frage.id];
     if (!istBeantwortet(item.frage, wert)) return;
+    // FEHLER 1: keine Automatik bei Fragen, die beim Betreten schon beantwortet waren
+    if (beimBetretenBeantwortetRef.current) return;
     const key = item.frage.id;
     const serialized = JSON.stringify(wert);
     if (autoWeiterStateRef.current[key] === serialized) return;
@@ -274,8 +295,12 @@ export default function Interview() {
     return () => clearTimeout(timer);
   }, [answers, currentIndex, fragenListe, screen]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function zurueck() {
+  async function zurueck() {
     if (currentIndex === 0) return;
+    // FEHLER 2: aktuelle Antwort speichern, bevor zurückgegangen wird (ohne Pflichtprüfung)
+    const item = fragenListe[currentIndex];
+    if (item) await antwortSpeichern(item.frage, answers[item.frage.id]);
+    await warteschlangeLeeren();
     setCurrentIndex(currentIndex - 1);
     setAnimKey((k) => k + 1);
     window.scrollTo({ top: 0, behavior: "auto" });
@@ -284,8 +309,10 @@ export default function Interview() {
   function ueberspringen() {
     const item = fragenListe[currentIndex];
     if (!item || item.frage.pflicht) return;
-    setAnswers({ ...answers, [item.frage.id]: null });
-    weiter();
+    // FEHLER 3: explizit leeren Wert speichern, nicht auf setAnswers+weiter() verlassen
+    const leererWert = { auswahl: [], ranking: [], text: "", matrixWerte: {} };
+    setAnswers({ ...answers, [item.frage.id]: leererWert });
+    weiter(leererWert);
   }
 
   async function abschliessen() {
