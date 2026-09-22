@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Search, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

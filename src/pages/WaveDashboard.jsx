@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Copy, ExternalLink, BarChart3 } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { dauerInMinuten, FRAGETYP_LABELS } from "@/lib/interview";
+import { dauerInMinuten } from "@/lib/interview";
 
 const STATUS_LABELS = {
   entwurf: "Entwurf",
@@ -79,8 +80,6 @@ export default function WaveDashboard() {
   if (!welle) return <div className="p-10 text-slate-400">Welle nicht gefunden.</div>;
 
   const teilnahmeUrl = `${window.location.origin}/i/${welle.linkToken}`;
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(teilnahmeUrl)}`;
-
   const gestartet = sessions.length;
   const abgeschlossen = sessions.filter((s) => s.status === "abgeschlossen").length;
   const quote = gestartet > 0 ? Math.round((abgeschlossen / gestartet) * 100) : 0;
@@ -134,7 +133,9 @@ export default function WaveDashboard() {
             <Button size="sm" variant="ghost"><ExternalLink size={14} className="mr-1" /> Im neuen Tab öffnen</Button>
           </a>
           <div className="mt-4 flex justify-center">
-            <img src={qrUrl} alt="QR-Code" className="w-32 h-32 border border-slate-100 rounded" />
+            <div className="w-32 h-32 border border-slate-100 rounded flex items-center justify-center p-1">
+              <QRCodeSVG value={teilnahmeUrl} size={120} level="M" />
+            </div>
           </div>
         </div>
 

@@ -15,8 +15,6 @@ import { toast } from "sonner";
 import { FRAGETYP_LABELS, ZIELGRUPPE_LABELS } from "@/lib/interview";
 import FrageForm from "@/components/welle/FrageForm";
 
-const STORAGE_KEY = "bib_container_namen";
-
 export default function QuestionLibrary() {
   const [fragen, setFragen] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,9 +36,18 @@ export default function QuestionLibrary() {
     try {
       const liste = await base44.entities.Bibliotheksfrage.list("-created_date", 500);
       setFragen(liste);
-      const ausFragen = [...new Set(liste.map((f) => f.container).filter(Boolean))];
-      const gespeichert = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-      const alle = [...new Set([...ausFragen, ...gespeichert, "Allgemein"])];
+      let containers = await base44.entities.BibliotheksContainer.list("-created_date", 500);
+      // Einmalige Migration: beim ersten Laden Container-Namen aus bestehenden
+      // Bibliotheksfragen in die neue Entity übernehmen
+      if (containers.length === 0) {
+        const ausFragen = [...new Set(liste.map((f) => f.container).filter(Boolean))];
+        const namen = [...new Set([...ausFragen, "Allgemein"])];
+        if (namen.length > 0) {
+          await base44.entities.BibliotheksContainer.bulkCreate(namen.map((name) => ({ name })));
+          containers = await base44.entities.BibliotheksContainer.list("-created_date", 500);
+        }
+      }
+      const alle = [...new Set([...containers.map((c) => c.name), "Allgemein"])];
       setContainerNamen(alle);
       if (!alle.includes(container)) setContainer(alle[0] || "Allgemein");
     } catch (e) {
@@ -54,22 +61,21 @@ export default function QuestionLibrary() {
     laden();
   }, []);
 
-  function containerSpeichern(namen) {
-    const alle = [...new Set([...namen, "Allgemein"])];
-    setContainerNamen(alle);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(alle));
-  }
-
-  function containerHinzufuegen() {
+  async function containerHinzufuegen() {
     const name = neuerContainer.trim();
     if (!name) return;
     if (containerNamen.includes(name)) {
       toast.error("Container existiert bereits.");
       return;
     }
-    containerSpeichern([...containerNamen, name]);
-    setContainer(name);
-    setNeuerContainer("");
+    try {
+      await base44.entities.BibliotheksContainer.create({ name });
+      setContainerNamen([...containerNamen, name]);
+      setContainer(name);
+      setNeuerContainer("");
+    } catch (e) {
+      toast.error("Anlegen fehlgeschlagen.");
+    }
   }
 
   async function containerUmbenennen(alterName) {
@@ -87,8 +93,12 @@ export default function QuestionLibrary() {
       await base44.entities.Bibliotheksfrage.bulkUpdate(
         inContainer.map((f) => ({ id: f.id, container: neuName }))
       );
+      const containers = await base44.entities.BibliotheksContainer.filter({ name: alterName });
+      if (containers.length) {
+        await base44.entities.BibliotheksContainer.update(containers[0].id, { name: neuName });
+      }
       const neueNamen = containerNamen.map((n) => (n === alterName ? neuName : n));
-      containerSpeichern(neueNamen);
+      setContainerNamen(neueNamen);
       setContainer(neuName);
       setRenameId(null);
       setRenameWert("");
@@ -109,8 +119,12 @@ export default function QuestionLibrary() {
       if (inContainer.length) {
         await base44.entities.Bibliotheksfrage.deleteMany({ container: name });
       }
+      const containers = await base44.entities.BibliotheksContainer.filter({ name });
+      if (containers.length) {
+        await base44.entities.BibliotheksContainer.delete(containers[0].id);
+      }
       const neueNamen = containerNamen.filter((n) => n !== name);
-      containerSpeichern(neueNamen);
+      setContainerNamen(neueNamen);
       if (container === name) setContainer("Allgemein");
       toast.success("Container gelöscht.");
       laden();
@@ -240,7 +254,10 @@ export default function QuestionLibrary() {
         });
         count++;
       }
-      if (!containerNamen.includes(container)) containerSpeichern([...containerNamen, container]);
+      if (!containerNamen.includes(container)) {
+        await base44.entities.BibliotheksContainer.create({ name: container });
+        setContainerNamen([...containerNamen, container]);
+      }
       toast.success(`${count} Frage(n) in „${container}" importiert.`);
       laden();
     } catch (err) {
