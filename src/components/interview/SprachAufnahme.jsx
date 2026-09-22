@@ -11,6 +11,7 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
   const aufnimmtRef = useRef(false);
   const startZeitRef = useRef(0);
   const limitTimerRef = useRef(null);
+  const restartTimerRef = useRef(null);
   const onTranskriptRef = useRef(onTranskript);
 
   // Ref hält immer die aktuellste Callback, damit die einmal beim Start
@@ -26,7 +27,29 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function start() {
+  function stoppe() {
+    aufnimmtRef.current = false;
+    setAufnimmt(false);
+    if (limitTimerRef.current) {
+      clearTimeout(limitTimerRef.current);
+      limitTimerRef.current = null;
+    }
+    if (restartTimerRef.current) {
+      clearTimeout(restartTimerRef.current);
+      restartTimerRef.current = null;
+    }
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch {}
+      recognitionRef.current = null;
+    }
+  }
+
+  async function start() {
+    // Vorherige Erkennung bereinigen
+    stoppe();
+
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) {
       setUnterstuetzt(false);
@@ -35,8 +58,20 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
     setFehler(false);
     finalTextRef.current = "";
 
+    // Mikrofon-Berechtigung aktiv anfragen — rec.start() allein löst in
+    // manchen Browsern/Iframes keinen Permission-Prompt aus, getUserMedia schon.
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach((t) => t.stop());
+      } catch (e) {
+        setFehler(true);
+        return;
+      }
+    }
+
     const rec = new SR();
-    rec.lang = "de-AT";
+    rec.lang = navigator.language || "de-DE";
     rec.continuous = true;
     rec.interimResults = true;
 
@@ -63,10 +98,12 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
     };
 
     rec.onend = () => {
+      // Alte Instanz nach Neustart ignorieren
+      if (recognitionRef.current !== rec) return;
       if (aufnimmtRef.current && Date.now() - startZeitRef.current < 180000) {
         // Kurze Pause vor Neustart, sonst wirft start() InvalidStateError
-        setTimeout(() => {
-          if (aufnimmtRef.current) {
+        restartTimerRef.current = setTimeout(() => {
+          if (aufnimmtRef.current && recognitionRef.current === rec) {
             try {
               rec.start();
             } catch {}
@@ -87,20 +124,7 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
     } catch {
       setFehler(true);
       aufnimmtRef.current = false;
-    }
-  }
-
-  function stoppe() {
-    aufnimmtRef.current = false;
-    setAufnimmt(false);
-    if (limitTimerRef.current) {
-      clearTimeout(limitTimerRef.current);
-      limitTimerRef.current = null;
-    }
-    if (recognitionRef.current) {
-      try {
-        recognitionRef.current.stop();
-      } catch {}
+      recognitionRef.current = null;
     }
   }
 
