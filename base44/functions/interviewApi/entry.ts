@@ -32,18 +32,23 @@ export default async function(req) {
   }
 }
 
-async function loadInterview(base44, { linkToken, sessionToken }) {
+async function loadInterview(base44, { linkToken, sessionToken, vorschau }) {
   const wellen = await base44.asServiceRole.entities.Welle.filter({ linkToken });
   if (!wellen.length) {
     return Response.json({ error: "nicht_gefunden" });
   }
   const welle = wellen[0];
-  // LÜCKE 1: Statusprüfung vor Auslieferung jeglicher Inhalte
-  if (welle.status === "geschlossen") {
-    return Response.json({ error: "geschlossen" });
-  }
-  if (welle.status === "entwurf") {
-    return Response.json({ error: "entwurf" });
+  // LÜCKE 1: Statusprüfung vor Auslieferung jeglicher Inhalte.
+  // Im Vorschaumodus (?test=1 aus dem Wellen-Editor) werden auch die Status
+  // "entwurf" und "geschlossen" freigegeben — gespeichert wird im Vorschaumodus
+  // ohnehin nichts (startSession/saveAnswer bleiben streng).
+  if (!vorschau) {
+    if (welle.status === "geschlossen") {
+      return Response.json({ error: "geschlossen" });
+    }
+    if (welle.status === "entwurf") {
+      return Response.json({ error: "entwurf" });
+    }
   }
   const projekt = await base44.asServiceRole.entities.Projekt.get(welle.projektId);
   // LÜCKE 2: reduziertes Projekt-Objekt — kein Briefing, kein Kundenname, kein Name/Status/ID

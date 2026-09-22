@@ -55,6 +55,7 @@ export default function Interview() {
         aktion: "load",
         linkToken,
         sessionToken: gespeichert,
+        vorschau: testModus,
       });
       const d = res?.data;
       if (!d || d.error) {
@@ -249,6 +250,12 @@ export default function Interview() {
   const weiter = useCallback(async (expliziterWert) => {
     const item = fragenListe[currentIndex];
     if (!item) return;
+    // Härte ab: ein React-Event-Objekt oder kein einfaches Objekt wird als
+    // "nicht übergeben" behandelt, damit onClick={weiter} nicht die Antwort
+    // überschreibt.
+    if (expliziterWert !== undefined && (typeof expliziterWert !== "object" || expliziterWert === null || "nativeEvent" in expliziterWert)) {
+      expliziterWert = undefined;
+    }
     const wert = expliziterWert !== undefined ? expliziterWert : answers[item.frage.id];
     if (!testModus && item.frage.pflicht && !istBeantwortet(item.frage, wert)) return;
 
@@ -658,7 +665,7 @@ export default function Interview() {
               </button>
             )}
             <button
-              onClick={weiter}
+              onClick={() => weiter()}
               disabled={!testModus && frage.pflicht && !istBeantwortet(frage, wert)}
               className="interview-btn-akzent"
               style={{ paddingLeft: 28, paddingRight: 28 }}

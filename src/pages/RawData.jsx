@@ -74,6 +74,7 @@ export default function RawData() {
         text: a.text,
         eingabeart: a.eingabeart,
         transkript_korrigiert: a.transkriptKorrigiert,
+        session_abgeschlossen: a.session_abgeschlossen ? "ja" : "nein",
       };
     });
     const blob = new Blob([JSON.stringify(rows, null, 2)], { type: "application/json" });
@@ -90,7 +91,7 @@ export default function RawData() {
       toast.error("Export gesperrt — Mindestteilnehmerzahl noch nicht erreicht.");
       return;
     }
-    const headers = ["session_token", "frage", "fragetyp", "auswahl", "zahl", "matrix_werte", "text", "eingabeart", "transkript_korrigiert"];
+    const headers = ["session_token", "frage", "fragetyp", "auswahl", "zahl", "matrix_werte", "text", "eingabeart", "transkript_korrigiert", "session_abgeschlossen"];
     const lines = [headers.join(",")];
     for (const a of antworten) {
       const f = fragen.find((x) => x.id === a.frageId);
@@ -105,6 +106,7 @@ export default function RawData() {
         (a.text || "").replace(/"/g, '""').replace(/\n/g, " "),
         a.eingabeart || "",
         a.transkriptKorrigiert ? "ja" : "nein",
+        a.session_abgeschlossen ? "ja" : "nein",
       ];
       lines.push(row.map((v) => `"${v}"`).join(","));
     }
