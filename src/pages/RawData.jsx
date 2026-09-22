@@ -9,9 +9,11 @@ import { FRAGETYP_LABELS, sternchenEntfernen } from "@/lib/interview";
 export default function RawData() {
   const { id } = useParams();
   const [welle, setWelle] = useState(null);
-  const [sessions, setSessions] = useState([]);
   const [fragen, setFragen] = useState([]);
   const [antworten, setAntworten] = useState([]);
+  const [gesperrt, setGesperrt] = useState(true);
+  const [abgeschlossenCount, setAbgeschlossenCount] = useState(0);
+  const [mindest, setMindest] = useState(6);
   const [loading, setLoading] = useState(true);
 
   const laden = useCallback(async () => {
@@ -19,23 +21,18 @@ export default function RawData() {
     try {
       const w = await base44.entities.Welle.get(id);
       setWelle(w);
-      const ss = await base44.entities.Session.filter({ wellenId: id });
-      setSessions(ss);
-      const bs = await base44.entities.Block.filter({ wellenId: id });
-      bs.sort((a, b) => (a.reihenfolge ?? 0) - (b.reihenfolge ?? 0));
-      const alleF = [];
-      for (const b of bs) {
-        const fs = await base44.entities.Frage.filter({ blockId: b.id });
-        fs.sort((a, b) => (a.reihenfolge ?? 0) - (b.reihenfolge ?? 0));
-        alleF.push(...fs);
+      const res = await base44.functions.invoke("rohdaten", { wellenId: id });
+      const d = res?.data;
+      if (!d || d.error) {
+        toast.error(d?.error || "Daten konnten nicht geladen werden.");
+        setLoading(false);
+        return;
       }
-      setFragen(alleF);
-      const alleA = [];
-      for (const s of ss) {
-        const as = await base44.entities.Antwort.filter({ sessionId: s.id });
-        alleA.push(...as);
-      }
-      setAntworten(alleA);
+      setGesperrt(!!d.gesperrt);
+      setAbgeschlossenCount(d.abgeschlossen ?? 0);
+      setMindest(d.mindest ?? 6);
+      setFragen(d.fragen || []);
+      setAntworten(d.antworten || []);
     } catch (e) {
       toast.error("Daten konnten nicht geladen werden.");
     } finally {
@@ -46,10 +43,6 @@ export default function RawData() {
   useEffect(() => {
     laden();
   }, [laden]);
-
-  const abgeschlossenCount = sessions.filter((s) => s.status === "abgeschlossen").length;
-  const mindest = welle?.mindestTeilnehmer ?? 6;
-  const gesperrt = abgeschlossenCount < mindest;
 
   function antwortWert(a, f) {
     if (!a) return "";
@@ -71,9 +64,8 @@ export default function RawData() {
     }
     const rows = antworten.map((a) => {
       const f = fragen.find((x) => x.id === a.frageId);
-      const s = sessions.find((x) => x.id === a.sessionId);
       return {
-        session_token: s?.token,
+        session_token: a.session_token,
         frage_text: sternchenEntfernen(f?.text),
         frage_typ: f?.typ,
         auswahl: a.auswahl,
@@ -102,10 +94,9 @@ export default function RawData() {
     const lines = [headers.join(",")];
     for (const a of antworten) {
       const f = fragen.find((x) => x.id === a.frageId);
-      const s = sessions.find((x) => x.id === a.sessionId);
       const matrixStr = a.matrixWerte ? Object.entries(a.matrixWerte).map(([k, v]) => `${k}:${v}`).join("; ") : "";
       const row = [
-        s?.token || "",
+        a.session_token || "",
         sternchenEntfernen(f?.text || "").replace(/"/g, '""'),
         f?.typ || "",
         (a.auswahl || []).join("; ").replace(/"/g, '""'),
@@ -181,10 +172,9 @@ export default function RawData() {
               ) : (
                 antworten.map((a) => {
                   const f = fragen.find((x) => x.id === a.frageId);
-                  const s = sessions.find((x) => x.id === a.sessionId);
                   return (
                     <tr key={a.id} className="hover:bg-slate-50">
-                      <td className="px-3 py-2 text-xs text-slate-400 font-mono">{s?.token?.slice(0, 8)}…</td>
+                      <td className="px-3 py-2 text-xs text-slate-400 font-mono">{a.session_token?.slice(0, 8)}…</td>
                       <td className="px-3 py-2 max-w-xs truncate">
                         {f ? sternchenEntfernen(f.text) : <span className="text-slate-400 italic">(Frage gelöscht)</span>}
                       </td>
