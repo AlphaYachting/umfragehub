@@ -51,8 +51,11 @@ async function loadInterview(base44, { linkToken, sessionToken, vorschau }) {
     }
   }
   const projekt = await base44.asServiceRole.entities.Projekt.get(welle.projektId);
-  // LÜCKE 2: reduziertes Projekt-Objekt — kein Briefing, kein Kundenname, kein Name/Status/ID
+  // LÜCKE 2: reduziertes Projekt-Objekt — kein Briefing, kein Name/Status/ID.
+  // Der Kundenname wird als "firma" durchgereicht, weil er im Fragetext
+  // ({{firma}}) ohnehin sichtbar ist — Schema v2, Platzhalter.
   const projektReduziert = {
+    firma: projekt.kundenname || "",
     theme: projekt.theme,
     logoUrl: projekt.logoUrl,
     farbePrimaer: projekt.farbePrimaer,
@@ -151,11 +154,20 @@ function validiereAntwort(frage, data) {
   const min = frage.skalaMin ?? 1;
   const max = frage.skalaMax ?? 5;
   if (typ === "single_choice" || typ === "multi_choice" || typ === "werte_auswahl" || typ === "limbic" || typ === "ja_nein") {
-    // Auswahl muss Teil der erlaubten Optionen sein (bei ja_nein: Ja/Nein)
-    const erlaubt = typ === "ja_nein" ? ["Ja", "Nein"] : (frage.optionen || []);
+    // Auswahl muss Teil der erlaubten Optionen sein (bei ja_nein: Ja/Nein).
+    // Limbic-Optionen sind als "Gruppe|Begriff" hinterlegt — gespeichert wird der Begriff.
+    let erlaubt: string[] = typ === "ja_nein" ? ["Ja", "Nein"] : (frage.optionen || []);
+    if (typ === "limbic") {
+      erlaubt = erlaubt.map((o: string) => (o.includes("|") ? o.split("|")[1] : o).trim());
+    }
     const auswahl = data.auswahl || [];
     for (const a of auswahl) {
       if (!erlaubt.includes(a)) return `Ungültige Auswahl: ${a}`;
+    }
+    // Auswahlgrenzen (Schema v2) — nur prüfen, wenn überhaupt etwas gewählt wurde
+    if ((typ === "multi_choice" || typ === "limbic") && auswahl.length > 0) {
+      const maxA = Number(frage.maxAuswahl);
+      if (maxA > 0 && auswahl.length > maxA) return `Höchstens ${maxA} Auswahlen erlaubt`;
     }
   }
   if (typ === "skala" || typ === "schieberegler" || typ === "gegensatzpaar") {
@@ -169,14 +181,16 @@ function validiereAntwort(frage, data) {
   }
   if (typ === "matrix") {
     const werte = data.matrixWerte || {};
-    const zeilen = frage.matrixZeilen || [];
-    for (const [idx, stufe] of Object.entries(werte)) {
+    // Schema v2: Antworten sind nach Zeilen-ID abgelegt; fehlt die ID, gilt der Index
+    const zeilen: string[] = frage.matrixZeilen || [];
+    const ids: string[] = frage.matrixZeilenIds || [];
+    const erlaubteIds = zeilen.map((_, i) => (ids[i] && String(ids[i]).trim()) || String(i));
+    for (const [zeilenId, stufe] of Object.entries(werte)) {
+      if (erlaubteIds.length && !erlaubteIds.includes(zeilenId)) return `Unbekannte Matrix-Zeile: ${zeilenId}`;
       const s = Number(stufe);
-      if (isNaN(s) || s < min || s > max) return `Matrix-Stufe für Zeile ${idx} außerhalb des Bereichs`;
+      if (isNaN(s) || s < min || s > max) return `Matrix-Stufe für Zeile ${zeilenId} außerhalb des Bereichs`;
     }
-    if (zeilen.length && !zeilen.every((_, i) => werte[String(i)] === undefined || werte[String(i)] === null)) {
-      // teilweise beantwortet ist erlaubt — nur Bereich prüfen
-    }
+    // teilweise beantwortet ist erlaubt — nur Bereich und Zeilen-IDs prüfen
   }
   return null;
 }
