@@ -1,18 +1,147 @@
 {
   "name": "Frage",
-  "type": "object",
   "properties": {
+    "auswertungstag": {
+      "title": "Auswertungs-Tag",
+      "type": "string"
+    },
+    "bezugSchluessel": {
+      "description": "Schl\u00fcssel der Hauptfrage, auf die sich diese Folgefrage bezieht (z. B. Warum-Frage zu einer Metaphernfrage)",
+      "title": "Bezug auf Frage",
+      "type": "string"
+    },
     "blockId": {
-      "type": "string",
-      "title": "Block ID"
+      "title": "Block ID",
+      "type": "string"
+    },
+    "erklaerung": {
+      "format": "textarea",
+      "title": "Erkl\u00e4rung",
+      "type": "string"
+    },
+    "hilfetext": {
+      "title": "Hilfetext",
+      "type": "string"
+    },
+    "kernfrage": {
+      "default": false,
+      "description": "Teil des gesperrten Benchmark-Kerns \u2014 Text und Optionen d\u00fcrfen nicht ver\u00e4ndert werden.",
+      "title": "Kernfrage",
+      "type": "boolean"
+    },
+    "kernversion": {
+      "description": "Version des Fragenkerns, z. B. 1.0",
+      "title": "Kernversion",
+      "type": "string"
+    },
+    "matrixZeilen": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Matrix-Zeilen",
+      "type": "array"
+    },
+    "matrixZeilenIds": {
+      "description": "Stabile ID je Matrix-Zeile, parallel zu matrixZeilen. Fehlt sie, gilt der Zeilenindex als ID.",
+      "items": {
+        "type": "string"
+      },
+      "title": "Matrix-Zeilen-IDs",
+      "type": "array"
+    },
+    "maxAuswahl": {
+      "description": "H\u00f6chstanzahl bei Mehrfachauswahl und Limbic",
+      "title": "Max. Auswahl",
+      "type": "number"
+    },
+    "minAuswahl": {
+      "description": "Mindestanzahl bei Mehrfachauswahl und Limbic",
+      "title": "Min. Auswahl",
+      "type": "number"
+    },
+    "optionen": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Optionen",
+      "type": "array"
+    },
+    "pflicht": {
+      "default": true,
+      "title": "Pflichtfrage",
+      "type": "boolean"
+    },
+    "polaritaet": {
+      "default": "neutral",
+      "description": "pro = steht f\u00fcr, contra = steht nicht f\u00fcr",
+      "enum": [
+        "neutral",
+        "pro",
+        "contra"
+      ],
+      "title": "Polarit\u00e4t",
+      "type": "string"
     },
     "reihenfolge": {
-      "type": "number",
       "default": 0,
-      "title": "Reihenfolge"
+      "title": "Reihenfolge",
+      "type": "number"
+    },
+    "schluessel": {
+      "description": "Stabiler, kunden\u00fcbergreifender Schl\u00fcssel (z. B. andi_i_wertewelt_pro). Grundlage f\u00fcr Benchmark und Auswertung.",
+      "title": "Fragenschl\u00fcssel",
+      "type": "string"
+    },
+    "skalaLabelLinks": {
+      "title": "Skala-Label links",
+      "type": "string"
+    },
+    "skalaLabelRechts": {
+      "title": "Skala-Label rechts",
+      "type": "string"
+    },
+    "skalaMax": {
+      "default": 5,
+      "title": "Skala Max",
+      "type": "number"
+    },
+    "skalaMin": {
+      "default": 1,
+      "title": "Skala Min",
+      "type": "number"
+    },
+    "sprachantwortErlaubt": {
+      "default": false,
+      "title": "Sprachantwort erlaubt",
+      "type": "boolean"
+    },
+    "stufenWorte": {
+      "items": {
+        "properties": {
+          "bis": {
+            "title": "Bis Wert",
+            "type": "number"
+          },
+          "wort": {
+            "title": "Wort",
+            "type": "string"
+          }
+        },
+        "required": [
+          "bis",
+          "wort"
+        ],
+        "type": "object"
+      },
+      "title": "Stufen-Worte",
+      "type": "array"
+    },
+    "text": {
+      "format": "textarea",
+      "title": "Fragetext",
+      "type": "string"
     },
     "typ": {
-      "type": "string",
       "enum": [
         "single_choice",
         "multi_choice",
@@ -25,93 +154,14 @@
         "gegensatzpaar",
         "matrix"
       ],
-      "title": "Fragetyp"
-    },
-    "text": {
-      "type": "string",
-      "title": "Fragetext",
-      "format": "textarea"
-    },
-    "hilfetext": {
-      "type": "string",
-      "title": "Hilfetext"
-    },
-    "erklaerung": {
-      "type": "string",
-      "title": "Erkl\u00e4rung",
-      "format": "textarea"
-    },
-    "pflicht": {
-      "type": "boolean",
-      "default": true,
-      "title": "Pflichtfrage"
-    },
-    "optionen": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "title": "Optionen"
-    },
-    "skalaMin": {
-      "type": "number",
-      "default": 1,
-      "title": "Skala Min"
-    },
-    "skalaMax": {
-      "type": "number",
-      "default": 5,
-      "title": "Skala Max"
-    },
-    "skalaLabelLinks": {
-      "type": "string",
-      "title": "Skala-Label links"
-    },
-    "skalaLabelRechts": {
-      "type": "string",
-      "title": "Skala-Label rechts"
-    },
-    "stufenWorte": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "bis": {
-            "type": "number",
-            "title": "Bis Wert"
-          },
-          "wort": {
-            "type": "string",
-            "title": "Wort"
-          }
-        },
-        "required": [
-          "bis",
-          "wort"
-        ]
-      },
-      "title": "Stufen-Worte"
-    },
-    "matrixZeilen": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "title": "Matrix-Zeilen"
-    },
-    "auswertungstag": {
-      "type": "string",
-      "title": "Auswertungs-Tag"
-    },
-    "sprachantwortErlaubt": {
-      "type": "boolean",
-      "default": false,
-      "title": "Sprachantwort erlaubt"
+      "title": "Fragetyp",
+      "type": "string"
     }
   },
   "required": [
     "blockId",
     "typ",
     "text"
-  ]
+  ],
+  "type": "object"
 }
