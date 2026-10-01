@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { FRAGETYP_LABELS, sternchenEntfernen } from "@/lib/interview";
+import { FRAGETYP_LABELS, sternchenEntfernen, frageFelderAuslesen } from "@/lib/interview";
 import BlockEditor from "@/components/welle/BlockEditor";
 import BibliothekDialog from "@/components/welle/BibliothekDialog";
 
@@ -141,19 +141,9 @@ export default function WaveEditor() {
       [f.blockId]: (fragen[f.blockId] || []).map((x) => (x.id === f.id ? f : x)),
     });
     try {
-      await base44.entities.Frage.update(f.id, {
-        typ: f.typ,
-        text: f.text,
-        hilfetext: f.hilfetext,
-        pflicht: f.pflicht,
-        optionen: f.optionen,
-        skalaMin: f.skalaMin,
-        skalaMax: f.skalaMax,
-        skalaLabelLinks: f.skalaLabelLinks,
-        skalaLabelRechts: f.skalaLabelRechts,
-        auswertungstag: f.auswertungstag,
-        sprachantwortErlaubt: f.sprachantwortErlaubt,
-      });
+      // Schema v2: EINE Feldliste — erklaerung, stufenWorte, matrixZeilen und
+      // die neuen Felder gingen hier bisher beim Speichern verloren.
+      await base44.entities.Frage.update(f.id, frageFelderAuslesen(f));
     } catch (e) {
       toast.error("Speichern fehlgeschlagen.");
     }
@@ -228,20 +218,13 @@ export default function WaveEditor() {
     const neue = [];
     for (let i = 0; i < ausgewaehlteFragen.length; i++) {
       const vf = ausgewaehlteFragen[i];
+      // Schema v2: alle Fragefelder mitnehmen (vorher fehlten erklaerung,
+      // stufenWorte und matrixZeilen — Matrix-Fragen kamen ohne Zeilen an)
       const erstellt = await base44.entities.Frage.create({
+        ...frageFelderAuslesen(vf),
+        optionen: vf.optionen || [],
         blockId,
         reihenfolge: startReihenfolge + i,
-        typ: vf.typ,
-        text: vf.text,
-        hilfetext: vf.hilfetext,
-        pflicht: vf.pflicht,
-        optionen: vf.optionen || [],
-        skalaMin: vf.skalaMin,
-        skalaMax: vf.skalaMax,
-        skalaLabelLinks: vf.skalaLabelLinks,
-        skalaLabelRechts: vf.skalaLabelRechts,
-        auswertungstag: vf.auswertungstag,
-        sprachantwortErlaubt: vf.sprachantwortErlaubt,
       });
       neue.push(erstellt);
     }
