@@ -4,7 +4,7 @@ import { ArrowLeft, Download, Lock } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { FRAGETYP_LABELS, sternchenEntfernen } from "@/lib/interview";
+import { FRAGETYP_LABELS, sternchenEntfernen, matrixZeilenMitIds } from "@/lib/interview";
 
 export default function RawData() {
   const { id } = useParams();
@@ -50,7 +50,7 @@ export default function RawData() {
     if (["skala", "ja_nein", "schieberegler", "gegensatzpaar"].includes(f.typ)) return String(a.zahl ?? "");
     if (f.typ === "matrix") {
       const mw = a.matrixWerte || {};
-      return (f.matrixZeilen || []).map((z, i) => `${z}: ${mw[String(i)] ?? ""}`).join(" | ");
+      return matrixZeilenMitIds(f).map((z) => `${z.text}: ${mw[z.id] ?? ""}`).join(" | ");
     }
     if (f.typ === "freitext") return a.text || "";
     if (a.auswahl && a.auswahl.length) return a.auswahl.join("; ");
@@ -64,13 +64,22 @@ export default function RawData() {
     }
     const rows = antworten.map((a) => {
       const f = fragen.find((x) => x.id === a.frageId);
+      // Matrix-Werte mit Zeilen-ID und Zeilentext, damit die Auswertung ohne Index auskommt
+      const matrixWerte = f?.typ === "matrix" && a.matrixWerte
+        ? matrixZeilenMitIds(f).map((z) => ({ zeile_id: z.id, zeile: z.text, wert: a.matrixWerte[z.id] ?? null }))
+        : null;
       return {
         session_token: a.session_token,
+        frage_schluessel: f?.schluessel || "",
+        kernfrage: !!f?.kernfrage,
+        kernversion: f?.kernversion || "",
+        auswertungstag: f?.auswertungstag || "",
         frage_text: sternchenEntfernen(f?.text),
         frage_typ: f?.typ,
+        polaritaet: f?.polaritaet || "neutral",
         auswahl: a.auswahl,
         zahl: a.zahl,
-        matrix_werte: a.matrixWerte || null,
+        matrix_werte: matrixWerte,
         text: a.text,
         eingabeart: a.eingabeart,
         transkript_korrigiert: a.transkriptKorrigiert,
@@ -91,13 +100,18 @@ export default function RawData() {
       toast.error("Export gesperrt — Mindestteilnehmerzahl noch nicht erreicht.");
       return;
     }
-    const headers = ["session_token", "frage", "fragetyp", "auswahl", "zahl", "matrix_werte", "text", "eingabeart", "transkript_korrigiert", "session_abgeschlossen"];
+    const headers = ["session_token", "frage_schluessel", "kernfrage", "auswertungstag", "frage", "fragetyp", "auswahl", "zahl", "matrix_werte", "text", "eingabeart", "transkript_korrigiert", "session_abgeschlossen"];
     const lines = [headers.join(",")];
     for (const a of antworten) {
       const f = fragen.find((x) => x.id === a.frageId);
-      const matrixStr = a.matrixWerte ? Object.entries(a.matrixWerte).map(([k, v]) => `${k}:${v}`).join("; ") : "";
+      const matrixStr = f?.typ === "matrix" && a.matrixWerte
+        ? matrixZeilenMitIds(f).map((z) => `${z.id}:${a.matrixWerte[z.id] ?? ""}`).join("; ")
+        : "";
       const row = [
         a.session_token || "",
+        f?.schluessel || "",
+        f?.kernfrage ? "ja" : "nein",
+        f?.auswertungstag || "",
         sternchenEntfernen(f?.text || "").replace(/"/g, '""'),
         f?.typ || "",
         (a.auswahl || []).join("; ").replace(/"/g, '""'),
