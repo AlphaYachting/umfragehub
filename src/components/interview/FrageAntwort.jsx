@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Check, Asterisk } from "lucide-react";
 import SprachAufnahme from "./SprachAufnahme";
+import { matrixZeilenMitIds, platzhalterErsetzen } from "@/lib/interview";
 
 const LIMBIC_FARBEN = [
   "color-mix(in srgb, var(--farbe-akzent) 6%, var(--farbe-bg))",
@@ -51,9 +52,21 @@ function gegensatzVerortung(pos) {
   return "deutlich rechts";
 }
 
-export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
+export default function FrageAntwort({ frage, wert, onChange, ansprache, textKontext }) {
   const v = wert || {};
   const auswahl = v.auswahl || [];
+  // Platzhalter ({{firma}}, Du/Sie) auch in Optionen, Zeilen und Labels auflösen
+  const t = (s) => (textKontext ? platzhalterErsetzen(s, textKontext) : s);
+  // Auswahlgrenzen (Schema v2) für multi_choice und limbic
+  const maxAuswahl = Number(frage.maxAuswahl) > 0 ? Number(frage.maxAuswahl) : null;
+  const minAuswahl = Number(frage.minAuswahl) > 0 ? Number(frage.minAuswahl) : null;
+  const auswahlHinweis = (() => {
+    if (!minAuswahl && !maxAuswahl) return "";
+    if (minAuswahl && maxAuswahl && minAuswahl === maxAuswahl) return `Bitte genau ${minAuswahl} auswählen.`;
+    if (minAuswahl && maxAuswahl) return `Bitte ${minAuswahl} bis ${maxAuswahl} auswählen.`;
+    if (maxAuswahl) return `Höchstens ${maxAuswahl} auswählen.`;
+    return `Mindestens ${minAuswahl} auswählen.`;
+  })();
   // Alle Hooks unbedingt am Anfang — Reihenfolge bleibt stabil über Typwechsel
   const [werteStep, setWerteStep] = useState(1);
   const [ranking, setRanking] = useState(v.ranking || []);
@@ -88,7 +101,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
               <span className={`interview-marker ${aktiv ? "interview-marker-aktiv" : ""}`}>
                 <Check className="interview-marker-haken" size={12} strokeWidth={3} />
               </span>
-              <span>{opt}</span>
+              <span>{t(opt)}</span>
             </button>
           );
         })}
@@ -98,29 +111,38 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
 
   // multi_choice
   if (frage.typ === "multi_choice") {
+    const vollBelegt = maxAuswahl !== null && auswahl.length >= maxAuswahl;
     function toggle(opt) {
       if (auswahl.includes(opt)) {
         setAuswahl(auswahl.filter((x) => x !== opt));
-      } else {
+      } else if (!vollBelegt) {
         setAuswahl([...auswahl, opt]);
       }
     }
     return (
       <div className="space-y-2">
+        {auswahlHinweis && (
+          <p className="text-xs" style={{ color: "var(--farbe-grau-mid)" }}>
+            {auswahlHinweis} {auswahl.length > 0 && `(${auswahl.length} gewählt)`}
+          </p>
+        )}
         {(frage.optionen || []).map((opt) => {
           const aktiv = auswahl.includes(opt);
+          const gesperrt = vollBelegt && !aktiv;
           return (
             <button
               key={opt}
               type="button"
               aria-pressed={aktiv}
-              onClick={(e) => { einrastenSpuerbar(e.currentTarget); toggle(opt); }}
+              aria-disabled={gesperrt}
+              onClick={(e) => { if (gesperrt) return; einrastenSpuerbar(e.currentTarget); toggle(opt); }}
               className={`interview-auswahl-karte ${aktiv ? "interview-auswahl-karte-aktiv" : ""}`}
+              style={gesperrt ? { opacity: 0.45, cursor: "not-allowed" } : undefined}
             >
               <span className={`interview-marker interview-marker-eckig ${aktiv ? "interview-marker-aktiv" : ""}`}>
                 <Check className="interview-marker-haken" size={12} strokeWidth={3} />
               </span>
-              <span>{opt}</span>
+              <span>{t(opt)}</span>
             </button>
           );
         })}
@@ -302,18 +324,18 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
     );
   }
 
-  // matrix
+  // matrix — Antworten werden unter der stabilen Zeilen-ID gespeichert (Schema v2)
   if (frage.typ === "matrix") {
     const min = frage.skalaMin ?? 1;
     const max = frage.skalaMax ?? 5;
     const punkte = [];
     for (let i = min; i <= max; i++) punkte.push(i);
     const matrixWerte = v.matrixWerte || {};
-    const zeilen = frage.matrixZeilen || [];
-    const alleBeantwortet = zeilen.length > 0 && zeilen.every((_, idx) => matrixWerte[String(idx)] !== undefined);
-    function setZeile(idx, stufe, element) {
+    const zeilen = matrixZeilenMitIds(frage);
+    const alleBeantwortet = zeilen.length > 0 && zeilen.every((z) => matrixWerte[z.id] !== undefined);
+    function setZeile(zeilenId, stufe, element) {
       einrastenSpuerbar(element);
-      onChange({ ...v, matrixWerte: { ...matrixWerte, [String(idx)]: stufe } });
+      onChange({ ...v, matrixWerte: { ...matrixWerte, [zeilenId]: stufe } });
     }
     return (
       <div>
@@ -322,19 +344,19 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
           <span>{frage.skalaLabelRechts || max}</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
-          {zeilen.map((zeile, idx) => (
-            <div key={idx}>
-              <div style={{ color: "var(--farbe-text)", fontSize: "15px", fontWeight: 600, marginBottom: "10px" }}>{zeile}</div>
+          {zeilen.map((zeile) => (
+            <div key={zeile.id}>
+              <div style={{ color: "var(--farbe-text)", fontSize: "15px", fontWeight: 600, marginBottom: "10px" }}>{t(zeile.text)}</div>
               <div style={{ display: "grid", gridTemplateColumns: `repeat(${punkte.length}, 1fr)`, gap: "7px" }}>
                 {punkte.map((p) => {
-                  const aktiv = matrixWerte[String(idx)] === p;
+                  const aktiv = matrixWerte[zeile.id] === p;
                   return (
                     <button
                       key={p}
                       type="button"
                       aria-pressed={aktiv}
-                      aria-label={`${zeile} — Stufe ${p}`}
-                      onClick={(e) => setZeile(idx, p, e.currentTarget)}
+                      aria-label={`${t(zeile.text)} — Stufe ${p}`}
+                      onClick={(e) => setZeile(zeile.id, p, e.currentTarget)}
                       className={`interview-skala-btn ${aktiv ? "interview-skala-btn-aktiv" : ""}`}
                     >
                       {p}
@@ -447,6 +469,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
 
   // limbic
   if (frage.typ === "limbic") {
+    const vollBelegt = maxAuswahl !== null && auswahl.length >= maxAuswahl;
     const gruppen = {};
     (frage.optionen || []).forEach((opt) => {
       const [g, b] = opt.includes("|") ? opt.split("|") : ["Sonstige", opt];
@@ -457,6 +480,11 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
     const gruppenListe = Object.entries(gruppen);
     return (
       <div className="space-y-4">
+        {auswahlHinweis && (
+          <p className="text-xs" style={{ color: "var(--farbe-grau-mid)" }}>
+            {auswahlHinweis} {auswahl.length > 0 && `(${auswahl.length} gewählt)`}
+          </p>
+        )}
         {gruppenListe.map(([gName, begriffe], gi) => {
           const farbe = LIMBIC_FARBEN[gi % LIMBIC_FARBEN.length];
           return (
@@ -465,12 +493,15 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
               <div className="flex flex-wrap gap-2">
                 {begriffe.map((b) => {
                   const aktiv = auswahl.includes(b);
+                  const gesperrt = vollBelegt && !aktiv;
                   return (
                     <button
                       key={b}
                       type="button"
                       aria-pressed={aktiv}
+                      aria-disabled={gesperrt}
                       onClick={(e) => {
+                        if (gesperrt) return;
                         einrastenSpuerbar(e.currentTarget);
                         if (auswahl.includes(b)) setAuswahl(auswahl.filter((x) => x !== b));
                         else setAuswahl([...auswahl, b]);
@@ -479,7 +510,9 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache }) {
                       style={{
                         background: aktiv ? "#fff" : farbe,
                         borderColor: aktiv ? "var(--farbe-akzent)" : "transparent",
-                        minHeight: 48
+                        minHeight: 48,
+                        opacity: gesperrt ? 0.45 : 1,
+                        cursor: gesperrt ? "not-allowed" : "pointer"
                       }}
                     >
                       {b}
