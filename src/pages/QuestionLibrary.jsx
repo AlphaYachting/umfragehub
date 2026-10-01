@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { FRAGETYP_LABELS, ZIELGRUPPE_LABELS } from "@/lib/interview";
+import { FRAGETYP_LABELS, ZIELGRUPPE_LABELS, frageAusImport, frageFuerExport } from "@/lib/interview";
 import FrageForm from "@/components/welle/FrageForm";
 
 export default function QuestionLibrary() {
@@ -209,10 +209,12 @@ export default function QuestionLibrary() {
   }
 
   function exportieren() {
+    // Schema v2: matrixZeilen als {id, text}, damit Zeilen-IDs mitwandern
     const data = JSON.stringify(
       fragen
         .filter((f) => f.container === container)
-        .map(({ id, created_date, updated_date, created_by_id, ...rest }) => rest),
+        .sort((a, b) => (a.reihenfolge ?? 0) - (b.reihenfolge ?? 0))
+        .map(frageFuerExport),
       null,
       2
     );
@@ -426,26 +428,9 @@ export default function QuestionLibrary() {
       if (!Array.isArray(liste)) throw new Error("Keine Liste");
       let count = 0;
       for (const f of liste) {
-        await base44.entities.Bibliotheksfrage.create({
-          typ: f.typ || "freitext",
-          text: f.text || "",
-          hilfetext: f.hilfetext || "",
-          erklaerung: f.erklaerung || "",
-          pflicht: f.pflicht !== false,
-          optionen: f.optionen || [],
-          skalaMin: f.skalaMin ?? 1,
-          skalaMax: f.skalaMax ?? 5,
-          skalaLabelLinks: f.skalaLabelLinks || "",
-          skalaLabelRechts: f.skalaLabelRechts || "",
-          stufenWorte: f.stufenWorte || [],
-          matrixZeilen: f.matrixZeilen || [],
-          auswertungstag: f.auswertungstag || "",
-          sprachantwortErlaubt: !!f.sprachantwortErlaubt,
-          zielgruppe: f.zielgruppe || "allgemein",
-          kategorie: f.kategorie || "",
-          container: f.container || container,
-          reihenfolge: f.reihenfolge ?? 0,
-        });
+        // Schema v2: Import normalisiert (matrixZeilen als String oder {id, text},
+        // Schlüssel, Kernfrage, Auswahlgrenzen, Polarität, Bezug)
+        await base44.entities.Bibliotheksfrage.create(frageAusImport(f, container));
         count++;
       }
       if (!containerNamen.includes(container)) {
