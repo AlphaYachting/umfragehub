@@ -1,13 +1,15 @@
 import React, { useRef } from "react";
+import { platzhalterErsetzen } from "@/lib/interview";
 
 // Aufklappbare Marginalie „Warum fragen wir das?" — linker Balken in der
 // Akzentfarbe, eingerückter Text, etwas kleiner und gedämpfter.
 // Zustand wird vom Eltern gehalten (pro Frage, solange die Sitzung läuft).
-export default function ErklaerungBlock({ frage, offen, onToggle }) {
+export default function ErklaerungBlock({ frage, offen, onToggle, textKontext }) {
   const containerRef = useRef(null);
   if (!frage.erklaerung || !frage.erklaerung.trim()) return null;
 
-  const absaetze = frage.erklaerung.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+  const erklaerung = textKontext ? platzhalterErsetzen(frage.erklaerung, textKontext) : frage.erklaerung;
+  const absaetze = erklaerung.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
 
   function klicken() {
     const wirdOffen = !offen;
