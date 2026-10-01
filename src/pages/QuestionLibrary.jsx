@@ -225,6 +225,197 @@ export default function QuestionLibrary() {
     URL.revokeObjectURL(url);
   }
 
+  function vorlageHerunterladen() {
+    const vorlage = [
+      {
+        reihenfolge: 1,
+        typ: "single_choice",
+        text: "Wie *zufrieden* bist du mit der Führung?",
+        hilfetext: "Bitte wähle eine Antwort.",
+        erklaerung: "Diese Frage misst die allgemeine Zufriedenheit mit der Führungskompetenz.",
+        pflicht: true,
+        optionen: ["Sehr zufrieden", "Eher zufrieden", "Teils / Teils", "Eher unzufrieden", "Sehr unzufrieden"],
+        skalaMin: 1, skalaMax: 5,
+        skalaLabelLinks: "", skalaLabelRechts: "",
+        stufenWorte: [], matrixZeilen: [],
+        auswertungstag: "zufriedenheit",
+        sprachantwortErlaubt: false,
+        zielgruppe: "mitarbeiter",
+        kategorie: "Führung",
+        container: "Standard Mitarbeiter"
+      },
+      {
+        reihenfolge: 2,
+        typ: "multi_choice",
+        text: "Welche Themen sind dir *wichtig*?",
+        hilfetext: "Mehrere Antworten möglich.",
+        erklaerung: "",
+        pflicht: true,
+        optionen: ["Gehalt", "Flexibilität", "Entwicklung", "Sicherheit", "Teamkultur"],
+        skalaMin: 1, skalaMax: 5,
+        skalaLabelLinks: "", skalaLabelRechts: "",
+        stufenWorte: [], matrixZeilen: [],
+        auswertungstag: "werte",
+        sprachantwortErlaubt: false,
+        zielgruppe: "mitarbeiter",
+        kategorie: "Werte",
+        container: "Standard Mitarbeiter"
+      },
+      {
+        reihenfolge: 3,
+        typ: "ja_nein",
+        text: "Würdest du das *weiterempfehlen*?",
+        hilfetext: "",
+        erklaerung: "Net-Promoter-ähnliche Frage.",
+        pflicht: true,
+        optionen: [],
+        skalaMin: 1, skalaMax: 5,
+        skalaLabelLinks: "", skalaLabelRechts: "",
+        stufenWorte: [], matrixZeilen: [],
+        auswertungstag: "nps",
+        sprachantwortErlaubt: false,
+        zielgruppe: "kunden",
+        kategorie: "Weiterempfehlung",
+        container: "Standard Kunden"
+      },
+      {
+        reihenfolge: 4,
+        typ: "skala",
+        text: "Auf einer Skala von 1 bis 7: Wie *innovativ* ist das Unternehmen?",
+        hilfetext: "1 = gar nicht, 7 = extrem.",
+        erklaerung: "",
+        pflicht: true,
+        optionen: [],
+        skalaMin: 1, skalaMax: 7,
+        skalaLabelLinks: "Gar nicht", skalaLabelRechts: "Extrem",
+        stufenWorte: [], matrixZeilen: [],
+        auswertungstag: "innovation",
+        sprachantwortErlaubt: false,
+        zielgruppe: "geschaeftsfuehrung",
+        kategorie: "Innovation",
+        container: "Standard GF"
+      },
+      {
+        reihenfolge: 5,
+        typ: "schieberegler",
+        text: "Wie *stark* ist deine Ausprägung in diesem Bereich?",
+        hilfetext: "Zieh den Regler.",
+        erklaerung: "",
+        pflicht: true,
+        optionen: [],
+        skalaMin: 0, skalaMax: 100,
+        skalaLabelLinks: "Niedrig", skalaLabelRechts: "Hoch",
+        stufenWorte: [
+          { "bis": 20, "wort": "Sehr niedrig" },
+          { "bis": 40, "wort": "Niedrig" },
+          { "bis": 60, "wort": "Mittel" },
+          { "bis": 80, "wort": "Hoch" },
+          { "bis": 100, "wort": "Sehr hoch" }
+        ],
+        matrixZeilen: [],
+        auswertungstag: "auspraegung",
+        sprachantwortErlaubt: false,
+        zielgruppe: "allgemein",
+        kategorie: "Selbsteinschätzung",
+        container: "Standard Allgemein"
+      },
+      {
+        reihenfolge: 6,
+        typ: "gegensatzpaar",
+        text: "Wo positionierst du dich zwischen *Stabilität* und *Veränderung*?",
+        hilfetext: "",
+        erklaerung: "0 = volle Stabilität, 100 = volle Veränderung.",
+        pflicht: true,
+        optionen: [],
+        skalaMin: 0, skalaMax: 100,
+        skalaLabelLinks: "Stabilität", skalaLabelRechts: "Veränderung",
+        stufenWorte: [], matrixZeilen: [],
+        auswertungstag: "veraenderungsbereitschaft",
+        sprachantwortErlaubt: false,
+        zielgruppe: "allgemein",
+        kategorie: "Veränderung",
+        container: "Standard Allgemein"
+      },
+      {
+        reihenfolge: 7,
+        typ: "matrix",
+        text: "Bitte bewerte folgende *Aussagen*.",
+        hilfetext: "Eine Skala pro Aussage.",
+        erklaerung: "",
+        pflicht: true,
+        optionen: [],
+        skalaMin: 1, skalaMax: 5,
+        skalaLabelLinks: "Stimme nicht zu", skalaLabelRechts: "Stimme voll zu",
+        stufenWorte: [],
+        matrixZeilen: ["Die Führung kommuniziert klar", "Ich habe Entwicklungsperspektiven", "Das Team zieht an einem Strang"],
+        auswertungstag: "matrix_fuehrung",
+        sprachantwortErlaubt: false,
+        zielgruppe: "mitarbeiter",
+        kategorie: "Führung",
+        container: "Standard Mitarbeiter"
+      },
+      {
+        reihenfolge: 8,
+        typ: "werte_auswahl",
+        text: "Wähle deine *drei wichtigsten* Werte und ordne sie.",
+        hilfetext: "Erst 3 auswählen, dann in Reihenfolge tippen.",
+        erklaerung: "Die Reihenfolge gibt die Priorität an.",
+        pflicht: true,
+        optionen: ["Vertrauen", "Mut", "Verantwortung", "Offenheit", "Exzellenz", "Nachhaltigkeit"],
+        skalaMin: 1, skalaMax: 5,
+        skalaLabelLinks: "", skalaLabelRechts: "",
+        stufenWorte: [], matrixZeilen: [],
+        auswertungstag: "werte_ranking",
+        sprachantwortErlaubt: false,
+        zielgruppe: "allgemein",
+        kategorie: "Werte",
+        container: "Standard Allgemein"
+      },
+      {
+        reihenfolge: 9,
+        typ: "limbic",
+        text: "Welche Begriffe *passen* zu dir?",
+        hilfetext: "Mehrfachauswahl möglich.",
+        erklaerung: "Optionen als 'Gruppe|Begriff' formatieren.",
+        pflicht: true,
+        optionen: ["Discipline|Pünktlichkeit", "Discipline|Zuverlässigkeit", "Fantasy|Kreativität", "Fantasy|Spielerisch", "Adventure|Risikofreude", "Adventure|Pioniergeist"],
+        skalaMin: 1, skalaMax: 5,
+        skalaLabelLinks: "", skalaLabelRechts: "",
+        stufenWorte: [], matrixZeilen: [],
+        auswertungstag: "limbic",
+        sprachantwortErlaubt: false,
+        zielgruppe: "allgemein",
+        kategorie: "Persönlichkeit",
+        container: "Standard Allgemein"
+      },
+      {
+        reihenfolge: 10,
+        typ: "freitext",
+        text: "Was würde dich an deinem *Arbeitsplatz* am meisten verbessern?",
+        hilfetext: "Antworte gerne ausführlich.",
+        erklaerung: "Offene Frage für qualitative Insights.",
+        pflicht: false,
+        optionen: [],
+        skalaMin: 1, skalaMax: 5,
+        skalaLabelLinks: "", skalaLabelRechts: "",
+        stufenWorte: [], matrixZeilen: [],
+        auswertungstag: "freitext_arbeitsplatz",
+        sprachantwortErlaubt: true,
+        zielgruppe: "mitarbeiter",
+        kategorie: "Arbeitsplatz",
+        container: "Standard Mitarbeiter"
+      }
+    ];
+    const data = JSON.stringify(vorlage, null, 2);
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "fragenbibliothek_vorlage.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   async function importieren(e) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -239,18 +430,21 @@ export default function QuestionLibrary() {
           typ: f.typ || "freitext",
           text: f.text || "",
           hilfetext: f.hilfetext || "",
+          erklaerung: f.erklaerung || "",
           pflicht: f.pflicht !== false,
           optionen: f.optionen || [],
           skalaMin: f.skalaMin ?? 1,
           skalaMax: f.skalaMax ?? 5,
           skalaLabelLinks: f.skalaLabelLinks || "",
           skalaLabelRechts: f.skalaLabelRechts || "",
+          stufenWorte: f.stufenWorte || [],
+          matrixZeilen: f.matrixZeilen || [],
           auswertungstag: f.auswertungstag || "",
           sprachantwortErlaubt: !!f.sprachantwortErlaubt,
           zielgruppe: f.zielgruppe || "allgemein",
           kategorie: f.kategorie || "",
           container: f.container || container,
-          reihenfolge: 0,
+          reihenfolge: f.reihenfolge ?? 0,
         });
         count++;
       }
@@ -366,6 +560,9 @@ export default function QuestionLibrary() {
           <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
             <h2 className="text-lg font-semibold">{container}</h2>
             <div className="flex gap-2 flex-wrap">
+              <Button variant="outline" size="sm" onClick={vorlageHerunterladen}>
+                <Download size={15} className="mr-1" /> Vorlage
+              </Button>
               <Button variant="outline" size="sm" onClick={exportieren} disabled={gefiltert().length === 0}>
                 <Download size={15} className="mr-1" /> Export
               </Button>
