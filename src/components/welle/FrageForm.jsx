@@ -43,9 +43,15 @@ export default function FrageForm({ frage, onChange }) {
     const neu = [...(frage.matrixZeilen || [])];
     neu[idx] = wert;
     const ids = zeilenIds();
-    // ID automatisch aus dem Text ableiten, solange sie noch nicht manuell gesetzt wurde
-    if (!ids[idx] || ids[idx] === zeilenIdAusText(frage.matrixZeilen?.[idx], ids.filter((_, i) => i !== idx))) {
-      ids[idx] = zeilenIdAusText(wert, ids.filter((_, i) => i !== idx));
+    const andere = ids.filter((_, i) => i !== idx);
+    const alterText = frage.matrixZeilen?.[idx] || "";
+    // ID automatisch aus dem Text ableiten — nur bei neu angelegten Zeilen (noch ohne Text)
+    // oder solange die ID noch der Automatik des alten Textes entspricht.
+    // Alt-Zeilen ohne ID behalten den Index als ID, damit bestehende Antworten lesbar bleiben.
+    const istNeu = ids[idx] === "" && alterText === "";
+    const istAutomatik = ids[idx] !== "" && ids[idx] === zeilenIdAusText(alterText, andere);
+    if (istNeu || istAutomatik) {
+      ids[idx] = zeilenIdAusText(wert, andere);
     }
     onChange({ ...frage, matrixZeilen: neu, matrixZeilenIds: ids });
   }
