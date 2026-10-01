@@ -1,0 +1,217 @@
+// Vorlage für den JSON-Import in die Fragenbibliothek (Schema v2).
+//
+// Ein Objekt pro Frage. Nicht benötigte Felder dürfen fehlen.
+// Platzhalter im Text: {{firma}} = Kundenname, {{du}} / {{dein}} / {{siehst|sehen}} = Du/Sie-Form.
+// matrixZeilen als { id, text } — die ID bleibt stabil, Antworten hängen an ihr.
+// schluessel + kernfrage + kernversion machen eine Frage benchmarkfähig.
+
+export const FRAGEN_VORLAGE_V2 = [
+  {
+    reihenfolge: 1,
+    schluessel: "beispiel_single_fuehrung",
+    kernfrage: false,
+    kernversion: "",
+    typ: "single_choice",
+    text: "Wie *zufrieden* {{bist}} {{du}} mit der Führung bei {{firma}}?",
+    hilfetext: "Bitte eine Antwort wählen.",
+    erklaerung: "Diese Frage misst die allgemeine Zufriedenheit mit der Führungskompetenz.",
+    pflicht: true,
+    optionen: ["Sehr zufrieden", "Eher zufrieden", "Teils / Teils", "Eher unzufrieden", "Sehr unzufrieden"],
+    auswertungstag: "zufriedenheit",
+    zielgruppe: "mitarbeiter",
+    kategorie: "Führung",
+    container: "Standard Mitarbeiter"
+  },
+  {
+    reihenfolge: 2,
+    schluessel: "beispiel_multi_themen",
+    typ: "multi_choice",
+    text: "Welche Themen sind {{dir}} *wichtig*?",
+    hilfetext: "Bitte genau drei auswählen.",
+    pflicht: true,
+    optionen: ["Gehalt", "Flexibilität", "Entwicklung", "Sicherheit", "Teamkultur", "Sinn"],
+    minAuswahl: 3,
+    maxAuswahl: 3,
+    polaritaet: "neutral",
+    auswertungstag: "werte",
+    zielgruppe: "mitarbeiter",
+    kategorie: "Werte",
+    container: "Standard Mitarbeiter"
+  },
+  {
+    reihenfolge: 3,
+    schluessel: "beispiel_ja_nein_empfehlung",
+    typ: "ja_nein",
+    text: "{{Würdest|Würden}} {{du}} {{firma}} *weiterempfehlen*?",
+    erklaerung: "Net-Promoter-ähnliche Frage.",
+    pflicht: true,
+    auswertungstag: "nps",
+    zielgruppe: "kunden",
+    kategorie: "Weiterempfehlung",
+    container: "Standard Kunden"
+  },
+  {
+    reihenfolge: 4,
+    schluessel: "beispiel_skala_innovation",
+    typ: "skala",
+    text: "Wie *innovativ* ist {{firma}}?",
+    hilfetext: "1 = gar nicht, 7 = extrem.",
+    pflicht: true,
+    skalaMin: 1,
+    skalaMax: 7,
+    skalaLabelLinks: "Gar nicht",
+    skalaLabelRechts: "Extrem",
+    auswertungstag: "innovation",
+    zielgruppe: "geschaeftsfuehrung",
+    kategorie: "Innovation",
+    container: "Standard GF"
+  },
+  {
+    reihenfolge: 5,
+    schluessel: "beispiel_regler_auspraegung",
+    typ: "schieberegler",
+    text: "Wie *stark* ist diese Eigenschaft bei {{firma}} ausgeprägt?",
+    hilfetext: "Zieh den Regler.",
+    pflicht: true,
+    skalaMin: 0,
+    skalaMax: 100,
+    skalaLabelLinks: "Niedrig",
+    skalaLabelRechts: "Hoch",
+    stufenWorte: [
+      { bis: 20, wort: "Sehr niedrig" },
+      { bis: 40, wort: "Niedrig" },
+      { bis: 60, wort: "Mittel" },
+      { bis: 80, wort: "Hoch" },
+      { bis: 100, wort: "Sehr hoch" }
+    ],
+    auswertungstag: "auspraegung",
+    zielgruppe: "allgemein",
+    kategorie: "Selbsteinschätzung",
+    container: "Standard Allgemein"
+  },
+  {
+    reihenfolge: 6,
+    schluessel: "beispiel_gegensatz_stabilitaet",
+    typ: "gegensatzpaar",
+    text: "Wo steht {{firma}} zwischen *Stabilität* und *Veränderung*?",
+    erklaerung: "Links = volle Stabilität, rechts = volle Veränderung.",
+    pflicht: true,
+    skalaMin: 0,
+    skalaMax: 100,
+    skalaLabelLinks: "Stabilität",
+    skalaLabelRechts: "Veränderung",
+    auswertungstag: "veraenderungsbereitschaft",
+    zielgruppe: "allgemein",
+    kategorie: "Veränderung",
+    container: "Standard Allgemein"
+  },
+  {
+    reihenfolge: 7,
+    schluessel: "beispiel_matrix_fuehrung",
+    typ: "matrix",
+    text: "Bitte bewerte folgende *Aussagen* zu {{firma}}.",
+    hilfetext: "Eine Skala pro Aussage.",
+    pflicht: true,
+    skalaMin: 1,
+    skalaMax: 5,
+    skalaLabelLinks: "Stimme nicht zu",
+    skalaLabelRechts: "Stimme voll zu",
+    matrixZeilen: [
+      { id: "kommunikation", text: "Die Führung kommuniziert klar" },
+      { id: "perspektive", text: "Ich habe Entwicklungsperspektiven" },
+      { id: "team", text: "Das Team zieht an einem Strang" }
+    ],
+    auswertungstag: "matrix_fuehrung",
+    zielgruppe: "mitarbeiter",
+    kategorie: "Führung",
+    container: "Standard Mitarbeiter"
+  },
+  {
+    reihenfolge: 8,
+    schluessel: "beispiel_werte_ranking",
+    typ: "werte_auswahl",
+    text: "Wähle die *drei wichtigsten* Werte und ordne sie.",
+    hilfetext: "Erst 3 auswählen, dann in Reihenfolge tippen.",
+    erklaerung: "Die Reihenfolge gibt die Priorität an.",
+    pflicht: true,
+    optionen: ["Vertrauen", "Mut", "Verantwortung", "Offenheit", "Exzellenz", "Nachhaltigkeit"],
+    polaritaet: "pro",
+    auswertungstag: "werte_ranking",
+    zielgruppe: "allgemein",
+    kategorie: "Werte",
+    container: "Standard Allgemein"
+  },
+  {
+    reihenfolge: 9,
+    schluessel: "beispiel_limbic_pro",
+    typ: "limbic",
+    text: "Wofür *steht* {{firma}}?",
+    hilfetext: "Mehrere Begriffe möglich, höchstens zehn.",
+    erklaerung: "Die Begriffe bilden die Wertewelt der Marke ab. Es gibt kein richtig oder falsch.",
+    pflicht: true,
+    optionen: [
+      "Disziplin|Pünktlichkeit", "Disziplin|Zuverlässigkeit", "Disziplin|Ordnung",
+      "Fantasie|Kreativität", "Fantasie|Spielerisch", "Fantasie|Poesie",
+      "Abenteuer|Risikofreude", "Abenteuer|Pioniergeist", "Abenteuer|Mut",
+      "Genuss|Leichtigkeit", "Genuss|Geselligkeit",
+      "Dominanz|Durchsetzung", "Dominanz|Leistung",
+      "Balance|Sicherheit", "Balance|Vertrauen", "Balance|Familie"
+    ],
+    maxAuswahl: 10,
+    polaritaet: "pro",
+    auswertungstag: "limbic_pro",
+    zielgruppe: "allgemein",
+    kategorie: "Wertewelt",
+    container: "Standard Allgemein"
+  },
+  {
+    reihenfolge: 10,
+    schluessel: "beispiel_limbic_contra",
+    typ: "limbic",
+    text: "Wofür steht {{firma}} *nicht*?",
+    hilfetext: "Mehrere Begriffe möglich, höchstens zehn.",
+    erklaerung: "Das Gegenstück zur vorigen Frage — gleiche Begriffe, umgekehrte Richtung.",
+    pflicht: true,
+    optionen: [
+      "Disziplin|Pünktlichkeit", "Disziplin|Zuverlässigkeit", "Disziplin|Ordnung",
+      "Fantasie|Kreativität", "Fantasie|Spielerisch", "Fantasie|Poesie",
+      "Abenteuer|Risikofreude", "Abenteuer|Pioniergeist", "Abenteuer|Mut",
+      "Genuss|Leichtigkeit", "Genuss|Geselligkeit",
+      "Dominanz|Durchsetzung", "Dominanz|Leistung",
+      "Balance|Sicherheit", "Balance|Vertrauen", "Balance|Familie"
+    ],
+    maxAuswahl: 10,
+    polaritaet: "contra",
+    bezugSchluessel: "beispiel_limbic_pro",
+    auswertungstag: "limbic_contra",
+    zielgruppe: "allgemein",
+    kategorie: "Wertewelt",
+    container: "Standard Allgemein"
+  },
+  {
+    reihenfolge: 11,
+    schluessel: "beispiel_single_fahrzeug",
+    typ: "single_choice",
+    text: "Wenn {{firma}} ein *Fahrzeug* wäre, welches wäre es?",
+    pflicht: true,
+    optionen: ["SUV", "Kombi", "Kleiner Stadtflitzer", "Sportwagen", "Rennwagen", "Limousine", "Motorrad", "Bus"],
+    auswertungstag: "metapher_fahrzeug",
+    zielgruppe: "allgemein",
+    kategorie: "Metaphern",
+    container: "Standard Allgemein"
+  },
+  {
+    reihenfolge: 12,
+    schluessel: "beispiel_freitext_fahrzeug_warum",
+    typ: "freitext",
+    text: "Warum gerade dieser *Fahrzeugtyp*?",
+    hilfetext: "Beschreibe die Eigenschaften, die {{du}} damit {{verbindest|verbinden}}.",
+    pflicht: false,
+    sprachantwortErlaubt: true,
+    bezugSchluessel: "beispiel_single_fahrzeug",
+    auswertungstag: "metapher_fahrzeug_warum",
+    zielgruppe: "allgemein",
+    kategorie: "Metaphern",
+    container: "Standard Allgemein"
+  }
+];
