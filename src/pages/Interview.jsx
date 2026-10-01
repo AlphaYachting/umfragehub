@@ -8,6 +8,8 @@ import {
   geschaetzteFrageDauerSekunden,
   renderFragetext,
   sternchenEntfernen,
+  platzhalterErsetzen,
+  matrixZeilenMitIds,
 } from "@/lib/interview";
 import FrageAntwort from "@/components/interview/FrageAntwort";
 import RechtlicheFusszeile from "@/components/interview/RechtlicheFusszeile";
@@ -237,14 +239,18 @@ export default function Interview() {
     if (frage.typ === "skala" || frage.typ === "ja_nein") return wert.zahl !== undefined && wert.zahl !== null;
     if (frage.typ === "schieberegler" || frage.typ === "gegensatzpaar") return wert.zahl !== undefined && wert.zahl !== null;
     if (frage.typ === "matrix") {
-      const zeilen = frage.matrixZeilen || [];
+      const zeilen = matrixZeilenMitIds(frage);
       if (!zeilen.length) return false;
-      const gesetzt = Object.keys(wert.matrixWerte || {}).length;
-      return gesetzt === zeilen.length;
+      const mw = wert.matrixWerte || {};
+      return zeilen.every((z) => mw[z.id] !== undefined && mw[z.id] !== null);
     }
     if (frage.typ === "freitext") return !!(wert.text && wert.text.trim());
     if (frage.typ === "werte_auswahl") return (wert.ranking || []).length === 3;
-    return (wert.auswahl || []).length > 0;
+    const anzahl = (wert.auswahl || []).length;
+    if ((frage.typ === "multi_choice" || frage.typ === "limbic") && frage.minAuswahl) {
+      return anzahl >= frage.minAuswahl;
+    }
+    return anzahl > 0;
   }
 
   const weiter = useCallback(async (expliziterWert) => {
@@ -364,6 +370,8 @@ export default function Interview() {
   const verbleibendeMin = Math.max(1, Math.round((verbleibendeBasisSek * pace) / 60));
 
   const a = anspracheFormen(projekt?.ansprache);
+  // Kontext für Platzhalter im Fragetext ({{firma}}, {{du}}, {{siehst|sehen}} …)
+  const textKontext = { firma: projekt?.firma, ansprache: projekt?.ansprache };
 
   // Kapitelübersicht für den Welcome-Screen (Paket 6 Vorarbeit)
   const kapitelUebersicht = [];
@@ -625,16 +633,17 @@ export default function Interview() {
             tabIndex={-1}
             className="interview-fragetext outline-none"
             style={{ color: "var(--farbe-text)", marginBottom: 12 }}
-            dangerouslySetInnerHTML={{ __html: renderFragetext(frage.text) }}
-            aria-label={sternchenEntfernen(frage.text)}
+            dangerouslySetInnerHTML={{ __html: renderFragetext(frage.text, textKontext) }}
+            aria-label={sternchenEntfernen(platzhalterErsetzen(frage.text, textKontext))}
           />
           {frage.hilfetext && (
             <p style={{ color: "var(--farbe-text-daempft)", fontSize: "14.5px", lineHeight: 1.6, marginBottom: 16 }}>
-              {frage.hilfetext}
+              {platzhalterErsetzen(frage.hilfetext, textKontext)}
             </p>
           )}
           <ErklaerungBlock
             frage={frage}
+            textKontext={textKontext}
             offen={!!erklaerungOffen[frage.id]}
             onToggle={(offen) => setErklaerungOffen({ ...erklaerungOffen, [frage.id]: offen })}
           />
@@ -643,6 +652,7 @@ export default function Interview() {
               frage={frage}
               wert={wert}
               ansprache={projekt?.ansprache}
+              textKontext={textKontext}
               onChange={(neu) => setAnswers({ ...answers, [frage.id]: neu })}
             />
           </div>
