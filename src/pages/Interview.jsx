@@ -637,7 +637,7 @@ export default function Interview() {
             aria-label={sternchenEntfernen(platzhalterErsetzen(frage.text, textKontext))}
           />
           {frage.hilfetext && (
-            <p style={{ color: "var(--farbe-text-daempft)", fontSize: "14.5px", lineHeight: 1.6, marginBottom: 16 }}>
+            <p style={{ color: "var(--farbe-text-daempft)", fontSize: "16px", lineHeight: 1.6, marginBottom: 16 }}>
               {platzhalterErsetzen(frage.hilfetext, textKontext)}
             </p>
           )}

@@ -122,7 +122,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
     return (
       <div className="space-y-2">
         {auswahlHinweis && (
-          <p className="text-xs" style={{ color: "var(--farbe-grau-mid)" }}>
+          <p style={{ color: "var(--farbe-text-daempft)", fontSize: "13px", fontWeight: 500 }}>
             {auswahlHinweis} {auswahl.length > 0 && `(${auswahl.length} gewählt)`}
           </p>
         )}
@@ -262,7 +262,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
           style={{ "--regler-fuellung": `${prozent}%` }}
           aria-label="Schieberegler"
         />
-        <div className="flex justify-between mt-3 text-xs" style={{ color: "var(--farbe-grau-mid)" }}>
+        <div className="flex justify-between mt-3" style={{ color: "var(--farbe-text-daempft)", fontSize: "14px", fontWeight: 500 }}>
           <span>{frage.skalaLabelLinks || min}</span>
           <span>{frage.skalaLabelRechts || max}</span>
         </div>
@@ -316,7 +316,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
           style={{ "--regler-fuellung": `${prozent}%` }}
           aria-label="Gegensatzpaar-Regler"
         />
-        <div className="flex justify-between mt-3 text-xs font-medium" style={{ color: "var(--farbe-grau-mid)" }}>
+        <div className="flex justify-between mt-3" style={{ color: "var(--farbe-text-daempft)", fontSize: "14px", fontWeight: 500 }}>
           <span>{frage.skalaLabelLinks || "links"}</span>
           <span>{frage.skalaLabelRechts || "rechts"}</span>
         </div>
@@ -339,7 +339,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
     }
     return (
       <div>
-        <div className="flex justify-between pb-3 mb-3 text-xs" style={{ color: "var(--farbe-grau-mid)", borderBottom: "1px solid var(--farbe-linie)" }}>
+        <div className="flex justify-between pb-3 mb-3" style={{ color: "var(--farbe-text-daempft)", fontSize: "14px", fontWeight: 500, borderBottom: "1px solid var(--farbe-linie)" }}>
           <span>{frage.skalaLabelLinks || min}</span>
           <span>{frage.skalaLabelRechts || max}</span>
         </div>
@@ -368,7 +368,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
           ))}
         </div>
         {!alleBeantwortet && zeilen.length > 0 && (
-          <p className="text-xs mt-3" style={{ color: "var(--farbe-grau-mid)" }}>
+          <p className="mt-3" style={{ color: "var(--farbe-text-daempft)", fontSize: "13px", fontWeight: 500 }}>
             Bitte alle Aussagen bewerten.
           </p>
         )}
@@ -481,7 +481,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
     return (
       <div className="space-y-4">
         {auswahlHinweis && (
-          <p className="text-xs" style={{ color: "var(--farbe-grau-mid)" }}>
+          <p style={{ color: "var(--farbe-text-daempft)", fontSize: "13px", fontWeight: 500 }}>
             {auswahlHinweis} {auswahl.length > 0 && `(${auswahl.length} gewählt)`}
           </p>
         )}
