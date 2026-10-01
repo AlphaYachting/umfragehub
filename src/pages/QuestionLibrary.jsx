@@ -423,7 +423,13 @@ export default function QuestionLibrary() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
                       <div className="text-sm font-medium text-slate-800">{f.text || "(leere Frage)"}</div>
-                      <div className="text-xs text-slate-400 mt-1 flex gap-3 flex-wrap">
+                      <div className="text-xs text-slate-400 mt-1 flex gap-3 flex-wrap items-center">
+                        {f.kernfrage && (
+                          <span className="rounded px-1.5 py-0.5 bg-amber-100 text-amber-800 font-medium">
+                            Kern{f.kernversion ? ` v${f.kernversion}` : ""}
+                          </span>
+                        )}
+                        {f.schluessel && <span className="font-mono">{f.schluessel}</span>}
                         <span>{FRAGETYP_LABELS[f.typ]}</span>
                         {f.kategorie && <span>· {f.kategorie}</span>}
                         {f.zielgruppe && <span>· {ZIELGRUPPE_LABELS[f.zielgruppe]}</span>}
