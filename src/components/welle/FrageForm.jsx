@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus, X } from "lucide-react";
-import { FRAGETYP_LABELS } from "@/lib/interview";
+import { FRAGETYP_LABELS, zeilenIdAusText } from "@/lib/interview";
 
 // Wiederverwendbares Formular für eine Frage (Frage wie auch Bibliotheksfrage)
 export default function FrageForm({ frage, onChange }) {
@@ -32,16 +32,39 @@ export default function FrageForm({ frage, onChange }) {
     feld("optionen", (frage.optionen || []).filter((_, i) => i !== idx));
   }
 
+  // Matrix-Zeilen (Schema v2): Text und stabile ID laufen als parallele Arrays
+  function zeilenIds() {
+    const zeilen = frage.matrixZeilen || [];
+    const ids = [...(frage.matrixZeilenIds || [])];
+    while (ids.length < zeilen.length) ids.push("");
+    return ids.slice(0, zeilen.length);
+  }
   function matrixZeileAendern(idx, wert) {
     const neu = [...(frage.matrixZeilen || [])];
     neu[idx] = wert;
-    feld("matrixZeilen", neu);
+    const ids = zeilenIds();
+    // ID automatisch aus dem Text ableiten, solange sie noch nicht manuell gesetzt wurde
+    if (!ids[idx] || ids[idx] === zeilenIdAusText(frage.matrixZeilen?.[idx], ids.filter((_, i) => i !== idx))) {
+      ids[idx] = zeilenIdAusText(wert, ids.filter((_, i) => i !== idx));
+    }
+    onChange({ ...frage, matrixZeilen: neu, matrixZeilenIds: ids });
+  }
+  function matrixZeilenIdAendern(idx, wert) {
+    const ids = zeilenIds();
+    ids[idx] = wert.replace(/[^a-zA-Z0-9_]/g, "_").toLowerCase();
+    feld("matrixZeilenIds", ids);
   }
   function matrixZeileHinzu() {
-    feld("matrixZeilen", [...(frage.matrixZeilen || []), ""]);
+    const ids = zeilenIds();
+    onChange({ ...frage, matrixZeilen: [...(frage.matrixZeilen || []), ""], matrixZeilenIds: [...ids, ""] });
   }
   function matrixZeileWeg(idx) {
-    feld("matrixZeilen", (frage.matrixZeilen || []).filter((_, i) => i !== idx));
+    const ids = zeilenIds();
+    onChange({
+      ...frage,
+      matrixZeilen: (frage.matrixZeilen || []).filter((_, i) => i !== idx),
+      matrixZeilenIds: ids.filter((_, i) => i !== idx),
+    });
   }
 
   function stufeAendern(idx, f, wert) {
@@ -60,10 +83,20 @@ export default function FrageForm({ frage, onChange }) {
   const brauchtSkala = ["skala", "schieberegler", "gegensatzpaar", "matrix"].includes(frage.typ);
   const brauchtMatrixZeilen = frage.typ === "matrix";
   const brauchtStufenWorte = ["schieberegler", "gegensatzpaar"].includes(frage.typ);
+  const brauchtAuswahlgrenzen = ["multi_choice", "limbic"].includes(frage.typ);
+  const brauchtPolaritaet = ["multi_choice", "limbic", "werte_auswahl", "freitext"].includes(frage.typ);
   const istFreitext = frage.typ === "freitext";
+  const istKern = !!frage.kernfrage;
 
   return (
     <div className="space-y-4">
+      {istKern && (
+        <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+          Kernfrage {frage.kernversion ? `(v${frage.kernversion})` : ""} — Text, Optionen und Zeilen sind Teil des Benchmark-Kerns.
+          Änderungen daran machen Ergebnisse mit anderen Kunden unvergleichbar.
+        </div>
+      )}
+
       <div className="space-y-2">
         <Label>Fragetext</Label>
         <Textarea
@@ -74,7 +107,36 @@ export default function FrageForm({ frage, onChange }) {
         />
         <p className="text-xs text-slate-400">
           Wort in Sternchen setzen, um es hervorzuheben — z.&nbsp;B. „Welche Werte *erlebst* du wirklich?&ldquo;
+          Platzhalter: <code>{"{{firma}}"}</code> für den Kundennamen, <code>{"{{du}}"}</code>, <code>{"{{dein}}"}</code> oder frei <code>{"{{siehst|sehen}}"}</code> für Du/Sie.
         </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="space-y-2">
+          <Label>Schlüssel</Label>
+          <Input
+            value={frage.schluessel || ""}
+            onChange={(e) => feld("schluessel", e.target.value.replace(/[^a-zA-Z0-9_]/g, "_").toLowerCase())}
+            placeholder="z. B. andi_i_wertewelt_pro"
+          />
+          <p className="text-xs text-slate-400">Stabil über alle Kunden — Basis für Benchmark.</p>
+        </div>
+        <div className="space-y-2">
+          <Label>Kernversion</Label>
+          <Input
+            value={frage.kernversion || ""}
+            onChange={(e) => feld("kernversion", e.target.value)}
+            placeholder="z. B. 1.0"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Bezug auf Frage (Schlüssel)</Label>
+          <Input
+            value={frage.bezugSchluessel || ""}
+            onChange={(e) => feld("bezugSchluessel", e.target.value)}
+            placeholder="bei Folgefragen, z. B. Warum-Frage"
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -112,10 +174,14 @@ export default function FrageForm({ frage, onChange }) {
         </p>
       </div>
 
-      <div className="flex items-center gap-6 pt-1">
+      <div className="flex items-center gap-6 pt-1 flex-wrap">
         <div className="flex items-center gap-2">
           <Switch checked={!!frage.pflicht} onCheckedChange={(v) => feld("pflicht", v)} id="pflicht" />
           <Label htmlFor="pflicht" className="cursor-pointer">Pflichtfrage</Label>
+        </div>
+        <div className="flex items-center gap-2">
+          <Switch checked={!!frage.kernfrage} onCheckedChange={(v) => feld("kernfrage", v)} id="kernfrage" />
+          <Label htmlFor="kernfrage" className="cursor-pointer">Kernfrage (Benchmark)</Label>
         </div>
         {istFreitext && (
           <div className="flex items-center gap-2">
@@ -146,6 +212,34 @@ export default function FrageForm({ frage, onChange }) {
         </div>
       )}
 
+      {brauchtPolaritaet && (
+        <div className="space-y-2">
+          <Label>Polarität</Label>
+          <Select value={frage.polaritaet || "neutral"} onValueChange={(v) => feld("polaritaet", v)}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="neutral">Neutral</SelectItem>
+              <SelectItem value="pro">Pro — „steht für“</SelectItem>
+              <SelectItem value="contra">Contra — „steht nicht für“</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-slate-400">Für Fragepaare mit gleicher Begriffsliste (steht für / steht nicht für).</p>
+        </div>
+      )}
+
+      {brauchtAuswahlgrenzen && (
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2">
+            <Label>Min. Auswahl</Label>
+            <Input type="number" min={0} value={frage.minAuswahl ?? ""} onChange={(e) => feld("minAuswahl", e.target.value === "" ? undefined : Number(e.target.value))} placeholder="keine" />
+          </div>
+          <div className="space-y-2">
+            <Label>Max. Auswahl</Label>
+            <Input type="number" min={0} value={frage.maxAuswahl ?? ""} onChange={(e) => feld("maxAuswahl", e.target.value === "" ? undefined : Number(e.target.value))} placeholder="keine" />
+          </div>
+        </div>
+      )}
+
       {brauchtMatrixZeilen && (
         <div className="space-y-2">
           <Label>Matrix-Aussagen</Label>
@@ -156,11 +250,19 @@ export default function FrageForm({ frage, onChange }) {
                 onChange={(e) => matrixZeileAendern(i, e.target.value)}
                 placeholder={`Aussage ${i + 1}`}
               />
+              <Input
+                value={zeilenIds()[i] || ""}
+                onChange={(e) => matrixZeilenIdAendern(i, e.target.value)}
+                placeholder="id"
+                className="w-36 font-mono text-xs"
+                title="Stabile Zeilen-ID für die Auswertung"
+              />
               <Button variant="ghost" size="sm" onClick={() => matrixZeileWeg(i)} className="text-red-500">
                 <X size={16} />
               </Button>
             </div>
           ))}
+          <p className="text-xs text-slate-400">Die ID bleibt stabil, auch wenn der Text später angepasst wird — Antworten hängen an der ID.</p>
           <Button variant="outline" size="sm" onClick={matrixZeileHinzu}>
             <Plus size={14} className="mr-1" /> Aussage hinzufügen
           </Button>
