@@ -184,7 +184,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
     for (let i = min; i <= max; i++) punkte.push(i);
     return (
       <div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap justify-between gap-2">
           {punkte.map((p) => {
             const aktiv = v.zahl === p;
             return (
@@ -201,7 +201,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
             );
           })}
         </div>
-        <div className="flex justify-between mt-3 text-xs" style={{ color: "var(--farbe-grau-mid)" }}>
+        <div className="flex justify-between mt-3" style={{ color: "var(--farbe-text-daempft)", fontSize: "14px", fontWeight: 500 }}>
           <span>{frage.skalaLabelLinks || ""}</span>
           <span>{frage.skalaLabelRechts || ""}</span>
         </div>
