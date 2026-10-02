@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { FRAGETYP_LABELS, sternchenEntfernen, frageFelderAuslesen } from "@/lib/interview";
 import BlockEditor from "@/components/welle/BlockEditor";
 import BibliothekDialog from "@/components/welle/BibliothekDialog";
+import BibliothekImportDialog from "@/components/welle/BibliothekImportDialog";
 
 export default function WaveEditor() {
   const { id } = useParams();
@@ -21,6 +22,7 @@ export default function WaveEditor() {
   const [loading, setLoading] = useState(true);
   const [bibDialog, setBibDialog] = useState(false);
   const [bibZielBlock, setBibZielBlock] = useState(null);
+  const [bibImportDialog, setBibImportDialog] = useState(false);
   const [speichern, setSpeichern] = useState(false);
   const [sessionCount, setSessionCount] = useState(0);
 
@@ -232,6 +234,40 @@ export default function WaveEditor() {
     toast.success(`${ausgewaehlteFragen.length} Frage(n) übernommen.`);
   }
 
+  async function bibliothekKomplettImportieren(gruppen) {
+    const blockStartReihenfolge = bloecke.length;
+    const neueBloecke = [];
+    const neueFragenMap = { ...fragen };
+
+    for (let i = 0; i < gruppen.length; i++) {
+      const g = gruppen[i];
+      const block = await base44.entities.Block.create({
+        wellenId: id,
+        titel: g.kategorie,
+        reihenfolge: blockStartReihenfolge + i,
+        motivationstext: "",
+      });
+      neueBloecke.push(block);
+      neueFragenMap[block.id] = [];
+
+      for (let j = 0; j < g.fragen.length; j++) {
+        const vf = g.fragen[j];
+        const erstellt = await base44.entities.Frage.create({
+          ...frageFelderAuslesen(vf),
+          optionen: vf.optionen || [],
+          blockId: block.id,
+          reihenfolge: j,
+        });
+        neueFragenMap[block.id].push(erstellt);
+      }
+    }
+
+    setBloecke([...bloecke, ...neueBloecke]);
+    setFragen(neueFragenMap);
+    const totalFragen = gruppen.reduce((s, g) => s + g.fragen.length, 0);
+    toast.success(`${totalFragen} Fragen in ${gruppen.length} Blöcken importiert.`);
+  }
+
   if (loading) return <div className="p-10 text-slate-400 text-sm">Lade Welle…</div>;
   if (!welle) return <div className="p-10 text-slate-400">Welle nicht gefunden.</div>;
 
@@ -302,9 +338,14 @@ export default function WaveEditor() {
       {/* Blöcke */}
       <div className="flex items-center justify-between mb-3">
         <h2 className="font-semibold">Blöcke & Fragen</h2>
-        <Button size="sm" variant="outline" onClick={blockHinzu}>
-          <Plus size={15} className="mr-1" /> Block
-        </Button>
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={() => setBibImportDialog(true)}>
+            <Library size={15} className="mr-1" /> Komplette Bibliothek
+          </Button>
+          <Button size="sm" variant="outline" onClick={blockHinzu}>
+            <Plus size={15} className="mr-1" /> Block
+          </Button>
+        </div>
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
@@ -393,6 +434,12 @@ export default function WaveEditor() {
         offen={bibDialog}
         onClose={() => setBibDialog(false)}
         onUebernehmen={bibliothekUebernehmen}
+      />
+
+      <BibliothekImportDialog
+        offen={bibImportDialog}
+        onClose={() => setBibImportDialog(false)}
+        onImport={bibliothekKomplettImportieren}
       />
     </div>
   );
