@@ -249,17 +249,23 @@ export default function QuestionLibrary() {
       const liste = JSON.parse(text);
       if (!Array.isArray(liste)) throw new Error("Keine Liste");
       let count = 0;
+      const importContainer = new Set();
       for (const f of liste) {
         // Schema v2: Import normalisiert (matrixZeilen als String oder {id, text},
         // Schlüssel, Kernfrage, Auswahlgrenzen, Polarität, Bezug)
-        await base44.entities.Bibliotheksfrage.create(frageAusImport(f, container));
+        const normalisiert = frageAusImport(f, container);
+        await base44.entities.Bibliotheksfrage.create(normalisiert);
+        if (normalisiert.container) importContainer.add(normalisiert.container);
         count++;
       }
-      if (!containerNamen.includes(container)) {
-        await base44.entities.BibliotheksContainer.create({ name: container });
-        setContainerNamen([...containerNamen, container]);
+      // Fehlende Container als BibliotheksContainer anlegen, damit die
+      // importierten Fragen in der Seitenleiste sichtbar werden
+      const bestehend = new Set(containerNamen);
+      const neuContainer = [...importContainer].filter((c) => !bestehend.has(c));
+      if (neuContainer.length) {
+        await base44.entities.BibliotheksContainer.bulkCreate(neuContainer.map((name) => ({ name })));
       }
-      toast.success(`${count} Frage(n) in „${container}" importiert.`);
+      toast.success(`${count} Frage(n) importiert.`);
       laden();
     } catch (err) {
       toast.error("Import fehlgeschlagen: ungültiges JSON.");
