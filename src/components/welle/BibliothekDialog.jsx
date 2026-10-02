@@ -46,18 +46,22 @@ export default function BibliothekDialog({ offen, onClose, onUebernehmen }) {
   }
 
   function gefiltert() {
-    return fragen.filter((f) => {
-      if (filterZielgruppe !== "all" && f.zielgruppe !== filterZielgruppe && f.zielgruppe !== "allgemein") return false;
-      if (filterKategorie !== "all" && f.kategorie !== filterKategorie) return false;
-      if (suche && !(f.text || "").toLowerCase().includes(suche.toLowerCase())) return false;
-      return true;
-    });
+    return fragen
+      .filter((f) => {
+        if (filterZielgruppe !== "all" && f.zielgruppe !== filterZielgruppe && f.zielgruppe !== "allgemein") return false;
+        if (filterKategorie !== "all" && f.kategorie !== filterKategorie) return false;
+        if (suche && !(f.text || "").toLowerCase().includes(suche.toLowerCase())) return false;
+        return true;
+      })
+      .sort((a, b) => (a.reihenfolge ?? 0) - (b.reihenfolge ?? 0));
   }
 
   const kategorien = [...new Set(fragen.map((f) => f.kategorie).filter(Boolean))].sort();
 
   function uebernehmen() {
-    const ausgewaehlt = fragen.filter((f) => auswahl.has(f.id));
+    const ausgewaehlt = fragen
+      .filter((f) => auswahl.has(f.id))
+      .sort((a, b) => (a.reihenfolge ?? 0) - (b.reihenfolge ?? 0));
     if (ausgewaehlt.length === 0) {
       toast.error("Bitte mindestens eine Frage auswählen.");
       return;

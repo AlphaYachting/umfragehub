@@ -135,13 +135,15 @@ export default function QuestionLibrary() {
   }
 
   function gefiltert() {
-    return fragen.filter((f) => {
-      if (f.container !== container) return false;
-      if (filterZielgruppe !== "all" && f.zielgruppe !== filterZielgruppe && f.zielgruppe !== "allgemein") return false;
-      if (filterKategorie !== "all" && f.kategorie !== filterKategorie) return false;
-      if (suche && !(f.text || "").toLowerCase().includes(suche.toLowerCase())) return false;
-      return true;
-    });
+    return fragen
+      .filter((f) => {
+        if (f.container !== container) return false;
+        if (filterZielgruppe !== "all" && f.zielgruppe !== filterZielgruppe && f.zielgruppe !== "allgemein") return false;
+        if (filterKategorie !== "all" && f.kategorie !== filterKategorie) return false;
+        if (suche && !(f.text || "").toLowerCase().includes(suche.toLowerCase())) return false;
+        return true;
+      })
+      .sort((a, b) => (a.reihenfolge ?? 0) - (b.reihenfolge ?? 0));
   }
 
   const kategorien = [...new Set(fragen.filter((f) => f.container === container).map((f) => f.kategorie).filter(Boolean))].sort();
