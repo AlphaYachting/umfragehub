@@ -60,12 +60,19 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
   // Auswahlgrenzen (Schema v2) für multi_choice und limbic
   const maxAuswahl = Number(frage.maxAuswahl) > 0 ? Number(frage.maxAuswahl) : null;
   const minAuswahl = Number(frage.minAuswahl) > 0 ? Number(frage.minAuswahl) : null;
-  const auswahlHinweis = (() => {
-    if (!minAuswahl && !maxAuswahl) return "";
-    if (minAuswahl && maxAuswahl && minAuswahl === maxAuswahl) return `Bitte genau ${minAuswahl} auswählen.`;
-    if (minAuswahl && maxAuswahl) return `Bitte ${minAuswahl} bis ${maxAuswahl} auswählen.`;
-    if (maxAuswahl) return `Höchstens ${maxAuswahl} auswählen.`;
-    return `Mindestens ${minAuswahl} auswählen.`;
+  const auswahlAnzeige = (() => {
+    const n = auswahl.length;
+    if (minAuswahl && maxAuswahl && minAuswahl === maxAuswahl) {
+      return { text: `${n} von ${maxAuswahl} gewählt`, erfuellt: n === maxAuswahl, anzeigen: true };
+    }
+    if (!minAuswahl && !maxAuswahl) return { text: "", erfuellt: false, anzeigen: false };
+    const hinweis = minAuswahl && maxAuswahl
+      ? `Bitte ${minAuswahl} bis ${maxAuswahl} auswählen.`
+      : maxAuswahl
+        ? `Höchstens ${maxAuswahl} auswählen.`
+        : `Mindestens ${minAuswahl} auswählen.`;
+    const erfuellt = minAuswahl ? n >= minAuswahl : n >= 1;
+    return { text: `${hinweis} · ${n} gewählt`, erfuellt, anzeigen: true };
   })();
   // Alle Hooks unbedingt am Anfang — Reihenfolge bleibt stabil über Typwechsel
   const [werteStep, setWerteStep] = useState(1);
@@ -121,9 +128,9 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
     }
     return (
       <div className="space-y-2">
-        {auswahlHinweis && (
-          <p style={{ color: "var(--farbe-text-daempft)", fontSize: "13px", fontWeight: 500 }}>
-            {auswahlHinweis} {auswahl.length > 0 && `(${auswahl.length} gewählt)`}
+        {auswahlAnzeige.anzeigen && (
+          <p aria-live="polite" style={{ color: auswahlAnzeige.erfuellt ? "var(--farbe-text)" : "var(--farbe-text-daempft)", fontSize: "14px", fontWeight: 600 }}>
+            {auswahlAnzeige.text}
           </p>
         )}
         {(frage.optionen || []).map((opt) => {
@@ -480,9 +487,9 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
     const gruppenListe = Object.entries(gruppen);
     return (
       <div className="space-y-4">
-        {auswahlHinweis && (
-          <p style={{ color: "var(--farbe-text-daempft)", fontSize: "13px", fontWeight: 500 }}>
-            {auswahlHinweis} {auswahl.length > 0 && `(${auswahl.length} gewählt)`}
+        {auswahlAnzeige.anzeigen && (
+          <p aria-live="polite" style={{ color: auswahlAnzeige.erfuellt ? "var(--farbe-text)" : "var(--farbe-text-daempft)", fontSize: "14px", fontWeight: 600 }}>
+            {auswahlAnzeige.text}
           </p>
         )}
         {gruppenListe.map(([gName, begriffe], gi) => {

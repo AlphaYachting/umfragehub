@@ -113,6 +113,7 @@ export default function FrageForm({ frage, onChange }) {
         />
         <p className="text-xs text-slate-400">
           Wort in Sternchen setzen, um es hervorzuheben — z.&nbsp;B. „Welche Werte *erlebst* du wirklich?&ldquo;
+          Höchstens ein bis drei Wörter markieren – nur das Wort, das die Frage von ähnlichen unterscheidet (z.&nbsp;B. „nicht&ldquo;, „Stärken&ldquo;). Eine ganze Aussage in Sternchen wird als eigener Block dargestellt.
           Platzhalter: <code>{"{{firma}}"}</code> für den Kundennamen, <code>{"{{du}}"}</code>, <code>{"{{dein}}"}</code> oder frei <code>{"{{siehst|sehen}}"}</code> für Du/Sie.
         </p>
       </div>

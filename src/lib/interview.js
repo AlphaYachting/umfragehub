@@ -187,7 +187,7 @@ export function platzhalterErsetzen(text, { firma, ansprache } = {}) {
 
 // Fragetext als HTML rendern — Platzhalter ersetzen, HTML escapen,
 // dann *wort* zu <span class="frage-akzent">wort</span>
-export function renderFragetext(text, kontext) {
+export function renderFragetext(text, kontext, optionen = {}) {
   if (!text) return "";
   const mitPlatzhaltern = kontext ? platzhalterErsetzen(text, kontext) : String(text);
   const escaped = mitPlatzhaltern
@@ -196,7 +196,13 @@ export function renderFragetext(text, kontext) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
-  return escaped.replace(/\*([^*]+)\*/g, '<span class="frage-akzent">$1</span>');
+  return escaped.replace(/\*([^*]+)\*/g, (ganz, wort) => {
+    if (wort.length > 40) {
+      return `<span class="frage-akzent-aussage">${wort}</span>`;
+    }
+    const contra = optionen.polaritaet === "contra";
+    return `<span class="frage-akzent${contra ? " frage-akzent-contra" : ""}">${wort}</span>`;
+  });
 }
 
 // ---------------------------------------------------------------------------

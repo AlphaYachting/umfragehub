@@ -633,7 +633,7 @@ export default function Interview() {
             tabIndex={-1}
             className="interview-fragetext outline-none"
             style={{ color: "var(--farbe-text)", marginBottom: 12 }}
-            dangerouslySetInnerHTML={{ __html: renderFragetext(frage.text, textKontext) }}
+            dangerouslySetInnerHTML={{ __html: renderFragetext(frage.text, textKontext, { polaritaet: frage.polaritaet }) }}
             aria-label={sternchenEntfernen(platzhalterErsetzen(frage.text, textKontext))}
           />
           {frage.hilfetext && (
