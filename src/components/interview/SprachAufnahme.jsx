@@ -154,7 +154,7 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
           style={{
             minHeight: 60,
             padding: "10px 16px 10px 10px",
-            border: "1.5px solid var(--farbe-linie-kraeftig)",
+            border: "1.5px solid var(--farbe-rahmen)",
             borderRadius: 10,
             background: "var(--farbe-bg)",
             color: "var(--farbe-text)",
