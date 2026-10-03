@@ -3,14 +3,20 @@ import { Check } from "lucide-react";
 import SprachAufnahme from "./SprachAufnahme";
 import { matrixZeilenMitIds, platzhalterErsetzen } from "@/lib/interview";
 
-const LIMBIC_FARBEN = [
-  "color-mix(in srgb, var(--farbe-akzent) 6%, var(--farbe-bg))",
-  "color-mix(in srgb, var(--farbe-akzent) 10%, var(--farbe-bg))",
-  "color-mix(in srgb, var(--farbe-akzent) 14%, var(--farbe-bg))",
-  "color-mix(in srgb, var(--farbe-akzent) 18%, var(--farbe-bg))",
-  "color-mix(in srgb, var(--farbe-akzent) 22%, var(--farbe-bg))",
-  "color-mix(in srgb, var(--farbe-akzent) 26%, var(--farbe-bg))",
-];
+// Ab dieser Optionszahl werden kurze Mehrfachauswahl-Optionen als Begriffe zum Antippen
+// dargestellt statt als lange Kartenliste.
+const CHIP_AB_OPTIONEN = 13;
+const CHIP_MAX_ZEICHEN = 28;
+
+// Gruppennamen ohne Aussage für Befragte („Feld 1“, „Sonstige“) werden nicht angezeigt.
+function gruppenNameSichtbar(name) {
+  return !/^(feld\s*\d+|sonstige)$/i.test(String(name || "").trim());
+}
+
+// Beschriftung eines Skalen-Endes: „1 = trifft überhaupt nicht zu“
+function skalaEnde(zahl, label) {
+  return label ? `${zahl} = ${label}` : `${zahl}`;
+}
 
 const REDUZIERTE_BEWEGUNG = typeof window !== "undefined" &&
   window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -126,14 +132,44 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
         setAuswahl([...auswahl, opt]);
       }
     }
+    const optionen = frage.optionen || [];
+    const alsBegriffe = optionen.length >= CHIP_AB_OPTIONEN &&
+      optionen.every((o) => String(t(o)).length <= CHIP_MAX_ZEICHEN);
+    const zaehler = auswahlAnzeige.anzeigen && (
+      <p aria-live="polite" className="interview-mitlaufend" style={{ color: auswahlAnzeige.erfuellt ? "var(--farbe-text)" : "var(--farbe-text-daempft)", fontSize: "14px", fontWeight: 600 }}>
+        {auswahlAnzeige.text}
+      </p>
+    );
+    if (alsBegriffe) {
+      return (
+        <div>
+          {zaehler}
+          <div className="flex flex-wrap gap-2" style={{ marginTop: zaehler ? 4 : 0 }}>
+            {optionen.map((opt) => {
+              const aktiv = auswahl.includes(opt);
+              const gesperrt = vollBelegt && !aktiv;
+              return (
+                <button
+                  key={opt}
+                  type="button"
+                  aria-pressed={aktiv}
+                  aria-disabled={gesperrt}
+                  onClick={(e) => { if (gesperrt) return; einrastenSpuerbar(e.currentTarget); toggle(opt); }}
+                  className={`interview-chip ${aktiv ? "interview-chip-aktiv" : ""}`}
+                  style={gesperrt ? { opacity: 0.45, cursor: "not-allowed" } : undefined}
+                >
+                  {t(opt)}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="space-y-2">
-        {auswahlAnzeige.anzeigen && (
-          <p aria-live="polite" style={{ color: auswahlAnzeige.erfuellt ? "var(--farbe-text)" : "var(--farbe-text-daempft)", fontSize: "14px", fontWeight: 600 }}>
-            {auswahlAnzeige.text}
-          </p>
-        )}
-        {(frage.optionen || []).map((opt) => {
+        {zaehler}
+        {optionen.map((opt) => {
           const aktiv = auswahl.includes(opt);
           const gesperrt = vollBelegt && !aktiv;
           return (
@@ -189,9 +225,16 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
     const max = frage.skalaMax ?? 5;
     const punkte = [];
     for (let i = min; i <= max; i++) punkte.push(i);
+    const mitLabels = !!(frage.skalaLabelLinks || frage.skalaLabelRechts);
     return (
       <div>
-        <div className="flex flex-wrap justify-between gap-2">
+        {mitLabels && (
+          <div className="flex justify-between gap-4 pb-3 mb-3" style={{ color: "var(--farbe-text-daempft)", fontSize: "14px", fontWeight: 500, borderBottom: "1px solid var(--farbe-linie)" }}>
+            <span>{t(skalaEnde(min, frage.skalaLabelLinks))}</span>
+            <span style={{ textAlign: "right" }}>{t(skalaEnde(max, frage.skalaLabelRechts))}</span>
+          </div>
+        )}
+        <div style={{ display: "grid", gridTemplateColumns: `repeat(${punkte.length}, 1fr)`, gap: "7px" }}>
           {punkte.map((p) => {
             const aktiv = v.zahl === p;
             return (
@@ -202,15 +245,12 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
                 aria-label={`${p}`}
                 onClick={(e) => { einrastenSpuerbar(e.currentTarget); onChange({ ...v, zahl: p }); }}
                 className={`interview-skala-btn ${aktiv ? "interview-skala-btn-aktiv" : ""}`}
+                style={{ minWidth: 0 }}
               >
                 {p}
               </button>
             );
           })}
-        </div>
-        <div className="flex justify-between mt-3" style={{ color: "var(--farbe-text-daempft)", fontSize: "14px", fontWeight: 500 }}>
-          <span>{frage.skalaLabelLinks || ""}</span>
-          <span>{frage.skalaLabelRechts || ""}</span>
         </div>
       </div>
     );
@@ -346,9 +386,9 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
     }
     return (
       <div>
-        <div className="flex justify-between pb-3 mb-3" style={{ color: "var(--farbe-text-daempft)", fontSize: "14px", fontWeight: 500, borderBottom: "1px solid var(--farbe-linie)" }}>
-          <span>{frage.skalaLabelLinks || min}</span>
-          <span>{frage.skalaLabelRechts || max}</span>
+        <div className="interview-mitlaufend flex justify-between gap-4 mb-3" style={{ color: "var(--farbe-text-daempft)", fontSize: "14px", fontWeight: 500, borderBottom: "1px solid var(--farbe-linie)" }}>
+          <span>{t(skalaEnde(min, frage.skalaLabelLinks))}</span>
+          <span style={{ textAlign: "right" }}>{t(skalaEnde(max, frage.skalaLabelRechts))}</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
           {zeilen.map((zeile) => (
@@ -365,6 +405,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
                       aria-label={`${t(zeile.text)} — Stufe ${p}`}
                       onClick={(e) => setZeile(zeile.id, p, e.currentTarget)}
                       className={`interview-skala-btn ${aktiv ? "interview-skala-btn-aktiv" : ""}`}
+                      style={{ minWidth: 0 }}
                     >
                       {p}
                     </button>
@@ -486,17 +527,24 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
     });
     const gruppenListe = Object.entries(gruppen);
     return (
-      <div className="space-y-4">
+      <div>
         {auswahlAnzeige.anzeigen && (
-          <p aria-live="polite" style={{ color: auswahlAnzeige.erfuellt ? "var(--farbe-text)" : "var(--farbe-text-daempft)", fontSize: "14px", fontWeight: 600 }}>
+          <p aria-live="polite" className="interview-mitlaufend" style={{ color: auswahlAnzeige.erfuellt ? "var(--farbe-text)" : "var(--farbe-text-daempft)", fontSize: "14px", fontWeight: 600 }}>
             {auswahlAnzeige.text}
           </p>
         )}
         {gruppenListe.map(([gName, begriffe], gi) => {
-          const farbe = LIMBIC_FARBEN[gi % LIMBIC_FARBEN.length];
+          const nameZeigen = gruppenNameSichtbar(gName);
           return (
-            <div key={gName}>
-              <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">{gName}</div>
+            <div
+              key={gName}
+              style={gi > 0
+                ? { marginTop: 18, paddingTop: 18, borderTop: "1px solid var(--farbe-linie)" }
+                : { marginTop: 4 }}
+            >
+              {nameZeigen && (
+                <div className="mb-2" style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--farbe-text-daempft)" }}>{t(gName)}</div>
+              )}
               <div className="flex flex-wrap gap-2">
                 {begriffe.map((b) => {
                   const aktiv = auswahl.includes(b);
@@ -513,14 +561,8 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
                         if (auswahl.includes(b)) setAuswahl(auswahl.filter((x) => x !== b));
                         else setAuswahl([...auswahl, b]);
                       }}
-                      className="px-4 py-3 text-sm rounded-md border-2 transition-all"
-                      style={{
-                        background: aktiv ? "#fff" : farbe,
-                        borderColor: aktiv ? "var(--farbe-akzent)" : "transparent",
-                        minHeight: 48,
-                        opacity: gesperrt ? 0.45 : 1,
-                        cursor: gesperrt ? "not-allowed" : "pointer"
-                      }}
+                      className={`interview-chip ${aktiv ? "interview-chip-aktiv" : ""}`}
+                      style={gesperrt ? { opacity: 0.45, cursor: "not-allowed" } : undefined}
                     >
                       {b}
                     </button>
@@ -549,8 +591,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
           }}
           rows={5}
           placeholder={ansprache === "sie" ? "Ihre Antwort…" : "Deine Antwort…"}
-          className="w-full px-4 py-3 rounded text-base border-2 focus:outline-none"
-          style={{ borderColor: "var(--farbe-grau-mid)", background: "#fff", minHeight: 120 }}
+          className="interview-textfeld"
         />
         {frage.sprachantwortErlaubt && (
           <SprachAufnahme
