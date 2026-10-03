@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Check, Asterisk } from "lucide-react";
+import { Check } from "lucide-react";
 import SprachAufnahme from "./SprachAufnahme";
 import { matrixZeilenMitIds, platzhalterErsetzen } from "@/lib/interview";
 
@@ -553,19 +553,13 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
           style={{ borderColor: "var(--farbe-grau-mid)", background: "#fff", minHeight: 120 }}
         />
         {frage.sprachantwortErlaubt && (
-          <>
-            <p className="text-xs text-slate-400 mt-2 flex items-start gap-1.5">
-              <Asterisk size={12} className="mt-0.5 shrink-0" style={{ color: "var(--farbe-akzent)" }} />
-              <span>Es wird keine Audiodatei gespeichert. Die Umwandlung in Text übernimmt die Spracherkennung {ansprache === "sie" ? "Ihres" : "deines"} Browsers — dabei wird die Aufnahme kurzzeitig an dessen Dienst übertragen. Gespeichert wird bei uns nur der Text, den {ansprache === "sie" ? "Sie" : "du"} danach {ansprache === "sie" ? "sehen und korrigieren können" : "siehst und korrigieren kannst"}.</span>
-            </p>
-            <SprachAufnahme
-              ansprache={ansprache}
-              onTranskript={(t) => {
-                onChange({ ...v, text: t, transkriptKorrigiert: false, eingabeart: "sprache" });
-                setKorrigiert(false);
-              }}
-            />
-          </>
+          <SprachAufnahme
+            ansprache={ansprache}
+            onTranskript={(t) => {
+              onChange({ ...v, text: t, transkriptKorrigiert: false, eingabeart: "sprache" });
+              setKorrigiert(false);
+            }}
+          />
         )}
         {v.eingabeart === "sprache" && v.text && (
           <p className="text-xs text-slate-400 mt-2">
