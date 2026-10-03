@@ -414,6 +414,36 @@
     border-top: 1px solid var(--farbe-linie);
     padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px));
   }
+  .interview-fuss-aktionen {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .interview-fuss-weiter {
+    padding-left: 28px;
+    padding-right: 28px;
+    white-space: nowrap;
+  }
+  /* Schmale Handys: Fußzeile darf nie breiter als der Bildschirm werden */
+  @media (max-width: 400px) {
+    .interview-fusszeile {
+      padding-left: 14px;
+      padding-right: 14px;
+    }
+    .interview-fuss-aktionen {
+      gap: 10px;
+    }
+    .interview-fuss-weiter {
+      padding-left: 18px;
+      padding-right: 18px;
+    }
+  }
+  /* Sehr schmale Handys (320 px): „Zurück“ nur noch als Pfeil */
+  @media (max-width: 345px) {
+    .interview-zurueck-wort {
+      display: none;
+    }
+  }
 
   .interview-erklaerung {
     border-left: 3px solid var(--farbe-rahmen);
