@@ -214,9 +214,12 @@
   .interview-auswahl-karte:active {
     transform: scale(0.99);
   }
+  /* Gewählte Antworten bewusst neutral (dunkel statt Akzentfarbe): Rot liest sich wie „falsch“,
+     Grün wie „richtig“ — beides könnte Antworten färben. */
   .interview-auswahl-karte-aktiv {
-    border-color: var(--farbe-akzent);
-    background: var(--farbe-akzent-hauch);
+    border-color: var(--farbe-text);
+    background: var(--farbe-grau);
+    box-shadow: inset 0 0 0 1px var(--farbe-text);
   }
 
   .interview-marker {
@@ -235,8 +238,8 @@
     border-radius: 6px;
   }
   .interview-marker-aktiv {
-    background: var(--farbe-akzent);
-    border-color: var(--farbe-akzent);
+    background: var(--farbe-text);
+    border-color: var(--farbe-text);
   }
   .interview-marker-haken {
     color: #fff;
@@ -275,9 +278,9 @@
     }
   }
   .interview-skala-btn-aktiv {
-    background-color: var(--farbe-akzent);
-    color: #fff;
-    border-color: var(--farbe-akzent);
+    background-color: var(--farbe-text);
+    color: var(--farbe-bg);
+    border-color: var(--farbe-text);
   }
 
   .frage-uebergang-enter {
@@ -360,12 +363,12 @@
   .interview-regel::-webkit-slider-runnable-track {
     height: 6px;
     border-radius: 3px;
-    background: linear-gradient(90deg, var(--farbe-akzent) var(--regler-fuellung, 0%), var(--farbe-linie) var(--regler-fuellung, 0%));
+    background: linear-gradient(90deg, var(--farbe-text) var(--regler-fuellung, 0%), var(--farbe-linie) var(--regler-fuellung, 0%));
   }
   .interview-regel::-moz-range-track {
     height: 6px;
     border-radius: 3px;
-    background: linear-gradient(90deg, var(--farbe-akzent) var(--regler-fuellung, 0%), var(--farbe-linie) var(--regler-fuellung, 0%));
+    background: linear-gradient(90deg, var(--farbe-text) var(--regler-fuellung, 0%), var(--farbe-linie) var(--regler-fuellung, 0%));
   }
   .interview-regel::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -375,7 +378,7 @@
     border-radius: 50%;
     margin-top: -12px;
     background: var(--farbe-bg);
-    border: 2.5px solid var(--farbe-akzent);
+    border: 2.5px solid var(--farbe-text);
     box-shadow: 0 2px 8px rgba(45, 45, 45, 0.18);
     transition: transform 0.12s ease;
   }
@@ -384,7 +387,7 @@
     height: 30px;
     border-radius: 50%;
     background: var(--farbe-bg);
-    border: 2.5px solid var(--farbe-akzent);
+    border: 2.5px solid var(--farbe-text);
     box-shadow: 0 2px 8px rgba(45, 45, 45, 0.18);
     transition: transform 0.12s ease;
   }
@@ -472,10 +475,9 @@
   }
   .interview-chip-aktiv,
   .interview-chip-aktiv:hover {
-    background: var(--farbe-akzent-hauch);
-    background: color-mix(in srgb, var(--farbe-akzent) 16%, var(--farbe-bg));
-    border-color: var(--farbe-akzent);
-    box-shadow: inset 0 0 0 1px var(--farbe-akzent);
+    background: var(--farbe-grau);
+    border-color: var(--farbe-text);
+    box-shadow: inset 0 0 0 1px var(--farbe-text);
   }
 
   /* Zähler und Skalen-Beschriftung bleiben beim Scrollen sichtbar */
