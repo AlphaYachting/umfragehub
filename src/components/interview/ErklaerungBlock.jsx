@@ -24,14 +24,14 @@ export default function ErklaerungBlock({ frage, offen, onToggle, textKontext })
   }
 
   return (
-    <div className="mt-4">
+    <div className="mt-2">
       <button
         type="button"
         onClick={klicken}
         aria-expanded={offen}
         aria-controls={`erklaerung-${frage.id}`}
         className="inline-flex items-center gap-1.5 text-sm font-medium"
-        style={{ color: "var(--farbe-text-daempft)", minHeight: 32 }}
+        style={{ color: "var(--farbe-text-daempft)", minHeight: 44 }}
       >
         <Info size={15} aria-hidden="true" />
         <span style={{ textDecoration: "underline", textDecorationColor: "var(--farbe-rahmen)", textUnderlineOffset: 3 }}>
