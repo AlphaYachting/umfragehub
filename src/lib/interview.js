@@ -52,12 +52,30 @@ export function verbleibendeDauerMinuten(fragen, abIndex) {
   return geschaetzteDauerMinuten(rest);
 }
 
+// Schriftfarbe, die auf einer Fläche in der gegebenen Hex-Farbe besser lesbar ist
+// (weiß oder dunkel) — für den grünen Hauptknopf, dessen Farbe je Theme wechselt.
+export function lesbareTextfarbe(hex) {
+  const m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(hex || "").trim());
+  if (!m) return "#ffffff";
+  let h = m[1];
+  if (h.length === 3) h = h.split("").map((c) => c + c).join("");
+  const [r, g, b] = [0, 2, 4].map((i) => {
+    const c = parseInt(h.slice(i, i + 2), 16) / 255;
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  });
+  const L = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  const kontrastWeiss = 1.05 / (L + 0.05);
+  const kontrastDunkel = (L + 0.05) / 0.0762; // gegen #2d2d2d
+  return kontrastWeiss >= kontrastDunkel ? "#ffffff" : "#2d2d2d";
+}
+
 // Theme-Variablen für ein Projekt auf ein Wurzelelement anwenden
 export function themeVariablenSetzen(projekt) {
   const root = document.documentElement;
   if (!projekt) {
     root.style.removeProperty("--farbe-akzent");
     root.style.removeProperty("--farbe-gut");
+    root.style.removeProperty("--farbe-weiter-text");
     root.style.removeProperty("--farbe-text");
     root.style.removeProperty("--farbe-bg");
     root.style.removeProperty("--schrift");
@@ -66,13 +84,16 @@ export function themeVariablenSetzen(projekt) {
   if (projekt.theme === "kunde") {
     root.style.setProperty("--farbe-akzent", projekt.farbePrimaer || "#ff3764");
     root.style.setProperty("--farbe-gut", projekt.farbeSekundaer || "#45d085");
+    root.style.setProperty("--farbe-weiter-text", lesbareTextfarbe(projekt.farbeSekundaer || "#45d085"));
   } else if (projekt.theme === "neutral") {
     root.style.setProperty("--farbe-akzent", "#1f3a5f");
     root.style.setProperty("--farbe-gut", "#3a7d5c");
+    root.style.setProperty("--farbe-weiter-text", "#ffffff");
   } else {
     // rittler — Standardwerte
     root.style.setProperty("--farbe-akzent", "#ff3764");
     root.style.setProperty("--farbe-gut", "#45d085");
+    root.style.setProperty("--farbe-weiter-text", "#2d2d2d");
   }
   // Optionale Branding-Felder — fehlen sie, gelten die bisherigen Werte
   if (projekt.farbeText) root.style.setProperty("--farbe-text", projekt.farbeText);
