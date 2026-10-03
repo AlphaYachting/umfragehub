@@ -13,9 +13,22 @@ function gruppenNameSichtbar(name) {
   return !/^(feld\s*\d+|sonstige)$/i.test(String(name || "").trim());
 }
 
-// Beschriftung eines Skalen-Endes: „1 = trifft überhaupt nicht zu“
-function skalaEnde(zahl, label) {
-  return label ? `${zahl} = ${label}` : `${zahl}`;
+// Skalen-Beschriftung als gut sichtbare Leiste: [1] links … rechts [4]
+function SkalaLegende({ min, max, links, rechts, mitlaufend }) {
+  return (
+    <div className={mitlaufend ? "interview-mitlaufend" : ""} style={{ marginBottom: mitlaufend ? 8 : 14 }}>
+      <div className="interview-skala-legende">
+        <span>
+          <span className="interview-skala-zahl">{min}</span>
+          {links ? <span>{links}</span> : null}
+        </span>
+        <span>
+          {rechts ? <span>{rechts}</span> : null}
+          <span className="interview-skala-zahl">{max}</span>
+        </span>
+      </div>
+    </div>
+  );
 }
 
 const REDUZIERTE_BEWEGUNG = typeof window !== "undefined" &&
@@ -229,10 +242,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
     return (
       <div>
         {mitLabels && (
-          <div className="flex justify-between gap-4 pb-3 mb-3" style={{ color: "var(--farbe-text-daempft)", fontSize: "14px", fontWeight: 500, borderBottom: "1px solid var(--farbe-linie)" }}>
-            <span>{t(skalaEnde(min, frage.skalaLabelLinks))}</span>
-            <span style={{ textAlign: "right" }}>{t(skalaEnde(max, frage.skalaLabelRechts))}</span>
-          </div>
+          <SkalaLegende min={min} max={max} links={t(frage.skalaLabelLinks || "")} rechts={t(frage.skalaLabelRechts || "")} />
         )}
         <div style={{ display: "grid", gridTemplateColumns: `repeat(${punkte.length}, 1fr)`, gap: "7px" }}>
           {punkte.map((p) => {
@@ -386,10 +396,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
     }
     return (
       <div>
-        <div className="interview-mitlaufend flex justify-between gap-4 mb-3" style={{ color: "var(--farbe-text-daempft)", fontSize: "14px", fontWeight: 500, borderBottom: "1px solid var(--farbe-linie)" }}>
-          <span>{t(skalaEnde(min, frage.skalaLabelLinks))}</span>
-          <span style={{ textAlign: "right" }}>{t(skalaEnde(max, frage.skalaLabelRechts))}</span>
-        </div>
+        <SkalaLegende min={min} max={max} links={t(frage.skalaLabelLinks || "")} rechts={t(frage.skalaLabelRechts || "")} mitlaufend />
         <div style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
           {zeilen.map((zeile) => (
             <div key={zeile.id}>
