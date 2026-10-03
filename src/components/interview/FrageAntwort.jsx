@@ -301,7 +301,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
             </span>
           ) : (
             <>
-              <div style={{ color: "var(--farbe-akzent)", fontSize: 38, fontWeight: 800, letterSpacing: "-0.03em", fontVariantNumeric: "tabular-nums", lineHeight: 1.1 }}>
+              <div style={{ color: "var(--farbe-text)", fontSize: 38, fontWeight: 800, letterSpacing: "-0.03em", fontVariantNumeric: "tabular-nums", lineHeight: 1.1 }}>
                 {Math.round(wertZahl)}
               </div>
               {stufenWort(frage, wertZahl) && (
@@ -499,7 +499,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
               disabled={auswahl.length < 3}
               onClick={() => setWerteStep(2)}
               className="text-sm font-medium"
-              style={{ color: auswahl.length < 3 ? "var(--farbe-grau-mid)" : "var(--farbe-akzent)" }}
+              style={{ color: auswahl.length < 3 ? "var(--farbe-grau-mid)" : "var(--farbe-text)" }}
             >
               {auswahl.length < 3 ? `Noch ${3 - auswahl.length} wählen` : "Weiter zur Reihenfolge →"}
             </button>
