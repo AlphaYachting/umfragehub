@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { Info } from "lucide-react";
 import { platzhalterErsetzen } from "@/lib/interview";
 
 // Aufklappbare Marginalie „Warum fragen wir das?" — linker Balken in der
@@ -29,17 +30,20 @@ export default function ErklaerungBlock({ frage, offen, onToggle, textKontext })
         onClick={klicken}
         aria-expanded={offen}
         aria-controls={`erklaerung-${frage.id}`}
-        className="text-sm font-medium hover:underline"
-        style={{ color: "var(--farbe-akzent)" }}
+        className="inline-flex items-center gap-1.5 text-sm font-medium"
+        style={{ color: "var(--farbe-text-daempft)", minHeight: 32 }}
       >
-        Warum fragen wir das?
+        <Info size={15} aria-hidden="true" />
+        <span style={{ textDecoration: "underline", textDecorationColor: "var(--farbe-rahmen)", textUnderlineOffset: 3 }}>
+          Warum fragen wir das?
+        </span>
       </button>
       {offen && (
         <div
           ref={containerRef}
           id={`erklaerung-${frage.id}`}
-          className="interview-erklaerung mt-2 text-sm"
-          style={{ color: "var(--farbe-text-daempft)" }}
+          className="interview-erklaerung mt-2"
+          style={{ color: "var(--farbe-text)", fontSize: "15px" }}
         >
           {absaetze.map((p, i) => (
             <p key={i} className="mb-2" style={{ lineHeight: 1.6 }}>{p}</p>
