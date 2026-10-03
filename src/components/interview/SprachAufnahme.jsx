@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Mic, Square, X } from "lucide-react";
+import { Mic, X } from "lucide-react";
 
 export default function SprachAufnahme({ onTranskript, ansprache }) {
   const [aufnimmt, setAufnimmt] = useState(false);
@@ -163,7 +163,7 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
           <span
             className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
             style={{
-              background: "color-mix(in srgb, var(--farbe-akzent) 14%, var(--farbe-bg))",
+              background: "var(--farbe-grau)",
               color: "var(--farbe-text)",
             }}
           >
@@ -179,36 +179,59 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
           </span>
         </button>
       ) : (
-        <div className="flex items-center gap-3">
+        // Aufnahme läuft — bewusst ruhig: kein Rot, kein Pulsieren, gleiche Fläche wie der Startknopf
+        <div
+          className="w-full flex items-center gap-3"
+          role="status"
+          style={{
+            minHeight: 60,
+            padding: "10px 10px 10px 10px",
+            border: "1.5px solid var(--farbe-gut)",
+            borderRadius: 10,
+            background: "color-mix(in srgb, var(--farbe-gut) 10%, var(--farbe-bg))",
+            color: "var(--farbe-text)",
+          }}
+        >
+          <span
+            className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+            style={{ background: "var(--farbe-bg)", color: "var(--farbe-text)" }}
+            aria-hidden="true"
+          >
+            <Mic size={18} />
+          </span>
+          <span className="flex flex-col flex-1">
+            <span style={{ fontSize: 15.5, fontWeight: 600, lineHeight: 1.3 }}>
+              {sie ? "Wir hören zu – sprechen Sie einfach." : "Wir hören zu – sprich einfach."}
+            </span>
+            <span style={{ fontSize: 13.5, lineHeight: 1.4, color: "var(--farbe-text-daempft)" }}>
+              {sie ? "Drücken Sie „Fertig“, wenn Sie alles gesagt haben." : "Drück „Fertig“, wenn du alles gesagt hast."}
+            </span>
+          </span>
           <button
             type="button"
             onClick={stoppe}
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white animate-pulse"
-            style={{ background: "var(--farbe-akzent)" }}
+            className="shrink-0"
+            style={{
+              minHeight: 44,
+              padding: "0 16px",
+              borderRadius: 9,
+              background: "var(--farbe-text)",
+              color: "var(--farbe-bg)",
+              fontSize: 14.5,
+              fontWeight: 600,
+            }}
           >
-            <Square size={16} />
-          </button>
-          <div className="flex-1">
-            <div className="text-xs text-slate-500">
-              Lausche… {ansprache === "sie" ? "Sprechen Sie" : "Sprich"} jetzt
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={stoppe}
-            className="text-sm text-slate-500"
-            style={{ minHeight: 48 }}
-          >
-            Stoppen
+            Fertig
           </button>
           <button
             type="button"
             onClick={verwerfen}
-            className="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700"
-            style={{ background: "var(--farbe-grau)" }}
-            aria-label="Verwerfen"
+            className="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
+            style={{ color: "var(--farbe-text-daempft)" }}
+            aria-label="Aufnahme verwerfen"
+            title="Aufnahme verwerfen"
           >
-            <X size={16} />
+            <X size={18} />
           </button>
         </div>
       )}
