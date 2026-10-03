@@ -1,6 +1,31 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Mic, X } from "lucide-react";
 
+// Verständliche Ursache zu einem Fehlercode ("mikrofon:NotAllowedError", "erkennung:network", …).
+// Der Code selbst wird klein dahinter angezeigt, damit sich der Fehler eingrenzen lässt.
+function fehlerUrsache(code, sie) {
+  const c = String(code || "");
+  if (/NotAllowedError|SecurityError|not-allowed/.test(c)) {
+    return `Das Mikrofon ist für diese Seite gesperrt. ${sie ? "Erlauben Sie" : "Erlaube"} es über das Schloss-Symbol in der Adresszeile und ${sie ? "versuchen Sie" : "versuch"} es noch einmal.`;
+  }
+  if (/NotFoundError|OverconstrainedError/.test(c)) {
+    return "An diesem Gerät wurde kein Mikrofon gefunden.";
+  }
+  if (/NotReadableError|AbortError|audio-capture/.test(c)) {
+    return "Das Mikrofon liefert gerade keinen Ton – möglicherweise verwendet es ein anderes Programm.";
+  }
+  if (/network/.test(c)) {
+    return "Der Spracherkennungsdienst des Browsers ist gerade nicht erreichbar.";
+  }
+  if (/service-not-allowed/.test(c)) {
+    return "In diesem Browser ist die Spracherkennung abgeschaltet.";
+  }
+  if (/language-not-supported/.test(c)) {
+    return "Die Spracherkennung unterstützt die eingestellte Sprache nicht.";
+  }
+  return "Die Spracherkennung lässt sich gerade nicht starten.";
+}
+
 export default function SprachAufnahme({ onTranskript, ansprache }) {
   const [aufnimmt, setAufnimmt] = useState(false);
   const [fehler, setFehler] = useState(false);
@@ -65,7 +90,9 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         stream.getTracks().forEach((t) => t.stop());
       } catch (e) {
-        setFehler(true);
+        const code = `mikrofon:${e?.name || "unbekannt"}`;
+        console.warn("[Sprache]", code, e?.message || "");
+        setFehler(code);
         return;
       }
     }
@@ -93,7 +120,9 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
       if (e.error === "no-speech" || e.error === "aborted") return;
       // Schwerwiegender Fehler (z. B. not-allowed, network, audio-capture) —
       // Aufnahme beenden und Hinweis zeigen, sonst hängt die UI in "Lausche…"
-      setFehler(true);
+      const code = `erkennung:${e.error || "unbekannt"}`;
+      console.warn("[Sprache]", code, e.message || "");
+      setFehler(code);
       stoppe();
     };
 
@@ -121,8 +150,10 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
     try {
       rec.start();
       setAufnimmt(true);
-    } catch {
-      setFehler(true);
+    } catch (e) {
+      const code = `start:${e?.name || "unbekannt"}`;
+      console.warn("[Sprache]", code, e?.message || "");
+      setFehler(code);
       aufnimmtRef.current = false;
       recognitionRef.current = null;
     }
@@ -238,7 +269,8 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
 
       {fehler && !aufnimmt && (
         <p className="mt-2" role="status" style={{ fontSize: 13, lineHeight: 1.5, color: "var(--farbe-text)" }}>
-          Die Spracherkennung ist leider nicht verfügbar. {sie ? "Sie können" : "Du kannst"} die Antwort einfach eintippen.
+          {fehlerUrsache(fehler, sie)} {sie ? "Sie können" : "Du kannst"} die Antwort auch einfach eintippen.{" "}
+          <span style={{ color: "var(--farbe-grau-mid)", fontSize: 12 }}>({String(fehler)})</span>
         </p>
       )}
 
