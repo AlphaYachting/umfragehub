@@ -38,7 +38,7 @@
   --farbe-linie: #e8e6e4;
   --farbe-linie-kraeftig: #d6d3d0;
   /* Rahmen für alles Anklickbare und Eingabefelder — aus Text- und Hintergrundfarbe abgeleitet */
-  --farbe-rahmen: color-mix(in srgb, var(--farbe-text) 36%, var(--farbe-bg));
+  --farbe-rahmen: #b3b3b3;
   --farbe-grau: #f6f5f4;
   --farbe-akzent: #ff3764;
   --farbe-akzent-tief: #e02551;
@@ -48,8 +48,29 @@
   /* Schrift auf dem grünen Hauptknopf — wird je Theme in themeVariablenSetzen passend gesetzt */
   --farbe-weiter-text: #2d2d2d;
   /* Textmarker für das betonte Wort im Fragetext — bewusst nicht in der Akzentfarbe */
-  --farbe-marker: color-mix(in srgb, var(--farbe-gut) 42%, var(--farbe-bg));
+  --farbe-marker: #b5ecce;
   --schrift: 'Inter', 'Gilroy', 'Helvetica Neue', Arial, sans-serif;
+  /* Die Befragung bleibt hell, auch wenn das Handy im Dunkelmodus ist oder der Browser
+     Seiten automatisch abdunkelt */
+  color-scheme: only light;
+}
+
+/* Abgeleitete Farben nur dort, wo der Browser color-mix() kennt (ab Safari 16.2, Chrome 111,
+   Firefox 113). Ältere Handys bekommen die festen Werte oben — sonst verschwänden dort
+   alle Rahmen und Markierungen. */
+@supports (color: color-mix(in srgb, red 50%, blue)) {
+  :root {
+    --farbe-rahmen: color-mix(in srgb, var(--farbe-text) 36%, var(--farbe-bg));
+    --farbe-marker: color-mix(in srgb, var(--farbe-gut) 42%, var(--farbe-bg));
+  }
+}
+
+/* iPhone: 100vh ist höher als der sichtbare Bereich (Adressleiste). Mit dvh passt die Seite
+   genau auf den Bildschirm. */
+@supports (min-height: 100dvh) {
+  .min-h-screen {
+    min-height: 100dvh;
+  }
 }
 
 @layer base {
@@ -153,8 +174,11 @@
     min-height: 48px;
     transition: background-color 0.16s ease, transform 0.1s ease;
   }
-  .interview-btn-akzent:hover {
-    background-color: color-mix(in srgb, var(--farbe-gut) 86%, #000);
+  /* Hover nur auf Geräten mit Maus — am Handy bliebe der Zustand nach dem Antippen „kleben“ */
+  @media (hover: hover) {
+    .interview-btn-akzent:hover {
+      filter: brightness(0.93);
+    }
   }
   .interview-btn-akzent:active {
     transform: scale(0.98);
@@ -182,8 +206,10 @@
     transition: border-color 0.16s ease, background 0.16s ease, transform 0.1s ease;
     cursor: pointer;
   }
-  .interview-auswahl-karte:hover {
-    border-color: var(--farbe-grau-mid);
+  @media (hover: hover) {
+    .interview-auswahl-karte:hover {
+      border-color: var(--farbe-grau-mid);
+    }
   }
   .interview-auswahl-karte:active {
     transform: scale(0.99);
@@ -243,8 +269,10 @@
     transition: all 0.15s ease;
     cursor: pointer;
   }
-  .interview-skala-btn:hover {
-    border-color: var(--farbe-grau-mid);
+  @media (hover: hover) {
+    .interview-skala-btn:hover {
+      border-color: var(--farbe-grau-mid);
+    }
   }
   .interview-skala-btn-aktiv {
     background-color: var(--farbe-akzent);
@@ -275,6 +303,18 @@
     border-left: 4px solid var(--farbe-gut);
     color: inherit;
     background: none;
+  }
+
+  /* Sehr lange Wörter dürfen auf schmalen Handys umbrechen statt über den Rand zu laufen */
+  .interview-fragetext,
+  .interview-auswahl-karte,
+  .interview-chip,
+  .interview-skala-legende {
+    overflow-wrap: break-word;
+  }
+  .interview-chip {
+    max-width: 100%;
+    text-align: left;
   }
 
   .interview-fragetext {
@@ -395,11 +435,14 @@
     cursor: pointer;
     transition: border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
   }
-  .interview-chip:hover {
-    border-color: var(--farbe-grau-mid);
+  @media (hover: hover) {
+    .interview-chip:hover {
+      border-color: var(--farbe-grau-mid);
+    }
   }
   .interview-chip-aktiv,
   .interview-chip-aktiv:hover {
+    background: var(--farbe-akzent-hauch);
     background: color-mix(in srgb, var(--farbe-akzent) 16%, var(--farbe-bg));
     border-color: var(--farbe-akzent);
     box-shadow: inset 0 0 0 1px var(--farbe-akzent);
@@ -467,6 +510,7 @@
   .interview-textfeld:focus {
     outline: none;
     border-color: var(--farbe-akzent);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--farbe-akzent) 20%, transparent);
   }
   .interview-textfeld::placeholder {
