@@ -13,6 +13,25 @@ function gruppenNameSichtbar(name) {
   return !/^(feld\s*\d+|sonstige)$/i.test(String(name || "").trim());
 }
 
+// Mitlaufende Leiste bei langen Begriffslisten: Zähler + die schon gewählten Begriffe.
+// So sieht man am Handy seine Auswahl, ohne durch 50+ Begriffe zurückzuscrollen.
+function AuswahlLeiste({ anzeige, gewaehlt }) {
+  if (!anzeige.anzeigen) return null;
+  const begriffe = (gewaehlt || []).map((g) => String(g).split("|").pop().trim()).filter(Boolean);
+  return (
+    <div aria-live="polite" className="interview-mitlaufend interview-mitlaufend-linie">
+      <p style={{ color: anzeige.erfuellt ? "var(--farbe-text)" : "var(--farbe-text-daempft)", fontSize: "14px", fontWeight: 600 }}>
+        {anzeige.text}
+      </p>
+      {begriffe.length > 0 && (
+        <p style={{ color: "var(--farbe-text)", fontSize: "13.5px", lineHeight: 1.45, marginTop: 2 }}>
+          {begriffe.join(" · ")}
+        </p>
+      )}
+    </div>
+  );
+}
+
 // Skalen-Beschriftung als gut sichtbare Leiste: [1] links … rechts [4]
 function SkalaLegende({ min, max, links, rechts, mitlaufend }) {
   return (
@@ -156,8 +175,8 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
     if (alsBegriffe) {
       return (
         <div>
-          {zaehler}
-          <div className="flex flex-wrap gap-2" style={{ marginTop: zaehler ? 4 : 0 }}>
+          <AuswahlLeiste anzeige={auswahlAnzeige} gewaehlt={auswahl.map((o) => t(o))} />
+          <div className="flex flex-wrap gap-2" style={{ marginTop: zaehler ? 10 : 0 }}>
             {optionen.map((opt) => {
               const aktiv = auswahl.includes(opt);
               const gesperrt = vollBelegt && !aktiv;
@@ -535,11 +554,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
     const gruppenListe = Object.entries(gruppen);
     return (
       <div>
-        {auswahlAnzeige.anzeigen && (
-          <p aria-live="polite" className="interview-mitlaufend" style={{ color: auswahlAnzeige.erfuellt ? "var(--farbe-text)" : "var(--farbe-text-daempft)", fontSize: "14px", fontWeight: 600 }}>
-            {auswahlAnzeige.text}
-          </p>
-        )}
+        <AuswahlLeiste anzeige={auswahlAnzeige} gewaehlt={auswahl} />
         {gruppenListe.map(([gName, begriffe], gi) => {
           const nameZeigen = gruppenNameSichtbar(gName);
           return (
@@ -547,7 +562,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
               key={gName}
               style={gi > 0
                 ? { marginTop: 18, paddingTop: 18, borderTop: "1px solid var(--farbe-linie)" }
-                : { marginTop: 4 }}
+                : { marginTop: 10 }}
             >
               {nameZeigen && (
                 <div className="mb-2" style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--farbe-text-daempft)" }}>{t(gName)}</div>
