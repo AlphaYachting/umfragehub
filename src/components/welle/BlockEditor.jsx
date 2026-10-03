@@ -52,7 +52,7 @@ export default function BlockEditor({
             <Textarea
               value={block.motivationstext || ""}
               onChange={(e) => blockFeld("motivationstext", e.target.value)}
-              placeholder="Motivationstext (wird nach Abschluss des Blocks angezeigt)"
+              placeholder="Motivationstext — erscheint auf einer Zwischenseite VOR diesem Kapitel (nicht beim ersten Kapitel). 1–2 Sätze: was jetzt kommt und warum es zählt."
               rows={2}
               className="text-sm"
             />
