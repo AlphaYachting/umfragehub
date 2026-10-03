@@ -123,6 +123,23 @@ export function anspracheFormen(ansprache) {
   };
 }
 
+// Kapiteltitel für Befragte: interne Ordnungskürzel aus dem Blocktitel entfernen.
+//   "Adaption V3 Kundenwissen"          → "Kundenwissen"
+//   "Kapitel 2 · Die Ausgangssituation" → "Die Ausgangssituation"
+//   "MA Kapitel 1 · Zusammenarbeit"     → "Zusammenarbeit"
+//   "Kern nachgestellt · Mitbewerb"     → "Mitbewerb"
+// Im Welleneditor und in der Auswertung bleibt der volle Titel sichtbar.
+export function kapitelTitelAnzeige(titel) {
+  if (!titel) return "";
+  const roh = String(titel).trim();
+  const bereinigt = roh
+    .replace(/^Adaption\s+[A-Z]{1,2}\d+\s+/, "")
+    .replace(/^(?:MA\s+)?Kapitel\s+\d+\s*[·:–—-]\s*/, "")
+    .replace(/^Kern\s+nachgestellt\s*[·:–—-]\s*/, "")
+    .trim();
+  return bereinigt || roh;
+}
+
 // Sternchen-Markierung aus dem Fragetext entfernen (für aria-label, Export, Editor-Vorschau)
 export function sternchenEntfernen(text) {
   if (!text) return "";
