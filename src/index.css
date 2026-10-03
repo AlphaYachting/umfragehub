@@ -486,6 +486,10 @@
     background: var(--farbe-bg);
     padding: 9px 0;
   }
+  /* Trennlinie, damit darunter durchlaufende Begriffe nicht in die Leiste „hineinragen“ */
+  .interview-mitlaufend-linie {
+    border-bottom: 1px solid var(--farbe-linie);
+  }
 
   /* Skalen-Beschriftung als gut sichtbare Leiste: [1] links … rechts [4] */
   .interview-skala-legende {
