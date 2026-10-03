@@ -495,8 +495,8 @@ export default function Interview() {
             {welle.name}
           </h1>
           {welle.begruessungstext && (
-            <p className="text-center" style={{ color: "var(--farbe-text-daempft)", fontSize: "16.5px", lineHeight: 1.65, marginBottom: 26 }}>
-              {welle.begruessungstext}
+            <p className="text-center" style={{ color: "var(--farbe-text-daempft)", fontSize: "16.5px", lineHeight: 1.65, marginBottom: 26, whiteSpace: "pre-line", textWrap: "pretty" }}>
+              {platzhalterErsetzen(welle.begruessungstext, textKontext)}
             </p>
           )}
 
@@ -571,8 +571,8 @@ export default function Interview() {
             </h2>
           )}
           {naechsterBlock?.motivationstext && (
-            <p style={{ color: "var(--farbe-text-daempft)", fontSize: "16.5px", lineHeight: 1.65, marginBottom: 26 }}>
-              {naechsterBlock.motivationstext}
+            <p style={{ color: "var(--farbe-text-daempft)", fontSize: "16.5px", lineHeight: 1.65, marginBottom: 26, whiteSpace: "pre-line", textWrap: "pretty" }}>
+              {platzhalterErsetzen(naechsterBlock.motivationstext, textKontext)}
             </p>
           )}
           <button onClick={blockuebergangWeiter} className="interview-btn-akzent" style={{ paddingLeft: 32, paddingRight: 32 }}>
@@ -602,8 +602,8 @@ export default function Interview() {
               : "Danke, dass du dir die Zeit genommen hast. Deine Antworten fließen anonymisiert in die Auswertung ein."}
           </p>
           {welle.abschlusstext && (
-            <p style={{ color: "var(--farbe-grau-mid)", fontSize: "14.5px", lineHeight: 1.65, marginBottom: 26 }}>
-              {welle.abschlusstext}
+            <p style={{ color: "var(--farbe-text-daempft)", fontSize: "16px", lineHeight: 1.65, marginBottom: 26, whiteSpace: "pre-line", textWrap: "pretty" }}>
+              {platzhalterErsetzen(welle.abschlusstext, textKontext)}
             </p>
           )}
           <RechtlicheFusszeile projekt={projekt} />
@@ -638,18 +638,23 @@ export default function Interview() {
 
       <div className="flex-1 flex items-start justify-center px-5 pt-6 pb-6">
         <div key={animKey} className="max-w-[560px] w-full frage-uebergang-enter">
-          <div className="mb-6 flex items-center gap-2" style={{ color: "var(--farbe-grau-mid)", fontSize: "12.5px" }}>
-            <span className="sm:hidden">Kapitel {blockNr}</span>
-            <span className="hidden sm:inline">{kapitelTitelAnzeige(item.block.titel)}</span>
-            <span className="interview-trennpunkt" />
-            <span>Frage {currentIndex + 1}/{gesamt}</span>
-            <span className="interview-trennpunkt" />
-            <span>noch etwa {verbleibendeMin} Min.</span>
+          {/* Kopf: Kapitelname als eigene Zeile (auch am Handy) — gibt gleich lautenden Fragen ihren Zusammenhang */}
+          <div className="mb-6">
+            <div style={{ fontSize: "13.5px", fontWeight: 600, color: "var(--farbe-text)", marginBottom: 3 }}>
+              {(kapitelTitelAnzeige(item.block.titel) && item.block.titel !== "Neuer Block")
+                ? kapitelTitelAnzeige(item.block.titel)
+                : `Kapitel ${blockNr}`}
+            </div>
+            <div className="flex items-center gap-2" style={{ color: "var(--farbe-grau-mid)", fontSize: "12.5px" }}>
+              <span>Frage {currentIndex + 1} von {gesamt}</span>
+              <span className="interview-trennpunkt" />
+              <span>noch etwa {verbleibendeMin} Min.</span>
+            </div>
           </div>
           <h2
             ref={frageHeadingRef}
             tabIndex={-1}
-            className="interview-fragetext outline-none"
+            className={`interview-fragetext outline-none ${sternchenEntfernen(platzhalterErsetzen(frage.text, textKontext)).length > 95 ? "interview-fragetext-lang" : ""}`}
             style={{ color: "var(--farbe-text)", marginBottom: 12 }}
             dangerouslySetInnerHTML={{ __html: renderFragetext(frage.text, textKontext, { polaritaet: frage.polaritaet }) }}
             aria-label={sternchenEntfernen(platzhalterErsetzen(frage.text, textKontext))}
