@@ -299,11 +299,11 @@ export default function Interview() {
       return;
     }
     if (istLetzteImBlock) {
-      // Zwischenseite nur für größere Kapitel (ab 3 Fragen) oder wenn ein Motivationstext
-      // hinterlegt ist — sonst geht es ohne Extra-Klick direkt zur nächsten Frage.
+      // Zwischenseite nur, wenn für das nächste Kapitel ein Motivationstext hinterlegt ist.
+      // Eine Seite, auf der nur „Kapitel x von y“ und „Weiter“ steht, ist ein Klick ohne Nutzen —
+      // der Kapitelname steht ohnehin über jeder Frage.
       const naechstes = fragenListe[currentIndex + 1];
-      const fragenImKapitel = fragenListe.filter((x) => x.blockIndex === naechstes.blockIndex).length;
-      if (fragenImKapitel >= 3 || naechstes.block?.motivationstext) {
+      if (String(naechstes.block?.motivationstext || "").trim()) {
         setNaechsterBlock(naechstes.block);
         setScreen("blockuebergang");
         return;
