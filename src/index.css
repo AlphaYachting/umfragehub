@@ -287,6 +287,15 @@
   @media (max-width: 420px) {
     .interview-fragetext { font-size: 21px; }
   }
+  /* Lange Fragen (über ~95 Zeichen) etwas kleiner — weniger Zeilen, ruhigeres Schriftbild */
+  .interview-fragetext-lang {
+    font-size: 21px;
+    line-height: 1.34;
+    letter-spacing: -0.01em;
+  }
+  @media (max-width: 420px) {
+    .interview-fragetext-lang { font-size: 19px; }
+  }
 
   .interview-welcome-heading {
     font-size: 30px;
@@ -367,7 +376,7 @@
   }
 
   .interview-erklaerung {
-    border-left: 3px solid var(--farbe-akzent);
+    border-left: 3px solid var(--farbe-rahmen);
     padding-left: 12px;
   }
 
