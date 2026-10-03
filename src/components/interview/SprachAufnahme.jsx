@@ -26,13 +26,28 @@ function fehlerUrsache(code, sie) {
   return "Die Spracherkennung lässt sich gerade nicht starten.";
 }
 
-export default function SprachAufnahme({ onTranskript, ansprache }) {
+// Diktiertes an den schon vorhandenen Text anhängen (Leerzeichen dazwischen, Zeilenumbrüche
+// im vorhandenen Text bleiben erhalten).
+function textAnhaengen(basis, diktat) {
+  const d = String(diktat || "").replace(/\s+/g, " ").trim();
+  const b = String(basis || "");
+  if (!d) return b;
+  if (!b.trim()) return d;
+  return /\s$/.test(b) ? b + d : `${b} ${d}`;
+}
+
+export default function SprachAufnahme({ onTranskript, ansprache, basisText }) {
   const [aufnimmt, setAufnimmt] = useState(false);
   const [fehler, setFehler] = useState(false);
   const [unterstuetzt, setUnterstuetzt] = useState(true);
 
   const recognitionRef = useRef(null);
-  const finalTextRef = useRef("");
+  // Text, der vor der Aufnahme schon im Feld stand — er wird nie überschrieben
+  const basisRef = useRef("");
+  const basisTextRef = useRef(basisText || "");
+  // Fertig erkannter Text früherer Erkennungsläufe dieser Aufnahme / des laufenden Laufs
+  const gesamtRef = useRef("");
+  const sitzungRef = useRef("");
   const aufnimmtRef = useRef(false);
   const startZeitRef = useRef(0);
   const limitTimerRef = useRef(null);
@@ -44,6 +59,16 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
   useEffect(() => {
     onTranskriptRef.current = onTranskript;
   }, [onTranskript]);
+
+  useEffect(() => {
+    basisTextRef.current = basisText || "";
+  }, [basisText]);
+
+  // Aktuellen Stand melden: vorhandener Text + alles bisher Diktierte (+ vorläufig Erkanntes)
+  function melden(vorlaeufig = "") {
+    const diktat = `${gesamtRef.current} ${sitzungRef.current} ${vorlaeufig}`;
+    onTranskriptRef.current(textAnhaengen(basisRef.current, diktat));
+  }
 
   useEffect(() => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -81,7 +106,9 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
       return;
     }
     setFehler(false);
-    finalTextRef.current = "";
+    basisRef.current = basisTextRef.current || "";
+    gesamtRef.current = "";
+    sitzungRef.current = "";
 
     // Mikrofon-Berechtigung aktiv anfragen — rec.start() allein löst in
     // manchen Browsern/Iframes keinen Permission-Prompt aus, getUserMedia schon.
@@ -98,22 +125,32 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
     }
 
     const rec = new SR();
-    rec.lang = navigator.language || "de-DE";
-    rec.continuous = true;
+    // Die Befragung ist deutsch — auch wenn der Browser auf eine andere Sprache gestellt ist.
+    // Deutsche Regionalvarianten (de-AT, de-CH) bleiben erhalten.
+    const browserSprache = navigator.language || "";
+    rec.lang = /^de(-|$)/i.test(browserSprache) ? browserSprache : "de-DE";
+    // Android-Chrome liefert im Dauerbetrieb jedes Ergebnis mehrfach (Text verdoppelt sich).
+    // Dort deshalb Einzelläufe, die nach jeder Sprechpause automatisch neu starten.
+    const istAndroid = /Android/i.test(navigator.userAgent || "");
+    rec.continuous = !istAndroid;
     rec.interimResults = true;
 
     rec.onresult = (e) => {
-      let interim = "";
-      for (let i = e.resultIndex; i < e.results.length; i++) {
+      // Immer aus der ganzen Ergebnisliste des laufenden Laufs neu aufbauen — so kann
+      // ein doppelt gemeldetes Ergebnis den Text nicht verdoppeln.
+      let fertig = "";
+      let vorlaeufig = "";
+      for (let i = 0; i < e.results.length; i++) {
         const r = e.results[i];
         if (!r || !r[0]) continue;
         if (r.isFinal) {
-          finalTextRef.current += r[0].transcript;
+          fertig = istAndroid ? r[0].transcript : `${fertig} ${r[0].transcript}`;
         } else {
-          interim += r[0].transcript;
+          vorlaeufig = `${vorlaeufig} ${r[0].transcript}`;
         }
       }
-      onTranskriptRef.current((finalTextRef.current + " " + interim).trim());
+      sitzungRef.current = fertig;
+      melden(vorlaeufig);
     };
 
     rec.onerror = (e) => {
@@ -127,6 +164,13 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
     };
 
     rec.onend = () => {
+      // Der Lauf ist zu Ende: sein Text ist fertig und zählt ab jetzt zum Gesamttext.
+      // (Nur übernehmen, solange diese Instanz noch die aktuelle Aufnahme ist oder gerade
+      // per „Fertig“ beendet wurde — eine neue Aufnahme hat die Refs schon zurückgesetzt.)
+      if (recognitionRef.current === rec || recognitionRef.current === null) {
+        gesamtRef.current = `${gesamtRef.current} ${sitzungRef.current}`.trim();
+        sitzungRef.current = "";
+      }
       // Alte Instanz nach Neustart ignorieren
       if (recognitionRef.current !== rec) return;
       if (aufnimmtRef.current && Date.now() - startZeitRef.current < 180000) {
@@ -139,7 +183,7 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
           }
         }, 200);
       } else {
-        onTranskriptRef.current(finalTextRef.current.trim());
+        melden();
       }
     };
 
@@ -159,10 +203,16 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
     }
   }
 
+  // Aufnahme verwerfen: nur das Diktierte fällt weg, der Text von vorher bleibt stehen
   function verwerfen() {
-    finalTextRef.current = "";
+    gesamtRef.current = "";
+    sitzungRef.current = "";
+    const rec = recognitionRef.current;
+    if (rec) {
+      rec.onresult = null; // späte Ergebnisse dieser Aufnahme nicht mehr übernehmen
+    }
     stoppe();
-    onTranskriptRef.current("");
+    onTranskriptRef.current(basisRef.current);
   }
 
   const sie = ansprache === "sie";
@@ -170,7 +220,7 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
   if (!unterstuetzt) {
     return (
       <p className="mt-2" style={{ fontSize: 13, lineHeight: 1.5, color: "var(--farbe-text-daempft)" }}>
-        Die Spracherkennung wird von diesem Browser nicht unterstützt — in Chrome funktioniert sie. Sonst einfach eintippen.
+        In diesem Browser gibt es keine eingebaute Spracheingabe. Tipp: Viele Handy-Tastaturen haben eine Mikrofon-Taste — damit {sie ? "können Sie" : "kannst du"} die Antwort direkt ins Feld diktieren.
       </p>
     );
   }
