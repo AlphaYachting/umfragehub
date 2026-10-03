@@ -16,6 +16,25 @@ import FrageAntwort from "@/components/interview/FrageAntwort";
 import RechtlicheFusszeile from "@/components/interview/RechtlicheFusszeile";
 import ErklaerungBlock from "@/components/interview/ErklaerungBlock";
 
+// Browser-Speicher kann gesperrt sein (privater Modus, eingebettete Browser in Mail-/Messenger-Apps,
+// strenge Datenschutz-Einstellungen). Die Befragung muss dann trotzdem laufen — nur das
+// spätere Fortsetzen auf demselben Gerät entfällt.
+function speicherLesen(schluessel) {
+  try {
+    return window.localStorage.getItem(schluessel);
+  } catch {
+    return null;
+  }
+}
+function speicherSchreiben(schluessel, wert) {
+  try {
+    window.localStorage.setItem(schluessel, wert);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export default function Interview() {
   const { linkToken } = useParams();
   const urlParams = new URLSearchParams(window.location.search);
@@ -48,12 +67,12 @@ export default function Interview() {
   // FEHLER 1: blockiert Auto-Weiter bei Fragen, die beim Betreten schon beantwortet waren
   const beimBetretenBeantwortetRef = useRef(false);
 
-  const kannFortsetzen = !testModus && !!localStorage.getItem(`interview_${linkToken}`);
+  const kannFortsetzen = !testModus && !!speicherLesen(`interview_${linkToken}`);
 
   const laden = useCallback(async () => {
     setLoading(true);
     try {
-      const gespeichert = testModus ? null : localStorage.getItem(`interview_${linkToken}`);
+      const gespeichert = testModus ? null : speicherLesen(`interview_${linkToken}`);
       const res = await base44.functions.invoke("interviewApi", {
         aktion: "load",
         linkToken,
@@ -164,7 +183,7 @@ export default function Interview() {
         return;
       }
       setSessionToken(d.sessionToken);
-      localStorage.setItem(`interview_${linkToken}`, d.sessionToken);
+      speicherSchreiben(`interview_${linkToken}`, d.sessionToken);
       setStartZeit(Date.now());
       setScreen("frage");
       setCurrentIndex(0);
