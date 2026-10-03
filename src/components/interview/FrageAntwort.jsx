@@ -603,6 +603,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
         {frage.sprachantwortErlaubt && (
           <SprachAufnahme
             ansprache={ansprache}
+            basisText={v.text || ""}
             onTranskript={(t) => {
               onChange({ ...v, text: t, transkriptKorrigiert: false, eingabeart: "sprache" });
               setKorrigiert(false);
