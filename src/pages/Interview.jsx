@@ -10,6 +10,7 @@ import {
   sternchenEntfernen,
   platzhalterErsetzen,
   matrixZeilenMitIds,
+  kapitelTitelAnzeige,
 } from "@/lib/interview";
 import FrageAntwort from "@/components/interview/FrageAntwort";
 import RechtlicheFusszeile from "@/components/interview/RechtlicheFusszeile";
@@ -278,9 +279,15 @@ export default function Interview() {
       return;
     }
     if (istLetzteImBlock) {
-      setNaechsterBlock(fragenListe[currentIndex + 1].block);
-      setScreen("blockuebergang");
-      return;
+      // Zwischenseite nur für größere Kapitel (ab 3 Fragen) oder wenn ein Motivationstext
+      // hinterlegt ist — sonst geht es ohne Extra-Klick direkt zur nächsten Frage.
+      const naechstes = fragenListe[currentIndex + 1];
+      const fragenImKapitel = fragenListe.filter((x) => x.blockIndex === naechstes.blockIndex).length;
+      if (fragenImKapitel >= 3 || naechstes.block?.motivationstext) {
+        setNaechsterBlock(naechstes.block);
+        setScreen("blockuebergang");
+        return;
+      }
     }
     setCurrentIndex(currentIndex + 1);
     setAnimKey((k) => k + 1);
@@ -368,6 +375,11 @@ export default function Interview() {
     if (basisBeantwortet > 0) pace = verstrichenSek / basisBeantwortet;
   }
   const verbleibendeMin = Math.max(1, Math.round((verbleibendeBasisSek * pace) / 60));
+  // Gesamtdauer für die Startseite — dieselbe Rechnung wie die Restzeit im Kopf der Fragen,
+  // damit beide Angaben zusammenpassen.
+  const gesamtDauerMin = Math.max(1, Math.round(
+    fragenListe.reduce((s, item) => s + geschaetzteFrageDauerSekunden(item.frage.typ), 0) / 60
+  ));
 
   const a = anspracheFormen(projekt?.ansprache);
   // Kontext für Platzhalter im Fragetext ({{firma}}, {{du}}, {{siehst|sehen}} …)
@@ -394,7 +406,10 @@ export default function Interview() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--farbe-bg)" }}>
-        <div className="text-sm" style={{ color: "var(--farbe-grau-mid)" }}>Lade Interview…</div>
+        <div className="flex flex-col items-center gap-4" role="status">
+          <div className="interview-lader" aria-hidden="true" />
+          <div className="text-sm" style={{ color: "var(--farbe-grau-mid)" }}>Die Befragung wird geladen…</div>
+        </div>
       </div>
     );
   }
@@ -406,19 +421,19 @@ export default function Interview() {
           {error === "nicht_gefunden" && (
             <>
               <h1 className="text-xl font-bold mb-2" style={{ color: "var(--farbe-text)" }}>Link ungültig</h1>
-              <p className="text-sm" style={{ color: "var(--farbe-grau-mid)" }}>Dieser Interview-Link ist nicht gültig. Bitte prüfe den Link oder wende dich an die Person, die {a.klein} eingeladen hat.</p>
+              <p className="text-sm" style={{ color: "var(--farbe-grau-mid)" }}>Dieser Link zur Befragung ist nicht gültig. Bitte prüfe den Link oder wende dich an die Person, die {a.klein} eingeladen hat.</p>
             </>
           )}
           {error === "entwurf" && (
             <>
               <h1 className="text-xl font-bold mb-2" style={{ color: "var(--farbe-text)" }}>Noch nicht freigeschaltet</h1>
-              <p className="text-sm" style={{ color: "var(--farbe-grau-mid)" }}>Dieses Interview ist noch in Vorbereitung. Sobald es freigeschaltet ist, erreichst {a.duSie} es über diesen Link.</p>
+              <p className="text-sm" style={{ color: "var(--farbe-grau-mid)" }}>Diese Befragung ist noch in Vorbereitung. Sobald sie freigeschaltet ist, erreichst {a.duSie} sie über diesen Link.</p>
             </>
           )}
           {error === "geschlossen" && (
             <>
-              <h1 className="text-xl font-bold mb-2" style={{ color: "var(--farbe-text)" }}>Interview geschlossen</h1>
-              <p className="text-sm" style={{ color: "var(--farbe-grau-mid)" }}>Die Teilnahme an diesem Interview ist leider beendet. Vielen Dank für das Interesse.</p>
+              <h1 className="text-xl font-bold mb-2" style={{ color: "var(--farbe-text)" }}>Befragung geschlossen</h1>
+              <p className="text-sm" style={{ color: "var(--farbe-grau-mid)" }}>Die Teilnahme an dieser Befragung ist leider beendet. Vielen Dank für das Interesse.</p>
             </>
           )}
         </div>
@@ -431,7 +446,7 @@ export default function Interview() {
       <div className="min-h-screen flex items-center justify-center p-6" style={{ background: "var(--farbe-bg)" }}>
         <div className="max-w-md text-center">
           <h1 className="text-xl font-bold mb-2" style={{ color: "var(--farbe-text)" }}>Keine Fragen</h1>
-          <p className="text-sm" style={{ color: "var(--farbe-grau-mid)" }}>Dieses Interview enthält noch keine Fragen.</p>
+          <p className="text-sm" style={{ color: "var(--farbe-grau-mid)" }}>Diese Befragung enthält noch keine Fragen.</p>
         </div>
       </div>
     );
@@ -448,7 +463,7 @@ export default function Interview() {
           <div className="space-y-4 text-sm" style={{ color: "var(--farbe-text-daempft)", lineHeight: 1.7 }}>
             <p>Diese Befragung ist vollständig anonym. Wir speichern keine Namen, keine E-Mail-Adressen und keinen Personenbezug. Auch IP-Adresse und Gerät werden nicht erfasst.</p>
             <p>Deine Antworten werden unter einem zufälligen Code gespeichert, der nur auf diesem Gerät liegt. So kannst du pausieren und später weitermachen — aber niemand kann die Antworten {a.dichSie} zuordnen.</p>
-            <p>Einzelantworten sind für uns erst ab {welle.mindestTeilnehmer || 6} abgeschlossenen Interviews einsehbar. Darunter bleiben alle Antworten gesperrt, damit niemand aus einer kleinen Gruppe Rückschlüsse ziehen kann.</p>
+            <p>Einzelantworten sind für uns erst ab {welle.mindestTeilnehmer || 6} abgeschlossenen Befragungen einsehbar. Darunter bleiben alle Antworten gesperrt, damit niemand aus einer kleinen Gruppe Rückschlüsse ziehen kann.</p>
             <p>Es gibt kein richtig und kein falsch. {a.duSie.charAt(0).toUpperCase() + a.duSie.slice(1)} {a.kannstKönnen} jede Frage überspringen (außer Pflichtfragen) und jederzeit mit „Zurück&ldquo; zu einer vorherigen Antwort zurückkehren.</p>
             <p>Wenn {a.duSie} eine Frage per Sprache {a.duSie === "Sie" ? "beantworten" : "beantwortest"} (sofern angeboten), wird keine Audiodatei gespeichert. Die Umwandlung in Text übernimmt die Spracherkennung {a.duSie === "Sie" ? "Ihres" : "deines"} Browsers — dabei wird die Aufnahme kurzzeitig an dessen Dienst übertragen. Gespeichert wird bei uns nur der Text, den {a.duSie} danach {a.duSie === "Sie" ? "sehen und korrigieren können" : "siehst und korrigieren kannst"}.</p>
           </div>
@@ -462,7 +477,7 @@ export default function Interview() {
     const zusicherungen = [
       { icon: Shield, lead: "Vollständig anonym.", text: `Wir sehen nicht, wer ${a.duSie} ${a.bistSind}. Es werden weder Name noch E-Mail noch Gerät gespeichert. Einzelantworten werden erst ab ${welle.mindestTeilnehmer || 6} abgeschlossenen Befragungen überhaupt sichtbar.` },
       { icon: Heart, lead: "Kein richtig, kein falsch.", text: `Zu jeder Frage gibt es eine Erklärung, warum wir sie stellen – einfach auf „Warum fragen wir das?“ tippen.` },
-      { icon: Clock, lead: `Etwa ${welle.geschaetzteDauerMinuten || 10} Minuten.`, text: `Eine Frage pro Seite, ${a.duSie} ${a.kannstKönnen} jederzeit zurück.` },
+      { icon: Clock, lead: `Etwa ${gesamtDauerMin} Minuten.`, text: `Eine Frage pro Seite, ${a.duSie} ${a.kannstKönnen} jederzeit zurück.` },
       { icon: PauseCircle, lead: "Pausieren geht.", text: `${a.duSie === "Sie" ? "Schließen Sie" : "Schließ"} den Tab einfach — auf demselben Gerät geht es später dort weiter, wo ${a.duSie} aufgehört ${a.hastHaben}.` },
     ];
     return (
@@ -499,6 +514,19 @@ export default function Interview() {
             })}
           </div>
 
+          <div className="space-y-3" style={{ marginBottom: 34 }}>
+            <div className="flex justify-center">
+              <button onClick={starten} className="interview-btn-akzent" style={{ height: 58, fontSize: 17, paddingLeft: 38, paddingRight: 38 }}>
+                {kannFortsetzen ? "Weitermachen" : "Befragung starten"}
+              </button>
+            </div>
+            <div className="flex justify-center">
+              <button onClick={() => setScreen("datenschutz")} className="text-sm hover:underline" style={{ color: "var(--farbe-grau-mid)" }}>
+                Wie werden meine Daten gespeichert?
+              </button>
+            </div>
+          </div>
+
           {kapitelListe.length > 0 && (
             <div style={{ marginBottom: 26 }}>
               <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--farbe-grau-mid)", marginBottom: 12 }}>
@@ -508,7 +536,7 @@ export default function Interview() {
                 {kapitelListe.map((k) => (
                   <div key={k.nr} className="flex items-center gap-3" style={{ padding: "12px 0", borderBottom: "1px solid var(--farbe-linie)" }}>
                     <span className="flex items-center justify-center shrink-0" style={{ width: 26, height: 26, borderRadius: "50%", background: "var(--farbe-grau)", fontSize: "12.5px", fontWeight: 700, color: "var(--farbe-text)" }}>{k.nr}</span>
-                    <span className="flex-1" style={{ fontSize: "14.5px", fontWeight: 600, color: "var(--farbe-text)" }}>{k.titel}</span>
+                    <span className="flex-1" style={{ fontSize: "14.5px", fontWeight: 600, color: "var(--farbe-text)" }}>{kapitelTitelAnzeige(k.titel)}</span>
                     <span style={{ fontSize: "12.5px", color: "var(--farbe-grau-mid)" }}>{k.anzahl} {k.anzahl === 1 ? "Frage" : "Fragen"}</span>
                   </div>
                 ))}
@@ -516,18 +544,6 @@ export default function Interview() {
             </div>
           )}
 
-          <div className="space-y-3">
-            <div className="flex justify-center">
-              <button onClick={starten} className="interview-btn-akzent" style={{ height: 58, fontSize: 17, paddingLeft: 38, paddingRight: 38 }}>
-                {kannFortsetzen ? "Weitermachen" : "Interview starten"}
-              </button>
-            </div>
-            <div className="flex justify-center">
-              <button onClick={() => setScreen("datenschutz")} className="text-sm hover:underline" style={{ color: "var(--farbe-grau-mid)" }}>
-                Wie werden meine Daten gespeichert?
-              </button>
-            </div>
-          </div>
           <RechtlicheFusszeile projekt={projekt} />
         </div>
       </div>
@@ -538,7 +554,7 @@ export default function Interview() {
     const naechstesItem = fragenListe[currentIndex + 1];
     const naechsterBlockIdx = naechstesItem?.blockIndex ?? 0;
     const blockNr = naechsterBlockIdx + 1;
-    const blockTitel = naechsterBlock?.titel;
+    const blockTitel = kapitelTitelAnzeige(naechsterBlock?.titel);
     const titelAnzeigen = blockTitel && blockTitel !== "Neuer Block";
     return (
       <div className="min-h-screen flex items-center justify-center p-5" style={{ background: "var(--farbe-bg)" }}>
@@ -550,7 +566,7 @@ export default function Interview() {
             <span style={{ fontSize: 19, fontWeight: 800, color: "var(--farbe-akzent)" }}>{blockNr}</span>
           </div>
           {titelAnzeigen && (
-            <h2 className="interview-welcome-heading" style={{ color: "var(--farbe-text)", marginBottom: 16 }}>
+            <h2 className="interview-fragetext" style={{ color: "var(--farbe-text)", marginBottom: 20 }}>
               {blockTitel}
             </h2>
           )}
@@ -581,7 +597,9 @@ export default function Interview() {
             Vielen <span style={{ color: "var(--farbe-akzent)" }}>Dank</span>!
           </h1>
           <p style={{ color: "var(--farbe-text-daempft)", fontSize: "16.5px", lineHeight: 1.65, marginBottom: 26 }}>
-            {a.duSie.charAt(0).toUpperCase() + a.duSie.slice(1)} {a.hastHaben} {a.deinIhr}e Antworten wertvoll geteilt. Sie fließen anonymisiert in die Auswertung ein.
+            {a.duSie === "Sie"
+              ? "Danke, dass Sie sich die Zeit genommen haben. Ihre Antworten fließen anonymisiert in die Auswertung ein."
+              : "Danke, dass du dir die Zeit genommen hast. Deine Antworten fließen anonymisiert in die Auswertung ein."}
           </p>
           {welle.abschlusstext && (
             <p style={{ color: "var(--farbe-grau-mid)", fontSize: "14.5px", lineHeight: 1.65, marginBottom: 26 }}>
@@ -622,7 +640,7 @@ export default function Interview() {
         <div key={animKey} className="max-w-[560px] w-full frage-uebergang-enter">
           <div className="mb-6 flex items-center gap-2" style={{ color: "var(--farbe-grau-mid)", fontSize: "12.5px" }}>
             <span className="sm:hidden">Kapitel {blockNr}</span>
-            <span className="hidden sm:inline">{item.block.titel}</span>
+            <span className="hidden sm:inline">{kapitelTitelAnzeige(item.block.titel)}</span>
             <span className="interview-trennpunkt" />
             <span>Frage {currentIndex + 1}/{gesamt}</span>
             <span className="interview-trennpunkt" />
