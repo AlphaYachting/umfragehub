@@ -315,13 +315,19 @@ export default function WaveEditor() {
         <div className="space-y-2">
           <Label>Begrüßungstext</Label>
           <Textarea value={welle.begruessungstext || ""} onChange={(e) => welleFeld("begruessungstext", e.target.value)} rows={3} />
+          <p className="text-xs text-slate-400">
+            Steht auf der Startseite unter dem Titel. Anonymität, „kein richtig, kein falsch“, Dauer und Pausieren zeigt die Startseite schon selbst — hier nur Anlass und Nutzen, 2–3 Sätze. Platzhalter wie <code>{"{{firma}}"}</code> und <code>{"{{du}}"}</code> werden ersetzt.
+          </p>
         </div>
         <div className="space-y-2">
           <Label>Abschlusstext</Label>
           <Textarea value={welle.abschlusstext || ""} onChange={(e) => welleFeld("abschlusstext", e.target.value)} rows={3} />
+          <p className="text-xs text-slate-400">
+            Steht auf der Schlussseite unter dem Dank. Der Dank selbst ist schon da — hier nur, was mit den Ergebnissen passiert und wann.
+          </p>
         </div>
         <div className="space-y-2">
-          <Label>Geschätzte Dauer (Minuten)</Label>
+          <Label>Geschätzte Dauer (Minuten) — nur intern; Befragte sehen die aus den Fragen berechnete Dauer</Label>
           <Input
             type="number"
             value={welle.geschaetzteDauerMinuten ?? 10}
