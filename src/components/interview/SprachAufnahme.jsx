@@ -48,6 +48,8 @@ export default function SprachAufnahme({ onTranskript, ansprache, basisText }) {
   // Fertig erkannter Text früherer Erkennungsläufe dieser Aufnahme / des laufenden Laufs
   const gesamtRef = useRef("");
   const sitzungRef = useRef("");
+  // Zählt die Aufnahmen — späte Ergebnisse einer älteren oder verworfenen Aufnahme werden ignoriert
+  const aufnahmeIdRef = useRef(0);
   const aufnimmtRef = useRef(false);
   const startZeitRef = useRef(0);
   const limitTimerRef = useRef(null);
@@ -106,6 +108,7 @@ export default function SprachAufnahme({ onTranskript, ansprache, basisText }) {
       return;
     }
     setFehler(false);
+    const meineId = ++aufnahmeIdRef.current;
     basisRef.current = basisTextRef.current || "";
     gesamtRef.current = "";
     sitzungRef.current = "";
@@ -136,6 +139,7 @@ export default function SprachAufnahme({ onTranskript, ansprache, basisText }) {
     rec.interimResults = true;
 
     rec.onresult = (e) => {
+      if (aufnahmeIdRef.current !== meineId) return;
       // Immer aus der ganzen Ergebnisliste des laufenden Laufs neu aufbauen — so kann
       // ein doppelt gemeldetes Ergebnis den Text nicht verdoppeln.
       let fertig = "";
@@ -164,10 +168,9 @@ export default function SprachAufnahme({ onTranskript, ansprache, basisText }) {
     };
 
     rec.onend = () => {
-      // Der Lauf ist zu Ende: sein Text ist fertig und zählt ab jetzt zum Gesamttext.
-      // (Nur übernehmen, solange diese Instanz noch die aktuelle Aufnahme ist oder gerade
-      // per „Fertig“ beendet wurde — eine neue Aufnahme hat die Refs schon zurückgesetzt.)
-      if (recognitionRef.current === rec || recognitionRef.current === null) {
+      // Der Lauf ist zu Ende: sein Text ist fertig und zählt ab jetzt zum Gesamttext
+      // (nur, solange inzwischen keine neue Aufnahme begonnen hat).
+      if (aufnahmeIdRef.current === meineId) {
         gesamtRef.current = `${gesamtRef.current} ${sitzungRef.current}`.trim();
         sitzungRef.current = "";
       }
@@ -205,12 +208,9 @@ export default function SprachAufnahme({ onTranskript, ansprache, basisText }) {
 
   // Aufnahme verwerfen: nur das Diktierte fällt weg, der Text von vorher bleibt stehen
   function verwerfen() {
+    aufnahmeIdRef.current++; // späte Ergebnisse dieser Aufnahme nicht mehr übernehmen
     gesamtRef.current = "";
     sitzungRef.current = "";
-    const rec = recognitionRef.current;
-    if (rec) {
-      rec.onresult = null; // späte Ergebnisse dieser Aufnahme nicht mehr übernehmen
-    }
     stoppe();
     onTranskriptRef.current(basisRef.current);
   }
