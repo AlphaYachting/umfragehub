@@ -5,6 +5,10 @@ import { Mic, X } from "lucide-react";
 // Der Code selbst wird klein dahinter angezeigt, damit sich der Fehler eingrenzen lässt.
 function fehlerUrsache(code, sie) {
   const c = String(code || "");
+  // Reihenfolge wichtig: "service-not-allowed" enthält "not-allowed" und muss zuerst geprüft werden.
+  if (/service-not-allowed/.test(c)) {
+    return "In diesem Browser ist die Spracherkennung nicht freigeschaltet. Tipp: Die Mikrofon-Taste der Handy-Tastatur funktioniert trotzdem.";
+  }
   if (/NotAllowedError|SecurityError|not-allowed/.test(c)) {
     return `Das Mikrofon ist für diese Seite gesperrt. ${sie ? "Erlauben Sie" : "Erlaube"} es über das Schloss-Symbol in der Adresszeile und ${sie ? "versuchen Sie" : "versuch"} es noch einmal.`;
   }
@@ -16,9 +20,6 @@ function fehlerUrsache(code, sie) {
   }
   if (/network/.test(c)) {
     return "Der Spracherkennungsdienst des Browsers ist gerade nicht erreichbar.";
-  }
-  if (/service-not-allowed/.test(c)) {
-    return "In diesem Browser ist die Spracherkennung nicht freigeschaltet. Tipp: Die Mikrofon-Taste der Handy-Tastatur funktioniert trotzdem.";
   }
   if (/language-not-supported/.test(c)) {
     return "Die Spracherkennung unterstützt die eingestellte Sprache nicht.";
