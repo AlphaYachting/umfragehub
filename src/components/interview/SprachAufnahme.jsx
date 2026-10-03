@@ -174,9 +174,7 @@ export default function SprachAufnahme({ onTranskript, ansprache }) {
               Lieber sprechen als tippen?
             </span>
             <span style={{ fontSize: 13.5, lineHeight: 1.4, color: "var(--farbe-text-daempft)" }}>
-              {sie
-                ? "Tippen Sie hier und sagen Sie einfach, was Ihnen am Herzen liegt – der Text erscheint oben im Feld."
-                : "Tippe hier und sag einfach, was dir am Herzen liegt – der Text erscheint oben im Feld."}
+              Hier drücken und einfach sagen, was {sie ? "Ihnen" : "dir"} am Herzen liegt. Der Text erscheint oben im Feld.
             </span>
           </span>
         </button>
