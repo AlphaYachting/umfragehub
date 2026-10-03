@@ -105,6 +105,8 @@ export function spracheingabeCheck(vorgabe) {
 
   return {
     status,
+    // Betriebssystem — entscheidet, ob sich der empfohlene Browser direkt öffnen lässt
+    system: istIOS ? "ios" : istAndroid ? "android" : istMac ? "mac" : "computer",
     browser,
     browserName: ANZEIGE_NAMEN[browser] || null,
     inApp,
