@@ -228,12 +228,19 @@ export function platzhalterErsetzen(text, { firma, ansprache } = {}) {
 export function renderFragetext(text, kontext, optionen = {}) {
   if (!text) return "";
   const mitPlatzhaltern = kontext ? platzhalterErsetzen(text, kontext) : String(text);
-  const escaped = mitPlatzhaltern
+  const escapen = (s) => String(s)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+  let escaped = escapen(mitPlatzhaltern);
+  // Kurze Firmennamen aus mehreren Wörtern („austro dent“) nicht über den Zeilenumbruch trennen
+  const firma = kontext?.firma ? String(kontext.firma).trim() : "";
+  if (firma && /\s/.test(firma) && firma.length <= 30) {
+    const firmaEsc = escapen(firma);
+    escaped = escaped.split(firmaEsc).join(firmaEsc.replace(/\s+/g, "&nbsp;"));
+  }
   return escaped.replace(/\*([^*]+)\*/g, (ganz, wort) => {
     if (wort.length > 40) {
       return `<span class="frage-akzent-aussage">${wort}</span>`;
