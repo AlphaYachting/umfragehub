@@ -540,7 +540,7 @@ export default function Interview() {
               </button>
             </div>
             <div className="flex justify-center">
-              <button onClick={() => setScreen("datenschutz")} className="text-sm hover:underline" style={{ color: "var(--farbe-grau-mid)" }}>
+              <button onClick={() => setScreen("datenschutz")} className="text-sm hover:underline" style={{ color: "var(--farbe-grau-mid)", minHeight: 44 }}>
                 Wie werden meine Daten gespeichert?
               </button>
             </div>
@@ -705,12 +705,12 @@ export default function Interview() {
         <div className="max-w-[560px] mx-auto flex items-center justify-between gap-3">
           <div>
             {currentIndex > 0 && (
-              <button onClick={zurueck} className="inline-flex items-center text-sm hover:opacity-70" style={{ color: "var(--farbe-grau-mid)", minHeight: 48 }}>
-                <ArrowLeft size={16} className="mr-1" /> Zurück
+              <button onClick={zurueck} aria-label="Zurück" className="inline-flex items-center text-sm hover:opacity-70" style={{ color: "var(--farbe-grau-mid)", minHeight: 48, minWidth: 44 }}>
+                <ArrowLeft size={16} className="mr-1" /> <span className="interview-zurueck-wort">Zurück</span>
               </button>
             )}
           </div>
-          <div className="flex items-center gap-4">
+          <div className="interview-fuss-aktionen">
             {(!frage.pflicht || testModus) && (
               <button onClick={ueberspringen} className="text-sm hover:opacity-70" style={{ color: "var(--farbe-grau-mid)", minHeight: 48 }}>
                 Überspringen
@@ -719,8 +719,7 @@ export default function Interview() {
             <button
               onClick={() => weiter()}
               disabled={!testModus && frage.pflicht && !istBeantwortet(frage, wert)}
-              className="interview-btn-akzent"
-              style={{ paddingLeft: 28, paddingRight: 28 }}
+              className="interview-btn-akzent interview-fuss-weiter"
             >
               {currentIndex === gesamt - 1 ? "Abschließen" : "Weiter"}
             </button>
