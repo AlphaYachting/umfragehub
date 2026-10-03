@@ -15,6 +15,7 @@ import {
 import FrageAntwort from "@/components/interview/FrageAntwort";
 import RechtlicheFusszeile from "@/components/interview/RechtlicheFusszeile";
 import ErklaerungBlock from "@/components/interview/ErklaerungBlock";
+import BrowserHinweis from "@/components/interview/BrowserHinweis";
 
 // Browser-Speicher kann gesperrt sein (privater Modus, eingebettete Browser in Mail-/Messenger-Apps,
 // strenge Datenschutz-Einstellungen). Die Befragung muss dann trotzdem laufen — nur das
@@ -532,6 +533,12 @@ export default function Interview() {
               );
             })}
           </div>
+
+          {/* Browser-Empfehlung: nur wenn es offene Fragen gibt (dort zählt die Spracheingabe) und
+              noch nicht in diesem Browser begonnen wurde — sonst ginge der Zwischenstand verloren. */}
+          {!kannFortsetzen && fragenListe.some((i) => i.frage.typ === "freitext") && (
+            <BrowserHinweis ansprache={projekt?.ansprache} testName={testModus ? urlParams.get("browser") : null} />
+          )}
 
           <div className="space-y-3" style={{ marginBottom: 34 }}>
             <div className="flex justify-center">
