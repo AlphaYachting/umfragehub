@@ -18,7 +18,7 @@ function fehlerUrsache(code, sie) {
     return "Der Spracherkennungsdienst des Browsers ist gerade nicht erreichbar.";
   }
   if (/service-not-allowed/.test(c)) {
-    return "In diesem Browser ist die Spracherkennung abgeschaltet.";
+    return "In diesem Browser ist die Spracherkennung nicht freigeschaltet. Tipp: Die Mikrofon-Taste der Handy-Tastatur funktioniert trotzdem.";
   }
   if (/language-not-supported/.test(c)) {
     return "Die Spracherkennung unterstützt die eingestellte Sprache nicht.";
@@ -48,6 +48,8 @@ export default function SprachAufnahme({ onTranskript, ansprache, basisText }) {
   // Fertig erkannter Text früherer Erkennungsläufe dieser Aufnahme / des laufenden Laufs
   const gesamtRef = useRef("");
   const sitzungRef = useRef("");
+  // Zuletzt nur vorläufig Erkanntes — manche Browser (iPhone-Safari) bestätigen es nie als fertig
+  const vorlaeufigRef = useRef("");
   // Zählt die Aufnahmen — späte Ergebnisse einer älteren oder verworfenen Aufnahme werden ignoriert
   const aufnahmeIdRef = useRef(0);
   const aufnimmtRef = useRef(false);
@@ -112,6 +114,7 @@ export default function SprachAufnahme({ onTranskript, ansprache, basisText }) {
     basisRef.current = basisTextRef.current || "";
     gesamtRef.current = "";
     sitzungRef.current = "";
+    vorlaeufigRef.current = "";
 
     // Mikrofon-Berechtigung aktiv anfragen — rec.start() allein löst in
     // manchen Browsern/Iframes keinen Permission-Prompt aus, getUserMedia schon.
@@ -154,6 +157,7 @@ export default function SprachAufnahme({ onTranskript, ansprache, basisText }) {
         }
       }
       sitzungRef.current = fertig;
+      vorlaeufigRef.current = vorlaeufig;
       melden(vorlaeufig);
     };
 
@@ -171,8 +175,12 @@ export default function SprachAufnahme({ onTranskript, ansprache, basisText }) {
       // Der Lauf ist zu Ende: sein Text ist fertig und zählt ab jetzt zum Gesamttext
       // (nur, solange inzwischen keine neue Aufnahme begonnen hat).
       if (aufnahmeIdRef.current === meineId) {
-        gesamtRef.current = `${gesamtRef.current} ${sitzungRef.current}`.trim();
+        // Was bis zum Ende nur vorläufig erkannt war, steht schon im Feld und bleibt erhalten.
+        gesamtRef.current = `${gesamtRef.current} ${sitzungRef.current} ${vorlaeufigRef.current}`
+          .replace(/\s+/g, " ")
+          .trim();
         sitzungRef.current = "";
+        vorlaeufigRef.current = "";
       }
       // Alte Instanz nach Neustart ignorieren
       if (recognitionRef.current !== rec) return;
@@ -211,6 +219,7 @@ export default function SprachAufnahme({ onTranskript, ansprache, basisText }) {
     aufnahmeIdRef.current++; // späte Ergebnisse dieser Aufnahme nicht mehr übernehmen
     gesamtRef.current = "";
     sitzungRef.current = "";
+    vorlaeufigRef.current = "";
     stoppe();
     onTranskriptRef.current(basisRef.current);
   }
