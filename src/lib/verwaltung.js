@@ -141,12 +141,30 @@ export function gruppiere(liste, feld) {
   return out;
 }
 
+// Alle Datensätze einer Entität seitenweise holen — unabhängig davon, wie viele
+// der Server je Abfrage höchstens liefert. Ohne das würden Zählungen ab einer
+// gewissen Menge stillschweigend zu niedrig ausfallen.
+const SEITE = 200;
+const MAX_SEITEN = 50;
+export async function alle(entitaet, query = null, sort = "-created_date") {
+  const out = [];
+  for (let seite = 0; seite < MAX_SEITEN; seite++) {
+    const teil = query
+      ? await entitaet.filter(query, sort, SEITE, out.length)
+      : await entitaet.list(sort, SEITE, out.length);
+    if (!teil || teil.length === 0) break;
+    out.push(...teil);
+    if (teil.length < SEITE) break;
+  }
+  return out;
+}
+
 // Alles für die Projektübersicht in drei parallelen Abfragen
 export async function ladeGesamt() {
   const [projekte, wellen, sessions] = await Promise.all([
-    base44.entities.Projekt.list("-created_date", 500),
-    base44.entities.Welle.list("-created_date", 2000),
-    base44.entities.Session.list("-created_date", 5000),
+    alle(base44.entities.Projekt),
+    alle(base44.entities.Welle),
+    alle(base44.entities.Session),
   ]);
   return { projekte, wellen, sessions };
 }
@@ -155,10 +173,10 @@ export async function ladeGesamt() {
 export async function ladeProjekt(projektId) {
   const [projekt, wellen] = await Promise.all([
     base44.entities.Projekt.get(projektId),
-    base44.entities.Welle.filter({ projektId }, "created_date", 500),
+    alle(base44.entities.Welle, { projektId }, "created_date"),
   ]);
   const listen = await Promise.all(
-    wellen.map((w) => base44.entities.Session.filter({ wellenId: w.id }, "-created_date", 5000))
+    wellen.map((w) => alle(base44.entities.Session, { wellenId: w.id }))
   );
   const sessionsJeWelle = {};
   wellen.forEach((w, i) => { sessionsJeWelle[w.id] = listen[i]; });
@@ -337,7 +355,7 @@ export async function welleDuplizieren(welle, neuerName) {
     abschlusstext: welle.abschlusstext || "",
     geschaetzteDauerMinuten: welle.geschaetzteDauerMinuten ?? 10,
   });
-  const bloecke = await base44.entities.Block.filter({ wellenId: welle.id }, "reihenfolge", 500);
+  const bloecke = await alle(base44.entities.Block, { wellenId: welle.id }, "reihenfolge");
   let anzahlFragen = 0;
   for (const b of bloecke) {
     const neuerBlock = await base44.entities.Block.create({
@@ -346,15 +364,20 @@ export async function welleDuplizieren(welle, neuerName) {
       reihenfolge: b.reihenfolge ?? 0,
       motivationstext: b.motivationstext || "",
     });
-    const fragen = await base44.entities.Frage.filter({ blockId: b.id }, "reihenfolge", 1000);
+    const fragen = await alle(base44.entities.Frage, { blockId: b.id }, "reihenfolge");
     if (fragen.length) {
-      await base44.entities.Frage.bulkCreate(
-        fragen.map((f) => ({
-          ...frageFelderAuslesen(f),
-          blockId: neuerBlock.id,
-          reihenfolge: f.reihenfolge ?? 0,
-        }))
-      );
+      const kopien = fragen.map((f) => ({
+        ...frageFelderAuslesen(f),
+        blockId: neuerBlock.id,
+        reihenfolge: f.reihenfolge ?? 0,
+      }));
+      try {
+        await base44.entities.Frage.bulkCreate(kopien);
+      } catch (e) {
+        // Sammelanlage nicht möglich — einzeln anlegen. Vorher aufräumen, damit nichts doppelt entsteht.
+        await base44.entities.Frage.deleteMany({ blockId: neuerBlock.id });
+        for (const kopie of kopien) await base44.entities.Frage.create(kopie);
+      }
       anzahlFragen += fragen.length;
     }
   }
@@ -363,12 +386,12 @@ export async function welleDuplizieren(welle, neuerName) {
 
 // Welle mit allem, was daran hängt, löschen
 export async function welleLoeschen(welle) {
-  const bloecke = await base44.entities.Block.filter({ wellenId: welle.id }, "reihenfolge", 500);
+  const bloecke = await alle(base44.entities.Block, { wellenId: welle.id }, "reihenfolge");
   for (const b of bloecke) {
     await base44.entities.Frage.deleteMany({ blockId: b.id });
   }
   await base44.entities.Block.deleteMany({ wellenId: welle.id });
-  const sessions = await base44.entities.Session.filter({ wellenId: welle.id }, "-created_date", 5000);
+  const sessions = await alle(base44.entities.Session, { wellenId: welle.id });
   for (const s of sessions) {
     await base44.entities.Antwort.deleteMany({ sessionId: s.id });
   }
