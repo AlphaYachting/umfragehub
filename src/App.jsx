@@ -17,6 +17,7 @@ import ProjectDetail from '@/pages/ProjectDetail';
 import WaveEditor from '@/pages/WaveEditor';
 import WaveDashboard from '@/pages/WaveDashboard';
 import RawData from '@/pages/RawData';
+import WaveInvites from '@/pages/WaveInvites';
 import QuestionLibrary from '@/pages/QuestionLibrary';
 import Interview from '@/pages/Interview';
 
@@ -58,6 +59,7 @@ const AuthenticatedApp = () => {
           <Route path="/welle/:id/editor" element={<WaveEditor />} />
           <Route path="/welle/:id/dashboard" element={<WaveDashboard />} />
           <Route path="/welle/:id/rohdaten" element={<RawData />} />
+          <Route path="/welle/:id/einladungen" element={<WaveInvites />} />
           <Route path="/bibliothek" element={<QuestionLibrary />} />
         </Route>
       </Route>
