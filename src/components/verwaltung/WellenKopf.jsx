@@ -11,6 +11,7 @@ export default function WellenKopf({ welle, projekt, aktiv, children }) {
   const reiter = [
     { key: "dashboard", label: "Verlauf", to: `/welle/${welle.id}/dashboard` },
     { key: "editor", label: "Fragen", to: `/welle/${welle.id}/editor` },
+    { key: "einladungen", label: "Einladungen", to: `/welle/${welle.id}/einladungen` },
     { key: "rohdaten", label: "Antworten & Export", to: `/welle/${welle.id}/rohdaten` },
   ];
   return (
@@ -40,7 +41,7 @@ export default function WellenKopf({ welle, projekt, aktiv, children }) {
           <LinkAktionen welle={welle} />
         </div>
       </div>
-      <div className="flex gap-6 border-b border-slate-200 mt-5">
+      <div className="flex gap-6 border-b border-slate-200 mt-5 overflow-x-auto whitespace-nowrap">
         {reiter.map((r) => (
           <Link
             key={r.key}
