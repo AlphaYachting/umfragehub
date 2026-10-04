@@ -1,0 +1,85 @@
+{
+  "description": "Eingeladene Person einer Welle. Enth\u00e4lt bewusst keinen Bezug zu Session oder Antworten.",
+  "name": "Empfaenger",
+  "properties": {
+    "abteilung": {
+      "title": "Abteilung",
+      "type": "string"
+    },
+    "anzahlErinnerungen": {
+      "default": 0,
+      "title": "Anzahl Erinnerungen",
+      "type": "number"
+    },
+    "eingeladenAm": {
+      "format": "date-time",
+      "title": "Eingeladen am",
+      "type": "string"
+    },
+    "email": {
+      "title": "E-Mail",
+      "type": "string"
+    },
+    "erinnertAm": {
+      "format": "date-time",
+      "title": "Zuletzt erinnert am",
+      "type": "string"
+    },
+    "fehlerText": {
+      "title": "Fehler beim Versand",
+      "type": "string"
+    },
+    "gestartet": {
+      "default": false,
+      "description": "Nur im Modus 'pers\u00f6nlicher Link': ob die Befragung ge\u00f6ffnet und gestartet wurde. Kein Zeitpunkt, kein Bezug zu Antworten.",
+      "title": "Hat begonnen",
+      "type": "boolean"
+    },
+    "token": {
+      "description": "Zuf\u00e4lliger Token f\u00fcr den pers\u00f6nlichen Link. Wird nie an Session oder Antwort gespeichert.",
+      "title": "Einladungs-Token",
+      "type": "string"
+    },
+    "versandStatus": {
+      "default": "neu",
+      "enum": [
+        "neu",
+        "eingeladen",
+        "fehler"
+      ],
+      "title": "Versandstatus",
+      "type": "string"
+    },
+    "wellenId": {
+      "title": "Wellen ID",
+      "type": "string"
+    }
+  },
+  "required": [
+    "wellenId",
+    "email"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  },
+  "type": "object"
+}

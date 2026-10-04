@@ -16,6 +16,16 @@
       "title": "Eingeladene Personen",
       "type": "number"
     },
+    "einladungsModus": {
+      "default": "gemeinsam",
+      "description": "gemeinsam = ein Link f\u00fcr alle, Erinnerung geht an alle. persoenlich = eigener Link je Adresse, Erinnerung nur an Personen, die noch nicht begonnen haben.",
+      "enum": [
+        "gemeinsam",
+        "persoenlich"
+      ],
+      "title": "Einladungsmodus",
+      "type": "string"
+    },
     "endetAm": {
       "description": "Geplantes Ende der Welle (Frist f\u00fcr die Befragten). Optional, schlie\u00dft die Welle nicht automatisch.",
       "format": "date",
@@ -31,6 +41,15 @@
       "title": "Link Token",
       "type": "string"
     },
+    "mailBetreff": {
+      "title": "Einladung: Betreff",
+      "type": "string"
+    },
+    "mailText": {
+      "format": "textarea",
+      "title": "Einladung: Text",
+      "type": "string"
+    },
     "mindestTeilnehmer": {
       "default": 6,
       "title": "Mindestteilnehmer",
@@ -42,6 +61,15 @@
     },
     "projektId": {
       "title": "Projekt ID",
+      "type": "string"
+    },
+    "reminderBetreff": {
+      "title": "Erinnerung: Betreff",
+      "type": "string"
+    },
+    "reminderText": {
+      "format": "textarea",
+      "title": "Erinnerung: Text",
       "type": "string"
     },
     "status": {

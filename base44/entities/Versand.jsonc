@@ -1,0 +1,71 @@
+{
+  "description": "Protokoll eines Versandlaufs (Einladung, Erinnerung, Test).",
+  "name": "Versand",
+  "properties": {
+    "abteilung": {
+      "title": "Abteilung (Filter)",
+      "type": "string"
+    },
+    "anzahl": {
+      "title": "Empf\u00e4nger",
+      "type": "number"
+    },
+    "art": {
+      "enum": [
+        "einladung",
+        "reminder",
+        "test"
+      ],
+      "title": "Art",
+      "type": "string"
+    },
+    "betreff": {
+      "title": "Betreff",
+      "type": "string"
+    },
+    "erfolgreich": {
+      "title": "Erfolgreich",
+      "type": "number"
+    },
+    "fehlgeschlagen": {
+      "title": "Fehlgeschlagen",
+      "type": "number"
+    },
+    "kanal": {
+      "description": "z. B. resend oder probelauf",
+      "title": "Versandkanal",
+      "type": "string"
+    },
+    "wellenId": {
+      "title": "Wellen ID",
+      "type": "string"
+    }
+  },
+  "required": [
+    "wellenId",
+    "art"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  },
+  "type": "object"
+}
