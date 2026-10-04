@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ChevronRight, Plus, Save, Trash2, CopyPlus, Pencil, LineChart, Table2 } from "lucide-react";
+import { ChevronRight, Plus, Save, Trash2, CopyPlus, Pencil, LineChart, Table2, Mail } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -356,6 +356,9 @@ export default function ProjectDetail() {
                         </Link>
                         <Link to={`/welle/${w.id}/editor`}>
                           <Button variant="outline" size="sm"><Pencil size={15} className="mr-1" /> Fragen</Button>
+                        </Link>
+                        <Link to={`/welle/${w.id}/einladungen`}>
+                          <Button variant="outline" size="sm"><Mail size={15} className="mr-1" /> Einladungen</Button>
                         </Link>
                         <Link to={`/welle/${w.id}/rohdaten`}>
                           <Button variant="outline" size="sm"><Table2 size={15} className="mr-1" /> Antworten</Button>
