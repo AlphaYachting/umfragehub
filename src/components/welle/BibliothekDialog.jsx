@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Check } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
@@ -74,10 +75,10 @@ export default function BibliothekDialog({ offen, onClose, onUebernehmen }) {
   if (!offen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-card rounded-lg w-full max-w-3xl max-h-[85vh] flex flex-col">
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-3xl w-[96vw] max-h-[85vh] flex flex-col gap-0 p-0">
         <div className="p-5 border-b border-border">
-          <h3 className="font-semibold mb-3">Aus Fragenbibliothek übernehmen</h3>
+          <DialogTitle className="text-value mb-3">Aus Fragenbibliothek übernehmen</DialogTitle>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Input
               placeholder="Suche…"
@@ -147,7 +148,7 @@ export default function BibliothekDialog({ offen, onClose, onUebernehmen }) {
             <Button onClick={uebernehmen}>Übernehmen</Button>
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

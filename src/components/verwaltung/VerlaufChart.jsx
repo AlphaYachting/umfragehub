@@ -1,11 +1,19 @@
 import React from "react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, CartesianGrid } from "recharts";
 
+// Farben ausschließlich aus den Tokens
+const F = {
+  linie: "hsl(var(--border))",
+  grau: "hsl(var(--muted-foreground))",
+  flaeche: "hsl(var(--muted))",
+  dunkel: "hsl(var(--foreground))",
+};
+
 // Verlauf einer Welle oder eines Projekts: begonnene und abgeschlossene
 // Interviews, aufsummiert je Tag. Optional mit Linie bei der Mindestzahl.
 export default function VerlaufChart({ daten, mindest = null, hoehe = 220 }) {
   if (!daten || daten.length === 0) {
-    return <p className="text-sm text-muted-foreground py-8 text-center">Noch keine Teilnahmen — der Verlauf erscheint mit dem ersten Interview.</p>;
+    return <p className="text-sm text-muted-foreground py-6 text-center">Noch keine Teilnahme — der Verlauf beginnt mit dem ersten Interview.</p>;
   }
   const maxWert = Math.max(mindest || 0, ...daten.map((d) => d.gestartet));
   const schritt = Math.max(1, Math.ceil(daten.length / 10));
@@ -15,28 +23,28 @@ export default function VerlaufChart({ daten, mindest = null, hoehe = 220 }) {
       <div style={{ width: "100%", height: hoehe }}>
         <ResponsiveContainer>
           <AreaChart data={daten} margin={{ top: 10, right: 12, left: -18, bottom: 0 }}>
-            <CartesianGrid stroke="#f1f5f9" vertical={false} />
-            <XAxis dataKey="tag" tick={{ fontSize: 11, fill: "#94a3b8" }} interval={schritt - 1} tickLine={false} axisLine={{ stroke: "#e2e8f0" }} />
-            <YAxis allowDecimals={false} domain={[0, Math.max(1, maxWert)]} tick={{ fontSize: 11, fill: "#94a3b8" }} tickLine={false} axisLine={false} />
+            <CartesianGrid stroke={F.linie} vertical={false} />
+            <XAxis dataKey="tag" tick={{ fontSize: 11, fill: F.grau }} interval={schritt - 1} tickLine={false} axisLine={{ stroke: F.linie }} />
+            <YAxis allowDecimals={false} domain={[0, Math.max(1, maxWert)]} tick={{ fontSize: 11, fill: F.grau }} tickLine={false} axisLine={false} />
             <Tooltip
-              contentStyle={{ fontSize: 12, borderRadius: 8, borderColor: "#e2e8f0" }}
+              contentStyle={{ fontSize: 12, borderRadius: 4, borderColor: F.linie, boxShadow: "none" }}
               formatter={(wert, name, eintrag) => {
                 const neu = name === "Abgeschlossen" ? eintrag.payload.neuAbgeschlossen : eintrag.payload.neuGestartet;
                 return [`${wert}${neu ? ` (+${neu} an diesem Tag)` : ""}`, name];
               }}
             />
             {mindest ? (
-              <ReferenceLine y={mindest} stroke="#64748b" strokeDasharray="4 4" label={{ value: `Mindestzahl ${mindest}`, position: "insideTopLeft", fontSize: 11, fill: "#64748b" }} />
+              <ReferenceLine y={mindest} stroke={F.grau} strokeDasharray="4 4" label={{ value: `Mindestzahl ${mindest}`, position: "insideTopLeft", fontSize: 11, fill: F.grau }} />
             ) : null}
-            <Area type="stepAfter" dataKey="gestartet" name="Begonnen" stroke="#94a3b8" fill="#e2e8f0" strokeWidth={1.5} />
-            <Area type="stepAfter" dataKey="abgeschlossen" name="Abgeschlossen" stroke="#16a34a" fill="#bbf7d0" strokeWidth={2} />
+            <Area type="stepAfter" dataKey="gestartet" name="Begonnen" stroke={F.grau} fill={F.flaeche} fillOpacity={1} strokeWidth={1} />
+            <Area type="stepAfter" dataKey="abgeschlossen" name="Abgeschlossen" stroke={F.dunkel} fill={F.dunkel} fillOpacity={0.14} strokeWidth={2} />
           </AreaChart>
         </ResponsiveContainer>
       </div>
-      <div className="flex items-center gap-4 text-xs text-muted-foreground mt-2">
-        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-status-done border border-status-done/40" /> Abgeschlossen</span>
-        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-muted border border-input" /> Begonnen</span>
-        <span className="text-muted-foreground">aufsummiert je Tag</span>
+      <div className="flex items-center gap-4 text-meta text-muted-foreground mt-2">
+        <span className="inline-flex items-center gap-1.5"><span className="h-0.5 w-4 bg-foreground" /> Abgeschlossen</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-4 bg-muted border" /> Begonnen</span>
+        <span>aufsummiert je Tag</span>
       </div>
     </div>
   );

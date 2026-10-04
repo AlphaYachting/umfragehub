@@ -1,56 +1,45 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import Seitenkopf from "@/components/shared/Seitenkopf";
+import TypPille from "@/components/shared/TypPille";
 import StatusBadge from "@/components/verwaltung/StatusBadge";
 import LinkAktionen from "@/components/verwaltung/LinkAktionen";
-import { ZIELGRUPPE_LABELS } from "@/lib/interview";
 
-// Gemeinsamer Kopf für Editor, Dashboard und Rohdaten einer Welle:
-// Brotkrumen, Name, Status, Link-Aktionen und die Reiter zwischen den drei Ansichten.
+// Gemeinsamer Kopf der vier Sichten einer Welle: Zurück zum Projekt, Name,
+// Zielgruppe und Status, Link-Aktionen, darunter die Reiter.
 export default function WellenKopf({ welle, projekt, aktiv, children }) {
   const reiter = [
     { key: "dashboard", label: "Verlauf", to: `/welle/${welle.id}/dashboard` },
     { key: "editor", label: "Fragen", to: `/welle/${welle.id}/editor` },
     { key: "einladungen", label: "Einladungen", to: `/welle/${welle.id}/einladungen` },
-    { key: "rohdaten", label: "Antworten & Export", to: `/welle/${welle.id}/rohdaten` },
+    { key: "rohdaten", label: "Antworten", to: `/welle/${welle.id}/rohdaten` },
   ];
   return (
-    <div className="mb-6">
-      <nav className="flex items-center gap-1 text-meta text-muted-foreground flex-wrap">
-        <Link to="/" className="hover:text-foreground">Projekte</Link>
-        <ChevronRight size={14} className="text-muted-foreground/50" />
-        <Link to={`/projekt/${welle.projektId}`} className="hover:text-foreground">
-          {projekt?.name || "Projekt"}
-        </Link>
-        <ChevronRight size={14} className="text-muted-foreground/50" />
-        <span className="text-foreground">{welle.name}</span>
-      </nav>
-      <div className="flex items-start justify-between gap-3 flex-wrap">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-page text-foreground">{welle.name}</h1>
+    <div className="space-y-4">
+      <Seitenkopf
+        zurueck={{ to: `/projekt/${welle.projektId}`, label: projekt?.name || "Zum Projekt" }}
+        bereich="Welle"
+        titel={welle.name}
+        versalien={false}
+        kontext={
+          <span className="inline-flex items-center gap-2 flex-wrap mt-1">
+            <TypPille zielgruppe={welle.zielgruppe} />
             <StatusBadge status={welle.status} />
-          </div>
-          <p className="text-meta text-muted-foreground">
-            {projekt?.kundenname ? `${projekt.kundenname} · ` : ""}
-            {ZIELGRUPPE_LABELS[welle.zielgruppe] || "—"}
-          </p>
-        </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          {children}
-          <LinkAktionen welle={welle} />
-        </div>
-      </div>
-      <div className="flex gap-6 border-b border-border mt-5 overflow-x-auto whitespace-nowrap">
+            {projekt?.kundenname && <span>{projekt.kundenname}</span>}
+          </span>
+        }
+        aktionen={<>{children}<LinkAktionen welle={welle} /></>}
+      />
+      <div className="inline-flex h-9 items-center rounded-lg bg-muted p-1 text-muted-foreground max-w-full overflow-x-auto">
         {reiter.map((r) => (
           <Link
             key={r.key}
             to={r.to}
-            className={`pb-2.5 -mb-px text-sm font-medium border-b-2 transition-colors ${
-              aktiv === r.key
-                ? "border-foreground text-foreground"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
+            className={cn(
+              "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              aktiv === r.key ? "bg-background text-foreground shadow" : "hover:text-foreground"
+            )}
           >
             {r.label}
           </Link>

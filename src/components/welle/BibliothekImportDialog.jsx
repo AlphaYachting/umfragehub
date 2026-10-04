@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import {
@@ -84,10 +85,10 @@ export default function BibliothekImportDialog({ offen, onClose, onImport }) {
   const totalFragen = gruppen.reduce((s, g) => s + g.fragen.length, 0);
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-card rounded-lg w-full max-w-2xl max-h-[85vh] flex flex-col">
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-2xl w-[96vw] max-h-[85vh] flex flex-col gap-0 p-0">
         <div className="p-5 border-b border-border">
-          <h3 className="font-semibold mb-1">Komplette Bibliothek importieren</h3>
+          <DialogTitle className="text-value mb-1">Komplette Bibliothek importieren</DialogTitle>
           <p className="text-sm text-muted-foreground mb-4">
             Es werden automatisch Blöcke aus den Kategorien der Fragen angelegt.
           </p>
@@ -146,7 +147,7 @@ export default function BibliothekImportDialog({ offen, onClose, onImport }) {
             <Button onClick={bestaetigen} disabled={gruppen.length === 0}>Importieren</Button>
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

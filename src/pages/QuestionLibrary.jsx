@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import Seitenkopf from "@/components/shared/Seitenkopf";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { bestaetigen, eingabe } from "@/components/shared/Bestaetigen";
 import { Plus, Copy, Trash2, Download, Upload, Pencil, Check, X, FolderPlus, Folder } from "lucide-react";
 import { base44 } from "@/api/base44Client";
@@ -282,12 +284,7 @@ export default function QuestionLibrary() {
 
   return (
     <div className="v-seite">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="text-page text-foreground">Fragenbibliothek</h1>
-          <p className="text-meta text-muted-foreground">Wiederverwendbare Fragen-Container</p>
-        </div>
-      </div>
+      <Seitenkopf titel="Fragenbibliothek" kontext="Wiederverwendbare Fragen, in Containern geordnet" />
 
       <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
         {/* Container-Seitenleiste */}
@@ -384,7 +381,7 @@ export default function QuestionLibrary() {
               </Button>
               <Button variant="outline" size="sm" onClick={() => importRef.current?.click()} disabled={importiert}>
                 {importiert ? (
-                  <><span className="w-3 h-3 border-2 border-input border-t-slate-600 rounded-full animate-spin inline-block mr-2" /> Import läuft…</>
+                  <><span className="w-3 h-3 border-2 border-input border-t-foreground rounded-full animate-spin inline-block mr-2" /> Import läuft…</>
                 ) : (
                   <><Upload size={15} className="mr-1" /> Import</>
                 )}
@@ -464,12 +461,12 @@ export default function QuestionLibrary() {
       </div>
 
       {neu && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={() => setNeu(null)}>
-          <div className="bg-card rounded-lg p-6 w-full max-w-2xl max-h-[85vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
-            <h3 className="font-semibold mb-4">Neue Frage in „{container}"</h3>
+        <Dialog open onOpenChange={(o) => !o && setNeu(null)}>
+          <DialogContent className="max-w-2xl w-[96vw] max-h-[90vh] overflow-y-auto">
+            <DialogTitle>Neue Frage in „{container}“</DialogTitle>
             <FrageEditorBib frage={neu} onSave={(fr) => speichern(fr, null)} onCancel={() => setNeu(null)} />
-          </div>
-        </div>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );
