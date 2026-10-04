@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Plus, Save, Trash2 } from "lucide-react";
+import { ChevronRight, Plus, Save, Trash2, CopyPlus, Pencil, LineChart, Table2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,42 +13,55 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { ZIELGRUPPE_LABELS, generiereToken } from "@/lib/interview";
+import StatusBadge from "@/components/verwaltung/StatusBadge";
+import Fortschritt from "@/components/verwaltung/Fortschritt";
+import LinkAktionen from "@/components/verwaltung/LinkAktionen";
+import VerlaufChart from "@/components/verwaltung/VerlaufChart";
 import {
-  ZIELGRUPPE_LABELS,
-  generiereToken,
-} from "@/lib/interview";
+  ladeProjekt,
+  wellenKennzahlen,
+  wellenHinweis,
+  verlaufProTag,
+  relativerTag,
+  datumKurz,
+  welleDuplizieren,
+  welleLoeschen,
+} from "@/lib/verwaltung";
 
-const STATUS_LABELS = {
-  entwurf: "Entwurf",
-  live: "Live",
-  geschlossen: "Geschlossen",
-};
-
-const STATUS_FARBEN = {
-  entwurf: "bg-slate-100 text-slate-700",
-  live: "bg-green-100 text-green-700",
-  geschlossen: "bg-amber-100 text-amber-700",
+const TON_KLASSE = {
+  gut: "text-green-700",
+  warnung: "text-amber-700",
+  neutral: "text-slate-500",
 };
 
 export default function ProjectDetail() {
   const { id } = useParams();
   const [projekt, setProjekt] = useState(null);
   const [wellen, setWellen] = useState([]);
+  const [sessionsJeWelle, setSessionsJeWelle] = useState({});
   const [loading, setLoading] = useState(true);
   const [speichern, setSpeichern] = useState(false);
+  const [ungespeichert, setUngespeichert] = useState(false);
   const [neueWelle, setNeueWelle] = useState(false);
   const [welleName, setWelleName] = useState("");
   const [welleZielgruppe, setWelleZielgruppe] = useState("mitarbeiter");
+  const [welleEingeladen, setWelleEingeladen] = useState("");
+  const [welleEndetAm, setWelleEndetAm] = useState("");
+  const [beschaeftigt, setBeschaeftigt] = useState(null); // Wellen-ID, an der gerade gearbeitet wird
 
-  async function laden() {
-    setLoading(true);
+  async function laden(still = false) {
+    if (!still) setLoading(true);
     try {
-      const p = await base44.entities.Projekt.get(id);
-      setProjekt(p);
-      const w = await base44.entities.Welle.filter({ projektId: id });
-      w.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
-      setWellen(w);
+      const d = await ladeProjekt(id);
+      d.wellen.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+      setProjekt(d.projekt);
+      setWellen(d.wellen);
+      setSessionsJeWelle(d.sessionsJeWelle);
+      setUngespeichert(false);
     } catch (e) {
       toast.error("Projekt konnte nicht geladen werden.");
     } finally {
@@ -60,8 +73,36 @@ export default function ProjectDetail() {
     laden();
   }, [id]);
 
+  const wellenMitZahlen = useMemo(
+    () => wellen.map((w) => ({ welle: w, k: wellenKennzahlen(w, sessionsJeWelle[w.id] || []) })),
+    [wellen, sessionsJeWelle]
+  );
+
+  const summe = useMemo(() => {
+    let gestartet = 0;
+    let abgeschlossen = 0;
+    let letzte = null;
+    for (const { k } of wellenMitZahlen) {
+      gestartet += k.gestartet;
+      abgeschlossen += k.abgeschlossen;
+      if (k.letzteAktivitaet && (!letzte || k.letzteAktivitaet > letzte)) letzte = k.letzteAktivitaet;
+    }
+    return {
+      gestartet,
+      abgeschlossen,
+      letzte,
+      live: wellen.filter((w) => w.status === "live").length,
+    };
+  }, [wellenMitZahlen, wellen]);
+
+  const verlauf = useMemo(
+    () => verlaufProTag(Object.values(sessionsJeWelle).flat()),
+    [sessionsJeWelle]
+  );
+
   function feldAendern(feld, wert) {
     setProjekt({ ...projekt, [feld]: wert });
+    setUngespeichert(true);
   }
 
   async function speichernProjekt() {
@@ -82,8 +123,8 @@ export default function ProjectDetail() {
         datenschutzUrl: projekt.datenschutzUrl,
         impressumUrl: projekt.impressumUrl,
         ansprache: projekt.ansprache,
-        status: projekt.status,
       });
+      setUngespeichert(false);
       toast.success("Gespeichert.");
     } catch (e) {
       toast.error("Speichern fehlgeschlagen.");
@@ -92,15 +133,26 @@ export default function ProjectDetail() {
     }
   }
 
+  // Projektstatus wird sofort gespeichert — unabhängig von den übrigen Einstellungen
+  async function projektStatus(neu) {
+    const alt = projekt.status;
+    setProjekt((p) => ({ ...p, status: neu }));
+    try {
+      await base44.entities.Projekt.update(id, { status: neu });
+      toast.success("Projektstatus aktualisiert.");
+    } catch (e) {
+      setProjekt((p) => ({ ...p, status: alt }));
+      toast.error("Aktualisierung fehlgeschlagen.");
+    }
+  }
+
   async function logoHochladen(e) {
     const file = e.target.files?.[0];
     if (!file) return;
     try {
-      const { file_url } = await base44.integrations.Core.UploadPublicFile({
-        file,
-      });
+      const { file_url } = await base44.integrations.Core.UploadPublicFile({ file });
       feldAendern("logoUrl", file_url);
-      toast.success("Logo hochgeladen.");
+      toast.success("Logo hochgeladen — bitte noch speichern.");
     } catch (err) {
       toast.error("Logo-Upload fehlgeschlagen.");
     }
@@ -112,7 +164,7 @@ export default function ProjectDetail() {
       return;
     }
     try {
-      await base44.entities.Welle.create({
+      const daten = {
         projektId: id,
         name: welleName.trim(),
         zielgruppe: welleZielgruppe,
@@ -122,272 +174,432 @@ export default function ProjectDetail() {
         begruessungstext: "",
         abschlusstext: "",
         geschaetzteDauerMinuten: 10,
-      });
+      };
+      if (Number(welleEingeladen) > 0) daten.eingeladen = Number(welleEingeladen);
+      if (welleEndetAm) daten.endetAm = welleEndetAm;
+      await base44.entities.Welle.create(daten);
       toast.success("Welle angelegt.");
       setNeueWelle(false);
       setWelleName("");
-      laden();
+      setWelleEingeladen("");
+      setWelleEndetAm("");
+      laden(true);
     } catch (e) {
       toast.error("Anlegen fehlgeschlagen.");
     }
   }
 
-  async function welleLoeschen(w) {
-    if (!confirm(`Welle "${w.name}" wirklich löschen? Alle Blöcke, Fragen und Antworten gehen verloren.`)) return;
+  async function welleStatus(w, neu) {
+    if (neu === w.status) return;
+    if (neu === "live" && !confirm(`Welle „${w.name}“ freischalten? Der Teilnahmelink funktioniert ab sofort.`)) return;
+    if (neu === "geschlossen" && !confirm(`Welle „${w.name}“ schließen? Neue Teilnahmen sind dann nicht mehr möglich.`)) return;
     try {
-      const bloecke = await base44.entities.Block.filter({ wellenId: w.id });
-      for (const b of bloecke) {
-        await base44.entities.Frage.deleteMany({ blockId: b.id });
-      }
-      await base44.entities.Block.deleteMany({ wellenId: w.id });
-      const sessions = await base44.entities.Session.filter({ wellenId: w.id });
-      for (const s of sessions) {
-        await base44.entities.Antwort.deleteMany({ sessionId: s.id });
-      }
-      await base44.entities.Session.deleteMany({ wellenId: w.id });
-      await base44.entities.Welle.delete(w.id);
+      await base44.entities.Welle.update(w.id, { status: neu });
+      setWellen((liste) => liste.map((x) => (x.id === w.id ? { ...x, status: neu } : x)));
+      toast.success("Status aktualisiert.");
+    } catch (e) {
+      toast.error("Aktualisierung fehlgeschlagen.");
+    }
+  }
+
+  async function duplizieren(w) {
+    const name = prompt(
+      "Name der Kopie — Blöcke und Fragen werden übernommen, Antworten nicht. Die Kopie bekommt einen eigenen Link.",
+      `${w.name} (Kopie)`
+    );
+    if (!name || !name.trim()) return;
+    setBeschaeftigt(w.id);
+    try {
+      const r = await welleDuplizieren(w, name.trim());
+      toast.success(`Kopie angelegt: ${r.bloecke} Blöcke, ${r.fragen} Fragen.`);
+      laden(true);
+    } catch (e) {
+      toast.error("Duplizieren fehlgeschlagen — bitte prüfen, ob eine unvollständige Kopie entstanden ist.");
+      laden(true);
+    } finally {
+      setBeschaeftigt(null);
+    }
+  }
+
+  async function loeschen(w, k) {
+    let msg = `Welle „${w.name}“ wirklich löschen? Alle Blöcke und Fragen gehen verloren.`;
+    if (k.gestartet > 0) {
+      msg += `\n\nAchtung: Zu dieser Welle liegen ${k.gestartet} Teilnahmen vor (${k.abgeschlossen} abgeschlossen). Ihre Antworten werden unwiderruflich gelöscht.`;
+    }
+    if (!confirm(msg)) return;
+    setBeschaeftigt(w.id);
+    try {
+      await welleLoeschen(w);
       toast.success("Welle gelöscht.");
-      laden();
+      laden(true);
     } catch (e) {
       toast.error("Löschen fehlgeschlagen.");
+    } finally {
+      setBeschaeftigt(null);
     }
   }
 
   if (loading) return <div className="p-10 text-slate-400 text-sm">Lade Projekt…</div>;
   if (!projekt) return <div className="p-10 text-slate-400">Projekt nicht gefunden.</div>;
 
+  const kachel = (label, wert, zusatz) => (
+    <div className="bg-white border border-slate-200 rounded-lg px-5 py-4">
+      <div className="text-xs text-slate-500">{label}</div>
+      <div className="text-2xl font-bold text-slate-900 mt-0.5">{wert}</div>
+      {zusatz && <div className="text-xs text-slate-400 mt-0.5">{zusatz}</div>}
+    </div>
+  );
+
   return (
     <div className="p-6 md:p-10 max-w-5xl mx-auto">
-      <Link to="/" className="inline-flex items-center text-sm text-slate-500 hover:text-slate-800 mb-4">
-        <ArrowLeft size={16} className="mr-1" /> Zurück zur Projektübersicht
-      </Link>
+      <nav className="flex items-center gap-1 text-sm text-slate-500 mb-3">
+        <Link to="/" className="hover:text-slate-800">Projekte</Link>
+        <ChevronRight size={14} className="text-slate-300" />
+        <span className="text-slate-800">{projekt.name}</span>
+      </nav>
 
-      <h1 className="text-2xl font-bold tracking-tight mb-1">{projekt.name}</h1>
-      <p className="text-sm text-slate-500 mb-8">{projekt.kundenname || "Kein Kundenname"}</p>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white border border-slate-200 rounded-lg p-6">
-          <h2 className="font-semibold mb-4">Briefing</h2>
-          <Textarea
-            value={projekt.briefing || ""}
-            onChange={(e) => feldAendern("briefing", e.target.value)}
-            placeholder="Hintergrund, Ziele, Kontext des Projekts…"
-            rows={8}
-          />
-        </div>
-
-        <div className="bg-white border border-slate-200 rounded-lg p-6">
-          <h2 className="font-semibold mb-4">Design</h2>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Theme</Label>
-              <Select value={projekt.theme} onValueChange={(v) => feldAendern("theme", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="rittler">Rittler (Pink)</SelectItem>
-                  <SelectItem value="neutral">Neutral (Dunkelblau)</SelectItem>
-                  <SelectItem value="kunde">Kunde (eigene Farben)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Logo</Label>
-              <div className="flex items-center gap-3">
-                {projekt.logoUrl ? (
-                  <img src={projekt.logoUrl} alt="Logo" className="h-12 w-auto max-w-[120px] object-contain border border-slate-200 rounded p-1" />
-                ) : (
-                  <div className="h-12 w-20 bg-slate-100 rounded flex items-center justify-center text-xs text-slate-400">Kein Logo</div>
-                )}
-                <label className="cursor-pointer">
-                  <span className="inline-flex items-center px-3 py-2 text-sm border border-slate-200 rounded-md hover:bg-slate-50">
-                    Logo hochladen
-                  </span>
-                  <input type="file" accept="image/*" className="hidden" onChange={logoHochladen} />
-                </label>
-              </div>
-            </div>
-
-            {projekt.theme === "kunde" && (
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label>Primärfarbe</Label>
-                  <div className="flex items-center gap-2">
-                    <input type="color" value={projekt.farbePrimaer || "#ff3764"} onChange={(e) => feldAendern("farbePrimaer", e.target.value)} className="h-9 w-12 rounded border border-slate-200" />
-                    <Input value={projekt.farbePrimaer || ""} onChange={(e) => feldAendern("farbePrimaer", e.target.value)} />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label>Sekundärfarbe</Label>
-                  <div className="flex items-center gap-2">
-                    <input type="color" value={projekt.farbeSekundaer || "#45d085"} onChange={(e) => feldAendern("farbeSekundaer", e.target.value)} className="h-9 w-12 rounded border border-slate-200" />
-                    <Input value={projekt.farbeSekundaer || ""} onChange={(e) => feldAendern("farbeSekundaer", e.target.value)} />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <Label>Ansprache</Label>
-              <Select value={projekt.ansprache} onValueChange={(v) => feldAendern("ansprache", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="du">Du</SelectItem>
-                  <SelectItem value="sie">Sie</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Status</Label>
-              <Select value={projekt.status} onValueChange={(v) => feldAendern("status", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="entwurf">Entwurf</SelectItem>
-                  <SelectItem value="aktiv">Aktiv</SelectItem>
-                  <SelectItem value="archiviert">Archiviert</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+      <div className="flex items-start justify-between gap-3 flex-wrap mb-6">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="text-2xl font-bold tracking-tight">{projekt.name}</h1>
+            <StatusBadge status={projekt.status || "entwurf"} art="projekt" />
           </div>
+          <p className="text-sm text-slate-500 mt-1">{projekt.kundenname || "Kein Kundenname"}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-slate-500">Projektstatus</span>
+          <Select value={projekt.status || "entwurf"} onValueChange={projektStatus}>
+            <SelectTrigger className="w-36 h-9 bg-white"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="entwurf">Entwurf</SelectItem>
+              <SelectItem value="aktiv">Aktiv</SelectItem>
+              <SelectItem value="archiviert">Archiviert</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-lg p-6 mb-8">
-        <h2 className="font-semibold mb-4">Schrift &amp; Rechtliches</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label>Schriftfamilie (CSS-Font-Stack, optional)</Label>
-            <Input
-              value={projekt.schriftFamilie || ""}
-              onChange={(e) => feldAendern("schriftFamilie", e.target.value)}
-              placeholder="z. B. 'Inter', 'Helvetica Neue', sans-serif"
-            />
+      <Tabs defaultValue="wellen">
+        <TabsList className="mb-4">
+          <TabsTrigger value="wellen">Wellen &amp; Verlauf</TabsTrigger>
+          <TabsTrigger value="einstellungen">
+            Einstellungen{ungespeichert ? " •" : ""}
+          </TabsTrigger>
+        </TabsList>
+
+        {/* ------------------------------------------------------------------ */}
+        <TabsContent value="wellen">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            {kachel("Wellen", wellen.length, `${summe.live} live`)}
+            {kachel("Abgeschlossen", summe.abgeschlossen, "Interviews")}
+            {kachel("Begonnen", summe.gestartet - summe.abgeschlossen, "noch nicht beendet")}
+            {kachel("Letzte Aktivität", relativerTag(summe.letzte))}
           </div>
-          <div className="space-y-2">
-            <Label>Schrift-URL (Google Fonts, optional)</Label>
-            <Input
-              value={projekt.schriftUrl || ""}
-              onChange={(e) => feldAendern("schriftUrl", e.target.value)}
-              placeholder="https://fonts.googleapis.com/css2?family=Inter&display=swap"
-            />
+
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold">Wellen</h2>
+            <Button size="sm" onClick={() => setNeueWelle(true)}>
+              <Plus size={16} className="mr-1" /> Neue Welle
+            </Button>
           </div>
-          {projekt.theme === "kunde" && (
-            <>
-              <div className="space-y-2">
-                <Label>Textfarbe (optional)</Label>
-                <div className="flex items-center gap-2">
-                  <input type="color" value={projekt.farbeText || "#2d2d2d"} onChange={(e) => feldAendern("farbeText", e.target.value)} className="h-9 w-12 rounded border border-slate-200" />
-                  <Input value={projekt.farbeText || ""} onChange={(e) => feldAendern("farbeText", e.target.value)} placeholder="#2d2d2d" />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label>Hintergrundfarbe (optional)</Label>
-                <div className="flex items-center gap-2">
-                  <input type="color" value={projekt.farbeHintergrund || "#ffffff"} onChange={(e) => feldAendern("farbeHintergrund", e.target.value)} className="h-9 w-12 rounded border border-slate-200" />
-                  <Input value={projekt.farbeHintergrund || ""} onChange={(e) => feldAendern("farbeHintergrund", e.target.value)} placeholder="#ffffff" />
-                </div>
-              </div>
-            </>
+
+          {wellen.length === 0 ? (
+            <div className="bg-white border border-dashed border-slate-200 rounded-lg py-10 text-center">
+              <p className="text-sm text-slate-400 mb-3">Noch keine Wellen angelegt.</p>
+              <Button size="sm" onClick={() => setNeueWelle(true)}>
+                <Plus size={16} className="mr-1" /> Erste Welle anlegen
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-3 mb-6">
+              {wellenMitZahlen.map(({ welle: w, k }) => {
+                const h = wellenHinweis(w, k);
+                const arbeitet = beschaeftigt === w.id;
+                return (
+                  <div key={w.id} className={`bg-white border border-slate-200 rounded-lg p-5 ${arbeitet ? "opacity-60 pointer-events-none" : ""}`}>
+                    <div className="flex items-start justify-between gap-3 flex-wrap">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Link to={`/welle/${w.id}/dashboard`} className="font-semibold text-slate-900 hover:underline">
+                            {w.name}
+                          </Link>
+                          <StatusBadge status={w.status} />
+                        </div>
+                        <div className="text-xs text-slate-500 mt-0.5">
+                          {ZIELGRUPPE_LABELS[w.zielgruppe]}
+                          {k.frist ? ` · läuft bis ${datumKurz(k.frist, true)}` : ""}
+                          {k.gestartet > 0 ? ` · zuletzt ${relativerTag(k.letzteAktivitaet)}` : ""}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Select value={w.status} onValueChange={(v) => welleStatus(w, v)}>
+                          <SelectTrigger className="w-36 h-8 text-sm"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="entwurf">Entwurf</SelectItem>
+                            <SelectItem value="live">Live</SelectItem>
+                            <SelectItem value="geschlossen">Geschlossen</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <LinkAktionen welle={w} />
+                      </div>
+                    </div>
+
+                    <div className="mt-4">
+                      <Fortschritt k={k} />
+                    </div>
+                    <div className={`text-xs mt-2 ${TON_KLASSE[h.ton]}`}>{h.text}</div>
+
+                    <div className="flex items-center justify-between gap-2 flex-wrap mt-4 pt-3 border-t border-slate-100">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <Link to={`/welle/${w.id}/dashboard`}>
+                          <Button variant="outline" size="sm"><LineChart size={15} className="mr-1" /> Verlauf</Button>
+                        </Link>
+                        <Link to={`/welle/${w.id}/editor`}>
+                          <Button variant="outline" size="sm"><Pencil size={15} className="mr-1" /> Fragen</Button>
+                        </Link>
+                        <Link to={`/welle/${w.id}/rohdaten`}>
+                          <Button variant="outline" size="sm"><Table2 size={15} className="mr-1" /> Antworten</Button>
+                        </Link>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Button variant="ghost" size="sm" onClick={() => duplizieren(w)}>
+                          <CopyPlus size={15} className="mr-1" /> {arbeitet ? "Arbeitet…" : "Duplizieren"}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => loeschen(w, k)}
+                          className="text-slate-400 hover:text-red-600"
+                          title="Welle löschen"
+                          aria-label="Welle löschen"
+                        >
+                          <Trash2 size={15} />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           )}
-          <div className="space-y-2">
-            <Label>Datenschutz-URL (optional)</Label>
-            <Input
-              value={projekt.datenschutzUrl || ""}
-              onChange={(e) => feldAendern("datenschutzUrl", e.target.value)}
-              placeholder="https://…/datenschutz"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Impressum-URL (optional)</Label>
-            <Input
-              value={projekt.impressumUrl || ""}
-              onChange={(e) => feldAendern("impressumUrl", e.target.value)}
-              placeholder="https://…/impressum"
-            />
-          </div>
-        </div>
-        <p className="text-xs text-slate-400 mt-3">
-          Sind Datenschutz- und Impressum-URL gesetzt, erscheinen sie als Fußzeile im Teilnehmer-Frontend.
-        </p>
-      </div>
 
-      <div className="flex justify-end mb-8">
-        <Button onClick={speichernProjekt} disabled={speichern}>
-          <Save size={16} className="mr-2" /> {speichern ? "Speichert…" : "Projekt speichern"}
-        </Button>
-      </div>
+          {wellen.length > 0 && (
+            <div className="bg-white border border-slate-200 rounded-lg p-5">
+              <h2 className="font-semibold mb-3">Verlauf über alle Wellen</h2>
+              <VerlaufChart daten={verlauf} />
+            </div>
+          )}
+        </TabsContent>
 
-      <div className="bg-white border border-slate-200 rounded-lg p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold">Wellen</h2>
-          <Button size="sm" onClick={() => setNeueWelle(true)}>
-            <Plus size={16} className="mr-1" /> Neue Welle
-          </Button>
-        </div>
-
-        {wellen.length === 0 ? (
-          <p className="text-sm text-slate-400 py-6 text-center">Noch keine Wellen angelegt.</p>
-        ) : (
-          <div className="divide-y divide-slate-100">
-            {wellen.map((w) => (
-              <div key={w.id} className="flex items-center justify-between py-3">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{w.name}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${STATUS_FARBEN[w.status]}`}>
-                      {STATUS_LABELS[w.status]}
-                    </span>
-                  </div>
-                  <div className="text-xs text-slate-500 mt-0.5">
-                    {ZIELGRUPPE_LABELS[w.zielgruppe]} · Mindestteilnehmer: {w.mindestTeilnehmer}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Link to={`/welle/${w.id}/editor`}>
-                    <Button variant="outline" size="sm">Editor</Button>
-                  </Link>
-                  <Link to={`/welle/${w.id}/dashboard`}>
-                    <Button variant="outline" size="sm">Dashboard</Button>
-                  </Link>
-                  <Button variant="ghost" size="sm" onClick={() => welleLoeschen(w)} className="text-red-500 hover:text-red-700">
-                    <Trash2 size={16} />
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {neueWelle && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={() => setNeueWelle(false)}>
-          <div className="bg-white rounded-lg p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
-            <h3 className="font-semibold mb-4">Neue Welle</h3>
-            <div className="space-y-4">
+        {/* ------------------------------------------------------------------ */}
+        <TabsContent value="einstellungen">
+          <div className="bg-white border border-slate-200 rounded-lg p-6 mb-6">
+            <h2 className="font-semibold mb-4">Stammdaten</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Name der Welle</Label>
-                <Input value={welleName} onChange={(e) => setWelleName(e.target.value)} placeholder="z. B. Welle 1 — Mitarbeiter" autoFocus />
+                <Label>Projektname</Label>
+                <Input value={projekt.name || ""} onChange={(e) => feldAendern("name", e.target.value)} />
               </div>
               <div className="space-y-2">
-                <Label>Zielgruppe</Label>
-                <Select value={welleZielgruppe} onValueChange={setWelleZielgruppe}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(ZIELGRUPPE_LABELS).filter(([k]) => k !== "allgemein").map(([k, v]) => (
-                      <SelectItem key={k} value={k}>{v}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label>Kundenname</Label>
+                <Input value={projekt.kundenname || ""} onChange={(e) => feldAendern("kundenname", e.target.value)} />
+                <p className="text-xs text-slate-400">
+                  Erscheint in den Fragen überall, wo <code>{"{{firma}}"}</code> steht.
+                </p>
               </div>
             </div>
-            <div className="flex justify-end gap-2 mt-6">
-              <Button variant="outline" onClick={() => setNeueWelle(false)}>Abbrechen</Button>
-              <Button onClick={welleAnlegen}>Anlegen</Button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div className="bg-white border border-slate-200 rounded-lg p-6">
+              <h2 className="font-semibold mb-4">Briefing</h2>
+              <Textarea
+                value={projekt.briefing || ""}
+                onChange={(e) => feldAendern("briefing", e.target.value)}
+                placeholder="Hintergrund, Ziele, Kontext des Projekts…"
+                rows={10}
+              />
+              <p className="text-xs text-slate-400 mt-2">Nur intern — Befragte sehen das Briefing nie.</p>
+            </div>
+
+            <div className="bg-white border border-slate-200 rounded-lg p-6">
+              <h2 className="font-semibold mb-4">Design</h2>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Theme</Label>
+                  <Select value={projekt.theme} onValueChange={(v) => feldAendern("theme", v)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="rittler">Rittler (Pink)</SelectItem>
+                      <SelectItem value="neutral">Neutral (Dunkelblau)</SelectItem>
+                      <SelectItem value="kunde">Kunde (eigene Farben)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Logo</Label>
+                  <div className="flex items-center gap-3">
+                    {projekt.logoUrl ? (
+                      <img src={projekt.logoUrl} alt="Logo" className="h-12 w-auto max-w-[120px] object-contain border border-slate-200 rounded p-1" />
+                    ) : (
+                      <div className="h-12 w-20 bg-slate-100 rounded flex items-center justify-center text-xs text-slate-400">Kein Logo</div>
+                    )}
+                    <label className="cursor-pointer">
+                      <span className="inline-flex items-center px-3 py-2 text-sm border border-slate-200 rounded-md hover:bg-slate-50">
+                        Logo hochladen
+                      </span>
+                      <input type="file" accept="image/*" className="hidden" onChange={logoHochladen} />
+                    </label>
+                  </div>
+                </div>
+
+                {projekt.theme === "kunde" && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label>Primärfarbe</Label>
+                      <div className="flex items-center gap-2">
+                        <input type="color" value={projekt.farbePrimaer || "#ff3764"} onChange={(e) => feldAendern("farbePrimaer", e.target.value)} className="h-9 w-12 rounded border border-slate-200" />
+                        <Input value={projekt.farbePrimaer || ""} onChange={(e) => feldAendern("farbePrimaer", e.target.value)} />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Sekundärfarbe</Label>
+                      <div className="flex items-center gap-2">
+                        <input type="color" value={projekt.farbeSekundaer || "#45d085"} onChange={(e) => feldAendern("farbeSekundaer", e.target.value)} className="h-9 w-12 rounded border border-slate-200" />
+                        <Input value={projekt.farbeSekundaer || ""} onChange={(e) => feldAendern("farbeSekundaer", e.target.value)} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label>Ansprache</Label>
+                  <Select value={projekt.ansprache} onValueChange={(v) => feldAendern("ansprache", v)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="du">Du</SelectItem>
+                      <SelectItem value="sie">Sie</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+
+          <div className="bg-white border border-slate-200 rounded-lg p-6 mb-6">
+            <h2 className="font-semibold mb-4">Schrift &amp; Rechtliches</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Schriftfamilie (CSS-Font-Stack, optional)</Label>
+                <Input
+                  value={projekt.schriftFamilie || ""}
+                  onChange={(e) => feldAendern("schriftFamilie", e.target.value)}
+                  placeholder="z. B. 'Inter', 'Helvetica Neue', sans-serif"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Schrift-URL (Google Fonts, optional)</Label>
+                <Input
+                  value={projekt.schriftUrl || ""}
+                  onChange={(e) => feldAendern("schriftUrl", e.target.value)}
+                  placeholder="https://fonts.googleapis.com/css2?family=Inter&display=swap"
+                />
+              </div>
+              {projekt.theme === "kunde" && (
+                <>
+                  <div className="space-y-2">
+                    <Label>Textfarbe (optional)</Label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={projekt.farbeText || "#2d2d2d"} onChange={(e) => feldAendern("farbeText", e.target.value)} className="h-9 w-12 rounded border border-slate-200" />
+                      <Input value={projekt.farbeText || ""} onChange={(e) => feldAendern("farbeText", e.target.value)} placeholder="#2d2d2d" />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Hintergrundfarbe (optional)</Label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={projekt.farbeHintergrund || "#ffffff"} onChange={(e) => feldAendern("farbeHintergrund", e.target.value)} className="h-9 w-12 rounded border border-slate-200" />
+                      <Input value={projekt.farbeHintergrund || ""} onChange={(e) => feldAendern("farbeHintergrund", e.target.value)} placeholder="#ffffff" />
+                    </div>
+                  </div>
+                </>
+              )}
+              <div className="space-y-2">
+                <Label>Datenschutz-URL (optional)</Label>
+                <Input
+                  value={projekt.datenschutzUrl || ""}
+                  onChange={(e) => feldAendern("datenschutzUrl", e.target.value)}
+                  placeholder="https://…/datenschutz"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Impressum-URL (optional)</Label>
+                <Input
+                  value={projekt.impressumUrl || ""}
+                  onChange={(e) => feldAendern("impressumUrl", e.target.value)}
+                  placeholder="https://…/impressum"
+                />
+              </div>
+            </div>
+            <p className="text-xs text-slate-400 mt-3">
+              Sind Datenschutz- und Impressum-URL gesetzt, erscheinen sie als Fußzeile im Teilnehmer-Frontend.
+            </p>
+          </div>
+
+          <div className="flex items-center justify-end gap-3 sticky bottom-4">
+            {ungespeichert && (
+              <span className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1">
+                Ungespeicherte Änderungen
+              </span>
+            )}
+            <Button onClick={speichernProjekt} disabled={speichern} className="shadow-sm">
+              <Save size={16} className="mr-2" /> {speichern ? "Speichert…" : "Einstellungen speichern"}
+            </Button>
+          </div>
+        </TabsContent>
+      </Tabs>
+
+      <Dialog open={neueWelle} onOpenChange={setNeueWelle}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Neue Welle</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label>Name der Welle</Label>
+              <Input value={welleName} onChange={(e) => setWelleName(e.target.value)} placeholder="z. B. Welle 1 — Außendienst" autoFocus />
+            </div>
+            <div className="space-y-2">
+              <Label>Zielgruppe</Label>
+              <Select value={welleZielgruppe} onValueChange={setWelleZielgruppe}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {Object.entries(ZIELGRUPPE_LABELS).filter(([k]) => k !== "allgemein").map(([k, v]) => (
+                    <SelectItem key={k} value={k}>{v}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>Eingeladene Personen (optional)</Label>
+                <Input type="number" min="0" value={welleEingeladen} onChange={(e) => setWelleEingeladen(e.target.value)} placeholder="z. B. 24" />
+              </div>
+              <div className="space-y-2">
+                <Label>Läuft bis (optional)</Label>
+                <Input type="date" value={welleEndetAm} onChange={(e) => setWelleEndetAm(e.target.value)} />
+              </div>
+            </div>
+            <p className="text-xs text-slate-400">
+              Beides lässt sich später im Verlauf der Welle ändern. Die Frist schließt die Welle nicht automatisch.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setNeueWelle(false)}>Abbrechen</Button>
+            <Button onClick={welleAnlegen}>Anlegen</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
