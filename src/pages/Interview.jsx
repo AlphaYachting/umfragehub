@@ -40,6 +40,8 @@ export default function Interview() {
   const { linkToken } = useParams();
   const urlParams = new URLSearchParams(window.location.search);
   const testModus = urlParams.get("test") === "1";
+  // Persönlicher Einladungslink (?e=…) — dient nur dazu, beim Start "hat begonnen" zu vermerken
+  const einladungsToken = urlParams.get("e") || "";
 
   const [welle, setWelle] = useState(null);
   const [projekt, setProjekt] = useState(null);
@@ -177,6 +179,7 @@ export default function Interview() {
       const res = await base44.functions.invoke("interviewApi", {
         aktion: "start",
         linkToken,
+        einladung: einladungsToken || undefined,
       });
       const d = res?.data;
       if (d?.error) {
@@ -481,7 +484,11 @@ export default function Interview() {
           </button>
           <h1 className="text-2xl font-bold mb-4" style={{ color: "var(--farbe-text)" }}>Wie wir mit deinen Daten umgehen</h1>
           <div className="space-y-4 text-sm" style={{ color: "var(--farbe-text-daempft)", lineHeight: 1.7 }}>
-            <p>Diese Befragung ist vollständig anonym. Wir speichern keine Namen, keine E-Mail-Adressen und keinen Personenbezug. Auch IP-Adresse und Gerät werden nicht erfasst.</p>
+            {welle.einladungsModus === "persoenlich" && einladungsToken ? (
+              <p>{a.deinIhr.charAt(0).toUpperCase() + a.deinIhr.slice(1)}e Antworten sind anonym. Über {a.duSie === "Sie" ? "Ihren" : "deinen"} persönlichen Einladungslink vermerken wir nur, dass {a.duSie} begonnen {a.hastHaben} — damit wir niemanden unnötig erinnern. Welche Antworten von wem stammen, wird nicht gespeichert: Zwischen der E-Mail-Adresse und den Antworten gibt es keine Verbindung. Auch IP-Adresse und Gerät werden nicht erfasst.</p>
+            ) : (
+              <p>Diese Befragung ist vollständig anonym. Wir speichern keine Namen, keine E-Mail-Adressen und keinen Personenbezug. Auch IP-Adresse und Gerät werden nicht erfasst.</p>
+            )}
             <p>Deine Antworten werden unter einem zufälligen Code gespeichert, der nur auf diesem Gerät liegt. So kannst du pausieren und später weitermachen — aber niemand kann die Antworten {a.dichSie} zuordnen.</p>
             <p>Einzelantworten sind für uns erst ab {welle.mindestTeilnehmer || 6} abgeschlossenen Befragungen einsehbar. Darunter bleiben alle Antworten gesperrt, damit niemand aus einer kleinen Gruppe Rückschlüsse ziehen kann.</p>
             <p>Es gibt kein richtig und kein falsch. {a.duSie.charAt(0).toUpperCase() + a.duSie.slice(1)} {a.kannstKönnen} jede Frage überspringen (außer Pflichtfragen) und jederzeit mit „Zurück&ldquo; zu einer vorherigen Antwort zurückkehren.</p>
@@ -495,7 +502,9 @@ export default function Interview() {
 
   if (screen === "welcome") {
     const zusicherungen = [
-      { icon: Shield, lead: "Vollständig anonym.", text: `Wir sehen nicht, wer ${a.duSie} ${a.bistSind}. Es werden weder Name noch E-Mail noch Gerät gespeichert. Einzelantworten werden erst ab ${welle.mindestTeilnehmer || 6} abgeschlossenen Befragungen überhaupt sichtbar.` },
+      welle.einladungsModus === "persoenlich" && einladungsToken
+        ? { icon: Shield, lead: "Antworten bleiben anonym.", text: `Wir sehen nur, ob ${a.duSie} teilgenommen ${a.hastHaben} — nicht, was ${a.duSie} ${a.duSie === "Sie" ? "antworten" : "antwortest"}. Antworten werden ohne Name, E-Mail und Gerät gespeichert und erst ab ${welle.mindestTeilnehmer || 6} abgeschlossenen Befragungen überhaupt sichtbar.` }
+        : { icon: Shield, lead: "Vollständig anonym.", text: `Wir sehen nicht, wer ${a.duSie} ${a.bistSind}. Es werden weder Name noch E-Mail noch Gerät gespeichert. Einzelantworten werden erst ab ${welle.mindestTeilnehmer || 6} abgeschlossenen Befragungen überhaupt sichtbar.` },
       { icon: Heart, lead: "Kein richtig, kein falsch.", text: `Zu jeder Frage gibt es eine Erklärung, warum wir sie stellen – einfach auf „Warum fragen wir das?“ tippen.` },
       { icon: Clock, lead: `Etwa ${gesamtDauerMin} Minuten.`, text: `Eine Frage pro Seite, ${a.duSie} ${a.kannstKönnen} jederzeit zurück.` },
       { icon: PauseCircle, lead: "Pausieren geht.", text: `${a.duSie === "Sie" ? "Schließen Sie" : "Schließ"} den Tab einfach — auf demselben Gerät geht es später dort weiter, wo ${a.duSie} aufgehört ${a.hastHaben}.` },
