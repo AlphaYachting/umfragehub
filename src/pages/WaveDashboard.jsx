@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { Box, BoxInhalt } from "@/components/shared/Box";
 import { TON_TEXT, HINWEIS_TON } from "@/lib/designTon";
-import { bestaetigen, eingabe } from "@/components/shared/Bestaetigen";
+import { bestaetigen } from "@/components/shared/Bestaetigen";
 import { useParams } from "react-router-dom";
 import { Copy, BarChart3, Mail, RefreshCw, Save, RotateCw, ExternalLink } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
@@ -333,7 +333,7 @@ export default function WaveDashboard() {
         <p className="text-xs text-muted-foreground mb-4">Wie viele der begonnenen Teilnahmen den jeweiligen Abschnitt erreicht haben.</p>
         {trichter.length === 0 ? (
           <p className="text-sm text-muted-foreground py-4 text-center">
-            {fragen.length === 0 ? "Diese Welle hat noch keine Fragen." : "Noch keine Teilnahmen."}
+            {fragen.length === 0 ? "Diese Welle hat noch keine Fragen." : "Noch hat niemand begonnen — sobald die Welle live ist und der Link verschickt wurde, erscheint hier der Verlauf."}
           </p>
         ) : (
           <div className="space-y-2.5">
@@ -364,7 +364,7 @@ export default function WaveDashboard() {
           <h2 className="v-h2">Abbrüche je Frage</h2>
         </div>
         {abbruchDaten.every((d) => d.abbrueche === 0) ? (
-          <p className="text-sm text-muted-foreground py-6 text-center">Noch keine Abbrüche erfasst.</p>
+          <p className="text-sm text-muted-foreground py-6 text-center">Bisher hat niemand mittendrin aufgehört.</p>
         ) : (
           <>
             <div style={{ width: "100%", height: 260 }}>

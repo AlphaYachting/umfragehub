@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { bestaetigen, eingabe } from "@/components/shared/Bestaetigen";
+import { bestaetigen } from "@/components/shared/Bestaetigen";
 import { useParams } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { Plus, Trash2, Save, Library, GripVertical } from "lucide-react";
@@ -419,7 +419,7 @@ export default function WaveEditor() {
 
       {bloecke.length === 0 && (
         <div className="text-center py-12 border-2 border-dashed border-border rounded-lg">
-          <p className="text-muted-foreground text-sm mb-3">Noch keine Blöcke. Lege den ersten Block an.</p>
+          <p className="text-muted-foreground text-sm mb-3">Diese Welle hat noch keine Fragen. Lege den ersten Block an oder übernimm die komplette Bibliothek.</p>
           <Button variant="outline" onClick={blockHinzu}><Plus size={16} /> Block anlegen</Button>
         </div>
       )}

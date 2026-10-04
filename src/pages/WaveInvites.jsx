@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { bestaetigen, eingabe } from "@/components/shared/Bestaetigen";
+import { bestaetigen } from "@/components/shared/Bestaetigen";
 import { useParams } from "react-router-dom";
 import { Upload, Send, Bell, Trash2, Eye, Save, FlaskConical, Info } from "lucide-react";
 import { base44 } from "@/api/base44Client";
@@ -460,7 +460,7 @@ export default function WaveInvites() {
                 key={k}
                 type="button"
                 onClick={() => setVorlage(k)}
-                className={`px-3 py-1 text-sm rounded-md transition-colors ${vorlage === k ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                className={`px-3 py-1 text-sm rounded-md transition-colors ${vorlage === k ? "bg-background text-foreground shadow" : "text-muted-foreground hover:text-foreground"}`}
               >
                 {l}
               </button>

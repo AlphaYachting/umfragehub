@@ -189,7 +189,7 @@ export default function RawData() {
             </thead>
             <tbody className="divide-y divide-border">
               {antworten.length === 0 ? (
-                <tr><td colSpan={5} className="text-center text-muted-foreground py-8">Keine Antworten vorhanden.</td></tr>
+                <tr><td colSpan={5} className="text-center text-muted-foreground py-8">Zu dieser Welle liegen noch keine Antworten vor.</td></tr>
               ) : (
                 antworten.map((a) => {
                   const f = fragen.find((x) => x.id === a.frageId);

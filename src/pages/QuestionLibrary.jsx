@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Seitenkopf from "@/components/shared/Seitenkopf";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { bestaetigen, eingabe } from "@/components/shared/Bestaetigen";
+import { bestaetigen } from "@/components/shared/Bestaetigen";
 import { Plus, Copy, Trash2, Download, Upload, Pencil, Check, X, FolderPlus, Folder } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
@@ -419,7 +419,7 @@ export default function QuestionLibrary() {
             <p className="text-sm text-muted-foreground">Lade…</p>
           ) : gefiltert().length === 0 ? (
             <div className="text-center py-16 border-2 border-dashed border-border rounded-lg">
-              <p className="text-sm text-muted-foreground mb-3">Keine Fragen in diesem Container.</p>
+              <p className="text-sm text-muted-foreground mb-3">Dieser Container ist noch leer — oben über „Neue Frage“ anlegen oder Fragen importieren.</p>
               <p className="text-xs text-muted-foreground">Importiere eine JSON-Datei oder lege eine neue Frage an.</p>
             </div>
           ) : (

@@ -18,7 +18,7 @@ export default function VorschauDialog({ welle, offen, onClose }) {
       type="button"
       onClick={() => setModus(wert)}
       className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md transition-colors ${
-        modus === wert ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+        modus === wert ? "bg-background text-foreground shadow" : "text-muted-foreground hover:text-foreground"
       }`}
     >
       <Icon size={15} /> {label}

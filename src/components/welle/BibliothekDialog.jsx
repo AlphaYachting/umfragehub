@@ -125,7 +125,7 @@ export default function BibliothekDialog({ offen, onClose, onUebernehmen }) {
                   <div className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 ${
                     auswahl.has(f.id) ? "bg-foreground border-foreground" : "border-input"
                   }`}>
-                    {auswahl.has(f.id) && <Check size={12} className="text-white" />}
+                    {auswahl.has(f.id) && <Check size={12} className="text-background" />}
                   </div>
                   <div className="flex-1">
                     <div className="text-sm font-medium text-foreground">{f.text}</div>
