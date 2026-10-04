@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Download, Lock } from "lucide-react";
+import { Download, Lock } from "lucide-react";
+import WellenKopf from "@/components/verwaltung/WellenKopf";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -9,6 +10,7 @@ import { FRAGETYP_LABELS, sternchenEntfernen, matrixZeilenMitIds } from "@/lib/i
 export default function RawData() {
   const { id } = useParams();
   const [welle, setWelle] = useState(null);
+  const [projekt, setProjekt] = useState(null);
   const [fragen, setFragen] = useState([]);
   const [antworten, setAntworten] = useState([]);
   const [gesperrt, setGesperrt] = useState(true);
@@ -21,6 +23,7 @@ export default function RawData() {
     try {
       const w = await base44.entities.Welle.get(id);
       setWelle(w);
+      base44.entities.Projekt.get(w.projektId).then(setProjekt).catch(() => {});
       const res = await base44.functions.invoke("rohdaten", { wellenId: id });
       const d = res?.data;
       if (!d || d.error) {
@@ -138,14 +141,16 @@ export default function RawData() {
 
   return (
     <div className="p-6 md:p-10 max-w-5xl mx-auto">
-      <Link to={`/welle/${id}/dashboard`} className="inline-flex items-center text-sm text-slate-500 hover:text-slate-800 mb-4">
-        <ArrowLeft size={16} className="mr-1" /> Zurück zum Dashboard
-      </Link>
+      <WellenKopf welle={welle} projekt={projekt} aktiv="rohdaten" />
 
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Rohdaten</h1>
-          <p className="text-sm text-slate-500 mt-1">{welle.name}</p>
+          <h2 className="font-semibold">Antworten</h2>
+          <p className="text-sm text-slate-500 mt-0.5">
+            {gesperrt
+              ? `${abgeschlossenCount} von ${mindest} nötigen Interviews abgeschlossen`
+              : `${abgeschlossenCount} abgeschlossene Interviews · ${antworten.length} Antworten`}
+          </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={exportJSON} disabled={gesperrt}>
@@ -167,7 +172,7 @@ export default function RawData() {
             Bisher abgeschlossen: {abgeschlossenCount} von {mindest} nötig.
           </p>
           <p className="text-xs text-amber-600 mt-3">
-            Kennzahlen (Anzahl, Fortschritt) sind im Dashboard bereits sichtbar.
+            Kennzahlen (Anzahl, Fortschritt) sind im <Link to={`/welle/${id}/dashboard`} className="underline">Verlauf</Link> bereits sichtbar.
           </p>
         </div>
       ) : (
