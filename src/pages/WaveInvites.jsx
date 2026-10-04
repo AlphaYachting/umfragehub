@@ -30,14 +30,16 @@ export function adressenLesen(text) {
     const zeile = zeileRoh.trim();
     if (!zeile) continue;
     const zellen = zeile.split(/[\t;,]/).map((z) => z.trim().replace(/^["']|["']$/g, "")).filter(Boolean);
-    const mailIndex = zellen.findIndex((z) => MAIL_REGEX.test(z.replace(/^<|>$/g, "")));
-    if (mailIndex === -1) {
+    // Adresse irgendwo in der Zeile finden — auch in der Form "Anna Muster <anna@kunde.at>"
+    const treffer = zeile.match(/[^\s@<>,;"']+@[^\s@<>,;"']+\.[^\s@<>,;"']{2,}/);
+    if (!treffer) {
       // Kopfzeilen wie "E-Mail;Abteilung" stillschweigend überspringen
       if (!/mail|abteilung|bereich|name/i.test(zeile)) unlesbar.push(zeile);
       continue;
     }
-    const email = zellen[mailIndex].replace(/^<|>$/g, "").toLowerCase();
-    const rest = zellen.filter((_, i) => i !== mailIndex);
+    const email = treffer[0].toLowerCase();
+    // Abteilung = letzte Spalte, die nicht die Adresse enthält
+    const rest = zellen.filter((z) => !z.toLowerCase().includes(email));
     eintraege.push({ email, abteilung: rest[rest.length - 1] || "" });
   }
   return { eintraege, unlesbar };
