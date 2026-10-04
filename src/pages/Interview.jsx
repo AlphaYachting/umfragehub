@@ -480,7 +480,7 @@ export default function Interview() {
       <div className="min-h-screen flex items-center justify-center p-6" style={{ background: "var(--farbe-bg)" }}>
         <div className="max-w-lg w-full">
           <button onClick={() => setScreen("welcome")} className="inline-flex items-center text-sm mb-6" style={{ color: "var(--farbe-grau-mid)" }}>
-            <ArrowLeft size={16} className="mr-1" /> Zurück
+            <ArrowLeft size={16} /> Zurück
           </button>
           <h1 className="text-2xl font-bold mb-4" style={{ color: "var(--farbe-text)" }}>Wie wir mit deinen Daten umgehen</h1>
           <div className="space-y-4 text-sm" style={{ color: "var(--farbe-text-daempft)", lineHeight: 1.7 }}>
@@ -722,7 +722,7 @@ export default function Interview() {
           <div>
             {currentIndex > 0 && (
               <button onClick={zurueck} aria-label="Zurück" className="inline-flex items-center text-sm hover:opacity-70" style={{ color: "var(--farbe-grau-mid)", minHeight: 48, minWidth: 44 }}>
-                <ArrowLeft size={16} className="mr-1" /> <span className="interview-zurueck-wort">Zurück</span>
+                <ArrowLeft size={16} /> <span className="interview-zurueck-wort">Zurück</span>
               </button>
             )}
           </div>

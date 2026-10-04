@@ -41,11 +41,11 @@ export default function VorschauDialog({ welle, offen, onClose }) {
           </div>
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="sm" onClick={() => setZaehler(zaehler + 1)}>
-              <RotateCw size={15} className="mr-1" /> Von vorne
+              <RotateCw size={15} /> Von vorne
             </Button>
             <a href={url} target="_blank" rel="noopener noreferrer">
               <Button variant="ghost" size="sm">
-                <ExternalLink size={15} className="mr-1" /> Neuer Tab
+                <ExternalLink size={15} /> Neuer Tab
               </Button>
             </a>
           </div>

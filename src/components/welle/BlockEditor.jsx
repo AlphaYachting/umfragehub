@@ -98,7 +98,7 @@ export default function BlockEditor({
           ))}
 
           <Button variant="outline" size="sm" onClick={onFrageNeu} className="w-full border-dashed">
-            <Plus size={14} className="mr-1" /> Frage hinzufügen
+            <Plus size={14} /> Frage hinzufügen
           </Button>
         </div>
       )}

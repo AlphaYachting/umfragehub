@@ -1,7 +1,14 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { bestaetigen, eingabe } from "@/components/shared/Bestaetigen";
 import { useParams, Link } from "react-router-dom";
-import { ChevronRight, Plus, Save, Trash2, CopyPlus, Pencil, LineChart, Table2, Mail } from "lucide-react";
+import { Plus, Save, Trash2, CopyPlus, Pencil, LineChart, Table2, Mail, MoreHorizontal } from "lucide-react";
+import { cn } from "@/lib/utils";
+import Seitenkopf from "@/components/shared/Seitenkopf";
+import Abschnittstitel from "@/components/shared/Abschnittstitel";
+import TypPille from "@/components/shared/TypPille";
+import { Box, BoxKopf, BoxInhalt } from "@/components/shared/Box";
+import { TON_TEXT, HINWEIS_TON } from "@/lib/designTon";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,12 +42,6 @@ import {
   welleLoeschen,
 } from "@/lib/verwaltung";
 
-const TON_KLASSE = {
-  gut: "text-status-done-text",
-  warnung: "text-status-attention",
-  neutral: "text-muted-foreground",
-};
-
 export default function ProjectDetail() {
   const { id } = useParams();
   const [projekt, setProjekt] = useState(null);
@@ -54,7 +55,8 @@ export default function ProjectDetail() {
   const [welleZielgruppe, setWelleZielgruppe] = useState("mitarbeiter");
   const [welleEingeladen, setWelleEingeladen] = useState("");
   const [welleEndetAm, setWelleEndetAm] = useState("");
-  const [beschaeftigt, setBeschaeftigt] = useState(null); // Wellen-ID, an der gerade gearbeitet wird
+  const [beschaeftigt, setBeschaeftigt] = useState(null);
+  const [reiter, setReiter] = useState("wellen"); // Wellen-ID, an der gerade gearbeitet wird
 
   async function laden(still = false) {
     if (!still) setLoading(true);
@@ -247,43 +249,44 @@ export default function ProjectDetail() {
 
   return (
     <div className="v-seite">
-      <nav className="flex items-center gap-1 text-meta text-muted-foreground flex-wrap">
-        <Link to="/" className="hover:text-foreground">Projekte</Link>
-        <ChevronRight size={14} className="text-muted-foreground/50" />
-        <span className="text-foreground">{projekt.name}</span>
-      </nav>
-
-      <div className="flex items-start justify-between gap-3 flex-wrap">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-page text-foreground">{projekt.name}</h1>
+      <Seitenkopf
+        zurueck={{ to: "/", label: "Übersicht" }}
+        bereich="Projekt"
+        titel={projekt.name}
+        versalien={false}
+        kontext={
+          <span className="inline-flex items-center gap-2 flex-wrap mt-1">
             <StatusBadge status={projekt.status || "entwurf"} art="projekt" />
-          </div>
-          <p className="text-meta text-muted-foreground">{projekt.kundenname || "Kein Kundenname"}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">Projektstatus</span>
-          <Select value={projekt.status || "entwurf"} onValueChange={projektStatus}>
-            <SelectTrigger className="w-36 h-9 bg-card"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="entwurf">Entwurf</SelectItem>
-              <SelectItem value="aktiv">Aktiv</SelectItem>
-              <SelectItem value="archiviert">Archiviert</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+            <span>{projekt.kundenname || "Kein Kundenname"}</span>
+          </span>
+        }
+        aktionen={
+          <>
+            <Select value={projekt.status || "entwurf"} onValueChange={projektStatus}>
+              <SelectTrigger className="w-36 bg-card" aria-label="Projektstatus"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="entwurf">Entwurf</SelectItem>
+                <SelectItem value="aktiv">Aktiv</SelectItem>
+                <SelectItem value="archiviert">Archiviert</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button variant={reiter === "wellen" ? "default" : "outline"} onClick={() => setNeueWelle(true)}>
+              <Plus /> Neue Welle
+            </Button>
+          </>
+        }
+      />
 
-      <Tabs defaultValue="wellen">
-        <TabsList className="mb-4">
-          <TabsTrigger value="wellen">Wellen &amp; Verlauf</TabsTrigger>
+      <Tabs value={reiter} onValueChange={setReiter}>
+        <TabsList>
+          <TabsTrigger value="wellen">Wellen ({wellen.length})</TabsTrigger>
           <TabsTrigger value="einstellungen">
             Einstellungen{ungespeichert ? " •" : ""}
           </TabsTrigger>
         </TabsList>
 
         {/* ------------------------------------------------------------------ */}
-        <TabsContent value="wellen">
+        <TabsContent value="wellen" className="mt-4 space-y-5">
           <Kennzahlleiste werte={[
             kachel("Wellen", wellen.length, `${summe.live} live`),
             kachel("Abgeschlossen", summe.abgeschlossen, "Interviews"),
@@ -291,106 +294,80 @@ export default function ProjectDetail() {
             kachel("Letzte Aktivität", relativerTag(summe.letzte)),
           ]} />
 
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="v-h2">Wellen</h2>
-            <Button size="sm" onClick={() => setNeueWelle(true)}>
-              <Plus size={16} className="mr-1" /> Neue Welle
-            </Button>
-          </div>
-
           {wellen.length === 0 ? (
-            <div className="bg-card border border-dashed border-border rounded-lg py-10 text-center">
-              <p className="text-sm text-muted-foreground mb-3">Noch keine Wellen angelegt.</p>
-              <Button size="sm" onClick={() => setNeueWelle(true)}>
-                <Plus size={16} className="mr-1" /> Erste Welle anlegen
-              </Button>
-            </div>
+            <div className="v-leer">Dieses Projekt hat noch keine Welle — oben rechts über „Neue Welle“ anlegen.</div>
           ) : (
             <div className="space-y-3">
+              <Abschnittstitel>Wellen</Abschnittstitel>
               {wellenMitZahlen.map(({ welle: w, k }) => {
                 const h = wellenHinweis(w, k);
+                const ton = HINWEIS_TON[h.ton];
                 const arbeitet = beschaeftigt === w.id;
                 return (
-                  <div key={w.id} className={`v-karte ${arbeitet ? "opacity-60 pointer-events-none" : ""}`}>
-                    <div className="flex items-start justify-between gap-3 flex-wrap">
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <Link to={`/welle/${w.id}/dashboard`} className="font-semibold text-foreground hover:underline">
-                            {w.name}
-                          </Link>
-                          <StatusBadge status={w.status} />
-                        </div>
-                        <div className="text-xs text-muted-foreground mt-0.5">
-                          {ZIELGRUPPE_LABELS[w.zielgruppe]}
-                          {k.frist ? ` · läuft bis ${datumKurz(k.frist, true)}` : ""}
-                          {k.gestartet > 0 ? ` · zuletzt ${relativerTag(k.letzteAktivitaet)}` : ""}
-                        </div>
+                  <Box key={w.id} streifen={ton === "attention" ? "attention" : undefined} className={cn(arbeitet && "opacity-50 pointer-events-none")}>
+                    <div className="flex items-center gap-3.5 px-4 py-3 flex-wrap border-b">
+                      <TypPille zielgruppe={w.zielgruppe} />
+                      <div className="min-w-0 flex-1">
+                        <Link to={`/welle/${w.id}/dashboard`} className="block text-object text-foreground truncate hover:underline">
+                          {w.name}
+                        </Link>
+                        <p className="text-label uppercase text-muted-foreground truncate">
+                          {[
+                            k.frist ? `läuft bis ${datumKurz(k.frist, true)}` : null,
+                            k.gestartet > 0 ? `zuletzt ${relativerTag(k.letzteAktivitaet)}` : "noch keine Teilnahme",
+                          ].filter(Boolean).join(" · ")}
+                        </p>
                       </div>
-                      <div className="flex items-center gap-2 flex-wrap">
+                      <StatusBadge status={w.status} />
+                      <LinkAktionen welle={w} mitText={false} variant="ghost" />
+                    </div>
+                    <div className="px-4 py-3 space-y-2">
+                      <Fortschritt k={k} />
+                      {ton !== "done" && <p className={cn("text-meta", ton === "attention" ? TON_TEXT.attention : "text-muted-foreground")}>{h.text}</p>}
+                    </div>
+                    <div className="flex items-center justify-between gap-2 flex-wrap px-4 py-2.5 border-t">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <Link to={`/welle/${w.id}/dashboard`}><Button variant="outline" size="sm"><LineChart /> Verlauf</Button></Link>
+                        <Link to={`/welle/${w.id}/editor`}><Button variant="outline" size="sm"><Pencil /> Fragen</Button></Link>
+                        <Link to={`/welle/${w.id}/einladungen`}><Button variant="outline" size="sm"><Mail /> Einladungen</Button></Link>
+                        <Link to={`/welle/${w.id}/rohdaten`}><Button variant="outline" size="sm"><Table2 /> Antworten</Button></Link>
+                      </div>
+                      <div className="flex items-center gap-1.5">
                         <Select value={w.status} onValueChange={(v) => welleStatus(w, v)}>
-                          <SelectTrigger className="w-36 h-8 text-sm"><SelectValue /></SelectTrigger>
+                          <SelectTrigger className="w-36 h-8 text-meta" aria-label="Status der Welle"><SelectValue /></SelectTrigger>
                           <SelectContent>
                             <SelectItem value="entwurf">Entwurf</SelectItem>
                             <SelectItem value="live">Live</SelectItem>
                             <SelectItem value="geschlossen">Geschlossen</SelectItem>
                           </SelectContent>
                         </Select>
-                        <LinkAktionen welle={w} />
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon-sm" aria-label="Weitere Aktionen"><MoreHorizontal /></Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => duplizieren(w)}><CopyPlus className="w-4 h-4 mr-2 text-muted-foreground" /> Duplizieren</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => loeschen(w, k)}><Trash2 className="w-4 h-4 mr-2 text-muted-foreground" /> Löschen …</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </div>
-
-                    <div className="mt-4">
-                      <Fortschritt k={k} />
-                    </div>
-                    <div className={`text-xs mt-2 ${TON_KLASSE[h.ton]}`}>{h.text}</div>
-
-                    <div className="flex items-center justify-between gap-2 flex-wrap mt-4 pt-3 border-t border-border">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <Link to={`/welle/${w.id}/dashboard`}>
-                          <Button variant="outline" size="sm"><LineChart size={15} className="mr-1" /> Verlauf</Button>
-                        </Link>
-                        <Link to={`/welle/${w.id}/editor`}>
-                          <Button variant="outline" size="sm"><Pencil size={15} className="mr-1" /> Fragen</Button>
-                        </Link>
-                        <Link to={`/welle/${w.id}/einladungen`}>
-                          <Button variant="outline" size="sm"><Mail size={15} className="mr-1" /> Einladungen</Button>
-                        </Link>
-                        <Link to={`/welle/${w.id}/rohdaten`}>
-                          <Button variant="outline" size="sm"><Table2 size={15} className="mr-1" /> Antworten</Button>
-                        </Link>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="sm" onClick={() => duplizieren(w)}>
-                          <CopyPlus size={15} className="mr-1" /> {arbeitet ? "Arbeitet…" : "Duplizieren"}
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => loeschen(w, k)}
-                          className="text-muted-foreground hover:text-status-critical"
-                          title="Welle löschen"
-                          aria-label="Welle löschen"
-                        >
-                          <Trash2 size={15} />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
+                  </Box>
                 );
               })}
             </div>
           )}
 
           {wellen.length > 0 && (
-            <div className="v-karte">
-              <h2 className="v-h2 mb-3">Verlauf über alle Wellen</h2>
-              <VerlaufChart daten={verlauf} />
-            </div>
+            <Box>
+              <BoxKopf titel="Verlauf über alle Wellen" />
+              <BoxInhalt><VerlaufChart daten={verlauf} /></BoxInhalt>
+            </Box>
           )}
         </TabsContent>
 
         {/* ------------------------------------------------------------------ */}
-        <TabsContent value="einstellungen">
+        <TabsContent value="einstellungen" className="mt-4 space-y-5">
           <div className="v-karte">
             <h2 className="v-h2 mb-3">Stammdaten</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -550,8 +527,8 @@ export default function ProjectDetail() {
                 Ungespeicherte Änderungen
               </span>
             )}
-            <Button onClick={speichernProjekt} disabled={speichern} className="shadow-sm">
-              <Save size={16} className="mr-2" /> {speichern ? "Speichert…" : "Einstellungen speichern"}
+            <Button onClick={speichernProjekt} disabled={speichern}>
+              <Save size={16} /> {speichern ? "Speichert…" : "Einstellungen speichern"}
             </Button>
           </div>
         </TabsContent>

@@ -43,10 +43,10 @@ export default function QrDialog({ welle, offen, onClose }) {
         <code className="block text-xs bg-muted px-3 py-2 rounded break-all text-muted-foreground">{url}</code>
         <div className="flex gap-2">
           <Button className="flex-1" variant="outline" onClick={kopieren}>
-            <Copy size={15} className="mr-1" /> Link kopieren
+            <Copy size={15} /> Link kopieren
           </Button>
           <Button className="flex-1" onClick={herunterladen}>
-            <Download size={15} className="mr-1" /> PNG laden
+            <Download size={15} /> PNG laden
           </Button>
         </div>
       </DialogContent>

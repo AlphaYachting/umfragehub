@@ -374,21 +374,21 @@ export default function QuestionLibrary() {
             <h2 className="v-h2">{container}</h2>
             <div className="flex gap-2 flex-wrap">
               <Button variant="outline" size="sm" onClick={vorlageHerunterladen}>
-                <Download size={15} className="mr-1" /> Vorlage
+                <Download size={15} /> Vorlage
               </Button>
               <Button variant="outline" size="sm" onClick={exportieren} disabled={gefiltert().length === 0}>
-                <Download size={15} className="mr-1" /> Export
+                <Download size={15} /> Export
               </Button>
               <Button variant="outline" size="sm" onClick={() => importRef.current?.click()} disabled={importiert}>
                 {importiert ? (
                   <><span className="w-3 h-3 border-2 border-input border-t-foreground rounded-full animate-spin inline-block mr-2" /> Import läuft…</>
                 ) : (
-                  <><Upload size={15} className="mr-1" /> Import</>
+                  <><Upload size={15} /> Import</>
                 )}
               </Button>
               <input ref={importRef} type="file" accept="application/json" className="hidden" onChange={importieren} />
               <Button size="sm" onClick={neueFrageOeffnen}>
-                <Plus size={15} className="mr-1" /> Neue Frage
+                <Plus size={15} /> Neue Frage
               </Button>
             </div>
           </div>
@@ -495,8 +495,8 @@ function FrageEditorBib({ frage, onSave, onCancel }) {
         </div>
       </div>
       <div className="flex justify-end gap-2 pt-2">
-        <Button variant="outline" onClick={onCancel}><X size={15} className="mr-1" /> Abbrechen</Button>
-        <Button onClick={() => onSave(daten)}><Check size={15} className="mr-1" /> Speichern</Button>
+        <Button variant="outline" onClick={onCancel}><X size={15} /> Abbrechen</Button>
+        <Button onClick={() => onSave(daten)}><Check size={15} /> Speichern</Button>
       </div>
     </div>
   );

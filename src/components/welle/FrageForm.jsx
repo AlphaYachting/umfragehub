@@ -214,7 +214,7 @@ export default function FrageForm({ frage, onChange }) {
             </div>
           ))}
           <Button variant="outline" size="sm" onClick={optionHinzu}>
-            <Plus size={14} className="mr-1" /> Option hinzufügen
+            <Plus size={14} /> Option hinzufügen
           </Button>
         </div>
       )}
@@ -271,7 +271,7 @@ export default function FrageForm({ frage, onChange }) {
           ))}
           <p className="text-xs text-muted-foreground">Die ID bleibt stabil, auch wenn der Text später angepasst wird — Antworten hängen an der ID.</p>
           <Button variant="outline" size="sm" onClick={matrixZeileHinzu}>
-            <Plus size={14} className="mr-1" /> Aussage hinzufügen
+            <Plus size={14} /> Aussage hinzufügen
           </Button>
         </div>
       )}
@@ -299,7 +299,7 @@ export default function FrageForm({ frage, onChange }) {
             </div>
           ))}
           <Button variant="outline" size="sm" onClick={stufeHinzu}>
-            <Plus size={14} className="mr-1" /> Stufe hinzufügen
+            <Plus size={14} /> Stufe hinzufügen
           </Button>
         </div>
       )}

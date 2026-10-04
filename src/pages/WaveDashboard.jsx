@@ -224,7 +224,7 @@ export default function WaveDashboard() {
     <div className="v-seite">
       <WellenKopf welle={welle} projekt={projekt} aktiv="dashboard">
         <Button variant="ghost" size="sm" onClick={() => laden(true)} title="Zahlen neu laden">
-          <RefreshCw size={15} className="mr-1" /> Aktualisieren
+          <RefreshCw size={15} /> Aktualisieren
         </Button>
       </WellenKopf>
 
@@ -281,7 +281,7 @@ export default function WaveDashboard() {
             </p>
             <div className="flex justify-end">
               <Button size="sm" onClick={planSpeichern} disabled={planSpeichert || !planGeaendert}>
-                <Save size={15} className="mr-1" /> {planSpeichert ? "Speichert…" : "Planung speichern"}
+                <Save size={15} /> {planSpeichert ? "Speichert…" : "Planung speichern"}
               </Button>
             </div>
           </div>
@@ -293,18 +293,18 @@ export default function WaveDashboard() {
           <code className="block text-xs bg-muted px-3 py-2 rounded break-all text-foreground mb-3">{url}</code>
           <div className="flex flex-wrap gap-2">
             <Button size="sm" variant="outline" onClick={() => kopiere(url, "Link kopiert.")}>
-              <Copy size={15} className="mr-1" /> Link kopieren
+              <Copy size={15} /> Link kopieren
             </Button>
             <Button
               size="sm"
               variant="outline"
               onClick={() => kopiere(einladungstext({ welle, projekt, dauerMinuten: dauerBefragung }), "Einladungstext kopiert.")}
             >
-              <Mail size={15} className="mr-1" /> Einladungstext kopieren
+              <Mail size={15} /> Einladungstext kopieren
             </Button>
             {welle.status === "live" && (
               <a href={url} target="_blank" rel="noopener noreferrer">
-                <Button size="sm" variant="ghost"><ExternalLink size={15} className="mr-1" /> Öffnen</Button>
+                <Button size="sm" variant="ghost"><ExternalLink size={15} /> Öffnen</Button>
               </a>
             )}
           </div>
@@ -314,7 +314,7 @@ export default function WaveDashboard() {
           </p>
           <div className="mt-4 pt-3 border-t border-border">
             <Button size="sm" variant="ghost" className="text-muted-foreground" onClick={linkNeuErzeugen}>
-              <RotateCw size={15} className="mr-1" /> Neuen Link erzeugen
+              <RotateCw size={15} /> Neuen Link erzeugen
             </Button>
             <span className="text-xs text-muted-foreground ml-1">macht den bisherigen ungültig</span>
           </div>

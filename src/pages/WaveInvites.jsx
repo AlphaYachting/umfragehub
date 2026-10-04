@@ -345,7 +345,7 @@ export default function WaveInvites() {
           <h2 className="v-h2">Adressen einspielen</h2>
           <label className="cursor-pointer">
             <span className="inline-flex items-center px-3 py-1.5 text-sm border border-border rounded-md hover:bg-muted/40">
-              <Upload size={15} className="mr-1.5" /> CSV-Datei wählen
+              <Upload size={15} /> CSV-Datei wählen
             </span>
             <input type="file" accept=".csv,.txt,text/csv,text/plain" className="hidden" onChange={dateiLesen} />
           </label>
@@ -419,7 +419,7 @@ export default function WaveInvites() {
                 {zeigeListe ? "Adressliste ausblenden" : `Adressliste anzeigen (${z.gesamt})`}
               </Button>
               <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-status-critical" onClick={alleEntfernen}>
-                <Trash2 size={15} className="mr-1" /> Alle Adressen löschen
+                <Trash2 size={15} /> Alle Adressen löschen
               </Button>
             </div>
             {zeigeListe && (
@@ -484,15 +484,15 @@ export default function WaveInvites() {
           <div className="flex items-center justify-between gap-3 flex-wrap pt-1">
             <div className="flex items-center gap-2 flex-wrap">
               <Button variant="outline" size="sm" onClick={vorschauZeigen}>
-                <Eye size={15} className="mr-1" /> Vorschau
+                <Eye size={15} /> Vorschau
               </Button>
               <Input value={testAdresse} onChange={(e) => setTestAdresse(e.target.value)} placeholder="Testadresse" className="h-9 w-56" />
               <Button variant="outline" size="sm" onClick={testSenden} disabled={sendet === "test"}>
-                <Send size={15} className="mr-1" /> {sendet === "test" ? "Sendet…" : "Testmail"}
+                <Send size={15} /> {sendet === "test" ? "Sendet…" : "Testmail"}
               </Button>
             </div>
             <Button size="sm" onClick={texteSpeichern} disabled={!texteGeaendert}>
-              <Save size={15} className="mr-1" /> Vorlagen speichern
+              <Save size={15} /> Vorlagen speichern
             </Button>
           </div>
         </div>
@@ -520,10 +520,10 @@ export default function WaveInvites() {
             </Select>
           </div>
           <Button onClick={() => versenden("einladung")} disabled={!!sendet || nichtLive || z.gesamt === 0}>
-            <Send size={15} className="mr-1.5" /> {sendet === "einladung" ? "Sendet…" : "Einladung senden"}
+            <Send size={15} /> {sendet === "einladung" ? "Sendet…" : "Einladung senden"}
           </Button>
           <Button variant="outline" onClick={() => versenden("reminder")} disabled={!!sendet || nichtLive || z.eingeladen === 0}>
-            <Bell size={15} className="mr-1.5" /> {sendet === "reminder" ? "Sendet…" : "Erinnerung senden"}
+            <Bell size={15} /> {sendet === "reminder" ? "Sendet…" : "Erinnerung senden"}
           </Button>
         </div>
         <p className="text-xs text-muted-foreground mt-3">

@@ -154,10 +154,10 @@ export default function RawData() {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={exportJSON} disabled={gesperrt}>
-            <Download size={15} className="mr-1" /> JSON
+            <Download size={15} /> JSON
           </Button>
           <Button variant="outline" size="sm" onClick={exportCSV} disabled={gesperrt}>
-            <Download size={15} className="mr-1" /> CSV
+            <Download size={15} /> CSV
           </Button>
         </div>
       </div>

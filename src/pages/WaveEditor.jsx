@@ -324,7 +324,7 @@ export default function WaveEditor() {
         </div>
         <div className="flex justify-end">
           <Button onClick={welleSpeichern} disabled={speichern} size="sm">
-            <Save size={15} className="mr-1" /> {speichern ? "Speichert…" : "Einstellungen speichern"}
+            <Save size={15} /> {speichern ? "Speichert…" : "Einstellungen speichern"}
           </Button>
         </div>
       </div>
@@ -334,10 +334,10 @@ export default function WaveEditor() {
         <h2 className="v-h2">Blöcke & Fragen</h2>
         <div className="flex gap-2">
           <Button size="sm" variant="outline" onClick={() => setBibImportDialog(true)}>
-            <Library size={15} className="mr-1" /> Komplette Bibliothek
+            <Library size={15} /> Komplette Bibliothek
           </Button>
           <Button size="sm" variant="outline" onClick={blockHinzu}>
-            <Plus size={15} className="mr-1" /> Block
+            <Plus size={15} /> Block
           </Button>
         </div>
       </div>
@@ -369,7 +369,7 @@ export default function WaveEditor() {
                               setBibDialog(true);
                             }}
                           >
-                            <Library size={15} className="mr-1" /> Aus Bibliothek übernehmen
+                            <Library size={15} /> Aus Bibliothek übernehmen
                           </Button>
                           <Button
                             variant="ghost"
@@ -377,7 +377,7 @@ export default function WaveEditor() {
                             onClick={() => blockLoeschen(b)}
                             className="text-status-critical hover:text-status-critical"
                           >
-                            <Trash2 size={15} className="mr-1" /> Block löschen
+                            <Trash2 size={15} /> Block löschen
                           </Button>
                         </div>
 
@@ -420,7 +420,7 @@ export default function WaveEditor() {
       {bloecke.length === 0 && (
         <div className="text-center py-12 border-2 border-dashed border-border rounded-lg">
           <p className="text-muted-foreground text-sm mb-3">Noch keine Blöcke. Lege den ersten Block an.</p>
-          <Button onClick={blockHinzu}><Plus size={16} className="mr-1" /> Block anlegen</Button>
+          <Button onClick={blockHinzu}><Plus size={16} /> Block anlegen</Button>
         </div>
       )}
 
