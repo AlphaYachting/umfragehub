@@ -1,59 +1,53 @@
 import React from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
-import { ClipboardList, Library, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { LayoutDashboard, Library } from "lucide-react";
+import { Toaster as Meldungen } from "sonner";
 
 export default function AdminLayout() {
   const location = useLocation();
-  const navItem = (to, label, icon) => {
-    const aktiv = location.pathname === to;
-    const Icon = icon;
-    return (
-      <Link
-        to={to}
-        className={`flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-colors ${
-          aktiv
-            ? "bg-slate-100 text-slate-900"
-            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-        }`}
-      >
-        <Icon size={18} />
-        {label}
-      </Link>
-    );
-  };
+  const pfad = location.pathname;
+  // Projekt- und Wellenseiten gehören zum Bereich "Übersicht"
+  const istAktiv = (to) =>
+    to === "/" ? pfad === "/" || pfad.startsWith("/projekt") || pfad.startsWith("/welle") : pfad.startsWith(to);
+
+  const navItem = (to, label, Icon) => (
+    <Link
+      to={to}
+      className={`flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium transition-colors ${
+        istAktiv(to)
+          ? "bg-slate-100 text-slate-900"
+          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+      }`}
+    >
+      <Icon size={18} />
+      {label}
+    </Link>
+  );
 
   return (
-    <div className="min-h-screen flex bg-slate-50">
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col p-4 shrink-0 hidden md:flex">
-        <div className="px-2 py-4 mb-2">
-          <div className="text-lg font-bold tracking-tight text-slate-900">
-            Interview-Plattform
-          </div>
+    <div className="min-h-screen flex flex-col md:flex-row bg-slate-50">
+      <aside className="w-60 bg-white border-r border-slate-200 flex-col p-4 shrink-0 hidden md:flex md:sticky md:top-0 md:h-screen">
+        <Link to="/" className="block px-2 py-4 mb-2">
+          <div className="text-lg font-bold tracking-tight text-slate-900">Interview-Plattform</div>
           <div className="text-xs text-slate-500">Verwaltung</div>
-        </div>
+        </Link>
         <nav className="flex flex-col gap-1">
-          {navItem("/", "Projekte", ClipboardList)}
+          {navItem("/", "Übersicht", LayoutDashboard)}
           {navItem("/bibliothek", "Fragenbibliothek", Library)}
         </nav>
-        <div className="mt-auto pt-4">
-          <Link to="/bibliothek">
-            <Button variant="outline" className="w-full" size="sm">
-              <Plus size={16} className="mr-2" /> Neue Bibliotheksfrage
-            </Button>
-          </Link>
-        </div>
       </aside>
 
-      <div className="md:hidden bg-white border-b border-slate-200 px-4 py-3 flex gap-2">
-        <Link to="/" className="text-sm font-medium text-slate-700">Projekte</Link>
-        <span className="text-slate-300">·</span>
-        <Link to="/bibliothek" className="text-sm font-medium text-slate-700">Bibliothek</Link>
+      <div className="md:hidden bg-white border-b border-slate-200 px-4 py-3 flex gap-4 sticky top-0 z-10">
+        <Link to="/" className={`text-sm font-medium ${istAktiv("/") ? "text-slate-900" : "text-slate-500"}`}>Übersicht</Link>
+        <Link to="/bibliothek" className={`text-sm font-medium ${istAktiv("/bibliothek") ? "text-slate-900" : "text-slate-500"}`}>Bibliothek</Link>
       </div>
 
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 min-w-0">
         <Outlet />
       </main>
+
+      {/* Rückmeldungen ("Gespeichert.", "Link kopiert.") — nur in der Verwaltung, nicht bei Befragten */}
+      <Meldungen position="bottom-right" closeButton />
     </div>
   );
 }
