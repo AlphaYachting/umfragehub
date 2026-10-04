@@ -88,7 +88,7 @@ export default function BlockEditor({
                 <div className="border-t border-border p-4 bg-muted">
                   <FrageForm frage={f} onChange={(neu) => onFrageSpeichern(neu)} />
                   <div className="flex justify-end mt-3">
-                    <Button size="sm" onClick={() => setBearbeiteteFrage(null)}>
+                    <Button variant="outline" size="sm" onClick={() => setBearbeiteteFrage(null)}>
                       Fertig
                     </Button>
                   </div>

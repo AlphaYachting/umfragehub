@@ -264,7 +264,7 @@ export default function WaveInvites() {
     return (
       <div className="v-seite">
         <WellenKopf welle={welle} projekt={projekt} aktiv="einladungen" />
-        <div className="bg-status-attention-surface border border-status-attention/30 rounded-lg p-5 text-sm text-status-attention">
+        <div className="v-leer">
           Die Einladungsfunktion antwortet nicht: {fehler || "unbekannter Fehler"}
           <div className="mt-3"><Button size="sm" variant="outline" onClick={() => laden()}>Erneut versuchen</Button></div>
         </div>
@@ -285,11 +285,11 @@ export default function WaveInvites() {
 
       {/* Versandkanal */}
       {d.kanal.bereit ? (
-        <div className="border border-status-done/40 bg-status-done-surface text-status-done-text rounded-lg px-5 py-3 text-sm">
-          Versand eingerichtet — Absender: <span className="font-medium">{d.kanal.absender}</span>
+        <div className="bg-card border rounded-lg px-4 py-3 text-meta text-muted-foreground">
+          Versand eingerichtet — Absender: <span className="font-semibold text-foreground">{d.kanal.absender}</span>
         </div>
       ) : (
-        <div className="border border-status-attention/30 bg-status-attention-surface text-status-attention rounded-lg px-5 py-3 text-sm flex gap-3">
+        <div className="flex gap-2 rounded border-l-4 border-status-attention bg-status-attention-surface p-3 text-sm text-foreground">
           <FlaskConical size={18} className="shrink-0 mt-0.5" />
           <div>
             <span className="font-medium">Probelauf:</span> Es ist noch kein Versandkanal eingerichtet. Adressen, Vorlagen und
@@ -369,7 +369,7 @@ export default function WaveInvites() {
                 {gelesen.unlesbar.length > 0 && <span className="text-status-attention"> · {gelesen.unlesbar.length} Zeilen ohne gültige Adresse</span>}
               </span>
             )}
-            <Button onClick={importieren} disabled={importiert || !gelesen.eintraege.length}>
+            <Button variant="outline" onClick={importieren} disabled={importiert || !gelesen.eintraege.length}>
               {importiert ? "Spielt ein…" : "Einspielen"}
             </Button>
           </div>
@@ -491,7 +491,7 @@ export default function WaveInvites() {
                 <Send size={15} /> {sendet === "test" ? "Sendet…" : "Testmail"}
               </Button>
             </div>
-            <Button size="sm" onClick={texteSpeichern} disabled={!texteGeaendert}>
+            <Button variant="outline" size="sm" onClick={texteSpeichern} disabled={!texteGeaendert}>
               <Save size={15} /> Vorlagen speichern
             </Button>
           </div>
@@ -502,7 +502,7 @@ export default function WaveInvites() {
       <div className="v-karte">
         <h2 className="v-h2 mb-3">Versenden</h2>
         {nichtLive && (
-          <p className="text-sm text-status-attention bg-status-attention-surface border border-status-attention/30 rounded px-3 py-2 mb-3">
+          <p className="rounded border-l-4 border-status-attention bg-status-attention-surface p-3 text-sm text-foreground mb-3">
             Die Welle ist nicht live — der Link in der Mail würde noch nicht funktionieren. Bitte zuerst unter „Verlauf“ freischalten.
           </p>
         )}

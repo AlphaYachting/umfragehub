@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { cn } from "@/lib/utils";
+import { Box, BoxInhalt } from "@/components/shared/Box";
+import { TON_TEXT, HINWEIS_TON } from "@/lib/designTon";
 import { bestaetigen, eingabe } from "@/components/shared/Bestaetigen";
 import { useParams } from "react-router-dom";
 import { Copy, BarChart3, Mail, RefreshCw, Save, RotateCw, ExternalLink } from "lucide-react";
@@ -36,12 +39,6 @@ import {
   inZwischenablage,
   alle,
 } from "@/lib/verwaltung";
-
-const TON_RAHMEN = {
-  gut: "bg-status-done-surface border-status-done/40 text-status-done-text",
-  warnung: "bg-status-attention-surface border-status-attention/30 text-status-attention",
-  neutral: "bg-muted border-border text-foreground",
-};
 
 export default function WaveDashboard() {
   const { id } = useParams();
@@ -214,6 +211,7 @@ export default function WaveDashboard() {
 
   const url = teilnahmeUrl(welle.linkToken);
   const hinweis = wellenHinweis(welle, k);
+  const hinweisTon = HINWEIS_TON[hinweis.ton];
   const dauerBefragung = fragen.length ? geschaetzteDauerMinuten(fragen) : null;
   const planGeaendert =
     planEingeladen !== (welle.eingeladen ? String(welle.eingeladen) : "") ||
@@ -229,23 +227,25 @@ export default function WaveDashboard() {
       </WellenKopf>
 
       {/* Wo steht die Welle */}
-      <div className={`border rounded-lg px-5 py-4 ${TON_RAHMEN[hinweis.ton]}`}>
-        <div className="text-sm font-medium mb-3">{hinweis.text}</div>
-        <Fortschritt k={k} />
-      </div>
+      <Box streifen={hinweisTon === "attention" ? "attention" : undefined}>
+        <BoxInhalt>
+          <p className={cn("text-value", hinweisTon === "attention" ? TON_TEXT.attention : "text-foreground")}>{hinweis.text}</p>
+          <Fortschritt k={k} />
+        </BoxInhalt>
+      </Box>
 
       <Kennzahlleiste werte={[
         kachel(
           "Abgeschlossen",
           k.abgeschlossen,
-          k.ruecklauf !== null ? `${k.ruecklauf} % Rücklauf` : `von ${k.mindest} nötigen`
+          k.eingeladen ? `von ${k.eingeladen} Eingeladenen` : `von ${k.mindest} nötigen`
         ),
-        kachel("Begonnen, nicht beendet", k.offen, k.abschlussquote !== null ? `${k.abschlussquote} % schließen ab` : ""),
+        kachel("Begonnen, nicht beendet", k.offen, k.gestartet ? `${k.abgeschlossen} von ${k.gestartet} beendet` : ""),
         kachel("Dauer (Median)", k.medianDauer !== null ? `${k.medianDauer} Min` : "—", dauerBefragung ? `geschätzt ${dauerBefragung} Min` : ""),
         kachel("Letzte Aktivität", relativerTag(k.letzteAktivitaet), k.abgeschlossen7Tage ? `${k.abgeschlossen7Tage} in 7 Tagen` : ""),
       ]} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Status & Planung */}
         <div className="v-karte">
           <h2 className="v-h2 mb-3">Status &amp; Planung</h2>
@@ -330,7 +330,7 @@ export default function WaveDashboard() {
       {/* Trichter je Block */}
       <div className="v-karte">
         <h2 className="v-h2 mb-3">Wie weit kommen die Befragten?</h2>
-        <p className="text-xs text-muted-foreground mb-4">Anteil aller begonnenen Teilnahmen, die den jeweiligen Abschnitt erreicht haben.</p>
+        <p className="text-xs text-muted-foreground mb-4">Wie viele der begonnenen Teilnahmen den jeweiligen Abschnitt erreicht haben.</p>
         {trichter.length === 0 ? (
           <p className="text-sm text-muted-foreground py-4 text-center">
             {fragen.length === 0 ? "Diese Welle hat noch keine Fragen." : "Noch keine Teilnahmen."}
@@ -338,20 +338,20 @@ export default function WaveDashboard() {
         ) : (
           <div className="space-y-2.5">
             {trichter.map((b) => (
-              <div key={b.id} className="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)_64px] gap-3 items-center text-sm">
+              <div key={b.id} className="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)_84px] gap-3 items-center text-sm">
                 <span className="truncate text-foreground" title={b.titel}>{b.titel}</span>
                 <div className="h-2.5 rounded-full bg-muted overflow-hidden">
                   <div className="h-full bg-foreground rounded-full" style={{ width: `${b.anteil}%` }} />
                 </div>
-                <span className="text-xs text-muted-foreground text-right whitespace-nowrap">{b.anteil} % · {b.erreicht}</span>
+                <span className="text-xs text-muted-foreground text-right whitespace-nowrap">{b.erreicht} von {sessions.length}</span>
               </div>
             ))}
-            <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)_64px] gap-3 items-center text-sm pt-1 border-t border-border">
+            <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)_84px] gap-3 items-center text-sm pt-1 border-t border-border">
               <span className="font-medium text-foreground">Abgeschlossen</span>
               <div className="h-2.5 rounded-full bg-muted overflow-hidden">
                 <div className="h-full bg-status-done rounded-full" style={{ width: `${k.abschlussquote ?? 0}%` }} />
               </div>
-              <span className="text-xs text-muted-foreground text-right whitespace-nowrap">{k.abschlussquote ?? 0} % · {k.abgeschlossen}</span>
+              <span className="text-xs text-muted-foreground text-right whitespace-nowrap">{k.abgeschlossen} von {k.gestartet}</span>
             </div>
           </div>
         )}
@@ -381,7 +381,7 @@ export default function WaveDashboard() {
                   />
                   <Bar dataKey="abbrueche" radius={[4, 4, 0, 0]}>
                     {abbruchDaten.map((d, i) => (
-                      <Cell key={i} fill={d.abbrueche > 0 ? "#d97706" : "#e5e7eb"} />
+                      <Cell key={i} fill={d.abbrueche > 0 ? "hsl(var(--status-attention))" : "hsl(var(--border))"} />
                     ))}
                   </Bar>
                 </BarChart>
