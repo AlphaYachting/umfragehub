@@ -6,12 +6,38 @@ module.exports = {
   	extend: {
   		opacity: Object.fromEntries(Array.from({ length: 101 }, (_, i) => [i, `${i / 100}`])),
   		borderRadius: {
+  			xl: 'var(--radius)',
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
+  		fontSize: {
+  			page: ['24px', { lineHeight: '30px', fontWeight: '800', letterSpacing: '-0.02em' }],
+  			kpi: ['24px', { lineHeight: '30px', fontWeight: '700', letterSpacing: '-0.01em' }],
+  			object: ['17px', { lineHeight: '24px', fontWeight: '500' }],
+  			value: ['15px', { lineHeight: '22px', fontWeight: '600' }],
+  			body: ['14px', { lineHeight: '21px' }],
+  			meta: ['13px', { lineHeight: '19px' }],
+  			label: ['12px', { lineHeight: '16px', fontWeight: '500', letterSpacing: '0.04em' }],
+  			section: ['11px', { lineHeight: '16px', fontWeight: '600', letterSpacing: '0.14em' }],
+  		},
   		colors: {
   			background: 'hsl(var(--background))',
+  			canvas: 'hsl(var(--canvas))',
+  			dekor: 'hsl(var(--dekor))',
+  			zeile: { hover: 'hsl(var(--zeile-hover))', trenner: 'hsl(var(--zeile-trenner))' },
+  			status: {
+  				neutral: 'hsl(var(--status-neutral))',
+  				attention: 'hsl(var(--status-attention))',
+  				'attention-surface': 'hsl(var(--status-attention-surface))',
+  				critical: 'hsl(var(--status-critical))',
+  				'critical-surface': 'hsl(var(--status-critical-surface))',
+  				info: 'hsl(var(--status-info))',
+  				'info-surface': 'hsl(var(--status-info-surface))',
+  				done: 'hsl(var(--status-done))',
+  				'done-text': 'hsl(var(--status-done-text))',
+  				'done-surface': 'hsl(var(--status-done-surface))',
+  			},
   			foreground: 'hsl(var(--foreground))',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
@@ -63,6 +89,7 @@ module.exports = {
   			}
   		},
   		fontFamily: {
+  			inter: ['var(--font-inter)'],
   			heading: ['var(--font-heading)'],
   			body: ['var(--font-body)'],
   			display: ['var(--font-display)'],
