@@ -1,63 +1,74 @@
 {
   "name": "Welle",
-  "type": "object",
   "properties": {
-    "projektId": {
-      "type": "string",
-      "title": "Projekt ID"
+    "abschlusstext": {
+      "format": "textarea",
+      "title": "Abschlusstext",
+      "type": "string"
+    },
+    "begruessungstext": {
+      "format": "textarea",
+      "title": "Begr\u00fc\u00dfungstext",
+      "type": "string"
+    },
+    "eingeladen": {
+      "description": "Wie viele Personen den Link bekommen haben \u2014 Grundlage f\u00fcr die R\u00fccklaufquote. Optional.",
+      "title": "Eingeladene Personen",
+      "type": "number"
+    },
+    "endetAm": {
+      "description": "Geplantes Ende der Welle (Frist f\u00fcr die Befragten). Optional, schlie\u00dft die Welle nicht automatisch.",
+      "format": "date",
+      "title": "L\u00e4uft bis",
+      "type": "string"
+    },
+    "geschaetzteDauerMinuten": {
+      "default": 10,
+      "title": "Gesch\u00e4tzte Dauer (Minuten)",
+      "type": "number"
+    },
+    "linkToken": {
+      "title": "Link Token",
+      "type": "string"
+    },
+    "mindestTeilnehmer": {
+      "default": 6,
+      "title": "Mindestteilnehmer",
+      "type": "number"
     },
     "name": {
-      "type": "string",
-      "title": "Name"
+      "title": "Name",
+      "type": "string"
+    },
+    "projektId": {
+      "title": "Projekt ID",
+      "type": "string"
+    },
+    "status": {
+      "default": "entwurf",
+      "enum": [
+        "entwurf",
+        "live",
+        "geschlossen"
+      ],
+      "title": "Status",
+      "type": "string"
     },
     "zielgruppe": {
-      "type": "string",
+      "default": "mitarbeiter",
       "enum": [
         "geschaeftsfuehrung",
         "mitarbeiter",
         "kunden",
         "partner"
       ],
-      "default": "mitarbeiter",
-      "title": "Zielgruppe"
-    },
-    "linkToken": {
-      "type": "string",
-      "title": "Link Token"
-    },
-    "status": {
-      "type": "string",
-      "enum": [
-        "entwurf",
-        "live",
-        "geschlossen"
-      ],
-      "default": "entwurf",
-      "title": "Status"
-    },
-    "mindestTeilnehmer": {
-      "type": "number",
-      "default": 6,
-      "title": "Mindestteilnehmer"
-    },
-    "begruessungstext": {
-      "type": "string",
-      "title": "Begr\u00fc\u00dfungstext",
-      "format": "textarea"
-    },
-    "abschlusstext": {
-      "type": "string",
-      "title": "Abschlusstext",
-      "format": "textarea"
-    },
-    "geschaetzteDauerMinuten": {
-      "type": "number",
-      "default": 10,
-      "title": "Gesch\u00e4tzte Dauer (Minuten)"
+      "title": "Zielgruppe",
+      "type": "string"
     }
   },
   "required": [
     "projektId",
     "name"
-  ]
+  ],
+  "type": "object"
 }
