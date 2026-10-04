@@ -85,8 +85,10 @@ async function loadInterview(base44, { linkToken, sessionToken, vorschau }) {
       antworten = await base44.asServiceRole.entities.Antwort.filter({ sessionId: session.id });
     }
   }
+  // Befragte bekommen nur, was die Befragung braucht — keine Mailvorlagen, keine Planungszahlen
+  const { mailBetreff, mailText, reminderBetreff, reminderText, eingeladen, ...welleReduziert } = welle;
   return Response.json({
-    welle,
+    welle: welleReduziert,
     projekt: projektReduziert,
     bloecke: bloeckeMitFragen,
     session,
@@ -103,7 +105,7 @@ function generiereToken(length = 24) {
   return out;
 }
 
-async function startSession(base44, { linkToken }) {
+async function startSession(base44, { linkToken, einladung }) {
   const wellen = await base44.asServiceRole.entities.Welle.filter({ linkToken });
   if (!wellen.length) {
     return Response.json({ error: "nicht_gefunden" });
@@ -124,6 +126,20 @@ async function startSession(base44, { linkToken }) {
     startedAt: jetzt,
     letzteFrageId: "",
   });
+  // Persönlicher Einladungslink (?e=…): nur das Häkchen "hat begonnen" am
+  // Empfänger setzen, damit Erinnerungen gezielt verschickt werden können.
+  // Der Einladungs-Token wird NICHT an der Session gespeichert — zwischen
+  // Adresse und Antworten entsteht keine Verknüpfung.
+  if (einladung && welle.einladungsModus === "persoenlich") {
+    try {
+      const treffer = await base44.asServiceRole.entities.Empfaenger.filter({ wellenId: welle.id, token: String(einladung) });
+      if (treffer.length && !treffer[0].gestartet) {
+        await base44.asServiceRole.entities.Empfaenger.update(treffer[0].id, { gestartet: true });
+      }
+    } catch (_e) {
+      // Das Interview darf daran nie scheitern
+    }
+  }
   return Response.json({ sessionToken: token, sessionId: session.id, startedAt: jetzt });
 }
 
