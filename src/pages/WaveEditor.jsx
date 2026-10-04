@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import { ArrowLeft, Plus, Trash2, ExternalLink, Save, Library } from "lucide-react";
+import { Plus, Trash2, Save, Library } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { FRAGETYP_LABELS, sternchenEntfernen, frageFelderAuslesen } from "@/lib/
 import BlockEditor from "@/components/welle/BlockEditor";
 import BibliothekDialog from "@/components/welle/BibliothekDialog";
 import BibliothekImportDialog from "@/components/welle/BibliothekImportDialog";
+import WellenKopf from "@/components/verwaltung/WellenKopf";
 
 export default function WaveEditor() {
   const { id } = useParams();
@@ -271,23 +272,9 @@ export default function WaveEditor() {
   if (loading) return <div className="p-10 text-slate-400 text-sm">Lade Welle…</div>;
   if (!welle) return <div className="p-10 text-slate-400">Welle nicht gefunden.</div>;
 
-  const vorschauUrl = `${window.location.origin}/i/${welle.linkToken}?test=1`;
-
   return (
     <div className="p-6 md:p-10 max-w-4xl mx-auto pb-24">
-      <div className="flex items-center justify-between mb-2">
-        <Link to={`/projekt/${welle.projektId}`} className="inline-flex items-center text-sm text-slate-500 hover:text-slate-800">
-          <ArrowLeft size={16} className="mr-1" /> Zurück zum Projekt
-        </Link>
-        <a href={vorschauUrl} target="_blank" rel="noopener noreferrer">
-          <Button variant="outline" size="sm">
-            <ExternalLink size={16} className="mr-1" /> Vorschau
-          </Button>
-        </a>
-      </div>
-
-      <h1 className="text-2xl font-bold tracking-tight mb-1">{welle.name}</h1>
-      <p className="text-sm text-slate-500 mb-6">Wellen-Editor</p>
+      <WellenKopf welle={welle} projekt={projekt} aktiv="editor" />
 
       {welle.status === "live" && sessionCount > 0 && (
         <div className="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6 text-sm text-amber-900">
