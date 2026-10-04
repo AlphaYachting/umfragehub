@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { bestaetigen, eingabe } from "@/components/shared/Bestaetigen";
 import { Plus, Copy, Trash2, Download, Upload, Pencil, Check, X, FolderPlus, Folder } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
@@ -115,7 +116,7 @@ export default function QuestionLibrary() {
     const msg = inContainer.length
       ? `Container „${name}" mit ${inContainer.length} Frage(n) löschen?`
       : `Leeren Container „${name}" löschen?`;
-    if (!confirm(msg)) return;
+    if (!await bestaetigen(msg)) return;
     try {
       if (inContainer.length) {
         await base44.entities.Bibliotheksfrage.deleteMany({ container: name });
@@ -202,7 +203,7 @@ export default function QuestionLibrary() {
   }
 
   async function loeschen(f) {
-    if (!confirm("Frage aus der Bibliothek löschen?")) return;
+    if (!await bestaetigen("Frage aus der Bibliothek löschen?")) return;
     try {
       await base44.entities.Bibliotheksfrage.delete(f.id);
       laden();
@@ -281,23 +282,23 @@ export default function QuestionLibrary() {
 
   return (
     <div className="v-seite">
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="v-h1">Fragenbibliothek</h1>
-          <p className="v-unterzeile">Wiederverwendbare Fragen-Container</p>
+          <h1 className="text-page text-foreground">Fragenbibliothek</h1>
+          <p className="text-meta text-muted-foreground">Wiederverwendbare Fragen-Container</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
         {/* Container-Seitenleiste */}
         <div className="space-y-2">
-          <div className="text-xs font-semibold uppercase tracking-wide text-slate-400 px-2 mb-1">Container</div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground px-2 mb-1">Container</div>
           <div className="space-y-1 max-h-[60vh] overflow-auto">
             {containerNamen.map((c) => (
               <div
                 key={c}
                 className={`group flex items-center gap-2 rounded-md px-3 py-2 cursor-pointer text-sm transition-colors ${
-                  container === c ? "bg-slate-900 text-white" : "hover:bg-slate-100 text-slate-700"
+                  container === c ? "bg-foreground text-background" : "hover:bg-muted/40 text-foreground"
                 }`}
                 onClick={() => setContainer(c)}
               >
@@ -312,12 +313,12 @@ export default function QuestionLibrary() {
                       if (e.key === "Enter") containerUmbenennen(c);
                       if (e.key === "Escape") setRenameId(null);
                     }}
-                    className="flex-1 min-w-0 bg-white text-slate-900 text-sm rounded px-1 py-0.5 outline-none"
+                    className="flex-1 min-w-0 bg-card text-foreground text-sm rounded px-1 py-0.5 outline-none"
                   />
                 ) : (
                   <span className="flex-1 truncate">{c}</span>
                 )}
-                <span className={`text-xs ${container === c ? "text-slate-400" : "text-slate-400"}`}>
+                <span className={`text-xs ${container === c ? "text-muted-foreground" : "text-muted-foreground"}`}>
                   {containerCounts[c] || 0}
                 </span>
                 {renameId === c ? (
@@ -383,7 +384,7 @@ export default function QuestionLibrary() {
               </Button>
               <Button variant="outline" size="sm" onClick={() => importRef.current?.click()} disabled={importiert}>
                 {importiert ? (
-                  <><span className="w-3 h-3 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin inline-block mr-2" /> Import läuft…</>
+                  <><span className="w-3 h-3 border-2 border-input border-t-slate-600 rounded-full animate-spin inline-block mr-2" /> Import läuft…</>
                 ) : (
                   <><Upload size={15} className="mr-1" /> Import</>
                 )}
@@ -395,7 +396,7 @@ export default function QuestionLibrary() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Input placeholder="Suche…" value={suche} onChange={(e) => setSuche(e.target.value)} />
             <Select value={filterZielgruppe} onValueChange={setFilterZielgruppe}>
               <SelectTrigger><SelectValue placeholder="Zielgruppe" /></SelectTrigger>
@@ -418,11 +419,11 @@ export default function QuestionLibrary() {
           </div>
 
           {loading ? (
-            <p className="text-sm text-slate-400">Lade…</p>
+            <p className="text-sm text-muted-foreground">Lade…</p>
           ) : gefiltert().length === 0 ? (
-            <div className="text-center py-16 border-2 border-dashed border-slate-200 rounded-lg">
-              <p className="text-sm text-slate-400 mb-3">Keine Fragen in diesem Container.</p>
-              <p className="text-xs text-slate-400">Importiere eine JSON-Datei oder lege eine neue Frage an.</p>
+            <div className="text-center py-16 border-2 border-dashed border-border rounded-lg">
+              <p className="text-sm text-muted-foreground mb-3">Keine Fragen in diesem Container.</p>
+              <p className="text-xs text-muted-foreground">Importiere eine JSON-Datei oder lege eine neue Frage an.</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -430,10 +431,10 @@ export default function QuestionLibrary() {
                 <div key={f.id} className="v-karte">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
-                      <div className="text-sm font-medium text-slate-800">{f.text || "(leere Frage)"}</div>
-                      <div className="text-xs text-slate-400 mt-1 flex gap-3 flex-wrap items-center">
+                      <div className="text-sm font-medium text-foreground">{f.text || "(leere Frage)"}</div>
+                      <div className="text-xs text-muted-foreground mt-1 flex gap-3 flex-wrap items-center">
                         {f.kernfrage && (
-                          <span className="rounded px-1.5 py-0.5 bg-amber-100 text-amber-800 font-medium">
+                          <span className="rounded px-1.5 py-0.5 bg-status-attention-surface text-status-attention font-medium">
                             Kern{f.kernversion ? ` v${f.kernversion}` : ""}
                           </span>
                         )}
@@ -446,12 +447,12 @@ export default function QuestionLibrary() {
                     <div className="flex items-center gap-1 shrink-0">
                       <Button variant="ghost" size="sm" onClick={() => setBearbeiten(f.id)}><Pencil size={15} /></Button>
                       <Button variant="ghost" size="sm" onClick={() => duplizieren(f)}><Copy size={15} /></Button>
-                      <Button variant="ghost" size="sm" onClick={() => loeschen(f)} className="text-red-500"><Trash2 size={15} /></Button>
+                      <Button variant="ghost" size="sm" onClick={() => loeschen(f)} className="text-status-critical"><Trash2 size={15} /></Button>
                     </div>
                   </div>
 
                   {bearbeiten === f.id && (
-                    <div className="mt-4 pt-4 border-t border-slate-100">
+                    <div className="mt-4 pt-4 border-t border-border">
                       <FrageEditorBib frage={f} onSave={(fr) => speichern(fr, f.id)} onCancel={() => setBearbeiten(null)} />
                     </div>
                   )}
@@ -464,7 +465,7 @@ export default function QuestionLibrary() {
 
       {neu && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={() => setNeu(null)}>
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[85vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-card rounded-lg p-6 w-full max-w-2xl max-h-[85vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
             <h3 className="font-semibold mb-4">Neue Frage in „{container}"</h3>
             <FrageEditorBib frage={neu} onSave={(fr) => speichern(fr, null)} onCancel={() => setNeu(null)} />
           </div>

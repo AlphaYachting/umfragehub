@@ -75,8 +75,8 @@ export default function BibliothekDialog({ offen, onClose, onUebernehmen }) {
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg w-full max-w-3xl max-h-[85vh] flex flex-col">
-        <div className="p-5 border-b border-slate-200">
+      <div className="bg-card rounded-lg w-full max-w-3xl max-h-[85vh] flex flex-col">
+        <div className="p-5 border-b border-border">
           <h3 className="font-semibold mb-3">Aus Fragenbibliothek übernehmen</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Input
@@ -108,27 +108,27 @@ export default function BibliothekDialog({ offen, onClose, onUebernehmen }) {
 
         <div className="flex-1 overflow-auto p-4 space-y-2">
           {loading ? (
-            <p className="text-sm text-slate-400 text-center py-8">Lade…</p>
+            <p className="text-sm text-muted-foreground text-center py-8">Lade…</p>
           ) : gefiltert().length === 0 ? (
-            <p className="text-sm text-slate-400 text-center py-8">Keine Fragen gefunden.</p>
+            <p className="text-sm text-muted-foreground text-center py-8">Keine Fragen gefunden.</p>
           ) : (
             gefiltert().map((f) => (
               <button
                 key={f.id}
                 onClick={() => umschalten(f.id)}
                 className={`w-full text-left p-3 rounded-md border-2 transition-colors ${
-                  auswahl.has(f.id) ? "border-slate-900 bg-slate-50" : "border-slate-100 hover:border-slate-300"
+                  auswahl.has(f.id) ? "border-foreground bg-muted" : "border-border hover:border-foreground/25"
                 }`}
               >
                 <div className="flex items-start gap-3">
                   <div className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 ${
-                    auswahl.has(f.id) ? "bg-slate-900 border-slate-900" : "border-slate-300"
+                    auswahl.has(f.id) ? "bg-foreground border-foreground" : "border-input"
                   }`}>
                     {auswahl.has(f.id) && <Check size={12} className="text-white" />}
                   </div>
                   <div className="flex-1">
-                    <div className="text-sm font-medium text-slate-800">{f.text}</div>
-                    <div className="text-xs text-slate-400 mt-1 flex gap-3">
+                    <div className="text-sm font-medium text-foreground">{f.text}</div>
+                    <div className="text-xs text-muted-foreground mt-1 flex gap-3">
                       <span>{FRAGETYP_LABELS[f.typ]}</span>
                       {f.kategorie && <span>· {f.kategorie}</span>}
                       {f.zielgruppe && <span>· {ZIELGRUPPE_LABELS[f.zielgruppe]}</span>}
@@ -140,8 +140,8 @@ export default function BibliothekDialog({ offen, onClose, onUebernehmen }) {
           )}
         </div>
 
-        <div className="p-4 border-t border-slate-200 flex items-center justify-between">
-          <span className="text-sm text-slate-500">{auswahl.size} ausgewählt</span>
+        <div className="p-4 border-t border-border flex items-center justify-between">
+          <span className="text-sm text-muted-foreground">{auswahl.size} ausgewählt</span>
           <div className="flex gap-2">
             <Button variant="outline" onClick={onClose}>Abbrechen</Button>
             <Button onClick={uebernehmen}>Übernehmen</Button>

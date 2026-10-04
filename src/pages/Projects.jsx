@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { kachel } from "@/components/verwaltung/Kachel";
+import Kennzahlleiste from "@/components/shared/Kennzahlleiste";
 import StatusBadge from "@/components/verwaltung/StatusBadge";
 import Fortschritt from "@/components/verwaltung/Fortschritt";
 import LinkAktionen from "@/components/verwaltung/LinkAktionen";
@@ -35,9 +36,9 @@ const FILTER = [
 ];
 
 const TON_KLASSE = {
-  gut: "text-green-700",
-  warnung: "text-amber-700",
-  neutral: "text-slate-500",
+  gut: "text-status-done-text",
+  warnung: "text-status-attention",
+  neutral: "text-muted-foreground",
 };
 
 export default function Projects() {
@@ -150,10 +151,10 @@ export default function Projects() {
 
   return (
     <div className="v-seite">
-      <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
-          <h1 className="v-h1">Übersicht</h1>
-          <p className="v-unterzeile">Alle Projekte und laufenden Wellen auf einen Blick</p>
+          <h1 className="text-page text-foreground">Übersicht</h1>
+          <p className="text-meta text-muted-foreground">Alle Projekte und laufenden Wellen auf einen Blick</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" onClick={laden} title="Aktualisieren" aria-label="Aktualisieren">
@@ -166,42 +167,42 @@ export default function Projects() {
       </div>
 
       {loading && daten.projekte.length === 0 ? (
-        <div className="text-slate-400 text-sm">Lade Projekte…</div>
+        <div className="text-muted-foreground text-sm">Lade Projekte…</div>
       ) : daten.projekte.length === 0 ? (
         <div className="text-center py-20">
-          <FolderOpen className="mx-auto mb-4 text-slate-300" size={48} />
-          <p className="text-slate-500 mb-4">Noch keine Projekte angelegt.</p>
+          <FolderOpen className="mx-auto mb-4 text-muted-foreground/50" size={48} />
+          <p className="text-muted-foreground mb-4">Noch keine Projekte angelegt.</p>
           <Button onClick={() => setDialogOffen(true)}>
             <Plus size={18} className="mr-2" /> Erstes Projekt anlegen
           </Button>
         </div>
       ) : (
         <>
-          <div className="v-kacheln">
-            {kachel("Projekte", kennzahlen.projekte, "ohne archivierte")}
-            {kachel("Wellen live", kennzahlen.live)}
-            {kachel("Abgeschlossene Interviews", kennzahlen.abgeschlossen, "insgesamt")}
-            {kachel("Neu in 7 Tagen", kennzahlen.woche, "abgeschlossene Interviews")}
-          </div>
+          <Kennzahlleiste werte={[
+            kachel("Projekte", kennzahlen.projekte, "ohne archivierte"),
+            kachel("Wellen live", kennzahlen.live),
+            kachel("Abgeschlossene Interviews", kennzahlen.abgeschlossen, "insgesamt"),
+            kachel("Neu in 7 Tagen", kennzahlen.woche, "abgeschlossene Interviews"),
+          ]} />
 
           {/* Was gerade läuft */}
           <h2 className="v-h2 mb-3">Läuft gerade</h2>
           {liveWellen.length === 0 ? (
-            <div className="bg-white border border-dashed border-slate-200 rounded-lg px-5 py-6 text-sm text-slate-400 mb-8">
+            <div className="bg-card border border-dashed border-border rounded-lg px-5 py-6 text-sm text-muted-foreground">
               Im Moment ist keine Welle live. Eine Welle wird in ihrem Projekt oder im Wellen-Verlauf freigeschaltet.
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
               {liveWellen.map(({ welle, k, projekt }) => {
                 const h = wellenHinweis(welle, k);
                 return (
                   <div key={welle.id} className="v-karte">
                     <div className="flex items-start justify-between gap-3 mb-3">
                       <div className="min-w-0">
-                        <Link to={`/welle/${welle.id}/dashboard`} className="font-semibold text-slate-900 hover:underline">
+                        <Link to={`/welle/${welle.id}/dashboard`} className="font-semibold text-foreground hover:underline">
                           {welle.name}
                         </Link>
-                        <div className="text-xs text-slate-500 truncate">
+                        <div className="text-xs text-muted-foreground truncate">
                           <Link to={`/projekt/${projekt.id}`} className="hover:underline">{projekt.name}</Link>
                           {projekt.kundenname ? ` · ${projekt.kundenname}` : ""}
                         </div>
@@ -211,7 +212,7 @@ export default function Projects() {
                     <Fortschritt k={k} />
                     <div className="flex items-center justify-between gap-3 mt-3 text-xs">
                       <span className={TON_KLASSE[h.ton]}>{h.text}</span>
-                      <span className="text-slate-400 whitespace-nowrap">Zuletzt: {relativerTag(k.letzteAktivitaet)}</span>
+                      <span className="text-muted-foreground whitespace-nowrap">Zuletzt: {relativerTag(k.letzteAktivitaet)}</span>
                     </div>
                   </div>
                 );
@@ -223,14 +224,14 @@ export default function Projects() {
           <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
             <h2 className="v-h2">Projekte</h2>
             <div className="flex items-center gap-2 flex-wrap">
-              <div className="inline-flex bg-slate-100 rounded-lg p-1">
+              <div className="inline-flex bg-muted rounded-lg p-1">
                 {FILTER.map((f) => (
                   <button
                     key={f.key}
                     type="button"
                     onClick={() => setFilter(f.key)}
                     className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                      filter === f.key ? "bg-white shadow-sm text-slate-900" : "text-slate-500 hover:text-slate-800"
+                      filter === f.key ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     {f.label}
@@ -238,19 +239,19 @@ export default function Projects() {
                 ))}
               </div>
               <div className="relative">
-                <Search size={15} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Search size={15} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   value={suche}
                   onChange={(e) => setSuche(e.target.value)}
                   placeholder="Projekt, Kunde oder Welle"
-                  className="pl-8 h-9 w-56 bg-white"
+                  className="pl-8 h-9 w-56 bg-card"
                 />
               </div>
             </div>
           </div>
 
-          <div className="v-karte-flach divide-y divide-slate-100">
-            <div className="hidden md:grid grid-cols-[minmax(0,2.2fr)_minmax(0,2.4fr)_minmax(0,1fr)_minmax(0,1fr)_20px] gap-4 px-5 py-2.5 text-xs font-medium text-slate-500">
+          <div className="v-karte-flach divide-y divide-border">
+            <div className="hidden md:grid grid-cols-[minmax(0,2.2fr)_minmax(0,2.4fr)_minmax(0,1fr)_minmax(0,1fr)_20px] gap-4 px-5 py-2.5 text-xs font-medium text-muted-foreground">
               <span>Projekt</span>
               <span>Wellen</span>
               <span>Interviews</span>
@@ -258,46 +259,46 @@ export default function Projects() {
               <span />
             </div>
             {sichtbar.length === 0 ? (
-              <div className="px-5 py-8 text-sm text-slate-400 text-center">Kein Projekt passt zu Filter und Suche.</div>
+              <div className="px-5 py-8 text-sm text-muted-foreground text-center">Kein Projekt passt zu Filter und Suche.</div>
             ) : (
               sichtbar.map(({ projekt: p, wellen, gestartet, abgeschlossen, letzte }) => (
                 <Link
                   key={p.id}
                   to={`/projekt/${p.id}`}
-                  className="grid grid-cols-1 md:grid-cols-[minmax(0,2.2fr)_minmax(0,2.4fr)_minmax(0,1fr)_minmax(0,1fr)_20px] gap-x-4 gap-y-2 px-5 py-4 items-center hover:bg-slate-50 transition-colors"
+                  className="grid grid-cols-1 md:grid-cols-[minmax(0,2.2fr)_minmax(0,2.4fr)_minmax(0,1fr)_minmax(0,1fr)_20px] gap-x-4 gap-y-2 px-5 py-4 items-center hover:bg-muted/40 transition-colors"
                 >
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-semibold text-slate-900 truncate">{p.name}</span>
+                      <span className="font-semibold text-foreground truncate">{p.name}</span>
                       <StatusBadge status={p.status || "entwurf"} art="projekt" />
                     </div>
-                    <div className="text-sm text-slate-500 truncate">{p.kundenname || "Kein Kundenname"}</div>
+                    <div className="text-sm text-muted-foreground truncate">{p.kundenname || "Kein Kundenname"}</div>
                   </div>
                   <div className="min-w-0 space-y-1">
                     {wellen.length === 0 ? (
-                      <span className="text-sm text-slate-400">Noch keine Welle</span>
+                      <span className="text-sm text-muted-foreground">Noch keine Welle</span>
                     ) : (
                       wellen.slice(0, 4).map(({ welle: w, k }) => (
                         <div key={w.id} className="flex items-center gap-2 text-sm min-w-0">
-                          <span className={`h-2 w-2 rounded-full shrink-0 ${WELLE_STATUS[w.status]?.punkt || "bg-slate-300"}`} title={WELLE_STATUS[w.status]?.label} />
-                          <span className="truncate text-slate-700">{w.name}</span>
-                          <span className="text-xs text-slate-400 whitespace-nowrap ml-auto">
+                          <span className={`h-2 w-2 rounded-full shrink-0 ${WELLE_STATUS[w.status]?.punkt || "bg-border"}`} title={WELLE_STATUS[w.status]?.label} />
+                          <span className="truncate text-foreground">{w.name}</span>
+                          <span className="text-xs text-muted-foreground whitespace-nowrap ml-auto">
                             {k.abgeschlossen}/{k.ziel}
                           </span>
                         </div>
                       ))
                     )}
-                    {wellen.length > 4 && <div className="text-xs text-slate-400">+ {wellen.length - 4} weitere</div>}
+                    {wellen.length > 4 && <div className="text-xs text-muted-foreground">+ {wellen.length - 4} weitere</div>}
                   </div>
-                  <div className="text-sm text-slate-700">
+                  <div className="text-sm text-foreground">
                     <span className="font-medium">{abgeschlossen}</span>
-                    <span className="text-slate-400"> abgeschlossen</span>
+                    <span className="text-muted-foreground"> abgeschlossen</span>
                     {gestartet > abgeschlossen && (
-                      <div className="text-xs text-slate-400">{gestartet - abgeschlossen} begonnen</div>
+                      <div className="text-xs text-muted-foreground">{gestartet - abgeschlossen} begonnen</div>
                     )}
                   </div>
-                  <div className="text-sm text-slate-500">{relativerTag(letzte)}</div>
-                  <ChevronRight size={16} className="text-slate-300 hidden md:block" />
+                  <div className="text-sm text-muted-foreground">{relativerTag(letzte)}</div>
+                  <ChevronRight size={16} className="text-muted-foreground/50 hidden md:block" />
                 </Link>
               ))
             )}

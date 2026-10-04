@@ -5,7 +5,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceL
 // Interviews, aufsummiert je Tag. Optional mit Linie bei der Mindestzahl.
 export default function VerlaufChart({ daten, mindest = null, hoehe = 220 }) {
   if (!daten || daten.length === 0) {
-    return <p className="text-sm text-slate-400 py-8 text-center">Noch keine Teilnahmen — der Verlauf erscheint mit dem ersten Interview.</p>;
+    return <p className="text-sm text-muted-foreground py-8 text-center">Noch keine Teilnahmen — der Verlauf erscheint mit dem ersten Interview.</p>;
   }
   const maxWert = Math.max(mindest || 0, ...daten.map((d) => d.gestartet));
   const schritt = Math.max(1, Math.ceil(daten.length / 10));
@@ -33,10 +33,10 @@ export default function VerlaufChart({ daten, mindest = null, hoehe = 220 }) {
           </AreaChart>
         </ResponsiveContainer>
       </div>
-      <div className="flex items-center gap-4 text-xs text-slate-500 mt-2">
-        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-green-300 border border-green-600" /> Abgeschlossen</span>
-        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-slate-200 border border-slate-400" /> Begonnen</span>
-        <span className="text-slate-400">aufsummiert je Tag</span>
+      <div className="flex items-center gap-4 text-xs text-muted-foreground mt-2">
+        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-status-done border border-status-done/40" /> Abgeschlossen</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-muted border border-input" /> Begonnen</span>
+        <span className="text-muted-foreground">aufsummiert je Tag</span>
       </div>
     </div>
   );

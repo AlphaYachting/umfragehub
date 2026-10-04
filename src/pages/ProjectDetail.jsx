@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { bestaetigen, eingabe } from "@/components/shared/Bestaetigen";
 import { useParams, Link } from "react-router-dom";
 import { ChevronRight, Plus, Save, Trash2, CopyPlus, Pencil, LineChart, Table2, Mail } from "lucide-react";
 import { base44 } from "@/api/base44Client";
@@ -18,6 +19,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { toast } from "sonner";
 import { ZIELGRUPPE_LABELS, generiereToken } from "@/lib/interview";
 import { kachel } from "@/components/verwaltung/Kachel";
+import Kennzahlleiste from "@/components/shared/Kennzahlleiste";
 import StatusBadge from "@/components/verwaltung/StatusBadge";
 import Fortschritt from "@/components/verwaltung/Fortschritt";
 import LinkAktionen from "@/components/verwaltung/LinkAktionen";
@@ -34,9 +36,9 @@ import {
 } from "@/lib/verwaltung";
 
 const TON_KLASSE = {
-  gut: "text-green-700",
-  warnung: "text-amber-700",
-  neutral: "text-slate-500",
+  gut: "text-status-done-text",
+  warnung: "text-status-attention",
+  neutral: "text-muted-foreground",
 };
 
 export default function ProjectDetail() {
@@ -192,8 +194,8 @@ export default function ProjectDetail() {
 
   async function welleStatus(w, neu) {
     if (neu === w.status) return;
-    if (neu === "live" && !confirm(`Welle „${w.name}“ freischalten? Der Teilnahmelink funktioniert ab sofort.`)) return;
-    if (neu === "geschlossen" && !confirm(`Welle „${w.name}“ schließen? Neue Teilnahmen sind dann nicht mehr möglich.`)) return;
+    if (neu === "live" && !await bestaetigen(`Welle „${w.name}“ freischalten? Der Teilnahmelink funktioniert ab sofort.`)) return;
+    if (neu === "geschlossen" && !await bestaetigen(`Welle „${w.name}“ schließen? Neue Teilnahmen sind dann nicht mehr möglich.`)) return;
     try {
       await base44.entities.Welle.update(w.id, { status: neu });
       setWellen((liste) => liste.map((x) => (x.id === w.id ? { ...x, status: neu } : x)));
@@ -204,7 +206,7 @@ export default function ProjectDetail() {
   }
 
   async function duplizieren(w) {
-    const name = prompt(
+    const name = await eingabe(
       "Name der Kopie — Blöcke und Fragen werden übernommen, Antworten nicht. Die Kopie bekommt einen eigenen Link.",
       `${w.name} (Kopie)`
     );
@@ -227,7 +229,7 @@ export default function ProjectDetail() {
     if (k.gestartet > 0) {
       msg += `\n\nAchtung: Zu dieser Welle liegen ${k.gestartet} Teilnahmen vor (${k.abgeschlossen} abgeschlossen). Ihre Antworten werden unwiderruflich gelöscht.`;
     }
-    if (!confirm(msg)) return;
+    if (!await bestaetigen(msg)) return;
     setBeschaeftigt(w.id);
     try {
       await welleLoeschen(w);
@@ -245,24 +247,24 @@ export default function ProjectDetail() {
 
   return (
     <div className="v-seite">
-      <nav className="v-krumen">
-        <Link to="/" className="hover:text-slate-800">Projekte</Link>
-        <ChevronRight size={14} className="text-slate-300" />
-        <span className="text-slate-800">{projekt.name}</span>
+      <nav className="flex items-center gap-1 text-meta text-muted-foreground flex-wrap">
+        <Link to="/" className="hover:text-foreground">Projekte</Link>
+        <ChevronRight size={14} className="text-muted-foreground/50" />
+        <span className="text-foreground">{projekt.name}</span>
       </nav>
 
-      <div className="flex items-start justify-between gap-3 flex-wrap mb-6">
+      <div className="flex items-start justify-between gap-3 flex-wrap">
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="v-h1">{projekt.name}</h1>
+            <h1 className="text-page text-foreground">{projekt.name}</h1>
             <StatusBadge status={projekt.status || "entwurf"} art="projekt" />
           </div>
-          <p className="v-unterzeile">{projekt.kundenname || "Kein Kundenname"}</p>
+          <p className="text-meta text-muted-foreground">{projekt.kundenname || "Kein Kundenname"}</p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-500">Projektstatus</span>
+          <span className="text-xs text-muted-foreground">Projektstatus</span>
           <Select value={projekt.status || "entwurf"} onValueChange={projektStatus}>
-            <SelectTrigger className="w-36 h-9 bg-white"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-36 h-9 bg-card"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="entwurf">Entwurf</SelectItem>
               <SelectItem value="aktiv">Aktiv</SelectItem>
@@ -282,12 +284,12 @@ export default function ProjectDetail() {
 
         {/* ------------------------------------------------------------------ */}
         <TabsContent value="wellen">
-          <div className="v-kacheln">
-            {kachel("Wellen", wellen.length, `${summe.live} live`)}
-            {kachel("Abgeschlossen", summe.abgeschlossen, "Interviews")}
-            {kachel("Begonnen", summe.gestartet - summe.abgeschlossen, "noch nicht beendet")}
-            {kachel("Letzte Aktivität", relativerTag(summe.letzte))}
-          </div>
+          <Kennzahlleiste werte={[
+            kachel("Wellen", wellen.length, `${summe.live} live`),
+            kachel("Abgeschlossen", summe.abgeschlossen, "Interviews"),
+            kachel("Begonnen", summe.gestartet - summe.abgeschlossen, "noch nicht beendet"),
+            kachel("Letzte Aktivität", relativerTag(summe.letzte)),
+          ]} />
 
           <div className="flex items-center justify-between mb-3">
             <h2 className="v-h2">Wellen</h2>
@@ -297,14 +299,14 @@ export default function ProjectDetail() {
           </div>
 
           {wellen.length === 0 ? (
-            <div className="bg-white border border-dashed border-slate-200 rounded-lg py-10 text-center">
-              <p className="text-sm text-slate-400 mb-3">Noch keine Wellen angelegt.</p>
+            <div className="bg-card border border-dashed border-border rounded-lg py-10 text-center">
+              <p className="text-sm text-muted-foreground mb-3">Noch keine Wellen angelegt.</p>
               <Button size="sm" onClick={() => setNeueWelle(true)}>
                 <Plus size={16} className="mr-1" /> Erste Welle anlegen
               </Button>
             </div>
           ) : (
-            <div className="space-y-3 mb-6">
+            <div className="space-y-3">
               {wellenMitZahlen.map(({ welle: w, k }) => {
                 const h = wellenHinweis(w, k);
                 const arbeitet = beschaeftigt === w.id;
@@ -313,12 +315,12 @@ export default function ProjectDetail() {
                     <div className="flex items-start justify-between gap-3 flex-wrap">
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <Link to={`/welle/${w.id}/dashboard`} className="font-semibold text-slate-900 hover:underline">
+                          <Link to={`/welle/${w.id}/dashboard`} className="font-semibold text-foreground hover:underline">
                             {w.name}
                           </Link>
                           <StatusBadge status={w.status} />
                         </div>
-                        <div className="text-xs text-slate-500 mt-0.5">
+                        <div className="text-xs text-muted-foreground mt-0.5">
                           {ZIELGRUPPE_LABELS[w.zielgruppe]}
                           {k.frist ? ` · läuft bis ${datumKurz(k.frist, true)}` : ""}
                           {k.gestartet > 0 ? ` · zuletzt ${relativerTag(k.letzteAktivitaet)}` : ""}
@@ -342,7 +344,7 @@ export default function ProjectDetail() {
                     </div>
                     <div className={`text-xs mt-2 ${TON_KLASSE[h.ton]}`}>{h.text}</div>
 
-                    <div className="flex items-center justify-between gap-2 flex-wrap mt-4 pt-3 border-t border-slate-100">
+                    <div className="flex items-center justify-between gap-2 flex-wrap mt-4 pt-3 border-t border-border">
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <Link to={`/welle/${w.id}/dashboard`}>
                           <Button variant="outline" size="sm"><LineChart size={15} className="mr-1" /> Verlauf</Button>
@@ -365,7 +367,7 @@ export default function ProjectDetail() {
                           variant="ghost"
                           size="sm"
                           onClick={() => loeschen(w, k)}
-                          className="text-slate-400 hover:text-red-600"
+                          className="text-muted-foreground hover:text-status-critical"
                           title="Welle löschen"
                           aria-label="Welle löschen"
                         >
@@ -389,7 +391,7 @@ export default function ProjectDetail() {
 
         {/* ------------------------------------------------------------------ */}
         <TabsContent value="einstellungen">
-          <div className="v-karte mb-6">
+          <div className="v-karte">
             <h2 className="v-h2 mb-3">Stammdaten</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -399,14 +401,14 @@ export default function ProjectDetail() {
               <div className="space-y-2">
                 <Label>Kundenname</Label>
                 <Input value={projekt.kundenname || ""} onChange={(e) => feldAendern("kundenname", e.target.value)} />
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-muted-foreground">
                   Erscheint in den Fragen überall, wo <code>{"{{firma}}"}</code> steht.
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="v-karte">
               <h2 className="v-h2 mb-3">Briefing</h2>
               <Textarea
@@ -415,7 +417,7 @@ export default function ProjectDetail() {
                 placeholder="Hintergrund, Ziele, Kontext des Projekts…"
                 rows={10}
               />
-              <p className="text-xs text-slate-400 mt-2">Nur intern — Befragte sehen das Briefing nie.</p>
+              <p className="text-xs text-muted-foreground mt-2">Nur intern — Befragte sehen das Briefing nie.</p>
             </div>
 
             <div className="v-karte">
@@ -437,12 +439,12 @@ export default function ProjectDetail() {
                   <Label>Logo</Label>
                   <div className="flex items-center gap-3">
                     {projekt.logoUrl ? (
-                      <img src={projekt.logoUrl} alt="Logo" className="h-12 w-auto max-w-[120px] object-contain border border-slate-200 rounded p-1" />
+                      <img src={projekt.logoUrl} alt="Logo" className="h-12 w-auto max-w-[120px] object-contain border border-border rounded p-1" />
                     ) : (
-                      <div className="h-12 w-20 bg-slate-100 rounded flex items-center justify-center text-xs text-slate-400">Kein Logo</div>
+                      <div className="h-12 w-20 bg-muted rounded flex items-center justify-center text-xs text-muted-foreground">Kein Logo</div>
                     )}
                     <label className="cursor-pointer">
-                      <span className="inline-flex items-center px-3 py-2 text-sm border border-slate-200 rounded-md hover:bg-slate-50">
+                      <span className="inline-flex items-center px-3 py-2 text-sm border border-border rounded-md hover:bg-muted/40">
                         Logo hochladen
                       </span>
                       <input type="file" accept="image/*" className="hidden" onChange={logoHochladen} />
@@ -455,14 +457,14 @@ export default function ProjectDetail() {
                     <div className="space-y-2">
                       <Label>Primärfarbe</Label>
                       <div className="flex items-center gap-2">
-                        <input type="color" value={projekt.farbePrimaer || "#ff3764"} onChange={(e) => feldAendern("farbePrimaer", e.target.value)} className="h-9 w-12 rounded border border-slate-200" />
+                        <input type="color" value={projekt.farbePrimaer || "#ff3764"} onChange={(e) => feldAendern("farbePrimaer", e.target.value)} className="h-9 w-12 rounded border border-border" />
                         <Input value={projekt.farbePrimaer || ""} onChange={(e) => feldAendern("farbePrimaer", e.target.value)} />
                       </div>
                     </div>
                     <div className="space-y-2">
                       <Label>Sekundärfarbe</Label>
                       <div className="flex items-center gap-2">
-                        <input type="color" value={projekt.farbeSekundaer || "#45d085"} onChange={(e) => feldAendern("farbeSekundaer", e.target.value)} className="h-9 w-12 rounded border border-slate-200" />
+                        <input type="color" value={projekt.farbeSekundaer || "#45d085"} onChange={(e) => feldAendern("farbeSekundaer", e.target.value)} className="h-9 w-12 rounded border border-border" />
                         <Input value={projekt.farbeSekundaer || ""} onChange={(e) => feldAendern("farbeSekundaer", e.target.value)} />
                       </div>
                     </div>
@@ -483,7 +485,7 @@ export default function ProjectDetail() {
             </div>
           </div>
 
-          <div className="v-karte mb-6">
+          <div className="v-karte">
             <h2 className="v-h2 mb-3">Schrift &amp; Rechtliches</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -507,14 +509,14 @@ export default function ProjectDetail() {
                   <div className="space-y-2">
                     <Label>Textfarbe (optional)</Label>
                     <div className="flex items-center gap-2">
-                      <input type="color" value={projekt.farbeText || "#2d2d2d"} onChange={(e) => feldAendern("farbeText", e.target.value)} className="h-9 w-12 rounded border border-slate-200" />
+                      <input type="color" value={projekt.farbeText || "#2d2d2d"} onChange={(e) => feldAendern("farbeText", e.target.value)} className="h-9 w-12 rounded border border-border" />
                       <Input value={projekt.farbeText || ""} onChange={(e) => feldAendern("farbeText", e.target.value)} placeholder="#2d2d2d" />
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Label>Hintergrundfarbe (optional)</Label>
                     <div className="flex items-center gap-2">
-                      <input type="color" value={projekt.farbeHintergrund || "#ffffff"} onChange={(e) => feldAendern("farbeHintergrund", e.target.value)} className="h-9 w-12 rounded border border-slate-200" />
+                      <input type="color" value={projekt.farbeHintergrund || "#ffffff"} onChange={(e) => feldAendern("farbeHintergrund", e.target.value)} className="h-9 w-12 rounded border border-border" />
                       <Input value={projekt.farbeHintergrund || ""} onChange={(e) => feldAendern("farbeHintergrund", e.target.value)} placeholder="#ffffff" />
                     </div>
                   </div>
@@ -537,14 +539,14 @@ export default function ProjectDetail() {
                 />
               </div>
             </div>
-            <p className="text-xs text-slate-400 mt-3">
+            <p className="text-xs text-muted-foreground mt-3">
               Sind Datenschutz- und Impressum-URL gesetzt, erscheinen sie als Fußzeile im Teilnehmer-Frontend.
             </p>
           </div>
 
           <div className="flex items-center justify-end gap-3 sticky bottom-4">
             {ungespeichert && (
-              <span className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1">
+              <span className="text-xs text-status-attention bg-status-attention-surface border border-status-attention/30 rounded px-2 py-1">
                 Ungespeicherte Änderungen
               </span>
             )}
@@ -586,7 +588,7 @@ export default function ProjectDetail() {
                 <Input type="date" value={welleEndetAm} onChange={(e) => setWelleEndetAm(e.target.value)} />
               </div>
             </div>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-muted-foreground">
               Beides lässt sich später im Verlauf der Welle ändern. Die Frist schließt die Welle nicht automatisch.
             </p>
           </div>

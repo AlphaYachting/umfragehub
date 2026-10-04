@@ -1,12 +1,4 @@
-import React from "react";
-
-// Kennzahl-Kachel — überall in der Verwaltung dieselbe
-export function kachel(label, wert, zusatz) {
-  return (
-    <div className="v-kachel" key={label}>
-      <div className="v-kachel-label">{label}</div>
-      <div className="v-kachel-wert">{wert}</div>
-      {zusatz ? <div className="v-kachel-zusatz">{zusatz}</div> : null}
-    </div>
-  );
+// Eine Kennzahl für die Kennzahlleiste: kachel("Wellen", 3, "1 live")
+export function kachel(label, wert, hinweis, ton) {
+  return { label, wert, hinweis: hinweis || undefined, ton };
 }

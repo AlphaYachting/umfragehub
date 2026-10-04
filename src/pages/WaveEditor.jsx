@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { bestaetigen, eingabe } from "@/components/shared/Bestaetigen";
 import { useParams } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { Plus, Trash2, Save, Library } from "lucide-react";
@@ -104,7 +105,7 @@ export default function WaveEditor() {
   }
 
   async function blockLoeschen(b) {
-    if (!confirm(`Block "${b.titel}" löschen? Alle Fragen gehen verloren.`)) return;
+    if (!await bestaetigen(`Block "${b.titel}" löschen? Alle Fragen gehen verloren.`)) return;
     try {
       await base44.entities.Frage.deleteMany({ blockId: b.id });
       await base44.entities.Block.delete(b.id);
@@ -160,7 +161,7 @@ export default function WaveEditor() {
       if (n > 0) {
         msg += `\n\nZu dieser Frage liegen bereits ${n} ${n === 1 ? "Antwort" : "Antworten"} vor. Beim Löschen gehen sie unwiderruflich verloren.`;
       }
-      if (!confirm(msg)) return;
+      if (!await bestaetigen(msg)) return;
       if (n > 0) {
         await base44.entities.Antwort.deleteMany({ frageId: f.id });
       }
@@ -273,17 +274,17 @@ export default function WaveEditor() {
   if (!welle) return <div className="v-seite v-lade">Welle nicht gefunden.</div>;
 
   return (
-    <div className="v-seite pb-24">
+    <div className="v-seite">
       <WellenKopf welle={welle} projekt={projekt} aktiv="editor" />
 
       {welle.status === "live" && sessionCount > 0 && (
-        <div className="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6 text-sm text-amber-900">
+        <div className="bg-status-attention-surface border border-status-attention/30 rounded-lg p-4 text-sm text-status-attention">
           <strong>Hinweis:</strong> Diese Welle läuft bereits und hat {sessionCount} Teilnehmer. Änderungen an Fragen verfälschen die Auswertung. Fragen ergänzen ist unbedenklich, umformulieren oder löschen nicht.
         </div>
       )}
 
       {/* Wellen-Einstellungen */}
-      <div className="v-karte mb-6 space-y-4">
+      <div className="v-karte space-y-4">
         <h2 className="v-h2">Wellen-Einstellungen</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
@@ -302,14 +303,14 @@ export default function WaveEditor() {
         <div className="space-y-2">
           <Label>Begrüßungstext</Label>
           <Textarea value={welle.begruessungstext || ""} onChange={(e) => welleFeld("begruessungstext", e.target.value)} rows={3} />
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-muted-foreground">
             Steht auf der Startseite unter dem Titel. Anonymität, „kein richtig, kein falsch“, Dauer und Pausieren zeigt die Startseite schon selbst — hier nur Anlass und Nutzen, 2–3 Sätze. Platzhalter wie <code>{"{{firma}}"}</code> und <code>{"{{du}}"}</code> werden ersetzt.
           </p>
         </div>
         <div className="space-y-2">
           <Label>Abschlusstext</Label>
           <Textarea value={welle.abschlusstext || ""} onChange={(e) => welleFeld("abschlusstext", e.target.value)} rows={3} />
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-muted-foreground">
             Steht auf der Schlussseite unter dem Dank. Der Dank selbst ist schon da — hier nur, was mit den Ergebnissen passiert und wann.
           </p>
         </div>
@@ -374,7 +375,7 @@ export default function WaveEditor() {
                             variant="ghost"
                             size="sm"
                             onClick={() => blockLoeschen(b)}
-                            className="text-red-500 hover:text-red-700"
+                            className="text-status-critical hover:text-status-critical"
                           >
                             <Trash2 size={15} className="mr-1" /> Block löschen
                           </Button>
@@ -391,12 +392,12 @@ export default function WaveEditor() {
                                       ref={pFrag.innerRef}
                                       {...pFrag.draggableProps}
                                       {...pFrag.dragHandleProps}
-                                      className="flex items-center gap-2 bg-slate-50 border border-slate-100 rounded px-3 py-2 text-sm cursor-grab"
+                                      className="flex items-center gap-2 bg-muted border border-border rounded px-3 py-2 text-sm cursor-grab"
                                     >
-                                      <span className="text-slate-300">⋮⋮</span>
-                                      <span className="text-xs text-slate-400">{fIdx + 1}.</span>
-                                      <span className="flex-1 truncate text-slate-700">{f.text || "(leere Frage)"}</span>
-                                      <span className="text-xs text-slate-400">{FRAGETYP_LABELS[f.typ]}</span>
+                                      <span className="text-muted-foreground/50">⋮⋮</span>
+                                      <span className="text-xs text-muted-foreground">{fIdx + 1}.</span>
+                                      <span className="flex-1 truncate text-foreground">{f.text || "(leere Frage)"}</span>
+                                      <span className="text-xs text-muted-foreground">{FRAGETYP_LABELS[f.typ]}</span>
                                     </div>
                                   )}
                                 </Draggable>
@@ -417,8 +418,8 @@ export default function WaveEditor() {
       </DragDropContext>
 
       {bloecke.length === 0 && (
-        <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-lg">
-          <p className="text-slate-400 text-sm mb-3">Noch keine Blöcke. Lege den ersten Block an.</p>
+        <div className="text-center py-12 border-2 border-dashed border-border rounded-lg">
+          <p className="text-muted-foreground text-sm mb-3">Noch keine Blöcke. Lege den ersten Block an.</p>
           <Button onClick={blockHinzu}><Plus size={16} className="mr-1" /> Block anlegen</Button>
         </div>
       )}

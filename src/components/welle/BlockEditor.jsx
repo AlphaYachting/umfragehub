@@ -28,11 +28,11 @@ export default function BlockEditor({
 
   return (
     <div className="v-karte-flach overflow-hidden">
-      <div className="flex items-center gap-2 p-4 bg-slate-50 border-b border-slate-200">
-        <span {...dragHandleProps} className="cursor-grab text-slate-400 hover:text-slate-600">
+      <div className="flex items-center gap-2 p-4 bg-muted border-b border-border">
+        <span {...dragHandleProps} className="cursor-grab text-muted-foreground hover:text-foreground">
           <GripVertical size={18} />
         </span>
-        <button onClick={() => setOffen(!offen)} className="text-slate-400 hover:text-slate-600">
+        <button onClick={() => setOffen(!offen)} className="text-muted-foreground hover:text-foreground">
           {offen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
         </button>
         <Input
@@ -41,7 +41,7 @@ export default function BlockEditor({
           className="flex-1 border-none bg-transparent font-semibold focus-visible:ring-0 focus-visible:ring-offset-0"
           placeholder="Blocktitel"
         />
-        <span className="text-xs text-slate-400 whitespace-nowrap">
+        <span className="text-xs text-muted-foreground whitespace-nowrap">
           {fragen.length} {fragen.length === 1 ? "Frage" : "Fragen"}
         </span>
       </div>
@@ -59,33 +59,33 @@ export default function BlockEditor({
           </div>
 
           {fragen.length === 0 && (
-            <p className="text-sm text-slate-400 py-2">Noch keine Fragen in diesem Block.</p>
+            <p className="text-sm text-muted-foreground py-2">Noch keine Fragen in diesem Block.</p>
           )}
 
           {fragen.map((f, idx) => (
-            <div key={f.id} className="border border-slate-200 rounded-md">
+            <div key={f.id} className="border border-border rounded-md">
               <div className="flex items-center justify-between p-3">
                 <button
                   onClick={() => frageBearbeiten(f)}
                   className="flex-1 text-left"
                 >
-                  <span className="text-xs text-slate-400 mr-2">{idx + 1}.</span>
-                  <span className="text-sm font-medium text-slate-800">
+                  <span className="text-xs text-muted-foreground mr-2">{idx + 1}.</span>
+                  <span className="text-sm font-medium text-foreground">
                     {f.text || "(leere Frage)"}
                   </span>
-                  <span className="ml-2 text-xs text-slate-400">
+                  <span className="ml-2 text-xs text-muted-foreground">
                     {FRAGETYP_LABELS[f.typ]}
                   </span>
                 </button>
                 <div className="flex items-center gap-1">
-                  <Button variant="ghost" size="sm" onClick={() => onFrageLoeschen(f)} className="text-red-500 hover:text-red-700">
+                  <Button variant="ghost" size="sm" onClick={() => onFrageLoeschen(f)} className="text-status-critical hover:text-status-critical">
                     <Trash2 size={15} />
                   </Button>
                 </div>
               </div>
 
               {bearbeiteteFrage === f.id && (
-                <div className="border-t border-slate-100 p-4 bg-slate-50/50">
+                <div className="border-t border-border p-4 bg-muted">
                   <FrageForm frage={f} onChange={(neu) => onFrageSpeichern(neu)} />
                   <div className="flex justify-end mt-3">
                     <Button size="sm" onClick={() => setBearbeiteteFrage(null)}>

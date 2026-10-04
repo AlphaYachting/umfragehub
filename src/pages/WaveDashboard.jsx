@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { bestaetigen, eingabe } from "@/components/shared/Bestaetigen";
 import { useParams } from "react-router-dom";
 import { Copy, BarChart3, Mail, RefreshCw, Save, RotateCw, ExternalLink } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
@@ -21,6 +22,7 @@ import {
   sternchenEntfernen,
 } from "@/lib/interview";
 import { kachel } from "@/components/verwaltung/Kachel";
+import Kennzahlleiste from "@/components/shared/Kennzahlleiste";
 import WellenKopf from "@/components/verwaltung/WellenKopf";
 import Fortschritt from "@/components/verwaltung/Fortschritt";
 import VerlaufChart from "@/components/verwaltung/VerlaufChart";
@@ -36,9 +38,9 @@ import {
 } from "@/lib/verwaltung";
 
 const TON_RAHMEN = {
-  gut: "bg-green-50 border-green-200 text-green-900",
-  warnung: "bg-amber-50 border-amber-200 text-amber-900",
-  neutral: "bg-slate-50 border-slate-200 text-slate-700",
+  gut: "bg-status-done-surface border-status-done/40 text-status-done-text",
+  warnung: "bg-status-attention-surface border-status-attention/30 text-status-attention",
+  neutral: "bg-muted border-border text-foreground",
 };
 
 export default function WaveDashboard() {
@@ -139,9 +141,9 @@ export default function WaveDashboard() {
         toast.error("Diese Welle hat noch keine Fragen — bitte zuerst unter „Fragen“ anlegen.");
         return;
       }
-      if (!confirm("Welle freischalten? Der Teilnahmelink funktioniert ab sofort.")) return;
+      if (!await bestaetigen("Welle freischalten? Der Teilnahmelink funktioniert ab sofort.")) return;
     }
-    if (neu === "geschlossen" && !confirm("Welle schließen? Neue Teilnahmen sind dann nicht mehr möglich.")) return;
+    if (neu === "geschlossen" && !await bestaetigen("Welle schließen? Neue Teilnahmen sind dann nicht mehr möglich.")) return;
     try {
       await base44.entities.Welle.update(id, { status: neu });
       setWelle({ ...welle, status: neu });
@@ -157,7 +159,7 @@ export default function WaveDashboard() {
       toast.error("Die Mindestzahl muss mindestens 1 sein.");
       return;
     }
-    if (mindest < 5 && !confirm(`Mindestzahl ${mindest}? Unter 5 Personen lassen sich Antworten leicht einzelnen Menschen zuordnen — die Anonymität ist dann nicht mehr gesichert.`)) return;
+    if (mindest < 5 && !await bestaetigen(`Mindestzahl ${mindest}? Unter 5 Personen lassen sich Antworten leicht einzelnen Menschen zuordnen — die Anonymität ist dann nicht mehr gesichert.`)) return;
     setPlanSpeichert(true);
     try {
       const daten = {
@@ -196,7 +198,7 @@ export default function WaveDashboard() {
     if (sessions.length > 0) {
       msg += `\n\nEs gibt bereits ${sessions.length} Teilnahmen. Sie bleiben erhalten — wer noch nicht fertig ist, kann aber über den alten Link nicht mehr weitermachen.`;
     }
-    if (!confirm(msg)) return;
+    if (!await bestaetigen(msg)) return;
     try {
       const linkToken = generiereToken();
       await base44.entities.Welle.update(id, { linkToken });
@@ -227,23 +229,23 @@ export default function WaveDashboard() {
       </WellenKopf>
 
       {/* Wo steht die Welle */}
-      <div className={`border rounded-lg px-5 py-4 mb-6 ${TON_RAHMEN[hinweis.ton]}`}>
+      <div className={`border rounded-lg px-5 py-4 ${TON_RAHMEN[hinweis.ton]}`}>
         <div className="text-sm font-medium mb-3">{hinweis.text}</div>
         <Fortschritt k={k} />
       </div>
 
-      <div className="v-kacheln">
-        {kachel(
+      <Kennzahlleiste werte={[
+        kachel(
           "Abgeschlossen",
           k.abgeschlossen,
           k.ruecklauf !== null ? `${k.ruecklauf} % Rücklauf` : `von ${k.mindest} nötigen`
-        )}
-        {kachel("Begonnen, nicht beendet", k.offen, k.abschlussquote !== null ? `${k.abschlussquote} % schließen ab` : "")}
-        {kachel("Dauer (Median)", k.medianDauer !== null ? `${k.medianDauer} Min` : "—", dauerBefragung ? `geschätzt ${dauerBefragung} Min` : "")}
-        {kachel("Letzte Aktivität", relativerTag(k.letzteAktivitaet), k.abgeschlossen7Tage ? `${k.abgeschlossen7Tage} in 7 Tagen` : "")}
-      </div>
+        ),
+        kachel("Begonnen, nicht beendet", k.offen, k.abschlussquote !== null ? `${k.abschlussquote} % schließen ab` : ""),
+        kachel("Dauer (Median)", k.medianDauer !== null ? `${k.medianDauer} Min` : "—", dauerBefragung ? `geschätzt ${dauerBefragung} Min` : ""),
+        kachel("Letzte Aktivität", relativerTag(k.letzteAktivitaet), k.abgeschlossen7Tage ? `${k.abgeschlossen7Tage} in 7 Tagen` : ""),
+      ]} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Status & Planung */}
         <div className="v-karte">
           <h2 className="v-h2 mb-3">Status &amp; Planung</h2>
@@ -273,7 +275,7 @@ export default function WaveDashboard() {
                 <Input type="date" value={planEndetAm} onChange={(e) => setPlanEndetAm(e.target.value)} />
               </div>
             </div>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-muted-foreground">
               „Eingeladen“ ist die Zahl der Personen, die den Link bekommen — daraus ergibt sich der Rücklauf. Ab der
               Mindestzahl werden Einzelantworten sichtbar. Die Frist schließt die Welle nicht automatisch.
             </p>
@@ -288,7 +290,7 @@ export default function WaveDashboard() {
         {/* Link */}
         <div className="v-karte">
           <h2 className="v-h2 mb-3">Teilnahmelink</h2>
-          <code className="block text-xs bg-slate-50 px-3 py-2 rounded break-all text-slate-700 mb-3">{url}</code>
+          <code className="block text-xs bg-muted px-3 py-2 rounded break-all text-foreground mb-3">{url}</code>
           <div className="flex flex-wrap gap-2">
             <Button size="sm" variant="outline" onClick={() => kopiere(url, "Link kopiert.")}>
               <Copy size={15} className="mr-1" /> Link kopieren
@@ -306,50 +308,50 @@ export default function WaveDashboard() {
               </a>
             )}
           </div>
-          <p className="text-xs text-slate-400 mt-3">
+          <p className="text-xs text-muted-foreground mt-3">
             Ein Link für alle Befragten dieser Welle — so bleibt die Teilnahme anonym. Vorschau und QR-Code stehen oben rechts.
             {welle.status !== "live" && " Der Link funktioniert erst im Status „Live“."}
           </p>
-          <div className="mt-4 pt-3 border-t border-slate-100">
-            <Button size="sm" variant="ghost" className="text-slate-500" onClick={linkNeuErzeugen}>
+          <div className="mt-4 pt-3 border-t border-border">
+            <Button size="sm" variant="ghost" className="text-muted-foreground" onClick={linkNeuErzeugen}>
               <RotateCw size={15} className="mr-1" /> Neuen Link erzeugen
             </Button>
-            <span className="text-xs text-slate-400 ml-1">macht den bisherigen ungültig</span>
+            <span className="text-xs text-muted-foreground ml-1">macht den bisherigen ungültig</span>
           </div>
         </div>
       </div>
 
       {/* Verlauf */}
-      <div className="v-karte mb-6">
+      <div className="v-karte">
         <h2 className="v-h2 mb-3">Verlauf</h2>
         <VerlaufChart daten={verlauf} mindest={k.mindest} />
       </div>
 
       {/* Trichter je Block */}
-      <div className="v-karte mb-6">
+      <div className="v-karte">
         <h2 className="v-h2 mb-3">Wie weit kommen die Befragten?</h2>
-        <p className="text-xs text-slate-400 mb-4">Anteil aller begonnenen Teilnahmen, die den jeweiligen Abschnitt erreicht haben.</p>
+        <p className="text-xs text-muted-foreground mb-4">Anteil aller begonnenen Teilnahmen, die den jeweiligen Abschnitt erreicht haben.</p>
         {trichter.length === 0 ? (
-          <p className="text-sm text-slate-400 py-4 text-center">
+          <p className="text-sm text-muted-foreground py-4 text-center">
             {fragen.length === 0 ? "Diese Welle hat noch keine Fragen." : "Noch keine Teilnahmen."}
           </p>
         ) : (
           <div className="space-y-2.5">
             {trichter.map((b) => (
               <div key={b.id} className="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)_64px] gap-3 items-center text-sm">
-                <span className="truncate text-slate-700" title={b.titel}>{b.titel}</span>
-                <div className="h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                  <div className="h-full bg-slate-600 rounded-full" style={{ width: `${b.anteil}%` }} />
+                <span className="truncate text-foreground" title={b.titel}>{b.titel}</span>
+                <div className="h-2.5 rounded-full bg-muted overflow-hidden">
+                  <div className="h-full bg-foreground rounded-full" style={{ width: `${b.anteil}%` }} />
                 </div>
-                <span className="text-xs text-slate-500 text-right whitespace-nowrap">{b.anteil} % · {b.erreicht}</span>
+                <span className="text-xs text-muted-foreground text-right whitespace-nowrap">{b.anteil} % · {b.erreicht}</span>
               </div>
             ))}
-            <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)_64px] gap-3 items-center text-sm pt-1 border-t border-slate-100">
-              <span className="font-medium text-slate-800">Abgeschlossen</span>
-              <div className="h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                <div className="h-full bg-green-500 rounded-full" style={{ width: `${k.abschlussquote ?? 0}%` }} />
+            <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)_64px] gap-3 items-center text-sm pt-1 border-t border-border">
+              <span className="font-medium text-foreground">Abgeschlossen</span>
+              <div className="h-2.5 rounded-full bg-muted overflow-hidden">
+                <div className="h-full bg-status-done rounded-full" style={{ width: `${k.abschlussquote ?? 0}%` }} />
               </div>
-              <span className="text-xs text-slate-500 text-right whitespace-nowrap">{k.abschlussquote ?? 0} % · {k.abgeschlossen}</span>
+              <span className="text-xs text-muted-foreground text-right whitespace-nowrap">{k.abschlussquote ?? 0} % · {k.abgeschlossen}</span>
             </div>
           </div>
         )}
@@ -358,11 +360,11 @@ export default function WaveDashboard() {
       {/* Abbruch-Analyse */}
       <div className="v-karte">
         <div className="flex items-center gap-2 mb-4">
-          <BarChart3 size={18} className="text-slate-400" />
+          <BarChart3 size={18} className="text-muted-foreground" />
           <h2 className="v-h2">Abbrüche je Frage</h2>
         </div>
         {abbruchDaten.every((d) => d.abbrueche === 0) ? (
-          <p className="text-sm text-slate-400 py-6 text-center">Noch keine Abbrüche erfasst.</p>
+          <p className="text-sm text-muted-foreground py-6 text-center">Noch keine Abbrüche erfasst.</p>
         ) : (
           <>
             <div style={{ width: "100%", height: 260 }}>
@@ -385,7 +387,7 @@ export default function WaveDashboard() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <p className="text-xs text-slate-400 mt-2">
+            <p className="text-xs text-muted-foreground mt-2">
               Zeigt, nach welcher Frage nicht beendete Teilnahmen stehen geblieben sind. Wer nur unterbrochen hat und später weitermacht, zählt bis dahin mit.
             </p>
           </>
@@ -393,7 +395,7 @@ export default function WaveDashboard() {
       </div>
 
       {aktualisiert && (
-        <p className="text-xs text-slate-400 mt-4 text-right">
+        <p className="text-xs text-muted-foreground mt-4 text-right">
           Stand: {String(aktualisiert.getHours()).padStart(2, "0")}:{String(aktualisiert.getMinutes()).padStart(2, "0")} Uhr
         </p>
       )}

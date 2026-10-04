@@ -97,7 +97,7 @@ export default function FrageForm({ frage, onChange }) {
   return (
     <div className="space-y-4">
       {istKern && (
-        <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+        <div className="rounded-md border border-status-attention/30 bg-status-attention-surface px-3 py-2 text-xs text-status-attention">
           Kernfrage {frage.kernversion ? `(v${frage.kernversion})` : ""} — Text, Optionen und Zeilen sind Teil des Benchmark-Kerns.
           Änderungen daran machen Ergebnisse mit anderen Kunden unvergleichbar.
         </div>
@@ -111,7 +111,7 @@ export default function FrageForm({ frage, onChange }) {
           rows={2}
           placeholder="Wie lautet die Frage?"
         />
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-muted-foreground">
           Wort in Sternchen setzen, um es hervorzuheben — z.&nbsp;B. „Welche Werte *erlebst* du wirklich?&ldquo;
           Jede Frage bekommt genau eine Markierung: das Wort, um das sich die Frage dreht (ein bis drei Wörter, z.&nbsp;B. „Stärken&ldquo;, „Anlass&ldquo;). Bei verneinten Fragen gehört „nicht&ldquo; in die Markierung. Eine ganze Aussage in Sternchen wird als eigener Block dargestellt.
           Platzhalter: <code>{"{{firma}}"}</code> für den Kundennamen, <code>{"{{du}}"}</code>, <code>{"{{dein}}"}</code> oder frei <code>{"{{siehst|sehen}}"}</code> für Du/Sie.
@@ -126,7 +126,7 @@ export default function FrageForm({ frage, onChange }) {
             onChange={(e) => feld("schluessel", e.target.value.replace(/[^a-zA-Z0-9_]/g, "_").toLowerCase())}
             placeholder="z. B. andi_i_wertewelt_pro"
           />
-          <p className="text-xs text-slate-400">Stabil über alle Kunden — Basis für Benchmark.</p>
+          <p className="text-xs text-muted-foreground">Stabil über alle Kunden — Basis für Benchmark.</p>
         </div>
         <div className="space-y-2">
           <Label>Kernversion</Label>
@@ -176,7 +176,7 @@ export default function FrageForm({ frage, onChange }) {
           rows={3}
           placeholder="Warum stellen wir diese Frage? Was soll der Befragte dabei bedenken?"
         />
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-muted-foreground">
           Mehrere Absätze durch eine Leerzeile trennen. Wird den Teilnehmern aufklappbar angezeigt.
         </p>
       </div>
@@ -208,7 +208,7 @@ export default function FrageForm({ frage, onChange }) {
                 onChange={(e) => optionAendern(i, e.target.value)}
                 placeholder={`Option ${i + 1}`}
               />
-              <Button variant="ghost" size="sm" onClick={() => optionWeg(i)} className="text-red-500">
+              <Button variant="ghost" size="sm" onClick={() => optionWeg(i)} className="text-status-critical">
                 <X size={16} />
               </Button>
             </div>
@@ -230,7 +230,7 @@ export default function FrageForm({ frage, onChange }) {
               <SelectItem value="contra">Contra — „steht nicht für“</SelectItem>
             </SelectContent>
           </Select>
-          <p className="text-xs text-slate-400">Für Fragepaare mit gleicher Begriffsliste (steht für / steht nicht für).</p>
+          <p className="text-xs text-muted-foreground">Für Fragepaare mit gleicher Begriffsliste (steht für / steht nicht für).</p>
         </div>
       )}
 
@@ -264,12 +264,12 @@ export default function FrageForm({ frage, onChange }) {
                 className="w-36 font-mono text-xs"
                 title="Stabile Zeilen-ID für die Auswertung"
               />
-              <Button variant="ghost" size="sm" onClick={() => matrixZeileWeg(i)} className="text-red-500">
+              <Button variant="ghost" size="sm" onClick={() => matrixZeileWeg(i)} className="text-status-critical">
                 <X size={16} />
               </Button>
             </div>
           ))}
-          <p className="text-xs text-slate-400">Die ID bleibt stabil, auch wenn der Text später angepasst wird — Antworten hängen an der ID.</p>
+          <p className="text-xs text-muted-foreground">Die ID bleibt stabil, auch wenn der Text später angepasst wird — Antworten hängen an der ID.</p>
           <Button variant="outline" size="sm" onClick={matrixZeileHinzu}>
             <Plus size={14} className="mr-1" /> Aussage hinzufügen
           </Button>
@@ -293,7 +293,7 @@ export default function FrageForm({ frage, onChange }) {
                 onChange={(e) => stufeAendern(i, "wort", e.target.value)}
                 placeholder="Wort z. B. „deutlich spürbar&ldquo;"
               />
-              <Button variant="ghost" size="sm" onClick={() => stufeWeg(i)} className="text-red-500">
+              <Button variant="ghost" size="sm" onClick={() => stufeWeg(i)} className="text-status-critical">
                 <X size={16} />
               </Button>
             </div>

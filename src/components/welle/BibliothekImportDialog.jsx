@@ -85,10 +85,10 @@ export default function BibliothekImportDialog({ offen, onClose, onImport }) {
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg w-full max-w-2xl max-h-[85vh] flex flex-col">
-        <div className="p-5 border-b border-slate-200">
+      <div className="bg-card rounded-lg w-full max-w-2xl max-h-[85vh] flex flex-col">
+        <div className="p-5 border-b border-border">
           <h3 className="font-semibold mb-1">Komplette Bibliothek importieren</h3>
-          <p className="text-sm text-slate-500 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             Es werden automatisch Blöcke aus den Kategorien der Fragen angelegt.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -115,21 +115,21 @@ export default function BibliothekImportDialog({ offen, onClose, onImport }) {
 
         <div className="flex-1 overflow-auto p-4">
           {loading ? (
-            <p className="text-sm text-slate-400 text-center py-8">Lade…</p>
+            <p className="text-sm text-muted-foreground text-center py-8">Lade…</p>
           ) : gruppen.length === 0 ? (
-            <p className="text-sm text-slate-400 text-center py-8">Keine Fragen gefunden.</p>
+            <p className="text-sm text-muted-foreground text-center py-8">Keine Fragen gefunden.</p>
           ) : (
             <div className="space-y-3">
-              <div className="text-sm text-slate-600">
+              <div className="text-sm text-muted-foreground">
                 <strong>{totalFragen} Fragen</strong> in <strong>{gruppen.length} Blöcken</strong>:
               </div>
               {gruppen.map((g) => (
-                <div key={g.kategorie} className="border border-slate-200 rounded-md p-3">
+                <div key={g.kategorie} className="border border-border rounded-md p-3">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-medium text-sm text-slate-800">{g.kategorie}</span>
-                    <span className="text-xs text-slate-400">{g.fragen.length} Frage(n)</span>
+                    <span className="font-medium text-sm text-foreground">{g.kategorie}</span>
+                    <span className="text-xs text-muted-foreground">{g.fragen.length} Frage(n)</span>
                   </div>
-                  <div className="text-xs text-slate-400 leading-relaxed">
+                  <div className="text-xs text-muted-foreground leading-relaxed">
                     {g.fragen.slice(0, 3).map((f) => (f.text || "").slice(0, 60)).join(" · ")}
                     {g.fragen.length > 3 && " …"}
                   </div>
@@ -139,8 +139,8 @@ export default function BibliothekImportDialog({ offen, onClose, onImport }) {
           )}
         </div>
 
-        <div className="p-4 border-t border-slate-200 flex items-center justify-between">
-          <span className="text-sm text-slate-500">{totalFragen} Fragen, {gruppen.length} Blöcke</span>
+        <div className="p-4 border-t border-border flex items-center justify-between">
+          <span className="text-sm text-muted-foreground">{totalFragen} Fragen, {gruppen.length} Blöcke</span>
           <div className="flex gap-2">
             <Button variant="outline" onClick={onClose}>Abbrechen</Button>
             <Button onClick={bestaetigen} disabled={gruppen.length === 0}>Importieren</Button>

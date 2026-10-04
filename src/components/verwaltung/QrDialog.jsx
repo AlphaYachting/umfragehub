@@ -40,7 +40,7 @@ export default function QrDialog({ welle, offen, onClose }) {
         <div ref={rahmen} className="flex justify-center py-2">
           <QRCodeCanvas value={url} size={720} level="M" includeMargin style={{ width: 240, height: 240 }} />
         </div>
-        <code className="block text-xs bg-slate-50 px-3 py-2 rounded break-all text-slate-600">{url}</code>
+        <code className="block text-xs bg-muted px-3 py-2 rounded break-all text-muted-foreground">{url}</code>
         <div className="flex gap-2">
           <Button className="flex-1" variant="outline" onClick={kopieren}>
             <Copy size={15} className="mr-1" /> Link kopieren

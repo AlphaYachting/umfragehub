@@ -146,7 +146,7 @@ export default function RawData() {
       <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
         <div>
           <h2 className="v-h2">Antworten</h2>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <p className="text-sm text-muted-foreground mt-0.5">
             {gesperrt
               ? `${abgeschlossenCount} von ${mindest} nötigen Interviews abgeschlossen`
               : `${abgeschlossenCount} abgeschlossene Interviews · ${antworten.length} Antworten`}
@@ -163,45 +163,45 @@ export default function RawData() {
       </div>
 
       {gesperrt ? (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-8 text-center">
-          <Lock className="mx-auto mb-3 text-amber-500" size={32} />
-          <p className="text-amber-800 font-medium mb-1">
+        <div className="bg-status-attention-surface border border-status-attention/30 rounded-lg p-8 text-center">
+          <Lock className="mx-auto mb-3 text-status-attention" size={32} />
+          <p className="text-status-attention font-medium mb-1">
             Zum Schutz der Anonymität sind Einzelantworten erst ab {mindest} abgeschlossenen Interviews einsehbar.
           </p>
-          <p className="text-sm text-amber-700">
+          <p className="text-sm text-status-attention">
             Bisher abgeschlossen: {abgeschlossenCount} von {mindest} nötig.
           </p>
-          <p className="text-xs text-amber-600 mt-3">
+          <p className="text-xs text-status-attention mt-3">
             Kennzahlen (Anzahl, Fortschritt) sind im <Link to={`/welle/${id}/dashboard`} className="underline">Verlauf</Link> bereits sichtbar.
           </p>
         </div>
       ) : (
         <div className="v-karte-flach overflow-auto">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 border-b border-slate-200">
+            <thead className="bg-muted border-b border-border">
               <tr>
-                <th className="text-left px-3 py-2 font-medium text-slate-600">Session</th>
-                <th className="text-left px-3 py-2 font-medium text-slate-600">Frage</th>
-                <th className="text-left px-3 py-2 font-medium text-slate-600">Typ</th>
-                <th className="text-left px-3 py-2 font-medium text-slate-600">Antwort</th>
-                <th className="text-left px-3 py-2 font-medium text-slate-600">Eingabe</th>
+                <th className="text-left px-3 py-2 font-medium text-muted-foreground">Session</th>
+                <th className="text-left px-3 py-2 font-medium text-muted-foreground">Frage</th>
+                <th className="text-left px-3 py-2 font-medium text-muted-foreground">Typ</th>
+                <th className="text-left px-3 py-2 font-medium text-muted-foreground">Antwort</th>
+                <th className="text-left px-3 py-2 font-medium text-muted-foreground">Eingabe</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-border">
               {antworten.length === 0 ? (
-                <tr><td colSpan={5} className="text-center text-slate-400 py-8">Keine Antworten vorhanden.</td></tr>
+                <tr><td colSpan={5} className="text-center text-muted-foreground py-8">Keine Antworten vorhanden.</td></tr>
               ) : (
                 antworten.map((a) => {
                   const f = fragen.find((x) => x.id === a.frageId);
                   return (
-                    <tr key={a.id} className="hover:bg-slate-50">
-                      <td className="px-3 py-2 text-xs text-slate-400 font-mono">{a.session_token?.slice(0, 8)}…</td>
+                    <tr key={a.id} className="hover:bg-muted/40">
+                      <td className="px-3 py-2 text-xs text-muted-foreground font-mono">{a.session_token?.slice(0, 8)}…</td>
                       <td className="px-3 py-2 max-w-xs truncate">
-                        {f ? sternchenEntfernen(f.text) : <span className="text-slate-400 italic">(Frage gelöscht)</span>}
+                        {f ? sternchenEntfernen(f.text) : <span className="text-muted-foreground italic">(Frage gelöscht)</span>}
                       </td>
-                      <td className="px-3 py-2 text-xs text-slate-500">{f ? FRAGETYP_LABELS[f.typ] : ""}</td>
-                      <td className="px-3 py-2 text-slate-800 max-w-md">{antwortWert(a, f)}</td>
-                      <td className="px-3 py-2 text-xs text-slate-500">{a.eingabeart}</td>
+                      <td className="px-3 py-2 text-xs text-muted-foreground">{f ? FRAGETYP_LABELS[f.typ] : ""}</td>
+                      <td className="px-3 py-2 text-foreground max-w-md">{antwortWert(a, f)}</td>
+                      <td className="px-3 py-2 text-xs text-muted-foreground">{a.eingabeart}</td>
                     </tr>
                   );
                 })

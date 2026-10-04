@@ -18,7 +18,7 @@ export default function VorschauDialog({ welle, offen, onClose }) {
       type="button"
       onClick={() => setModus(wert)}
       className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md transition-colors ${
-        modus === wert ? "bg-white shadow-sm text-slate-900" : "text-slate-500 hover:text-slate-800"
+        modus === wert ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
       }`}
     >
       <Icon size={15} /> {label}
@@ -35,7 +35,7 @@ export default function VorschauDialog({ welle, offen, onClose }) {
           </DialogDescription>
         </DialogHeader>
         <div className="flex items-center justify-between gap-2 flex-wrap">
-          <div className="inline-flex bg-slate-100 rounded-lg p-1">
+          <div className="inline-flex bg-muted rounded-lg p-1">
             {umschalter("handy", Smartphone, "Handy")}
             {umschalter("desktop", Monitor, "Desktop")}
           </div>
@@ -50,7 +50,7 @@ export default function VorschauDialog({ welle, offen, onClose }) {
             </a>
           </div>
         </div>
-        <div className="flex-1 min-h-0 bg-slate-100 rounded-lg flex justify-center overflow-hidden">
+        <div className="flex-1 min-h-0 bg-muted rounded-lg flex justify-center overflow-hidden">
           <iframe
             key={`${modus}-${zaehler}`}
             src={url}
@@ -58,8 +58,8 @@ export default function VorschauDialog({ welle, offen, onClose }) {
             allow="microphone"
             className={
               modus === "handy"
-                ? "h-full w-[390px] max-w-full bg-white border-x border-slate-200"
-                : "h-full w-full bg-white"
+                ? "h-full w-[390px] max-w-full bg-card border-x border-border"
+                : "h-full w-full bg-card"
             }
           />
         </div>
