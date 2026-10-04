@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, FolderOpen, Search, RefreshCw, ChevronRight } from "lucide-react";
+import { Plus, Search, RefreshCw, X } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,34 +12,35 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { kachel } from "@/components/verwaltung/Kachel";
+import { cn } from "@/lib/utils";
+import Seitenkopf from "@/components/shared/Seitenkopf";
 import Kennzahlleiste from "@/components/shared/Kennzahlleiste";
+import Abschnittstitel from "@/components/shared/Abschnittstitel";
+import Listenzeile from "@/components/shared/Listenzeile";
+import TypPille from "@/components/shared/TypPille";
+import { Box } from "@/components/shared/Box";
 import StatusBadge from "@/components/verwaltung/StatusBadge";
 import Fortschritt from "@/components/verwaltung/Fortschritt";
 import LinkAktionen from "@/components/verwaltung/LinkAktionen";
+import { kachel } from "@/components/verwaltung/Kachel";
+import { TON_TEXT, HINWEIS_TON } from "@/lib/designTon";
 import {
   ladeGesamt,
   gruppiere,
   wellenKennzahlen,
   wellenHinweis,
   relativerTag,
-  WELLE_STATUS,
 } from "@/lib/verwaltung";
 
 const FILTER = [
-  { key: "laufend", label: "Laufend" },
-  { key: "entwurf", label: "Entwurf" },
-  { key: "aktiv", label: "Aktiv" },
-  { key: "archiviert", label: "Archiviert" },
-  { key: "alle", label: "Alle" },
+  { key: "laufend", label: "Laufend", passt: (st) => st !== "archiviert" },
+  { key: "entwurf", label: "Entwurf", passt: (st) => st === "entwurf" },
+  { key: "aktiv", label: "Aktiv", passt: (st) => st === "aktiv" },
+  { key: "archiviert", label: "Archiviert", passt: (st) => st === "archiviert" },
+  { key: "alle", label: "Alle", passt: () => true },
 ];
-
-const TON_KLASSE = {
-  gut: "text-status-done-text",
-  warnung: "text-status-attention",
-  neutral: "text-muted-foreground",
-};
 
 export default function Projects() {
   const navigate = useNavigate();
@@ -76,47 +77,41 @@ export default function Projects() {
         .map((w) => ({ welle: w, k: wellenKennzahlen(w, sessionsJeWelle[w.id] || []) }))
         .sort((a, b) => (a.welle.name || "").localeCompare(b.welle.name || ""));
       let letzte = null;
-      let gestartet = 0;
       let abgeschlossen = 0;
       for (const { k } of wellen) {
-        gestartet += k.gestartet;
         abgeschlossen += k.abgeschlossen;
         if (k.letzteAktivitaet && (!letzte || k.letzteAktivitaet > letzte)) letzte = k.letzteAktivitaet;
       }
-      return { projekt: p, wellen, gestartet, abgeschlossen, letzte };
+      return { projekt: p, status: p.status || "entwurf", wellen, abgeschlossen, letzte };
     });
   }, [daten]);
 
   const liveWellen = useMemo(() => {
     const out = [];
     for (const z of zeilen) {
-      if (z.projekt.status === "archiviert") continue;
+      if (z.status === "archiviert") continue;
       for (const w of z.wellen) if (w.welle.status === "live") out.push({ ...w, projekt: z.projekt });
     }
     return out;
   }, [zeilen]);
 
   const kennzahlen = useMemo(() => {
-    const offen = zeilen.filter((z) => z.projekt.status !== "archiviert");
+    const offen = zeilen.filter((z) => z.status !== "archiviert");
     return {
       projekte: offen.length,
-      live: liveWellen.length,
       abgeschlossen: offen.reduce((s, z) => s + z.abgeschlossen, 0),
       woche: offen.reduce((s, z) => s + z.wellen.reduce((t, w) => t + w.k.abgeschlossen7Tage, 0), 0),
+      fehlt: liveWellen.filter((w) => !w.k.schwelleErreicht).length,
     };
   }, [zeilen, liveWellen]);
 
   const sichtbar = useMemo(() => {
     const q = suche.trim().toLowerCase();
+    const f = FILTER.find((x) => x.key === filter) || FILTER[0];
     return zeilen.filter((z) => {
-      const st = z.projekt.status || "entwurf";
-      if (filter === "laufend" && st === "archiviert") return false;
-      if (["entwurf", "aktiv", "archiviert"].includes(filter) && st !== filter) return false;
+      if (!f.passt(z.status)) return false;
       if (!q) return true;
-      const text = [z.projekt.name, z.projekt.kundenname, ...z.wellen.map((w) => w.welle.name)]
-        .join(" ")
-        .toLowerCase();
-      return text.includes(q);
+      return [z.projekt.name, z.projekt.kundenname, ...z.wellen.map((w) => w.welle.name)].join(" ").toLowerCase().includes(q);
     });
   }, [zeilen, suche, filter]);
 
@@ -149,186 +144,149 @@ export default function Projects() {
     }
   }
 
+  const ersterLauf = loading && daten.projekte.length === 0;
+
   return (
     <div className="v-seite">
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <div>
-          <h1 className="text-page text-foreground">Übersicht</h1>
-          <p className="text-meta text-muted-foreground">Alle Projekte und laufenden Wellen auf einen Blick</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" onClick={laden} title="Aktualisieren" aria-label="Aktualisieren">
-            <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
-          </Button>
-          <Button onClick={() => setDialogOffen(true)}>
-            <Plus size={18} className="mr-2" /> Neues Projekt
-          </Button>
-        </div>
-      </div>
+      <Seitenkopf
+        titel="Übersicht"
+        aktionen={
+          <>
+            <Button variant="ghost" size="icon" onClick={laden} title="Aktualisieren" aria-label="Aktualisieren">
+              <RefreshCw className={cn(loading && "animate-spin")} />
+            </Button>
+            <Button onClick={() => setDialogOffen(true)}>
+              <Plus /> Neues Projekt
+            </Button>
+          </>
+        }
+      />
 
-      {loading && daten.projekte.length === 0 ? (
-        <div className="text-muted-foreground text-sm">Lade Projekte…</div>
+      {ersterLauf ? (
+        <>
+          <Skeleton className="h-[86px] w-full" />
+          <Skeleton className="h-64 w-full" />
+        </>
       ) : daten.projekte.length === 0 ? (
-        <div className="text-center py-20">
-          <FolderOpen className="mx-auto mb-4 text-muted-foreground/50" size={48} />
-          <p className="text-muted-foreground mb-4">Noch keine Projekte angelegt.</p>
-          <Button onClick={() => setDialogOffen(true)}>
-            <Plus size={18} className="mr-2" /> Erstes Projekt anlegen
-          </Button>
-        </div>
+        <div className="v-leer">Noch kein Projekt — oben rechts über „Neues Projekt“ starten.</div>
       ) : (
         <>
           <Kennzahlleiste werte={[
             kachel("Projekte", kennzahlen.projekte, "ohne archivierte"),
-            kachel("Wellen live", kennzahlen.live),
+            kachel("Wellen live", liveWellen.length, kennzahlen.fehlt ? `${kennzahlen.fehlt} unter der Mindestzahl` : undefined, kennzahlen.fehlt ? "attention" : undefined),
             kachel("Abgeschlossene Interviews", kennzahlen.abgeschlossen, "insgesamt"),
             kachel("Neu in 7 Tagen", kennzahlen.woche, "abgeschlossene Interviews"),
           ]} />
 
-          {/* Was gerade läuft */}
-          <h2 className="v-h2 mb-3">Läuft gerade</h2>
-          {liveWellen.length === 0 ? (
-            <div className="bg-card border border-dashed border-border rounded-lg px-5 py-6 text-sm text-muted-foreground">
-              Im Moment ist keine Welle live. Eine Welle wird in ihrem Projekt oder im Wellen-Verlauf freigeschaltet.
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-              {liveWellen.map(({ welle, k, projekt }) => {
-                const h = wellenHinweis(welle, k);
-                return (
-                  <div key={welle.id} className="v-karte">
-                    <div className="flex items-start justify-between gap-3 mb-3">
-                      <div className="min-w-0">
-                        <Link to={`/welle/${welle.id}/dashboard`} className="font-semibold text-foreground hover:underline">
-                          {welle.name}
-                        </Link>
-                        <div className="text-xs text-muted-foreground truncate">
-                          <Link to={`/projekt/${projekt.id}`} className="hover:underline">{projekt.name}</Link>
-                          {projekt.kundenname ? ` · ${projekt.kundenname}` : ""}
+          {/* Was gerade läuft — erscheint nur, wenn etwas läuft */}
+          {liveWellen.length > 0 && (
+            <div className="space-y-3">
+              <Abschnittstitel>Läuft gerade</Abschnittstitel>
+              <Box className="divide-y">
+                {liveWellen.map(({ welle, k, projekt }) => {
+                  const h = wellenHinweis(welle, k);
+                  const ton = HINWEIS_TON[h.ton];
+                  return (
+                    <div key={welle.id} className={cn("px-4 py-3 space-y-2", ton === "attention" && "shadow-[inset_3px_0_0_hsl(var(--status-attention))]")}>
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <TypPille zielgruppe={welle.zielgruppe} />
+                        <div className="min-w-0 flex-1">
+                          <Link to={`/welle/${welle.id}/dashboard`} className="block text-object text-foreground truncate hover:underline">
+                            {welle.name}
+                          </Link>
+                          <p className="text-label uppercase text-muted-foreground truncate">
+                            {[projekt.kundenname, projekt.name].filter(Boolean).join(" · ")}
+                          </p>
                         </div>
+                        <span className="text-meta text-muted-foreground whitespace-nowrap hidden md:inline">zuletzt {relativerTag(k.letzteAktivitaet)}</span>
+                        <LinkAktionen welle={welle} mitText={false} variant="ghost" />
                       </div>
-                      <LinkAktionen welle={welle} mitText={false} variant="ghost" />
+                      <Fortschritt k={k} />
+                      {ton !== "done" && <p className={cn("text-meta", ton === "attention" ? TON_TEXT.attention : "text-muted-foreground")}>{h.text}</p>}
                     </div>
-                    <Fortschritt k={k} />
-                    <div className="flex items-center justify-between gap-3 mt-3 text-xs">
-                      <span className={TON_KLASSE[h.ton]}>{h.text}</span>
-                      <span className="text-muted-foreground whitespace-nowrap">Zuletzt: {relativerTag(k.letzteAktivitaet)}</span>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </Box>
             </div>
           )}
 
-          {/* Projektliste */}
-          <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
-            <h2 className="v-h2">Projekte</h2>
-            <div className="flex items-center gap-2 flex-wrap">
-              <div className="inline-flex bg-muted rounded-lg p-1">
+          <div className="space-y-3">
+            <Abschnittstitel>Projekte</Abschnittstitel>
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div className="flex items-center gap-1.5 flex-wrap">
                 {FILTER.map((f) => (
                   <button
                     key={f.key}
                     type="button"
                     onClick={() => setFilter(f.key)}
-                    className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                      filter === f.key ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
-                    }`}
+                    className={cn("v-chip", filter === f.key && "v-chip-aktiv")}
                   >
-                    {f.label}
+                    {f.label} ({zeilen.filter((z) => f.passt(z.status)).length})
                   </button>
                 ))}
               </div>
-              <div className="relative">
-                <Search size={15} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <div className="relative w-full sm:w-[280px]">
+                <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   value={suche}
                   onChange={(e) => setSuche(e.target.value)}
-                  placeholder="Projekt, Kunde oder Welle"
-                  className="pl-8 h-9 w-56 bg-card"
+                  placeholder="Projekt, Kunde, Welle …"
+                  className="pl-8 pr-8 bg-card"
                 />
+                {suche && (
+                  <button type="button" onClick={() => setSuche("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" aria-label="Suche leeren">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
             </div>
-          </div>
 
-          <div className="v-karte-flach divide-y divide-border">
-            <div className="hidden md:grid grid-cols-[minmax(0,2.2fr)_minmax(0,2.4fr)_minmax(0,1fr)_minmax(0,1fr)_20px] gap-4 px-5 py-2.5 text-xs font-medium text-muted-foreground">
-              <span>Projekt</span>
-              <span>Wellen</span>
-              <span>Interviews</span>
-              <span>Letzte Aktivität</span>
-              <span />
-            </div>
             {sichtbar.length === 0 ? (
-              <div className="px-5 py-8 text-sm text-muted-foreground text-center">Kein Projekt passt zu Filter und Suche.</div>
+              <div className="v-leer">
+                {suche.trim() ? "Kein Projekt passt zur Suche. " : `Kein Projekt im Filter „${FILTER.find((f) => f.key === filter)?.label}“. `}
+                <button type="button" className="underline" onClick={() => { setSuche(""); setFilter("alle"); }}>
+                  Alle Projekte anzeigen
+                </button>
+              </div>
             ) : (
-              sichtbar.map(({ projekt: p, wellen, gestartet, abgeschlossen, letzte }) => (
-                <Link
-                  key={p.id}
-                  to={`/projekt/${p.id}`}
-                  className="grid grid-cols-1 md:grid-cols-[minmax(0,2.2fr)_minmax(0,2.4fr)_minmax(0,1fr)_minmax(0,1fr)_20px] gap-x-4 gap-y-2 px-5 py-4 items-center hover:bg-muted/40 transition-colors"
-                >
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-semibold text-foreground truncate">{p.name}</span>
-                      <StatusBadge status={p.status || "entwurf"} art="projekt" />
-                    </div>
-                    <div className="text-sm text-muted-foreground truncate">{p.kundenname || "Kein Kundenname"}</div>
-                  </div>
-                  <div className="min-w-0 space-y-1">
-                    {wellen.length === 0 ? (
-                      <span className="text-sm text-muted-foreground">Noch keine Welle</span>
-                    ) : (
-                      wellen.slice(0, 4).map(({ welle: w, k }) => (
-                        <div key={w.id} className="flex items-center gap-2 text-sm min-w-0">
-                          <span className={`h-2 w-2 rounded-full shrink-0 ${WELLE_STATUS[w.status]?.punkt || "bg-border"}`} title={WELLE_STATUS[w.status]?.label} />
-                          <span className="truncate text-foreground">{w.name}</span>
-                          <span className="text-xs text-muted-foreground whitespace-nowrap ml-auto">
-                            {k.abgeschlossen}/{k.ziel}
-                          </span>
-                        </div>
-                      ))
-                    )}
-                    {wellen.length > 4 && <div className="text-xs text-muted-foreground">+ {wellen.length - 4} weitere</div>}
-                  </div>
-                  <div className="text-sm text-foreground">
-                    <span className="font-medium">{abgeschlossen}</span>
-                    <span className="text-muted-foreground"> abgeschlossen</span>
-                    {gestartet > abgeschlossen && (
-                      <div className="text-xs text-muted-foreground">{gestartet - abgeschlossen} begonnen</div>
-                    )}
-                  </div>
-                  <div className="text-sm text-muted-foreground">{relativerTag(letzte)}</div>
-                  <ChevronRight size={16} className="text-muted-foreground/50 hidden md:block" />
-                </Link>
-              ))
+              <Box className="divide-y overflow-hidden">
+                {sichtbar.map(({ projekt: p, status, wellen, abgeschlossen, letzte }) => {
+                  const live = wellen.filter((w) => w.welle.status === "live").length;
+                  const wellenText = wellen.length === 0
+                    ? "Noch keine Welle"
+                    : `${wellen.length} ${wellen.length === 1 ? "Welle" : "Wellen"}${live ? ` · ${live} live` : ""} · zuletzt ${relativerTag(letzte)}`;
+                  return (
+                    <Listenzeile
+                      key={p.id}
+                      titel={p.name}
+                      label={p.kundenname || "Kein Kundenname"}
+                      zusatz={wellenText}
+                      etikett={<StatusBadge status={status} art="projekt" />}
+                      wert={abgeschlossen}
+                      wertHinweis="abgeschlossen"
+                      onClick={() => navigate(`/projekt/${p.id}`)}
+                    />
+                  );
+                })}
+              </Box>
             )}
           </div>
         </>
       )}
 
       <Dialog open={dialogOffen} onOpenChange={setDialogOffen}>
-        <DialogContent>
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Neues Projekt</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div className="space-y-2">
+          <div className="space-y-3">
+            <div className="space-y-1.5">
               <Label htmlFor="pname">Projektname</Label>
-              <Input
-                id="pname"
-                value={neuName}
-                onChange={(e) => setNeuName(e.target.value)}
-                placeholder="z. B. Markenprüfstand 2026"
-              />
+              <Input id="pname" value={neuName} onChange={(e) => setNeuName(e.target.value)} placeholder="z. B. Markenprüfstand 2026" />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="pkunde">Kundenname</Label>
-              <Input
-                id="pkunde"
-                value={neuKunde}
-                onChange={(e) => setNeuKunde(e.target.value)}
-                placeholder="so, wie er in den Fragen stehen soll"
-              />
+              <Input id="pkunde" value={neuKunde} onChange={(e) => setNeuKunde(e.target.value)} placeholder="so, wie er in den Fragen stehen soll" />
             </div>
           </div>
           <DialogFooter>
@@ -336,7 +294,7 @@ export default function Projects() {
               Abbrechen
             </Button>
             <Button onClick={projektAnlegen} disabled={speichern}>
-              {speichern ? "Wird angelegt…" : "Anlegen"}
+              {speichern ? "Legt an…" : "Projekt anlegen"}
             </Button>
           </DialogFooter>
         </DialogContent>
