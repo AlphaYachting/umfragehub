@@ -418,8 +418,8 @@ export default function WaveEditor() {
       </DragDropContext>
 
       {bloecke.length === 0 && (
-        <div className="text-center py-12 border-2 border-dashed border-border rounded-lg">
-          <p className="text-muted-foreground text-sm mb-3">Diese Welle hat noch keine Fragen. Lege den ersten Block an oder übernimm die komplette Bibliothek.</p>
+        <div className="v-leer space-y-3">
+          <p>Diese Welle hat noch keine Fragen. Lege den ersten Block an oder übernimm die komplette Bibliothek.</p>
           <Button variant="outline" onClick={blockHinzu}><Plus size={16} /> Block anlegen</Button>
         </div>
       )}

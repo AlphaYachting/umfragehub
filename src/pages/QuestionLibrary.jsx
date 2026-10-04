@@ -288,8 +288,8 @@ export default function QuestionLibrary() {
 
       <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
         {/* Container-Seitenleiste */}
-        <div className="space-y-2">
-          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground px-2 mb-1">Container</div>
+        <div className="v-karte space-y-2 self-start">
+          <div className="text-section uppercase text-muted-foreground px-2 mb-1">Container</div>
           <div className="space-y-1 max-h-[60vh] overflow-auto">
             {containerNamen.map((c) => (
               <div
