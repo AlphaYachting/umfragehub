@@ -40,9 +40,12 @@ export function BestaetigenHost() {
     anfrage.resolve(ergebnis);
     setAnfrage(null);
   };
+  // Titel = erster Satz bis zum Fragezeichen, der Rest steht darunter
   const absaetze = String(anfrage.text || '').split(/\n\s*\n/);
-  const titel = anfrage.titel || absaetze[0];
-  const rest = anfrage.titel ? absaetze : absaetze.slice(1);
+  const m = /^(.*?\?)\s+(.+)$/s.exec(absaetze[0]);
+  const titel = anfrage.titel || (m ? m[1] : absaetze[0]);
+  const rest = anfrage.titel ? absaetze : [...(m ? [m[2]] : []), ...absaetze.slice(1)];
+  const gefaehrlich = anfrage.gefaehrlich ?? (!istEingabe && /löschen/i.test(titel));
 
   return (
     <AlertDialog open onOpenChange={(o) => !o && schliessen(istEingabe ? null : false)}>
@@ -65,7 +68,7 @@ export function BestaetigenHost() {
         )}
         <AlertDialogFooter>
           <Button variant="outline" onClick={() => schliessen(istEingabe ? null : false)}>Abbrechen</Button>
-          {anfrage.gefaehrlich ? (
+          {gefaehrlich ? (
             <Button variant="outline" className="border-status-critical text-status-critical hover:bg-status-critical-surface hover:border-status-critical" onClick={() => schliessen(true)}>
               {anfrage.aktion || 'Löschen'}
             </Button>
