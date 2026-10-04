@@ -136,16 +136,16 @@ export default function RawData() {
     URL.revokeObjectURL(url);
   }
 
-  if (loading) return <div className="p-10 text-slate-400 text-sm">Lade Rohdaten…</div>;
-  if (!welle) return <div className="p-10 text-slate-400">Welle nicht gefunden.</div>;
+  if (loading) return <div className="v-seite v-lade">Lade Rohdaten…</div>;
+  if (!welle) return <div className="v-seite v-lade">Welle nicht gefunden.</div>;
 
   return (
-    <div className="p-6 md:p-10 max-w-5xl mx-auto">
+    <div className="v-seite">
       <WellenKopf welle={welle} projekt={projekt} aktiv="rohdaten" />
 
       <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
         <div>
-          <h2 className="font-semibold">Antworten</h2>
+          <h2 className="v-h2">Antworten</h2>
           <p className="text-sm text-slate-500 mt-0.5">
             {gesperrt
               ? `${abgeschlossenCount} von ${mindest} nötigen Interviews abgeschlossen`
@@ -176,7 +176,7 @@ export default function RawData() {
           </p>
         </div>
       ) : (
-        <div className="bg-white border border-slate-200 rounded-lg overflow-auto">
+        <div className="v-karte-flach overflow-auto">
           <table className="w-full text-sm">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>

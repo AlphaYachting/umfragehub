@@ -280,11 +280,11 @@ export default function QuestionLibrary() {
   const editObj = bearbeiten ? fragen.find((f) => f.id === bearbeiten) : null;
 
   return (
-    <div className="p-6 md:p-10 max-w-7xl mx-auto">
+    <div className="v-seite">
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Fragenbibliothek</h1>
-          <p className="text-sm text-slate-500 mt-1">Wiederverwendbare Fragen-Container</p>
+          <h1 className="v-h1">Fragenbibliothek</h1>
+          <p className="v-unterzeile">Wiederverwendbare Fragen-Container</p>
         </div>
       </div>
 
@@ -373,7 +373,7 @@ export default function QuestionLibrary() {
         {/* Fragen im Container */}
         <div>
           <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-            <h2 className="text-lg font-semibold">{container}</h2>
+            <h2 className="v-h2">{container}</h2>
             <div className="flex gap-2 flex-wrap">
               <Button variant="outline" size="sm" onClick={vorlageHerunterladen}>
                 <Download size={15} className="mr-1" /> Vorlage
@@ -427,7 +427,7 @@ export default function QuestionLibrary() {
           ) : (
             <div className="space-y-2">
               {gefiltert().map((f) => (
-                <div key={f.id} className="bg-white border border-slate-200 rounded-md p-4">
+                <div key={f.id} className="v-karte">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
                       <div className="text-sm font-medium text-slate-800">{f.text || "(leere Frage)"}</div>

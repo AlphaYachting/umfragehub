@@ -584,3 +584,23 @@
     transition-duration: 0.01ms !important;
   }
 }
+/* ---------------------------------------------------------------------------
+   Verwaltung — gemeinsame Bausteine
+   Eine Stelle für Seitenbreite, Karten, Kacheln und Überschriften aller
+   Verwaltungsseiten. Wer das Erscheinungsbild ändern will, ändert es hier.
+   --------------------------------------------------------------------------- */
+@layer components {
+  .v-seite { @apply p-6 md:p-10 max-w-5xl mx-auto; }
+  .v-lade { @apply text-sm text-slate-400; }
+  .v-h1 { @apply text-2xl font-bold tracking-tight text-slate-900; }
+  .v-h2 { @apply font-semibold text-slate-900; }
+  .v-unterzeile { @apply text-sm text-slate-500 mt-1; }
+  .v-karte { @apply bg-white border border-slate-200 rounded-lg p-5; }
+  .v-karte-flach { @apply bg-white border border-slate-200 rounded-lg; }
+  .v-kachel { @apply bg-white border border-slate-200 rounded-lg px-5 py-4; }
+  .v-kachel-label { @apply text-xs text-slate-500; }
+  .v-kachel-wert { @apply text-2xl font-bold text-slate-900 mt-0.5; }
+  .v-kachel-zusatz { @apply text-xs text-slate-400 mt-0.5; }
+  .v-kacheln { @apply grid grid-cols-2 md:grid-cols-4 gap-3 mb-6; }
+  .v-krumen { @apply flex items-center gap-1 text-sm text-slate-500 mb-3 flex-wrap; }
+}

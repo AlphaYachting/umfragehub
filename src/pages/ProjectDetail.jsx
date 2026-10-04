@@ -17,6 +17,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { ZIELGRUPPE_LABELS, generiereToken } from "@/lib/interview";
+import { kachel } from "@/components/verwaltung/Kachel";
 import StatusBadge from "@/components/verwaltung/StatusBadge";
 import Fortschritt from "@/components/verwaltung/Fortschritt";
 import LinkAktionen from "@/components/verwaltung/LinkAktionen";
@@ -239,20 +240,12 @@ export default function ProjectDetail() {
     }
   }
 
-  if (loading) return <div className="p-10 text-slate-400 text-sm">Lade Projekt…</div>;
-  if (!projekt) return <div className="p-10 text-slate-400">Projekt nicht gefunden.</div>;
-
-  const kachel = (label, wert, zusatz) => (
-    <div className="bg-white border border-slate-200 rounded-lg px-5 py-4">
-      <div className="text-xs text-slate-500">{label}</div>
-      <div className="text-2xl font-bold text-slate-900 mt-0.5">{wert}</div>
-      {zusatz && <div className="text-xs text-slate-400 mt-0.5">{zusatz}</div>}
-    </div>
-  );
+  if (loading) return <div className="v-seite v-lade">Lade Projekt…</div>;
+  if (!projekt) return <div className="v-seite v-lade">Projekt nicht gefunden.</div>;
 
   return (
-    <div className="p-6 md:p-10 max-w-5xl mx-auto">
-      <nav className="flex items-center gap-1 text-sm text-slate-500 mb-3">
+    <div className="v-seite">
+      <nav className="v-krumen">
         <Link to="/" className="hover:text-slate-800">Projekte</Link>
         <ChevronRight size={14} className="text-slate-300" />
         <span className="text-slate-800">{projekt.name}</span>
@@ -261,10 +254,10 @@ export default function ProjectDetail() {
       <div className="flex items-start justify-between gap-3 flex-wrap mb-6">
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-2xl font-bold tracking-tight">{projekt.name}</h1>
+            <h1 className="v-h1">{projekt.name}</h1>
             <StatusBadge status={projekt.status || "entwurf"} art="projekt" />
           </div>
-          <p className="text-sm text-slate-500 mt-1">{projekt.kundenname || "Kein Kundenname"}</p>
+          <p className="v-unterzeile">{projekt.kundenname || "Kein Kundenname"}</p>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-xs text-slate-500">Projektstatus</span>
@@ -289,7 +282,7 @@ export default function ProjectDetail() {
 
         {/* ------------------------------------------------------------------ */}
         <TabsContent value="wellen">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          <div className="v-kacheln">
             {kachel("Wellen", wellen.length, `${summe.live} live`)}
             {kachel("Abgeschlossen", summe.abgeschlossen, "Interviews")}
             {kachel("Begonnen", summe.gestartet - summe.abgeschlossen, "noch nicht beendet")}
@@ -297,7 +290,7 @@ export default function ProjectDetail() {
           </div>
 
           <div className="flex items-center justify-between mb-3">
-            <h2 className="font-semibold">Wellen</h2>
+            <h2 className="v-h2">Wellen</h2>
             <Button size="sm" onClick={() => setNeueWelle(true)}>
               <Plus size={16} className="mr-1" /> Neue Welle
             </Button>
@@ -316,7 +309,7 @@ export default function ProjectDetail() {
                 const h = wellenHinweis(w, k);
                 const arbeitet = beschaeftigt === w.id;
                 return (
-                  <div key={w.id} className={`bg-white border border-slate-200 rounded-lg p-5 ${arbeitet ? "opacity-60 pointer-events-none" : ""}`}>
+                  <div key={w.id} className={`v-karte ${arbeitet ? "opacity-60 pointer-events-none" : ""}`}>
                     <div className="flex items-start justify-between gap-3 flex-wrap">
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
@@ -387,8 +380,8 @@ export default function ProjectDetail() {
           )}
 
           {wellen.length > 0 && (
-            <div className="bg-white border border-slate-200 rounded-lg p-5">
-              <h2 className="font-semibold mb-3">Verlauf über alle Wellen</h2>
+            <div className="v-karte">
+              <h2 className="v-h2 mb-3">Verlauf über alle Wellen</h2>
               <VerlaufChart daten={verlauf} />
             </div>
           )}
@@ -396,8 +389,8 @@ export default function ProjectDetail() {
 
         {/* ------------------------------------------------------------------ */}
         <TabsContent value="einstellungen">
-          <div className="bg-white border border-slate-200 rounded-lg p-6 mb-6">
-            <h2 className="font-semibold mb-4">Stammdaten</h2>
+          <div className="v-karte mb-6">
+            <h2 className="v-h2 mb-3">Stammdaten</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Projektname</Label>
@@ -414,8 +407,8 @@ export default function ProjectDetail() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <div className="bg-white border border-slate-200 rounded-lg p-6">
-              <h2 className="font-semibold mb-4">Briefing</h2>
+            <div className="v-karte">
+              <h2 className="v-h2 mb-3">Briefing</h2>
               <Textarea
                 value={projekt.briefing || ""}
                 onChange={(e) => feldAendern("briefing", e.target.value)}
@@ -425,8 +418,8 @@ export default function ProjectDetail() {
               <p className="text-xs text-slate-400 mt-2">Nur intern — Befragte sehen das Briefing nie.</p>
             </div>
 
-            <div className="bg-white border border-slate-200 rounded-lg p-6">
-              <h2 className="font-semibold mb-4">Design</h2>
+            <div className="v-karte">
+              <h2 className="v-h2 mb-3">Design</h2>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label>Theme</Label>
@@ -490,8 +483,8 @@ export default function ProjectDetail() {
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-lg p-6 mb-6">
-            <h2 className="font-semibold mb-4">Schrift &amp; Rechtliches</h2>
+          <div className="v-karte mb-6">
+            <h2 className="v-h2 mb-3">Schrift &amp; Rechtliches</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Schriftfamilie (CSS-Font-Stack, optional)</Label>

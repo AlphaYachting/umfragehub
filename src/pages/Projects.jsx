@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { kachel } from "@/components/verwaltung/Kachel";
 import StatusBadge from "@/components/verwaltung/StatusBadge";
 import Fortschritt from "@/components/verwaltung/Fortschritt";
 import LinkAktionen from "@/components/verwaltung/LinkAktionen";
@@ -147,20 +148,12 @@ export default function Projects() {
     }
   }
 
-  const kachel = (label, wert, zusatz) => (
-    <div className="bg-white border border-slate-200 rounded-lg px-5 py-4">
-      <div className="text-xs text-slate-500">{label}</div>
-      <div className="text-2xl font-bold text-slate-900 mt-0.5">{wert}</div>
-      {zusatz && <div className="text-xs text-slate-400 mt-0.5">{zusatz}</div>}
-    </div>
-  );
-
   return (
-    <div className="p-6 md:p-10 max-w-6xl mx-auto">
+    <div className="v-seite">
       <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Übersicht</h1>
-          <p className="text-sm text-slate-500 mt-1">Alle Projekte und laufenden Wellen auf einen Blick</p>
+          <h1 className="v-h1">Übersicht</h1>
+          <p className="v-unterzeile">Alle Projekte und laufenden Wellen auf einen Blick</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" onClick={laden} title="Aktualisieren" aria-label="Aktualisieren">
@@ -184,7 +177,7 @@ export default function Projects() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+          <div className="v-kacheln">
             {kachel("Projekte", kennzahlen.projekte, "ohne archivierte")}
             {kachel("Wellen live", kennzahlen.live)}
             {kachel("Abgeschlossene Interviews", kennzahlen.abgeschlossen, "insgesamt")}
@@ -192,7 +185,7 @@ export default function Projects() {
           </div>
 
           {/* Was gerade läuft */}
-          <h2 className="font-semibold mb-3">Läuft gerade</h2>
+          <h2 className="v-h2 mb-3">Läuft gerade</h2>
           {liveWellen.length === 0 ? (
             <div className="bg-white border border-dashed border-slate-200 rounded-lg px-5 py-6 text-sm text-slate-400 mb-8">
               Im Moment ist keine Welle live. Eine Welle wird in ihrem Projekt oder im Wellen-Verlauf freigeschaltet.
@@ -202,7 +195,7 @@ export default function Projects() {
               {liveWellen.map(({ welle, k, projekt }) => {
                 const h = wellenHinweis(welle, k);
                 return (
-                  <div key={welle.id} className="bg-white border border-slate-200 rounded-lg p-5">
+                  <div key={welle.id} className="v-karte">
                     <div className="flex items-start justify-between gap-3 mb-3">
                       <div className="min-w-0">
                         <Link to={`/welle/${welle.id}/dashboard`} className="font-semibold text-slate-900 hover:underline">
@@ -228,7 +221,7 @@ export default function Projects() {
 
           {/* Projektliste */}
           <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
-            <h2 className="font-semibold">Projekte</h2>
+            <h2 className="v-h2">Projekte</h2>
             <div className="flex items-center gap-2 flex-wrap">
               <div className="inline-flex bg-slate-100 rounded-lg p-1">
                 {FILTER.map((f) => (
@@ -256,7 +249,7 @@ export default function Projects() {
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-lg divide-y divide-slate-100">
+          <div className="v-karte-flach divide-y divide-slate-100">
             <div className="hidden md:grid grid-cols-[minmax(0,2.2fr)_minmax(0,2.4fr)_minmax(0,1fr)_minmax(0,1fr)_20px] gap-4 px-5 py-2.5 text-xs font-medium text-slate-500">
               <span>Projekt</span>
               <span>Wellen</span>

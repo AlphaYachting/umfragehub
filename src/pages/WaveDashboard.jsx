@@ -20,6 +20,7 @@ import {
   kapitelTitelAnzeige,
   sternchenEntfernen,
 } from "@/lib/interview";
+import { kachel } from "@/components/verwaltung/Kachel";
 import WellenKopf from "@/components/verwaltung/WellenKopf";
 import Fortschritt from "@/components/verwaltung/Fortschritt";
 import VerlaufChart from "@/components/verwaltung/VerlaufChart";
@@ -206,8 +207,8 @@ export default function WaveDashboard() {
     }
   }
 
-  if (loading) return <div className="p-10 text-slate-400 text-sm">Lade Verlauf…</div>;
-  if (!welle || !k) return <div className="p-10 text-slate-400">Welle nicht gefunden.</div>;
+  if (loading) return <div className="v-seite v-lade">Lade Verlauf…</div>;
+  if (!welle || !k) return <div className="v-seite v-lade">Welle nicht gefunden.</div>;
 
   const url = teilnahmeUrl(welle.linkToken);
   const hinweis = wellenHinweis(welle, k);
@@ -217,16 +218,8 @@ export default function WaveDashboard() {
     planEndetAm !== (welle.endetAm ? String(welle.endetAm).slice(0, 10) : "") ||
     planMindest !== String(welle.mindestTeilnehmer ?? 6);
 
-  const kachel = (label, wert, zusatz) => (
-    <div className="bg-white border border-slate-200 rounded-lg px-5 py-4">
-      <div className="text-xs text-slate-500">{label}</div>
-      <div className="text-2xl font-bold text-slate-900 mt-0.5">{wert}</div>
-      {zusatz && <div className="text-xs text-slate-400 mt-0.5">{zusatz}</div>}
-    </div>
-  );
-
   return (
-    <div className="p-6 md:p-10 max-w-5xl mx-auto">
+    <div className="v-seite">
       <WellenKopf welle={welle} projekt={projekt} aktiv="dashboard">
         <Button variant="ghost" size="sm" onClick={() => laden(true)} title="Zahlen neu laden">
           <RefreshCw size={15} className="mr-1" /> Aktualisieren
@@ -239,7 +232,7 @@ export default function WaveDashboard() {
         <Fortschritt k={k} />
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+      <div className="v-kacheln">
         {kachel(
           "Abgeschlossen",
           k.abgeschlossen,
@@ -252,8 +245,8 @@ export default function WaveDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
         {/* Status & Planung */}
-        <div className="bg-white border border-slate-200 rounded-lg p-5">
-          <h2 className="font-semibold mb-3">Status &amp; Planung</h2>
+        <div className="v-karte">
+          <h2 className="v-h2 mb-3">Status &amp; Planung</h2>
           <div className="space-y-4">
             <div className="space-y-1.5">
               <Label>Status</Label>
@@ -293,8 +286,8 @@ export default function WaveDashboard() {
         </div>
 
         {/* Link */}
-        <div className="bg-white border border-slate-200 rounded-lg p-5">
-          <h2 className="font-semibold mb-3">Teilnahmelink</h2>
+        <div className="v-karte">
+          <h2 className="v-h2 mb-3">Teilnahmelink</h2>
           <code className="block text-xs bg-slate-50 px-3 py-2 rounded break-all text-slate-700 mb-3">{url}</code>
           <div className="flex flex-wrap gap-2">
             <Button size="sm" variant="outline" onClick={() => kopiere(url, "Link kopiert.")}>
@@ -327,14 +320,14 @@ export default function WaveDashboard() {
       </div>
 
       {/* Verlauf */}
-      <div className="bg-white border border-slate-200 rounded-lg p-5 mb-6">
-        <h2 className="font-semibold mb-3">Verlauf</h2>
+      <div className="v-karte mb-6">
+        <h2 className="v-h2 mb-3">Verlauf</h2>
         <VerlaufChart daten={verlauf} mindest={k.mindest} />
       </div>
 
       {/* Trichter je Block */}
-      <div className="bg-white border border-slate-200 rounded-lg p-5 mb-6">
-        <h2 className="font-semibold mb-1">Wie weit kommen die Befragten?</h2>
+      <div className="v-karte mb-6">
+        <h2 className="v-h2 mb-3">Wie weit kommen die Befragten?</h2>
         <p className="text-xs text-slate-400 mb-4">Anteil aller begonnenen Teilnahmen, die den jeweiligen Abschnitt erreicht haben.</p>
         {trichter.length === 0 ? (
           <p className="text-sm text-slate-400 py-4 text-center">
@@ -363,10 +356,10 @@ export default function WaveDashboard() {
       </div>
 
       {/* Abbruch-Analyse */}
-      <div className="bg-white border border-slate-200 rounded-lg p-5">
+      <div className="v-karte">
         <div className="flex items-center gap-2 mb-4">
           <BarChart3 size={18} className="text-slate-400" />
-          <h2 className="font-semibold">Abbrüche je Frage</h2>
+          <h2 className="v-h2">Abbrüche je Frage</h2>
         </div>
         {abbruchDaten.every((d) => d.abbrueche === 0) ? (
           <p className="text-sm text-slate-400 py-6 text-center">Noch keine Abbrüche erfasst.</p>

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { kachel } from "@/components/verwaltung/Kachel";
 import WellenKopf from "@/components/verwaltung/WellenKopf";
 import { alsDatum, datumKurz } from "@/lib/verwaltung";
 
@@ -254,12 +255,12 @@ export default function WaveInvites() {
     }
   }
 
-  if (loading) return <div className="p-10 text-slate-400 text-sm">Lade Einladungen…</div>;
-  if (!welle) return <div className="p-10 text-slate-400">Welle nicht gefunden.</div>;
+  if (loading) return <div className="v-seite v-lade">Lade Einladungen…</div>;
+  if (!welle) return <div className="v-seite v-lade">Welle nicht gefunden.</div>;
 
   if (fehler || !d || !texte) {
     return (
-      <div className="p-6 md:p-10 max-w-5xl mx-auto">
+      <div className="v-seite">
         <WellenKopf welle={welle} projekt={projekt} aktiv="einladungen" />
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-5 text-sm text-amber-900">
           Die Einladungsfunktion antwortet nicht: {fehler || "unbekannter Fehler"}
@@ -276,16 +277,8 @@ export default function WaveInvites() {
   const textFeldName = istReminder ? "reminderText" : "mailText";
   const nichtLive = d.wellenStatus !== "live";
 
-  const kachel = (label, wert, zusatz) => (
-    <div className="bg-white border border-slate-200 rounded-lg px-5 py-4">
-      <div className="text-xs text-slate-500">{label}</div>
-      <div className="text-2xl font-bold text-slate-900 mt-0.5">{wert}</div>
-      {zusatz && <div className="text-xs text-slate-400 mt-0.5">{zusatz}</div>}
-    </div>
-  );
-
   return (
-    <div className="p-6 md:p-10 max-w-5xl mx-auto pb-24">
+    <div className="v-seite pb-24">
       <WellenKopf welle={welle} projekt={projekt} aktiv="einladungen" />
 
       {/* Versandkanal */}
@@ -303,7 +296,7 @@ export default function WaveInvites() {
         </div>
       )}
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+      <div className="v-kacheln">
         {kachel("Adressen", z.gesamt, `${d.abteilungen.length} ${d.abteilungen.length === 1 ? "Abteilung" : "Abteilungen"}`)}
         {kachel("Eingeladen", z.eingeladen, z.neu ? `${z.neu} noch offen` : z.gesamt ? "alle angeschrieben" : "")}
         {kachel(pers ? "Begonnen" : "Erinnerbar", pers ? z.gestartet : z.erinnerbar, pers ? `${z.erinnerbar} noch nicht` : "alle Eingeladenen")}
@@ -311,8 +304,8 @@ export default function WaveInvites() {
       </div>
 
       {/* Einladungsart */}
-      <div className="bg-white border border-slate-200 rounded-lg p-5 mb-6">
-        <h2 className="font-semibold mb-3">Einladungsart</h2>
+      <div className="v-karte mb-6">
+        <h2 className="v-h2 mb-3">Einladungsart</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {[
             {
@@ -345,9 +338,9 @@ export default function WaveInvites() {
       </div>
 
       {/* Adressen */}
-      <div className="bg-white border border-slate-200 rounded-lg p-5 mb-6">
+      <div className="v-karte mb-6">
         <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
-          <h2 className="font-semibold">Adressen einspielen</h2>
+          <h2 className="v-h2">Adressen einspielen</h2>
           <label className="cursor-pointer">
             <span className="inline-flex items-center px-3 py-1.5 text-sm border border-slate-200 rounded-md hover:bg-slate-50">
               <Upload size={15} className="mr-1.5" /> CSV-Datei wählen
@@ -456,9 +449,9 @@ export default function WaveInvites() {
       </div>
 
       {/* Vorlagen */}
-      <div className="bg-white border border-slate-200 rounded-lg p-5 mb-6">
+      <div className="v-karte mb-6">
         <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
-          <h2 className="font-semibold">Mailvorlagen</h2>
+          <h2 className="v-h2">Mailvorlagen</h2>
           <div className="inline-flex bg-slate-100 rounded-lg p-1">
             {[["einladung", "Einladung"], ["reminder", "Erinnerung"]].map(([k, l]) => (
               <button
@@ -504,8 +497,8 @@ export default function WaveInvites() {
       </div>
 
       {/* Versand */}
-      <div className="bg-white border border-slate-200 rounded-lg p-5 mb-6">
-        <h2 className="font-semibold mb-3">Versenden</h2>
+      <div className="v-karte mb-6">
+        <h2 className="v-h2 mb-3">Versenden</h2>
         {nichtLive && (
           <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded px-3 py-2 mb-3">
             Die Welle ist nicht live — der Link in der Mail würde noch nicht funktionieren. Bitte zuerst unter „Verlauf“ freischalten.

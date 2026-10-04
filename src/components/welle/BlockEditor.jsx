@@ -27,7 +27,7 @@ export default function BlockEditor({
   }
 
   return (
-    <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+    <div className="v-karte-flach overflow-hidden">
       <div className="flex items-center gap-2 p-4 bg-slate-50 border-b border-slate-200">
         <span {...dragHandleProps} className="cursor-grab text-slate-400 hover:text-slate-600">
           <GripVertical size={18} />

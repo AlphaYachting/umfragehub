@@ -269,11 +269,11 @@ export default function WaveEditor() {
     toast.success(`${totalFragen} Fragen in ${gruppen.length} Blöcken importiert.`);
   }
 
-  if (loading) return <div className="p-10 text-slate-400 text-sm">Lade Welle…</div>;
-  if (!welle) return <div className="p-10 text-slate-400">Welle nicht gefunden.</div>;
+  if (loading) return <div className="v-seite v-lade">Lade Welle…</div>;
+  if (!welle) return <div className="v-seite v-lade">Welle nicht gefunden.</div>;
 
   return (
-    <div className="p-6 md:p-10 max-w-4xl mx-auto pb-24">
+    <div className="v-seite pb-24">
       <WellenKopf welle={welle} projekt={projekt} aktiv="editor" />
 
       {welle.status === "live" && sessionCount > 0 && (
@@ -283,8 +283,8 @@ export default function WaveEditor() {
       )}
 
       {/* Wellen-Einstellungen */}
-      <div className="bg-white border border-slate-200 rounded-lg p-6 mb-6 space-y-4">
-        <h2 className="font-semibold">Wellen-Einstellungen</h2>
+      <div className="v-karte mb-6 space-y-4">
+        <h2 className="v-h2">Wellen-Einstellungen</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Name</Label>
@@ -330,7 +330,7 @@ export default function WaveEditor() {
 
       {/* Blöcke */}
       <div className="flex items-center justify-between mb-3">
-        <h2 className="font-semibold">Blöcke & Fragen</h2>
+        <h2 className="v-h2">Blöcke & Fragen</h2>
         <div className="flex gap-2">
           <Button size="sm" variant="outline" onClick={() => setBibImportDialog(true)}>
             <Library size={15} className="mr-1" /> Komplette Bibliothek

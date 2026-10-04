@@ -16,7 +16,7 @@ export default function WellenKopf({ welle, projekt, aktiv, children }) {
   ];
   return (
     <div className="mb-6">
-      <nav className="flex items-center gap-1 text-sm text-slate-500 mb-3 flex-wrap">
+      <nav className="v-krumen">
         <Link to="/" className="hover:text-slate-800">Projekte</Link>
         <ChevronRight size={14} className="text-slate-300" />
         <Link to={`/projekt/${welle.projektId}`} className="hover:text-slate-800">
@@ -28,10 +28,10 @@ export default function WellenKopf({ welle, projekt, aktiv, children }) {
       <div className="flex items-start justify-between gap-3 flex-wrap">
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-2xl font-bold tracking-tight">{welle.name}</h1>
+            <h1 className="v-h1">{welle.name}</h1>
             <StatusBadge status={welle.status} />
           </div>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="v-unterzeile">
             {projekt?.kundenname ? `${projekt.kundenname} · ` : ""}
             {ZIELGRUPPE_LABELS[welle.zielgruppe] || "—"}
           </p>
