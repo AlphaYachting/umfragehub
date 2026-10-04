@@ -31,6 +31,7 @@ import {
   teilnahmeUrl,
   einladungstext,
   inZwischenablage,
+  alle,
 } from "@/lib/verwaltung";
 
 const TON_RAHMEN = {
@@ -58,13 +59,13 @@ export default function WaveDashboard() {
     try {
       const [w, ss, bs] = await Promise.all([
         base44.entities.Welle.get(id),
-        base44.entities.Session.filter({ wellenId: id }, "-created_date", 5000),
-        base44.entities.Block.filter({ wellenId: id }, "reihenfolge", 500),
+        alle(base44.entities.Session, { wellenId: id }),
+        alle(base44.entities.Block, { wellenId: id }, "reihenfolge"),
       ]);
       bs.sort((a, b) => (a.reihenfolge ?? 0) - (b.reihenfolge ?? 0));
       const [p, ...fragenListen] = await Promise.all([
         base44.entities.Projekt.get(w.projektId),
-        ...bs.map((b) => base44.entities.Frage.filter({ blockId: b.id }, "reihenfolge", 1000)),
+        ...bs.map((b) => alle(base44.entities.Frage, { blockId: b.id }, "reihenfolge")),
       ]);
       const alleFragen = [];
       fragenListen.forEach((fs) => {
@@ -163,7 +164,17 @@ export default function WaveDashboard() {
         eingeladen: Number(planEingeladen) > 0 ? Number(planEingeladen) : null,
         endetAm: planEndetAm || null,
       };
-      await base44.entities.Welle.update(id, daten);
+      try {
+        await base44.entities.Welle.update(id, daten);
+      } catch (e) {
+        // Falls der Server leere Werte nicht annimmt: gesetzte Felder trotzdem speichern
+        const gesetzt = Object.fromEntries(Object.entries(daten).filter(([, v]) => v !== null));
+        if (Object.keys(gesetzt).length === Object.keys(daten).length) throw e;
+        await base44.entities.Welle.update(id, gesetzt);
+        setWelle({ ...welle, ...gesetzt });
+        toast.error("Gespeichert — ein geleertes Feld ließ sich aber nicht zurücksetzen.");
+        return;
+      }
       setWelle({ ...welle, ...daten });
       toast.success("Planung gespeichert.");
     } catch (e) {
