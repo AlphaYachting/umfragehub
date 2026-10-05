@@ -262,7 +262,7 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache, textK
   const gegenseite = reihenfolge.filter((b) => sortierung[b] === (istBest ? SORT_PASST_NICHT : SORT_PASST) && !gesperrt.includes(b));
   const fehlen = Math.max(0, N - stapel.length);
 
-  const gruppen = [[istBest ? "Dein „Passt“-Stapel" : "Dein „Passt nicht“-Stapel", stapel]];
+  const gruppen = [[`${sie ? "Ihr" : "Dein"} „${istBest ? "Passt" : "Passt nicht"}“-Stapel`, stapel]];
   if (fehlen > 0 || alleZeigen) gruppen.push(["Weiß nicht", unsicher]);
   if (alleZeigen) gruppen.push([istBest ? "Passt nicht" : "Passt", gegenseite]);
   const sichtbareGruppen = gruppen.filter(([, liste]) => liste.length > 0);
