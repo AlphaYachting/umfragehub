@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Check } from "lucide-react";
 import SprachAufnahme from "./SprachAufnahme";
+import WerteSortierer from "./WerteSortierer";
 import { matrixZeilenMitIds, platzhalterErsetzen } from "@/lib/interview";
 
 // Ab dieser Optionszahl werden kurze Mehrfachauswahl-Optionen als Begriffe zum Antippen
@@ -127,6 +128,20 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
     onChange({ ...v, auswahl: neu, ranking: [] });
     setRanking([]);
     setWerteStep(1);
+  }
+
+  // werte_sortierer — Standardmodul: sortieren, dann je N Begriffe „steht für“ / „steht nicht für“
+  if (frage.typ === "werte_sortierer") {
+    return (
+      <WerteSortierer
+        key={frage.id}
+        frage={frage}
+        wert={v}
+        onChange={onChange}
+        ansprache={ansprache}
+        textKontext={textKontext}
+      />
+    );
   }
 
   // single_choice
