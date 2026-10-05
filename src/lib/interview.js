@@ -28,6 +28,8 @@ export function geschaetzteFrageDauerSekunden(typ) {
       return 45;
     case "limbic":
       return 35;
+    case "werte_sortierer":
+      return 150;
     case "matrix":
       return 30;
     case "freitext":
@@ -403,6 +405,7 @@ export const FRAGETYP_LABELS = {
   skala: "Skala",
   werte_auswahl: "Werte-Auswahl",
   limbic: "Limbic",
+  werte_sortierer: "Werte-Sortierer",
   freitext: "Freitext",
   ja_nein: "Ja / Nein",
   schieberegler: "Schieberegler",
