@@ -13,6 +13,7 @@ import {
   kapitelTitelAnzeige,
 } from "@/lib/interview";
 import FrageAntwort from "@/components/interview/FrageAntwort";
+import { werteSortiererFertig } from "@/lib/werteSortierer";
 import RechtlicheFusszeile from "@/components/interview/RechtlicheFusszeile";
 import ErklaerungBlock from "@/components/interview/ErklaerungBlock";
 import BrowserHinweis from "@/components/interview/BrowserHinweis";
@@ -270,6 +271,7 @@ export default function Interview() {
     }
     if (frage.typ === "freitext") return !!(wert.text && wert.text.trim());
     if (frage.typ === "werte_auswahl") return (wert.ranking || []).length === 3;
+    if (frage.typ === "werte_sortierer") return werteSortiererFertig(frage, wert);
     const anzahl = (wert.auswahl || []).length;
     if ((frage.typ === "multi_choice" || frage.typ === "limbic") && frage.minAuswahl) {
       return anzahl >= frage.minAuswahl;
