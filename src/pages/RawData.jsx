@@ -6,6 +6,7 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { FRAGETYP_LABELS, sternchenEntfernen, matrixZeilenMitIds } from "@/lib/interview";
+import { werteSortiererText, listenAusAuswahl, sortierungListen } from "@/lib/werteSortierer";
 
 export default function RawData() {
   const { id } = useParams();
@@ -56,6 +57,7 @@ export default function RawData() {
       return matrixZeilenMitIds(f).map((z) => `${z.text}: ${mw[z.id] ?? ""}`).join(" | ");
     }
     if (f.typ === "freitext") return a.text || "";
+    if (f.typ === "werte_sortierer") return werteSortiererText(f, a);
     if (a.auswahl && a.auswahl.length) return a.auswahl.join("; ");
     return "";
   }
@@ -71,7 +73,15 @@ export default function RawData() {
       const matrixWerte = f?.typ === "matrix" && a.matrixWerte
         ? matrixZeilenMitIds(f).map((z) => ({ zeile_id: z.id, zeile: z.text, wert: a.matrixWerte[z.id] ?? null }))
         : null;
+      // Werte-Sortierer: beide Listen (Reihenfolge = Rang) und die komplette Sortierung getrennt
+      const werte = f?.typ === "werte_sortierer"
+        ? (() => {
+            const { ist, nicht } = listenAusAuswahl(a.auswahl);
+            return { steht_fuer: ist, steht_nicht_fuer: nicht, sortierung: sortierungListen(f, a), reihenfolge_seed: a.zahl ?? null };
+          })()
+        : null;
       return {
+        ...(werte ? { werte_sortierer: werte } : {}),
         session_token: a.session_token,
         frage_schluessel: f?.schluessel || "",
         kernfrage: !!f?.kernfrage,
@@ -103,13 +113,17 @@ export default function RawData() {
       toast.error("Export gesperrt — Mindestteilnehmerzahl noch nicht erreicht.");
       return;
     }
-    const headers = ["session_token", "frage_schluessel", "kernfrage", "auswertungstag", "frage", "fragetyp", "auswahl", "zahl", "matrix_werte", "text", "eingabeart", "transkript_korrigiert", "session_abgeschlossen"];
+    const headers = ["session_token", "frage_schluessel", "kernfrage", "auswertungstag", "frage", "fragetyp", "auswahl", "steht_fuer", "steht_nicht_fuer", "zahl", "matrix_werte", "text", "eingabeart", "transkript_korrigiert", "session_abgeschlossen"];
     const lines = [headers.join(",")];
     for (const a of antworten) {
       const f = fragen.find((x) => x.id === a.frageId);
+      const istSortierer = f?.typ === "werte_sortierer";
       const matrixStr = f?.typ === "matrix" && a.matrixWerte
         ? matrixZeilenMitIds(f).map((z) => `${z.id}:${a.matrixWerte[z.id] ?? ""}`).join("; ")
-        : "";
+        : istSortierer && a.matrixWerte
+          ? (() => { const s = sortierungListen(f, a); return `passt: ${s.passt.join(", ")} | weiss nicht: ${s.weiss_nicht.join(", ")} | passt nicht: ${s.passt_nicht.join(", ")}`; })()
+          : "";
+      const sortiererListen = istSortierer ? listenAusAuswahl(a.auswahl) : { ist: [], nicht: [] };
       const row = [
         a.session_token || "",
         f?.schluessel || "",
@@ -118,6 +132,8 @@ export default function RawData() {
         sternchenEntfernen(f?.text || "").replace(/"/g, '""'),
         f?.typ || "",
         (a.auswahl || []).join("; ").replace(/"/g, '""'),
+        sortiererListen.ist.join("; ").replace(/"/g, '""'),
+        sortiererListen.nicht.join("; ").replace(/"/g, '""'),
         a.zahl ?? "",
         matrixStr.replace(/"/g, '""'),
         (a.text || "").replace(/"/g, '""').replace(/\n/g, " "),
