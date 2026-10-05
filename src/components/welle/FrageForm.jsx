@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Plus, X } from "lucide-react";
 import { FRAGETYP_LABELS, zeilenIdAusText } from "@/lib/interview";
+import { STANDARD_BEGRIFF_NAMEN, werteSortiererVorlage } from "@/lib/werteSortierer";
 
 // Wiederverwendbares Formular für eine Frage (Frage wie auch Bibliotheksfrage)
 export default function FrageForm({ frage, onChange }) {
@@ -93,6 +94,28 @@ export default function FrageForm({ frage, onChange }) {
   const brauchtPolaritaet = ["multi_choice", "limbic", "werte_auswahl", "freitext"].includes(frage.typ);
   const istFreitext = frage.typ === "freitext";
   const istKern = !!frage.kernfrage;
+  const istSortierer = frage.typ === "werte_sortierer";
+  const sortiererBegriffe = frage.optionen || [];
+  const istStandardliste = sortiererBegriffe.length === STANDARD_BEGRIFF_NAMEN.length &&
+    sortiererBegriffe.every((b, i) => b === STANDARD_BEGRIFF_NAMEN[i]);
+
+  function typWechseln(neuerTyp) {
+    // Beim Wechsel auf den Werte-Sortierer gleich mit Standardbegriffen und 5 je Seite vorbelegen
+    if (neuerTyp === "werte_sortierer") {
+      const vorlage = werteSortiererVorlage();
+      onChange({
+        ...frage,
+        typ: neuerTyp,
+        optionen: (frage.optionen || []).length ? frage.optionen : vorlage.optionen,
+        maxAuswahl: frage.maxAuswahl || vorlage.maxAuswahl,
+        text: frage.text || vorlage.text,
+        hilfetext: frage.hilfetext || vorlage.hilfetext,
+        erklaerung: frage.erklaerung || vorlage.erklaerung,
+      });
+      return;
+    }
+    feld("typ", neuerTyp);
+  }
 
   return (
     <div className="space-y-4">
@@ -149,7 +172,7 @@ export default function FrageForm({ frage, onChange }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>Fragetyp</Label>
-          <Select value={frage.typ} onValueChange={(v) => feld("typ", v)}>
+          <Select value={frage.typ} onValueChange={typWechseln}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
               {Object.entries(FRAGETYP_LABELS).map(([k, v]) => (
@@ -216,6 +239,55 @@ export default function FrageForm({ frage, onChange }) {
           <Button variant="outline" size="sm" onClick={optionHinzu}>
             <Plus size={14} /> Option hinzufügen
           </Button>
+        </div>
+      )}
+
+      {istSortierer && (
+        <div className="space-y-3 rounded-md border border-border bg-card p-3">
+          <div className="text-sm text-foreground">
+            <strong>Werte-Sortierer</strong> — Befragte sortieren jeden Begriff (passt / weiß nicht / passt nicht),
+            wählen danach die treffendsten und die unpassendsten. Die Reihenfolge der Begriffe ist pro Person zufällig.
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="space-y-2">
+              <Label>Begriffe je Seite</Label>
+              <Input
+                type="number"
+                min={1}
+                max={10}
+                value={frage.maxAuswahl ?? 5}
+                onChange={(e) => feld("maxAuswahl", Math.max(1, Math.min(10, Number(e.target.value) || 5)))}
+              />
+              <p className="text-xs text-muted-foreground">Standard 5 „steht für“ + 5 „steht nicht für“.</p>
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label>Begriffsliste</Label>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm text-muted-foreground">
+                  {sortiererBegriffe.length} Begriffe{istStandardliste ? " · Standardliste (Limbic Map)" : " · angepasst"}
+                </span>
+                {!istStandardliste && (
+                  <Button variant="outline" size="sm" onClick={() => feld("optionen", [...STANDARD_BEGRIFF_NAMEN])}>
+                    Standardliste laden
+                  </Button>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Ab etwa 40 Begriffen dauert das Sortieren rund 1,5 Minuten, mit allen 66 rund 2,5 Minuten.
+                Gekürzte Listen sind mit anderen Kunden nur für die gemeinsamen Begriffe vergleichbar.
+              </p>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label>Begriffe (einer pro Zeile)</Label>
+            <Textarea
+              value={sortiererBegriffe.join("\n")}
+              onChange={(e) => feld("optionen", e.target.value.split("\n").map((s) => s.replace(/^\s+/, "")))}
+              onBlur={(e) => feld("optionen", Array.from(new Set(e.target.value.split("\n").map((s) => s.trim()).filter(Boolean))))}
+              rows={8}
+              className="font-mono text-xs"
+            />
+          </div>
         </div>
       )}
 
