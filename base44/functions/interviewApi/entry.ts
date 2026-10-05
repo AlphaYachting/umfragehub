@@ -186,6 +186,30 @@ function validiereAntwort(frage, data) {
       if (maxA > 0 && auswahl.length > maxA) return `Höchstens ${maxA} Auswahlen erlaubt`;
     }
   }
+  if (typ === "werte_sortierer") {
+    // auswahl = ["ist:Begriff", …, "ist_nicht:Begriff", …], matrixWerte = { Begriff: 1 | 0 | -1 }
+    const begriffe: string[] = (frage.optionen || []).map((o: string) => String(o).trim()).filter(Boolean);
+    const n = Number(frage.maxAuswahl) > 0 ? Math.min(Number(frage.maxAuswahl), 10) : 5;
+    const ist: string[] = [];
+    const nicht: string[] = [];
+    for (const a of (data.auswahl || [])) {
+      const s = String(a);
+      if (s.startsWith("ist_nicht:")) nicht.push(s.slice(10));
+      else if (s.startsWith("ist:")) ist.push(s.slice(4));
+      else return `Ungültige Auswahl: ${s}`;
+    }
+    for (const b of [...ist, ...nicht]) {
+      if (begriffe.length && !begriffe.includes(b)) return `Unbekannter Begriff: ${b}`;
+    }
+    if (ist.length > n || nicht.length > n) return `Höchstens ${n} Begriffe je Seite`;
+    if (new Set(ist).size !== ist.length || new Set(nicht).size !== nicht.length) return "Begriff doppelt gewählt";
+    if (ist.some((b) => nicht.includes(b))) return "Begriff kann nicht in beiden Listen stehen";
+    const sortierung = data.matrixWerte || {};
+    for (const [b, w] of Object.entries(sortierung)) {
+      if (begriffe.length && !begriffe.includes(b)) return `Unbekannter Begriff in der Sortierung: ${b}`;
+      if (![1, 0, -1].includes(Number(w))) return `Ungültige Sortierung für ${b}`;
+    }
+  }
   if (typ === "skala" || typ === "schieberegler" || typ === "gegensatzpaar") {
     if (data.zahl !== undefined && data.zahl !== null && data.zahl !== "") {
       const z = Number(data.zahl);
