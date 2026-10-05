@@ -25,9 +25,10 @@ function nachObenScrollen() {
   window.scrollTo({ top: 0, behavior: "auto" });
 }
 
-export default function WerteSortierer({ frage, wert, onChange, ansprache }) {
+export default function WerteSortierer({ frage, wert, onChange, ansprache, textKontext }) {
   const v = wert || {};
   const sie = ansprache === "sie";
+  const firma = String(textKontext?.firma || "").trim();
   const N = anzahlJeSeite(frage);
   const begriffe = useMemo(() => begriffeDerFrage(frage), [frage.optionen]); // eslint-disable-line react-hooks/exhaustive-deps
   const [seed] = useState(() => (Number(v.zahl) > 0 ? Number(v.zahl) : neuerSeed()));
@@ -181,7 +182,7 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache }) {
         </div>
         <div className="ws-balken" aria-hidden="true"><i style={{ width: `${(position / reihenfolge.length) * 100}%` }} /></div>
 
-        <p className="ws-frage">Passt das zu {sie ? "dem Unternehmen" : "dem Unternehmen"}?</p>
+        <p className="ws-frage">Passt das zu {firma || "dem Unternehmen"}?</p>
 
         <div className="ws-stapel">
           {naechster && <div className="ws-karte ws-karte-hinten" aria-hidden="true"><span>{naechster}</span></div>}
@@ -277,8 +278,8 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache }) {
   }
 
   const titel = istBest
-    ? `Welche ${N} beschreiben das Unternehmen am besten?`
-    : `Und umgekehrt: Welche ${N} passen am wenigsten?`;
+    ? `Welche ${N} beschreiben ${firma || "das Unternehmen"} am besten?`
+    : `Und umgekehrt: Welche ${N} passen am wenigsten zu ${firma || "dem Unternehmen"}?`;
   const hinweis = fehlen > 0
     ? `${sie ? "Ihr" : "Dein"} Stapel hat nur ${stapel.length}. ${sie ? "Ergänzen Sie" : "Ergänze"} aus „Weiß nicht“.`
     : stapel.length === N && gewaehlt.length === N
