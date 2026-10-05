@@ -60,6 +60,9 @@ export default function Interview() {
   const [animKey, setAnimKey] = useState(0);
   const [erklaerungOffen, setErklaerungOffen] = useState({});
   const [offlineHinweis, setOfflineHinweis] = useState(false);
+  // Werte-Sortierer: führt über den Weiter-Knopf der Fußzeile durch seine Schritte
+  const [sortiererStatus, setSortiererStatus] = useState(null);
+  const sortiererAbfangenRef = useRef(null);
 
   // Warteschlange für fehlgeschlagene Antworten (Paket 0.3)
   const warteschlangeRef = useRef([]);
@@ -287,6 +290,10 @@ export default function Interview() {
     // überschreibt.
     if (expliziterWert !== undefined && (typeof expliziterWert !== "object" || expliziterWert === null || "nativeEvent" in expliziterWert)) {
       expliziterWert = undefined;
+    }
+    // Werte-Sortierer: „Weiter“ führt zuerst durch die Schritte des Moduls (Einleitung → … → Schritt 3)
+    if (expliziterWert === undefined && item.frage.typ === "werte_sortierer" && sortiererAbfangenRef.current) {
+      if (sortiererAbfangenRef.current()) return;
     }
     const wert = expliziterWert !== undefined ? expliziterWert : answers[item.frage.id];
     if (!testModus && item.frage.pflicht && !istBeantwortet(item.frage, wert)) return;
@@ -660,6 +667,14 @@ export default function Interview() {
   const frage = item.frage;
   const wert = answers[frage.id] || {};
   const blockNr = item.blockIndex + 1;
+  const istSortierer = frage.typ === "werte_sortierer";
+  const sortiererAktiv = istSortierer && sortiererStatus && sortiererStatus.frageId === frage.id;
+  const weiterGesperrt = istSortierer
+    ? !testModus && !(sortiererAktiv && sortiererStatus.kannWeiter)
+    : !testModus && frage.pflicht && !istBeantwortet(frage, wert);
+  const weiterBeschriftung = sortiererAktiv && sortiererStatus.beschriftung
+    ? sortiererStatus.beschriftung
+    : (currentIndex === gesamt - 1 ? "Abschließen" : "Weiter");
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "var(--farbe-bg)" }}>
@@ -714,6 +729,8 @@ export default function Interview() {
               ansprache={projekt?.ansprache}
               textKontext={textKontext}
               onChange={(neu) => setAnswers({ ...answers, [frage.id]: neu })}
+              onStatus={(st) => setSortiererStatus(st ? { ...st, frageId: frage.id } : null)}
+              weiterAbfangen={(fn) => { sortiererAbfangenRef.current = fn; }}
             />
           </div>
         </div>
@@ -736,10 +753,10 @@ export default function Interview() {
             )}
             <button
               onClick={() => weiter()}
-              disabled={!testModus && frage.pflicht && !istBeantwortet(frage, wert)}
+              disabled={weiterGesperrt}
               className="interview-btn-akzent interview-fuss-weiter"
             >
-              {currentIndex === gesamt - 1 ? "Abschließen" : "Weiter"}
+              {weiterBeschriftung}
             </button>
           </div>
         </div>

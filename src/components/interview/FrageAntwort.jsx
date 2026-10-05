@@ -91,7 +91,7 @@ function gegensatzVerortung(pos) {
   return "deutlich rechts";
 }
 
-export default function FrageAntwort({ frage, wert, onChange, ansprache, textKontext }) {
+export default function FrageAntwort({ frage, wert, onChange, ansprache, textKontext, onStatus, weiterAbfangen }) {
   const v = wert || {};
   const auswahl = v.auswahl || [];
   // Platzhalter ({{firma}}, Du/Sie) auch in Optionen, Zeilen und Labels auflösen
@@ -140,6 +140,8 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
         onChange={onChange}
         ansprache={ansprache}
         textKontext={textKontext}
+        onStatus={onStatus}
+        weiterAbfangen={weiterAbfangen}
       />
     );
   }

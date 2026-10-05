@@ -25,7 +25,7 @@ function nachObenScrollen() {
   window.scrollTo({ top: 0, behavior: "auto" });
 }
 
-export default function WerteSortierer({ frage, wert, onChange, ansprache, textKontext }) {
+export default function WerteSortierer({ frage, wert, onChange, ansprache, textKontext, onStatus, weiterAbfangen }) {
   const v = wert || {};
   const sie = ansprache === "sie";
   const firma = String(textKontext?.firma || "").trim();
@@ -127,6 +127,29 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache, textK
     setFlug(null);
     setPhase("sort");
     speichern(neu, listen.ist.filter((b) => b !== letzter), listen.nicht.filter((b) => b !== letzter));
+  }
+
+  // Den Weiter-Knopf der Fußzeile steuern: welche Beschriftung, ob er aktiv ist, und was er tut.
+  // So gibt es auf jeder Stufe genau EINEN Weiter-Knopf — unten, wo er immer ist.
+  const voll = (phase === "best" ? ist.length : nicht.length) >= N;
+  const statusText = JSON.stringify({ phase, voll });
+  const letzterStatus = useRef("");
+  useEffect(() => {
+    if (!onStatus || statusText === letzterStatus.current) return;
+    letzterStatus.current = statusText;
+    if (phase === "intro") onStatus({ kannWeiter: true, beschriftung: "Los geht's" });
+    else if (phase === "sort") onStatus({ kannWeiter: false, beschriftung: "Weiter" });
+    else if (phase === "best") onStatus({ kannWeiter: voll, beschriftung: "Weiter zu Schritt 3" });
+    else onStatus({ kannWeiter: voll, beschriftung: null });
+  });
+  useEffect(() => () => { if (onStatus) onStatus(null); if (weiterAbfangen) weiterAbfangen(null); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // Gibt true zurück, wenn der Klick innerhalb des Moduls verarbeitet wurde
+  if (weiterAbfangen) {
+    weiterAbfangen(() => {
+      if (phase === "intro") { setPhase("sort"); return true; }
+      if (phase === "best" && voll) { setPhase("worst"); return true; }
+      return false;
+    });
   }
 
   // Tastatur: ← passt nicht · ↓ weiß nicht · → passt · Rücktaste = zurück · Enter startet
@@ -236,9 +259,9 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache, textK
         <p className="ws-hinweis">
           Dauer etwa {minuten} {minuten === 1 ? "Minute" : "Minuten"}. {sie ? "Entscheiden Sie" : "Entscheide"} aus dem Bauch heraus — es gibt kein richtig oder falsch.
         </p>
-        <button type="button" className="interview-btn-akzent ws-weiter" onClick={() => setPhase("sort")}>
-          Los geht's
-        </button>
+        <p className="ws-hinweis ws-unten-hinweis">
+          {sie ? "Tippen Sie" : "Tippe"} unten auf „Los geht's“{mausGeraet ? (sie ? " oder drücken Sie Enter" : " oder drücke Enter") : ""}.
+        </p>
       </div>
     );
   }
@@ -346,7 +369,7 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache, textK
   const schluessel = istBest ? SORT_PASST : SORT_PASST_NICHT;
   const gewaehlt = istBest ? ist : nicht;
   const gesperrt = istBest ? nicht : ist;
-  const voll = gewaehlt.length >= N;
+  const platzVoll = gewaehlt.length >= N;
   const stapel = reihenfolge.filter((b) => sortierung[b] === schluessel && !gesperrt.includes(b));
   const unsicher = reihenfolge.filter((b) => sortierung[b] === SORT_WEISS_NICHT && !gesperrt.includes(b));
   const gegenseite = reihenfolge.filter((b) => sortierung[b] === (istBest ? SORT_PASST_NICHT : SORT_PASST) && !gesperrt.includes(b));
@@ -421,7 +444,7 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache, textK
                   key={b}
                   type="button"
                   aria-pressed={belegt}
-                  className={`ws-begriff ${belegt ? "ws-begriff-belegt" : ""} ${!belegt && voll ? "ws-begriff-blass" : ""}`}
+                  className={`ws-begriff ${belegt ? "ws-begriff-belegt" : ""} ${!belegt && platzVoll ? "ws-begriff-blass" : ""}`}
                   onClick={() => umschalten(b)}
                 >
                   <span className="ws-begriff-text">{b}</span>
@@ -442,9 +465,11 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache, textK
       <div className="ws-aktionen">
         {istBest ? (
           <>
-            <button type="button" className="interview-btn-akzent ws-weiter" disabled={!voll} onClick={() => setPhase("worst")}>
-              Weiter zu Schritt 3
-            </button>
+            <p className="ws-hinweis" style={{ margin: 0 }}>
+              {platzVoll
+                ? `${sie ? "Tippen Sie" : "Tippe"} unten auf „Weiter zu Schritt 3“.`
+                : `Noch ${N - gewaehlt.length} ${N - gewaehlt.length === 1 ? "Begriff" : "Begriffe"}.`}
+            </p>
             <button type="button" className="ws-link" onClick={rueckgaengig}>
               <Undo2 size={14} /> Zurück zum Sortieren
             </button>
@@ -452,7 +477,7 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache, textK
         ) : (
           <>
             <p className="ws-hinweis" style={{ margin: 0 }}>
-              {voll
+              {platzVoll
                 ? `Fertig. ${sie ? "Tippen Sie" : "Tippe"} unten auf „Weiter“.`
                 : `Noch ${N - gewaehlt.length} ${N - gewaehlt.length === 1 ? "Begriff" : "Begriffe"}.`}
             </p>
