@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import { ThumbsUp, ThumbsDown, HelpCircle, Undo2, X } from "lucide-react";
+import { ThumbsUp, ThumbsDown, HelpCircle, Undo2 } from "lucide-react";
 import {
   anzahlJeSeite,
   begriffeDerFrage,
@@ -40,30 +40,35 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache, textK
   const sortFertig = offenIndex < 0;
   const position = sortFertig ? reihenfolge.length : offenIndex;
 
+  const nichtsSortiert = Object.keys(sortierung).length === 0;
   const [phase, setPhase] = useState(() => {
-    if (!sortFertig) return "sort";
+    if (!sortFertig) return nichtsSortiert ? "intro" : "sort";
     if (ist.length < N) return "best";
     if (nicht.length < N) return "worst";
     return "worst";
   });
   const [alleZeigen, setAlleZeigen] = useState(false);
-  const [tippGesehen, setTippGesehen] = useState(position > 0);
   const [mausGeraet] = useState(() =>
     typeof window !== "undefined" && window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches
   );
+  // Weggeworfene Karte fliegt als eigene Kopie hinaus — die nächste Karte ist sofort bedienbar
+  const [flug, setFlug] = useState(null);
 
   const karteRef = useRef(null);
-  const beschaeftigt = useRef(false);
+  // Immer der neueste Antwortstand — auch wenn schnell hintereinander gewischt/getippt wird,
+  // bevor React neu gezeichnet hat
   const aktuellerWert = useRef(v);
   aktuellerWert.current = v;
 
   function speichern(neueSortierung, neuIst, neuNicht) {
-    onChange({
+    const neu = {
       ...aktuellerWert.current,
       matrixWerte: neueSortierung,
       auswahl: auswahlAusListen(neuIst, neuNicht),
       zahl: seed,
-    });
+    };
+    aktuellerWert.current = neu;
+    onChange(neu);
   }
 
   // Sortieren abgeschlossen → Schritt 2
@@ -89,43 +94,53 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache, textK
     }
   }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function entscheiden(wertung) {
-    if (beschaeftigt.current || phase !== "sort" || sortFertig) return;
-    beschaeftigt.current = true;
-    setTippGesehen(true);
-    const begriff = reihenfolge[position];
-    const karte = karteRef.current;
-    const fertig = () => {
-      beschaeftigt.current = false;
-      speichern({ ...sortierung, [begriff]: wertung }, ist.filter((b) => b !== begriff), nicht.filter((b) => b !== begriff));
-    };
-    if (karte && !REDUZIERTE_BEWEGUNG) {
-      const dx = wertung === SORT_PASST ? 1 : wertung === SORT_PASST_NICHT ? -1 : 0;
-      karte.style.transition = "transform 0.2s ease, opacity 0.2s ease";
-      karte.style.transform = dx ? `translateX(${dx * 120}%) rotate(${dx * 12}deg)` : "translateY(50%) scale(0.92)";
-      karte.style.opacity = "0";
-      setTimeout(fertig, 190);
-    } else {
-      fertig();
+  // Eine Entscheidung — rechnet immer mit dem neuesten Stand (aktuellerWert), nicht mit dem
+  // Stand der letzten Zeichnung. So geht auch bei sehr schnellem Wischen nichts verloren.
+  function entscheiden(wertung, start = { dx: 0, dy: 0 }) {
+    if (phase !== "sort") return;
+    const stand = aktuellerWert.current || {};
+    const sort = stand.matrixWerte || {};
+    const idx = reihenfolge.findIndex((b) => sort[b] === undefined);
+    if (idx < 0) return;
+    const begriff = reihenfolge[idx];
+    const listen = listenAusAuswahl(stand.auswahl);
+    if (!REDUZIERTE_BEWEGUNG) {
+      setFlug({ begriff, wertung, dx: start.dx, dy: start.dy, id: `${begriff}-${Date.now()}` });
     }
+    speichern(
+      { ...sort, [begriff]: wertung },
+      listen.ist.filter((b) => b !== begriff),
+      listen.nicht.filter((b) => b !== begriff)
+    );
   }
 
   function rueckgaengig() {
-    if (position === 0) return;
-    const letzter = reihenfolge[position - 1];
-    const neu = { ...sortierung };
+    const stand = aktuellerWert.current || {};
+    const sort = stand.matrixWerte || {};
+    const idx = reihenfolge.findIndex((b) => sort[b] === undefined);
+    const pos = idx < 0 ? reihenfolge.length : idx;
+    if (pos === 0) return;
+    const letzter = reihenfolge[pos - 1];
+    const neu = { ...sort };
     delete neu[letzter];
+    const listen = listenAusAuswahl(stand.auswahl);
+    setFlug(null);
     setPhase("sort");
-    speichern(neu, ist.filter((b) => b !== letzter), nicht.filter((b) => b !== letzter));
+    speichern(neu, listen.ist.filter((b) => b !== letzter), listen.nicht.filter((b) => b !== letzter));
   }
 
-  // Tastatur: ← passt nicht · ↓ weiß nicht · → passt · Rücktaste = zurück
+  // Tastatur: ← passt nicht · ↓ weiß nicht · → passt · Rücktaste = zurück · Enter startet
   useEffect(() => {
-    if (phase !== "sort") return;
+    if (phase !== "sort" && phase !== "intro") return;
     function taste(e) {
       const ziel = e.target;
       if (ziel && (ziel.tagName === "INPUT" || ziel.tagName === "TEXTAREA" || ziel.isContentEditable)) return;
       if (e.altKey || e.ctrlKey || e.metaKey) return;
+      if (phase === "intro") {
+        if (e.key === "Enter" || e.key === "ArrowRight") { e.preventDefault(); setPhase("sort"); }
+        return;
+      }
+      if (e.repeat) return;
       if (e.key === "ArrowRight") { e.preventDefault(); entscheiden(SORT_PASST); }
       else if (e.key === "ArrowLeft") { e.preventDefault(); entscheiden(SORT_PASST_NICHT); }
       else if (e.key === "ArrowDown") { e.preventDefault(); entscheiden(SORT_WEISS_NICHT); }
@@ -135,38 +150,97 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache, textK
     return () => window.removeEventListener("keydown", taste);
   }); // bewusst ohne Abhängigkeiten: immer mit aktuellem Stand
 
-  // Wischen
-  const zug = useRef({ x0: null, y0: null, dx: 0, dy: 0 });
+  // Wischen — Zeiger-Ereignisse (Finger, Maus, Stift). Entschieden wird nach Weg ODER Tempo:
+  // ein kurzer, schneller Wisch zählt genauso wie ein langer, langsamer.
+  const zug = useRef(null);
+  function etiketten(dx, dy) {
+    const k = karteRef.current;
+    if (!k) return;
+    const setze = (sel, o) => { const el = k.querySelector(sel); if (el) el.style.opacity = String(Math.max(0, Math.min(1, o))); };
+    setze("[data-etikett='l']", -dx / 80);
+    setze("[data-etikett='r']", dx / 80);
+    setze("[data-etikett='u']", Math.abs(dx) < 40 ? dy / 100 : 0);
+  }
+  function karteZuruecksetzen() {
+    const k = karteRef.current;
+    if (!k) return;
+    k.style.transition = "transform 0.18s ease";
+    k.style.transform = "";
+    etiketten(0, 0);
+  }
   function zeigerRunter(e) {
-    if (beschaeftigt.current) return;
-    zug.current = { x0: e.clientX, y0: e.clientY, dx: 0, dy: 0 };
-    try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* egal */ }
+    if (e.button !== undefined && e.button > 0) return; // nur Hauptknopf / erster Finger
+    if (zug.current) return;
+    zug.current = { id: e.pointerId, x0: e.clientX, y0: e.clientY, dx: 0, dy: 0, t0: performance.now(), tx: performance.now(), xv: e.clientX, yv: e.clientY, vx: 0, vy: 0 };
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* nicht überall */ }
     if (karteRef.current) karteRef.current.style.transition = "none";
   }
   function zeigerBewegen(e) {
     const z = zug.current;
-    if (z.x0 === null || !karteRef.current) return;
+    if (!z || e.pointerId !== z.id || !karteRef.current) return;
+    const jetzt = performance.now();
+    const dt = Math.max(1, jetzt - z.tx);
+    z.vx = (e.clientX - z.xv) / dt;
+    z.vy = (e.clientY - z.yv) / dt;
+    z.xv = e.clientX; z.yv = e.clientY; z.tx = jetzt;
     z.dx = e.clientX - z.x0;
     z.dy = Math.max(0, e.clientY - z.y0);
-    karteRef.current.style.transform = `translate(${z.dx}px, ${z.dy * 0.4}px) rotate(${z.dx / 18}deg)`;
-    const k = karteRef.current;
-    k.querySelector("[data-etikett='l']").style.opacity = String(Math.min(1, -z.dx / 90));
-    k.querySelector("[data-etikett='r']").style.opacity = String(Math.min(1, z.dx / 90));
-    k.querySelector("[data-etikett='u']").style.opacity = String(Math.abs(z.dx) < 40 ? Math.min(1, z.dy / 110) : 0);
+    karteRef.current.style.transform = `translate(${z.dx}px, ${z.dy * 0.5}px) rotate(${z.dx / 18}deg)`;
+    etiketten(z.dx, z.dy);
   }
-  function zeigerHoch() {
+  function zeigerHoch(e) {
     const z = zug.current;
-    if (z.x0 === null) return;
-    zug.current = { x0: null, y0: null, dx: 0, dy: 0 };
-    if (z.dx > 90) return entscheiden(SORT_PASST);
-    if (z.dx < -90) return entscheiden(SORT_PASST_NICHT);
-    if (z.dy > 110 && Math.abs(z.dx) < 60) return entscheiden(SORT_WEISS_NICHT);
-    const k = karteRef.current;
-    if (k) {
-      k.style.transition = "transform 0.2s ease";
-      k.style.transform = "";
-      k.querySelectorAll("[data-etikett]").forEach((el) => { el.style.opacity = "0"; });
+    if (!z || (e && e.pointerId !== undefined && e.pointerId !== z.id)) return;
+    zug.current = null;
+    const { dx, dy, vx, vy } = z;
+    const seitlich = Math.abs(dx) >= Math.abs(dy);
+    const weitGenug = seitlich ? Math.abs(dx) > 80 : dy > 90;
+    const schnellGenug = seitlich ? Math.abs(dx) > 30 && Math.abs(vx) > 0.45 : dy > 30 && vy > 0.45;
+    if (weitGenug || schnellGenug) {
+      const wertung = seitlich ? (dx > 0 ? SORT_PASST : SORT_PASST_NICHT) : SORT_WEISS_NICHT;
+      entscheiden(wertung, { dx, dy: dy * 0.5 });
+      return;
     }
+    karteZuruecksetzen();
+  }
+
+  // ---------------------------------------------------------------- Einleitung
+  if (phase === "intro") {
+    const anzahl = reihenfolge.length;
+    const minuten = Math.max(1, Math.round((anzahl * 2 + 40) / 60));
+    const name = firma || "das Unternehmen";
+    return (
+      <div className="ws ws-intro">
+        <div className="ws-kopf"><span className="ws-schritt">So geht's</span></div>
+        <ol className="ws-schritte">
+          <li>
+            <span className="ws-schritte-nr">1</span>
+            <span>
+              <b>Sortieren:</b> {sie ? "Sie sehen" : "Du siehst"} {anzahl} Begriffe, immer nur einen. Passt er zu {name}, passt er nicht, oder {sie ? "wissen Sie" : "weißt du"} es nicht?
+              <span className="ws-schritte-zusatz">
+                {mausGeraet
+                  ? <>Am schnellsten mit den Pfeiltasten <kbd>←</kbd> passt nicht · <kbd>↓</kbd> weiß nicht · <kbd>→</kbd> passt.</>
+                  : <>Karte nach rechts wischen = passt, nach links = passt nicht, nach unten = weiß nicht. Oder {sie ? "tippen Sie" : "tippe"} auf die Knöpfe.</>}
+              </span>
+            </span>
+          </li>
+          <li>
+            <span className="ws-schritte-nr">2</span>
+            <span><b>Die {N} treffendsten</b> aus {sie ? "Ihrem" : "deinem"} „Passt“-Stapel auswählen.</span>
+          </li>
+          <li>
+            <span className="ws-schritte-nr">3</span>
+            <span><b>Die {N} unpassendsten</b> aus {sie ? "Ihrem" : "deinem"} „Passt nicht“-Stapel auswählen.</span>
+          </li>
+        </ol>
+        <p className="ws-hinweis">
+          Dauer etwa {minuten} {minuten === 1 ? "Minute" : "Minuten"}. {sie ? "Entscheiden Sie" : "Entscheide"} aus dem Bauch heraus — es gibt kein richtig oder falsch.
+        </p>
+        <button type="button" className="interview-btn-akzent ws-weiter" onClick={() => setPhase("sort")}>
+          Los geht's
+        </button>
+      </div>
+    );
   }
 
   // ---------------------------------------------------------------- Schritt 1
@@ -174,6 +248,9 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache, textK
     const aktuell = reihenfolge[position];
     const naechster = reihenfolge[position + 1];
     const zaehle = (w) => Object.values(sortierung).filter((x) => x === w).length;
+    const flugKlasse = flug
+      ? (flug.wertung === SORT_PASST ? "ws-flug-r" : flug.wertung === SORT_PASST_NICHT ? "ws-flug-l" : "ws-flug-u")
+      : "";
     return (
       <div className="ws">
         <div className="ws-kopf">
@@ -196,24 +273,25 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache, textK
             onPointerMove={zeigerBewegen}
             onPointerUp={zeigerHoch}
             onPointerCancel={zeigerHoch}
+            onLostPointerCapture={zeigerHoch}
+            onDragStart={(e) => e.preventDefault()}
           >
             <span data-etikett="l" className="ws-etikett ws-etikett-l">Passt nicht</span>
             <span data-etikett="u" className="ws-etikett ws-etikett-u">Weiß nicht</span>
             <span data-etikett="r" className="ws-etikett ws-etikett-r">Passt</span>
             <span className="ws-wort">{aktuell}</span>
-            {!tippGesehen && (
-              <div className="ws-tipp" onPointerDown={(e) => e.stopPropagation()}>
-                <span>
-                  {mausGeraet ? (
-                    <><b>Tipp:</b> <kbd>←</kbd> passt nicht · <kbd>↓</kbd> weiß nicht · <kbd>→</kbd> passt · <kbd>⌫</kbd> zurück</>
-                  ) : (
-                    <><b>Tipp:</b> Karte nach rechts wischen = passt, nach links = passt nicht, nach unten = weiß nicht.</>
-                  )}
-                </span>
-                <button type="button" aria-label="Tipp schließen" onClick={() => setTippGesehen(true)}><X size={16} /></button>
-              </div>
-            )}
           </div>
+          {flug && (
+            <div
+              key={flug.id}
+              className={`ws-karte ws-flug ${flugKlasse}`}
+              style={{ "--start-x": `${flug.dx}px`, "--start-y": `${flug.dy}px` }}
+              aria-hidden="true"
+              onAnimationEnd={() => setFlug((f) => (f && f.id === flug.id ? null : f))}
+            >
+              <span className="ws-wort">{flug.begriff}</span>
+            </div>
+          )}
         </div>
 
         <div className="ws-knoepfe">
@@ -240,12 +318,24 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache, textK
           <span>Passt <b>{zaehle(SORT_PASST)}</b></span>
         </div>
 
+        {position < 3 && (
+          <p className="ws-wischhinweis">
+            {mausGeraet
+              ? <>Pfeiltasten: <kbd>←</kbd> passt nicht · <kbd>↓</kbd> weiß nicht · <kbd>→</kbd> passt</>
+              : "Wischen: rechts = passt · links = passt nicht · unten = weiß nicht"}
+          </p>
+        )}
+
         <div className="ws-fuss">
           {position > 0 ? (
             <button type="button" className="ws-link" onClick={rueckgaengig}>
               <Undo2 size={14} /> Letzte Karte zurück{mausGeraet ? " (Rücktaste)" : ""}
             </button>
-          ) : <span />}
+          ) : (
+            <button type="button" className="ws-link" onClick={() => setPhase("intro")}>
+              Anleitung nochmal ansehen
+            </button>
+          )}
         </div>
       </div>
     );

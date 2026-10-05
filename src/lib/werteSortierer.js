@@ -95,7 +95,8 @@ export function werteSortiererVorlage() {
   return {
     typ: WERTE_SORTIERER_TYP,
     text: "Wofür *steht* {{firma}}?",
-    hilfetext: "{{Du}} {{siehst}} gleich nacheinander einzelne Begriffe. {{Entscheide|Entscheiden Sie}} jeweils aus dem Bauch heraus, ob sie zu {{firma}} passen.",
+    // Die Anleitung zeigt der Werte-Sortierer selbst (Einleitung vor dem Sortieren)
+    hilfetext: "",
     erklaerung: "Aus allen Antworten entsteht das Wertebild von {{firma}}: wofür das Unternehmen aus Sicht der Befragten steht und wofür nicht.\n\nEs gibt kein richtig oder falsch. Der erste Eindruck ist der wertvollste.",
     pflicht: true,
     optionen: [...STANDARD_BEGRIFF_NAMEN],

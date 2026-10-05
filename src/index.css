@@ -642,8 +642,35 @@
     background: var(--farbe-text); color: var(--farbe-bg); font-size: 12.5px; font-weight: 800;
   }
   .ws-begriff-blass { opacity: 0.4; cursor: default; }
+
+  /* Einleitung */
+  .ws-schritte { list-style: none; margin: 4px 0 16px; padding: 0; display: grid; gap: 14px; }
+  .ws-schritte li { display: grid; grid-template-columns: 30px 1fr; gap: 12px; align-items: start; font-size: 15.5px; line-height: 1.5; color: var(--farbe-text); }
+  .ws-schritte-nr { width: 30px; height: 30px; border-radius: 50%; background: var(--farbe-grau); display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13.5px; }
+  .ws-schritte-zusatz { display: block; margin-top: 4px; font-size: 14px; color: var(--farbe-text-daempft); }
+  .ws-intro .ws-weiter { margin-top: 6px; }
+  .ws-wischhinweis { text-align: center; font-size: 13px; color: var(--farbe-grau-mid); margin: 12px 0 0; }
+
+  /* Weggeworfene Karte fliegt als Kopie hinaus — blockiert nichts */
+  .ws-flug { pointer-events: none; z-index: 2; box-shadow: 0 14px 34px rgba(45, 45, 45, 0.16); animation-duration: 0.26s; animation-timing-function: ease-in; animation-fill-mode: forwards; }
+  .ws-flug-r { animation-name: wsFlugRechts; }
+  .ws-flug-l { animation-name: wsFlugLinks; }
+  .ws-flug-u { animation-name: wsFlugUnten; }
   .ws-aktionen { display: flex; flex-direction: column; align-items: stretch; gap: 8px; margin-top: 14px; }
   .ws-weiter { width: 100%; }
+}
+
+@keyframes wsFlugRechts {
+  from { transform: translate(var(--start-x, 0px), var(--start-y, 0px)); opacity: 1; }
+  to { transform: translate(130%, var(--start-y, 0px)) rotate(16deg); opacity: 0; }
+}
+@keyframes wsFlugLinks {
+  from { transform: translate(var(--start-x, 0px), var(--start-y, 0px)); opacity: 1; }
+  to { transform: translate(-130%, var(--start-y, 0px)) rotate(-16deg); opacity: 0; }
+}
+@keyframes wsFlugUnten {
+  from { transform: translate(var(--start-x, 0px), var(--start-y, 0px)); opacity: 1; }
+  to { transform: translate(0, 70%) scale(0.9); opacity: 0; }
 }
 
 @keyframes interviewDrehen {
