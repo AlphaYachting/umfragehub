@@ -273,7 +273,7 @@ export default function FrageForm({ frage, onChange }) {
                 )}
               </div>
               <p className="text-xs text-muted-foreground">
-                Ab etwa 40 Begriffen dauert das Sortieren rund 1,5 Minuten, mit allen 66 rund 2,5 Minuten.
+                Mit etwa 40 Begriffen dauert das Sortieren rund 1,5 Minuten, mit allen 66 rund 2,5 Minuten.
                 Gekürzte Listen sind mit anderen Kunden nur für die gemeinsamen Begriffe vergleichbar.
               </p>
             </div>
