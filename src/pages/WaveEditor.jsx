@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { bestaetigen } from "@/components/shared/Bestaetigen";
 import { useParams } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import { Plus, Trash2, Save, Library, GripVertical } from "lucide-react";
+import { Plus, Trash2, Save, Library, GripVertical, Layers } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,14 @@ import BlockEditor from "@/components/welle/BlockEditor";
 import BibliothekDialog from "@/components/welle/BibliothekDialog";
 import BibliothekImportDialog from "@/components/welle/BibliothekImportDialog";
 import WellenKopf from "@/components/verwaltung/WellenKopf";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { werteSortiererVorlage, WERTE_SORTIERER_TYP } from "@/lib/werteSortierer";
 
 export default function WaveEditor() {
   const { id } = useParams();
@@ -27,6 +35,7 @@ export default function WaveEditor() {
   const [bibImportDialog, setBibImportDialog] = useState(false);
   const [speichern, setSpeichern] = useState(false);
   const [sessionCount, setSessionCount] = useState(0);
+  const [modulZielBlock, setModulZielBlock] = useState("");
 
   const laden = useCallback(async () => {
     setLoading(true);
@@ -176,6 +185,44 @@ export default function WaveEditor() {
     }
   }
 
+  // Standardmodul Werte-Sortierer: vorkonfigurierte Frage am Ende eines Blocks anlegen.
+  // Die genaue Position wählt man danach per Ziehen (auch in einen anderen Block).
+  async function werteSortiererEinfuegen(blockId) {
+    if (!blockId) return;
+    try {
+      const liste = fragen[blockId] || [];
+      const neu = await base44.entities.Frage.create({
+        ...werteSortiererVorlage(),
+        blockId,
+        reihenfolge: liste.length,
+      });
+      setFragen({ ...fragen, [blockId]: [...liste, neu] });
+      toast.success("Werte-Sortierer eingefügt. Per Ziehen an die gewünschte Stelle schieben.");
+    } catch (e) {
+      toast.error("Werte-Sortierer konnte nicht eingefügt werden.");
+    }
+  }
+
+  // Frage in einen anderen Block verschieben (Ziehen zwischen Blöcken)
+  async function frageVerschieben(quellBlockId, quellListe, zielBlockId, zielListe, bewegt) {
+    const quelle = quellListe.map((f, i) => ({ ...f, reihenfolge: i }));
+    const ziel = zielListe.map((f, i) => ({ ...f, reihenfolge: i }));
+    setFragen({ ...fragen, [quellBlockId]: quelle, [zielBlockId]: ziel });
+    try {
+      await base44.entities.Frage.update(bewegt.id, { blockId: zielBlockId });
+      for (let i = 0; i < quellListe.length; i++) {
+        if (quellListe[i].reihenfolge !== i) await base44.entities.Frage.update(quellListe[i].id, { reihenfolge: i });
+      }
+      for (let i = 0; i < zielListe.length; i++) {
+        if (zielListe[i].reihenfolge !== i || zielListe[i].id === bewegt.id) {
+          await base44.entities.Frage.update(zielListe[i].id, { reihenfolge: i });
+        }
+      }
+    } catch (e) {
+      toast.error("Verschieben fehlgeschlagen.");
+    }
+  }
+
   async function reorderBlocks(neueReihenfolge) {
     setBloecke(neueReihenfolge);
     for (let i = 0; i < neueReihenfolge.length; i++) {
@@ -207,11 +254,20 @@ export default function WaveEditor() {
       neu.splice(destination.index, 0, bewegt);
       reorderBlocks(neu);
     } else if (type === "frage") {
-      const blockId = destination.droppableId;
-      const liste = Array.from(fragen[blockId] || []);
-      const [bewegt] = liste.splice(source.index, 1);
-      liste.splice(destination.index, 0, bewegt);
-      reorderFragen(blockId, liste);
+      if (source.droppableId === destination.droppableId) {
+        const blockId = destination.droppableId;
+        const liste = Array.from(fragen[blockId] || []);
+        const [bewegt] = liste.splice(source.index, 1);
+        liste.splice(destination.index, 0, bewegt);
+        reorderFragen(blockId, liste);
+      } else {
+        const quelle = Array.from(fragen[source.droppableId] || []);
+        const ziel = Array.from(fragen[destination.droppableId] || []);
+        const [bewegt] = quelle.splice(source.index, 1);
+        const verschoben = { ...bewegt, blockId: destination.droppableId };
+        ziel.splice(destination.index, 0, verschoben);
+        frageVerschieben(source.droppableId, quelle, destination.droppableId, ziel, verschoben);
+      }
     }
   }
 
@@ -273,6 +329,13 @@ export default function WaveEditor() {
   if (loading) return <div className="v-seite v-lade">Lade Welle…</div>;
   if (!welle) return <div className="v-seite v-lade">Welle nicht gefunden.</div>;
 
+  // Wo steht der Werte-Sortierer in der Welle? (Position aus Sicht der Befragten)
+  const alleFragen = bloecke.flatMap((b) => (fragen[b.id] || []).map((f) => ({ f, b })));
+  const sortiererStellen = alleFragen
+    .map((x, i) => ({ ...x, nr: i + 1 }))
+    .filter((x) => x.f.typ === WERTE_SORTIERER_TYP);
+  const zielBlock = modulZielBlock || bloecke[0]?.id || "";
+
   return (
     <div className="v-seite">
       <WellenKopf welle={welle} projekt={projekt} aktiv="editor" />
@@ -327,6 +390,55 @@ export default function WaveEditor() {
             <Save size={15} /> {speichern ? "Speichert…" : "Einstellungen speichern"}
           </Button>
         </div>
+      </div>
+
+      {/* Standardmodule */}
+      <div className="v-karte space-y-3">
+        <div className="flex items-center gap-2">
+          <Layers size={16} className="text-muted-foreground" />
+          <h2 className="v-h2">Standardmodule</h2>
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-3 border border-border rounded-md p-3">
+          <div className="min-w-0">
+            <div className="text-sm font-semibold text-foreground">Werte-Sortierer</div>
+            <div className="text-xs text-muted-foreground mt-0.5">
+              {sortiererStellen.length === 0
+                ? "Nicht in dieser Welle. Empfehlung: früh, nach 1–2 leichten Einstiegsfragen und vor bewertenden Fragen."
+                : sortiererStellen.map((s) => `Enthalten · Frage ${s.nr} von ${alleFragen.length} · Block „${s.b.titel}“`).join(" — ")}
+            </div>
+          </div>
+          {sortiererStellen.length === 0 ? (
+            bloecke.length > 0 ? (
+              <div className="flex items-center gap-2">
+                <Select value={zielBlock} onValueChange={setModulZielBlock}>
+                  <SelectTrigger className="w-56"><SelectValue placeholder="Block wählen" /></SelectTrigger>
+                  <SelectContent>
+                    {bloecke.map((b) => (
+                      <SelectItem key={b.id} value={b.id}>{b.titel || "Block"}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button size="sm" onClick={() => werteSortiererEinfuegen(zielBlock)}>
+                  <Plus size={15} /> Einfügen
+                </Button>
+              </div>
+            ) : (
+              <span className="text-xs text-muted-foreground">Zuerst einen Block anlegen.</span>
+            )
+          ) : (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="text-status-critical hover:text-status-critical"
+              onClick={() => frageLoeschen(sortiererStellen[0].f)}
+            >
+              <Trash2 size={15} /> Aus Welle entfernen
+            </Button>
+          )}
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Die Position bestimmst du unten per Ziehen — Fragen lassen sich auch zwischen Blöcken verschieben.
+        </p>
       </div>
 
       {/* Blöcke */}
