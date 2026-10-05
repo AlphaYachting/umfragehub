@@ -549,6 +549,103 @@
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Werte-Sortierer (Fragetyp werte_sortierer) — bewusst neutrale Farben:
+   gewählte Antworten dunkel/grau wie überall in der Befragung, kein Rot/Grün.
+   --------------------------------------------------------------------------- */
+@layer components {
+  .ws { display: flex; flex-direction: column; }
+  .ws kbd {
+    font-family: inherit; font-size: 11.5px; font-weight: 700; line-height: 1.3;
+    min-width: 22px; display: inline-flex; align-items: center; justify-content: center;
+    padding: 1px 6px; border: 1px solid var(--farbe-rahmen); border-bottom-width: 2px;
+    border-radius: 4px; background: var(--farbe-bg); color: var(--farbe-text);
+  }
+  .ws-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+  .ws-schritt { font-size: 11.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--farbe-text-daempft); }
+  .ws-zahl { font-size: 13px; color: var(--farbe-grau-mid); font-variant-numeric: tabular-nums; }
+  .ws-balken { height: 4px; border-radius: 2px; background: var(--farbe-linie); overflow: hidden; margin-bottom: 18px; }
+  .ws-balken i { display: block; height: 100%; background: var(--farbe-text); transition: width 0.2s ease; }
+  .ws-frage { text-align: center; font-weight: 600; font-size: 15.5px; color: var(--farbe-text); margin: 0 0 12px; }
+
+  .ws-stapel { position: relative; height: 230px; margin-bottom: 18px; touch-action: pan-y; }
+  .ws-karte {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 20px; background: var(--farbe-bg);
+    border: 1.5px solid var(--farbe-rahmen); border-radius: 14px;
+    box-shadow: 0 10px 28px rgba(45, 45, 45, 0.12);
+    user-select: none; -webkit-user-select: none; cursor: grab; touch-action: none;
+  }
+  .ws-karte-hinten { transform: translateY(9px) scale(0.95); opacity: 0.55; box-shadow: none; cursor: default; }
+  .ws-wort { font-size: clamp(27px, 7.5vw, 36px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; color: var(--farbe-text); overflow-wrap: anywhere; hyphens: auto; }
+  .ws-karte-hinten span { font-size: clamp(27px, 7.5vw, 36px); font-weight: 800; color: var(--farbe-text); }
+  .ws-etikett {
+    position: absolute; top: 14px; padding: 3px 8px; border: 2px solid var(--farbe-text);
+    border-radius: 4px; font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--farbe-text); background: var(--farbe-bg); opacity: 0; pointer-events: none;
+  }
+  .ws-etikett-l { left: 14px; }
+  .ws-etikett-r { right: 14px; }
+  .ws-etikett-u { left: 50%; transform: translateX(-50%); }
+  .ws-tipp {
+    position: absolute; left: 10px; right: 10px; bottom: 10px; display: flex; gap: 10px; align-items: flex-start;
+    padding: 10px 12px; border-radius: 10px; background: var(--farbe-text); color: var(--farbe-bg);
+    font-size: 13.5px; line-height: 1.5; text-align: left; cursor: default;
+  }
+  .ws-tipp kbd { background: var(--farbe-bg); color: var(--farbe-text); border-color: var(--farbe-bg); }
+  .ws-tipp button { margin-left: auto; flex: none; color: var(--farbe-bg); opacity: 0.75; min-width: 28px; min-height: 28px; display: inline-flex; align-items: center; justify-content: center; }
+
+  .ws-knoepfe { display: grid; grid-template-columns: 1fr 0.85fr 1fr; gap: 10px; }
+  .ws-knopf {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    min-height: 76px; padding: 10px 6px; border: 1.5px solid var(--farbe-rahmen); border-radius: 12px;
+    background: var(--farbe-bg); color: var(--farbe-text); font-weight: 700; font-size: 14.5px; line-height: 1.2;
+    transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease; cursor: pointer;
+  }
+  .ws-knopf-mitte { color: var(--farbe-text-daempft); font-weight: 600; }
+  @media (hover: hover) { .ws-knopf:hover { border-color: var(--farbe-text); background: var(--farbe-grau); } }
+  .ws-knopf:active { transform: scale(0.97); }
+  .ws-stapelzahlen { display: flex; justify-content: space-between; margin-top: 14px; font-size: 13px; color: var(--farbe-grau-mid); font-variant-numeric: tabular-nums; }
+  .ws-stapelzahlen b { color: var(--farbe-text); font-weight: 800; }
+  .ws-fuss { display: flex; justify-content: center; margin-top: 14px; min-height: 28px; }
+  .ws-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: var(--farbe-grau-mid); text-decoration: underline; text-underline-offset: 2px; min-height: 36px; align-self: center; }
+  @media (hover: hover) { .ws-link:hover { color: var(--farbe-text); } }
+
+  .ws-titel { font-size: 19px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; color: var(--farbe-text); margin: 2px 0 6px; text-wrap: balance; }
+  .ws-hinweis { font-size: 14.5px; line-height: 1.5; color: var(--farbe-text-daempft); margin: 0 0 12px; }
+  .ws-plaetze { list-style: none; margin: 4px 0 18px; padding: 0; display: grid; gap: 6px; }
+  .ws-platz {
+    width: 100%; display: grid; grid-template-columns: 26px 1fr auto; align-items: center; gap: 10px;
+    min-height: 44px; padding: 0 12px; border: 1.5px dashed var(--farbe-linie-kraeftig); border-radius: 10px;
+    color: var(--farbe-grau-mid); font-size: 14px; text-align: left; background: var(--farbe-bg);
+  }
+  .ws-platz-nr { font-weight: 800; font-variant-numeric: tabular-nums; }
+  .ws-platz-naechster { border-color: var(--farbe-text); color: var(--farbe-text); }
+  .ws-platz-belegt { border-style: solid; border-color: var(--farbe-text); background: var(--farbe-grau); color: var(--farbe-text); font-size: 16px; font-weight: 700; cursor: pointer; }
+  .ws-platz-weg { font-size: 12px; font-weight: 500; color: var(--farbe-grau-mid); }
+  .ws-gruppe { margin-bottom: 12px; }
+  .ws-gruppe-kopf { display: flex; justify-content: space-between; font-size: 11.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--farbe-grau-mid); margin: 0 0 8px; }
+  .ws-raster { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+  @media (min-width: 520px) { .ws-raster { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .ws-begriff {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0;
+    min-height: 46px; padding: 9px 12px; border: 1.5px solid var(--farbe-rahmen); border-radius: 9px;
+    background: var(--farbe-bg); color: var(--farbe-text); font-size: 14.5px; font-weight: 600; text-align: left; cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+  }
+  .ws-begriff-text { min-width: 0; overflow-wrap: anywhere; }
+  .ws-begriff-zeichen { flex: none; font-size: 18px; font-weight: 500; color: var(--farbe-grau-mid); line-height: 1; }
+  @media (hover: hover) { .ws-begriff:hover { border-color: var(--farbe-text); } }
+  .ws-begriff-belegt { border-style: dashed; border-color: var(--farbe-linie-kraeftig); background: var(--farbe-grau); color: var(--farbe-grau-mid); font-weight: 500; }
+  .ws-begriff-belegt .ws-begriff-zeichen {
+    width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+    background: var(--farbe-text); color: var(--farbe-bg); font-size: 12.5px; font-weight: 800;
+  }
+  .ws-begriff-blass { opacity: 0.4; cursor: default; }
+  .ws-aktionen { display: flex; flex-direction: column; align-items: stretch; gap: 8px; margin-top: 14px; }
+  .ws-weiter { width: 100%; }
+}
+
 @keyframes interviewDrehen {
   to { transform: rotate(360deg); }
 }
