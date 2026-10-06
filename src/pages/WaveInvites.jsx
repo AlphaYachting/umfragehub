@@ -359,6 +359,8 @@ export default function WaveInvites() {
   const betreffFeld = istReminder ? "reminderBetreff" : "mailBetreff";
   const textFeldName = istReminder ? "reminderText" : "mailText";
   const nichtLive = d.wellenStatus !== "live";
+  const aktLayout = d.layouts?.[istReminder ? "reminder" : "einladung"] || "";
+  const layoutUnbekannt = aktLayout && layouts && !layouts.some((l) => l.id === aktLayout);
 
   return (
     <div className="v-seite">
@@ -367,7 +369,8 @@ export default function WaveInvites() {
       {/* Versandkanal */}
       {d.kanal.bereit ? (
         <div className="bg-card border rounded-lg px-4 py-3 text-meta text-muted-foreground">
-          Versand eingerichtet — Absender: <span className="font-semibold text-foreground">{d.kanal.absender}</span>
+          Versand über <span className="font-semibold text-foreground">{KANAL_NAME[d.kanal.kanal] || d.kanal.kanal}</span> — Absender:{" "}
+          <span className="font-semibold text-foreground">{d.kanal.absender}</span>
         </div>
       ) : (
         <div className="flex gap-2 rounded border-l-4 border-status-attention bg-status-attention-surface p-3 text-sm text-foreground">
@@ -375,6 +378,11 @@ export default function WaveInvites() {
           <div>
             <span className="font-medium">Probelauf:</span> Es ist noch kein Versandkanal eingerichtet. Adressen, Vorlagen und
             Vorschau funktionieren bereits; beim Senden wird nur gezeigt, was verschickt würde — es geht keine Mail hinaus.
+            {d.kanal.fehlt?.length > 0 && (
+              <span className="block mt-1 text-xs text-muted-foreground">
+                Fehlt in den App-Einstellungen (Secrets): {d.kanal.fehlt.join(", ")}
+              </span>
+            )}
           </div>
         </div>
       )}
@@ -447,14 +455,50 @@ export default function WaveInvites() {
             {eingabe.trim() && (
               <span className="text-xs text-muted-foreground">
                 {gelesen.eintraege.length} {gelesen.eintraege.length === 1 ? "Adresse" : "Adressen"} erkannt
+                {zumImport.length !== gelesen.eintraege.length && <> · {zumImport.length} ausgewählt</>}
                 {gelesen.unlesbar.length > 0 && <span className="text-status-attention"> · {gelesen.unlesbar.length} Zeilen ohne gültige Adresse</span>}
               </span>
             )}
-            <Button variant="outline" onClick={importieren} disabled={importiert || !gelesen.eintraege.length}>
+            <Button variant="outline" onClick={importieren} disabled={importiert || !zumImport.length}>
               {importiert ? "Spielt ein…" : "Einspielen"}
             </Button>
           </div>
         </div>
+        {segmente.length > 0 && (
+          <div className="mt-4 rounded-lg border border-border p-3">
+            <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
+              <span className="text-sm font-medium">Segmente für diese Welle</span>
+              {segmente.length > 1 && (
+                <span className="flex gap-1">
+                  <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => segmenteAlle(true)}>Alle</Button>
+                  <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => segmenteAlle(false)}>Keines</Button>
+                </span>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {segmente.map((s) => {
+                const an = !abgewaehlt.has(s.name);
+                return (
+                  <button
+                    key={s.name}
+                    type="button"
+                    onClick={() => segmentUmschalten(s.name)}
+                    aria-pressed={an}
+                    className={`inline-flex items-center gap-2 rounded-md border px-2.5 py-1 text-sm transition-colors ${
+                      an ? "border-foreground bg-muted text-foreground" : "border-border text-muted-foreground"
+                    }`}
+                  >
+                    <span className={`h-3.5 w-3.5 rounded-sm border-2 ${an ? "border-foreground bg-foreground" : "border-input"}`} />
+                    {s.name} <span className="text-xs text-muted-foreground">{s.anzahl}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Die Kundenliste kann alle Segmente enthalten — übernommen werden nur die ausgewählten. So lässt sich dieselbe Liste in mehreren Wellen verwenden.
+            </p>
+          </div>
+        )}
         {gelesen.unlesbar.length > 0 && (
           <p className="text-xs text-status-attention mt-2 break-all">Nicht lesbar: {gelesen.unlesbar.slice(0, 5).join(" | ")}{gelesen.unlesbar.length > 5 ? " …" : ""}</p>
         )}
@@ -550,6 +594,49 @@ export default function WaveInvites() {
         </div>
         <div className="space-y-3">
           <div className="space-y-1.5">
+            <Label className="flex items-center gap-1.5"><LayoutTemplate size={14} /> Layout der {istReminder ? "Erinnerung" : "Einladung"}</Label>
+            {brevoAktiv ? (
+              <div className="flex items-center gap-2 flex-wrap">
+                <Select
+                  value={aktLayout || "__standard"}
+                  onValueChange={(v) => layoutWaehlen(istReminder ? "reminder" : "einladung", v)}
+                  disabled={layoutSpeichert || layouts === null}
+                >
+                  <SelectTrigger className="w-80 h-9"><SelectValue placeholder={layouts === null ? "Lade Layouts…" : undefined} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__standard">UmfrageHub-Standard (Projekt-Design)</SelectItem>
+                    {(layouts || []).map((l) => (
+                      <SelectItem key={l.id} value={l.id}>{l.name} · #{l.id}</SelectItem>
+                    ))}
+                    {layoutUnbekannt && <SelectItem value={aktLayout}>Brevo-Vorlage #{aktLayout} (nicht mehr aktiv)</SelectItem>}
+                  </SelectContent>
+                </Select>
+                <Button variant="ghost" size="sm" onClick={() => { setLayouts(null); }} title="Layouts neu aus Brevo laden">
+                  <RefreshCw size={14} /> Neu laden
+                </Button>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                UmfrageHub-Standard im Projekt-Design. Eigene Layouts stehen zur Auswahl, sobald Brevo als Versandkanal eingerichtet ist.
+              </p>
+            )}
+            {layoutFehler && <p className="text-xs text-status-attention">{layoutFehler}</p>}
+            {brevoAktiv && layouts && layouts.length === 0 && !layoutFehler && (
+              <p className="text-xs text-muted-foreground">In Brevo gibt es noch keine aktive transaktionale Vorlage.</p>
+            )}
+            {aktLayout && (
+              <details className="text-xs text-muted-foreground">
+                <summary className="cursor-pointer">Platzhalter für das Brevo-Layout</summary>
+                <p className="mt-1.5 leading-relaxed">
+                  Betreff und Text unten werden übergeben; das Layout setzt sie mit <code>{"{{ params.NAME }}"}</code> ein:{" "}
+                  {BREVO_PLATZHALTER.map((p, i) => <span key={p}>{i ? ", " : ""}<code>{p}</code></span>)}.
+                  Den Fließtext als HTML so einsetzen: <code>{"{% autoescape off %}{{ params.TEXT_HTML }}{% endautoescape %}"}</code>.
+                  Der Knopf verlinkt auf <code>{"{{ params.LINK }}"}</code>.
+                </p>
+              </details>
+            )}
+          </div>
+          <div className="space-y-1.5">
             <Label>Betreff</Label>
             <Input value={texte[betreffFeld] || ""} onChange={(e) => textFeld(betreffFeld, e.target.value)} />
           </div>
@@ -557,7 +644,10 @@ export default function WaveInvites() {
             <Label>Text</Label>
             <Textarea value={texte[textFeldName] || ""} onChange={(e) => textFeld(textFeldName, e.target.value)} rows={9} />
             <p className="text-xs text-muted-foreground">
-              Logo, Farben und der Knopf „Zur Befragung“ kommen automatisch aus dem Projekt-Design. Platzhalter:{" "}
+              {aktLayout
+                ? "Der Text wird in das gewählte Brevo-Layout eingesetzt. "
+                : "Logo, Farben und der Knopf „Zur Befragung“ kommen automatisch aus dem Projekt-Design. "}
+              Platzhalter:{" "}
               <code>{"{{firma}}"}</code>, <code>{"{{dauer}}"}</code> (Minuten, aus den Fragen berechnet), <code>{"{{frist}}"}</code>,{" "}
               <code>{"{{frist_satz}}"}</code> (ganzer Satz, entfällt ohne Frist).
             </p>
@@ -607,12 +697,23 @@ export default function WaveInvites() {
             <Bell size={15} /> {sendet === "reminder" ? "Sendet…" : "Erinnerung senden"}
           </Button>
         </div>
-        <p className="text-xs text-muted-foreground mt-3">
+        <p className="text-xs text-muted-foreground mt-3 flex items-center gap-1.5">
+          <LayoutTemplate size={13} className="shrink-0" />
+          Einladung: {layoutName(d.layouts?.einladung)} · Erinnerung: {layoutName(d.layouts?.reminder)}
+        </p>
+        <p className="text-xs text-muted-foreground mt-1">
           Die Einladung geht nur an Adressen, die noch keine bekommen haben — nachträglich eingespielte Adressen lassen sich also einfach nachschicken.
           {pers
             ? " Die Erinnerung geht nur an Eingeladene, die noch nicht begonnen haben."
             : " Die Erinnerung geht an alle Eingeladenen."}
         </p>
+        {d.kanal.kanal === "brevo" && !pers && (
+          <p className="text-xs text-muted-foreground mt-2 flex gap-1.5">
+            <Info size={13} className="shrink-0 mt-0.5" />
+            Brevo protokolliert je Adresse, ob die Mail geöffnet und der Link geklickt wurde. Damit „Ein Link für alle“ wirklich anonym bleibt,
+            in Brevo das Öffnungs- und Klick-Tracking für transaktionale Mails abschalten.
+          </p>
+        )}
 
         {d.versandlog.length > 0 && (
           <div className="mt-5 pt-4 border-t border-border">
@@ -629,6 +730,7 @@ export default function WaveInvites() {
                         ? `Probelauf — ${v.anzahl} ${v.anzahl === 1 ? "Mail wäre" : "Mails wären"} verschickt worden`
                         : `${v.erfolgreich} verschickt${v.fehlgeschlagen ? `, ${v.fehlgeschlagen} fehlgeschlagen` : ""}`}
                       {v.abteilung ? ` · ${v.abteilung}` : ""}
+                      {v.layout ? ` · ${layoutName(v.layout)}` : ""}
                     </span>
                   </div>
                 );
@@ -644,6 +746,8 @@ export default function WaveInvites() {
             <DialogTitle className="text-base pr-8">Betreff: {vorschau?.betreff}</DialogTitle>
             <DialogDescription className="text-xs">
               So kommt die {istReminder ? "Erinnerung" : "Einladung"} an — mit dem aktuellen, auch ungespeicherten Text.
+              {vorschau?.layout ? ` Layout: ${vorschau.layout}.` : ""}
+              {vorschau?.hinweis ? ` ${vorschau.hinweis}` : ""}
             </DialogDescription>
           </DialogHeader>
           <iframe
