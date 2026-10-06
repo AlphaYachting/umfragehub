@@ -12,10 +12,14 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 // - Ohne eingerichteten Versandkanal läuft alles als Probelauf: es wird nichts
 //   verschickt und kein Empfängerstatus verändert.
 //
-// Versandkanal: Umgebungsvariablen RESEND_API_KEY und MAIL_ABSENDER
-// (z. B. "Befragung <befragung@beispiel.at>"). Optional APP_URL für die Links.
-// Ein anderer Kanal (z. B. das eigene Newsletter-System) braucht nur eine
-// weitere Funktion nach dem Muster von sendeMitResend().
+// Versandkanal: Umgebungsvariable BREVO_API_KEY (bevorzugt) oder RESEND_API_KEY,
+// dazu MAIL_ABSENDER (z. B. "Befragung <befragung@beispiel.at>" — bei Brevo muss
+// diese Adresse dort als Absender bestätigt sein). Optional APP_URL für die Links.
+//
+// Layouts (nur Brevo): je Welle kann für Einladung und Erinnerung eine
+// transaktionale Brevo-Vorlage gewählt werden. Ohne Auswahl gilt das
+// UmfrageHub-Standardlayout im Projekt-Design. Platzhalter im Brevo-Layout siehe
+// layoutParams().
 
 const KLEINGRUPPE = 5;
 const SEITE = 200;
@@ -34,6 +38,7 @@ export default async function(req) {
     const { aktion, wellenId } = body;
 
     if (aktion === "status") return Response.json(kanalInfo());
+    if (aktion === "layouts") return Response.json(await brevoLayouts());
     if (!wellenId) return Response.json({ error: "wellenId fehlt." }, { status: 400 });
     const welle = await db.Welle.get(wellenId);
     if (!welle) return Response.json({ error: "Welle nicht gefunden." }, { status: 404 });
@@ -62,13 +67,27 @@ function env(name: string): string {
 }
 
 function kanalInfo() {
-  const key = env("RESEND_API_KEY");
+  const brevo = env("BREVO_API_KEY");
+  const resend = env("RESEND_API_KEY");
   const absender = env("MAIL_ABSENDER");
   const fehlt: string[] = [];
-  if (!key) fehlt.push("RESEND_API_KEY");
+  if (!brevo && !resend) fehlt.push("BREVO_API_KEY");
   if (!absender) fehlt.push("MAIL_ABSENDER");
-  if (fehlt.length) return { kanal: "probelauf", bereit: false, absender, fehlt };
-  return { kanal: "resend", bereit: true, absender, fehlt };
+  const layouts = !!brevo; // Brevo-Layouts lassen sich auch ohne Absender schon auswählen
+  if (fehlt.length) return { kanal: "probelauf", bereit: false, absender, fehlt, layouts };
+  return { kanal: brevo ? "brevo" : "resend", bereit: true, absender, fehlt, layouts };
+}
+
+function absenderTeilen(s: string) {
+  const m = /^\s*"?(.*?)"?\s*<([^>]+)>\s*$/.exec(String(s || ""));
+  return m && m[1] ? { name: m[1].trim(), email: m[2].trim() } : { email: (m ? m[2] : String(s || "")).trim() };
+}
+
+function layoutId(welle, art) {
+  if (!env("BREVO_API_KEY")) return null;
+  const roh = art === "reminder" ? welle.layoutReminder : welle.layoutEinladung;
+  const id = parseInt(String(roh || ""), 10);
+  return Number.isFinite(id) && id > 0 ? id : null;
 }
 
 async function alle(entitaet, query, sort = "created_date") {
