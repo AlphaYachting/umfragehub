@@ -294,6 +294,40 @@ function linkFuer(welle, basis, empfaenger) {
   return istPersoenlich(welle) && empfaenger?.token ? `${url}?e=${empfaenger.token}` : url;
 }
 
+// Werte, die ein Brevo-Layout als {{ params.NAME }} verwenden kann.
+// TEXT_HTML enthält Absätze als HTML — im Layout so einsetzen:
+// {% autoescape off %}{{ params.TEXT_HTML }}{% endautoescape %}
+function layoutParams({ betreff, text, link, projekt, k, art }) {
+  const f = farben(projekt);
+  const absaetze = String(text)
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((p) => `<p style="margin:0 0 16px 0;">${esc(p).replace(/\n/g, "<br>")}</p>`)
+    .join("");
+  const firma = projekt?.kundenname || "";
+  return {
+    BETREFF: betreff,
+    TEXT: text,
+    TEXT_HTML: absaetze,
+    LINK: link,
+    KNOPF_TEXT: "Zur Befragung",
+    FIRMA: firma,
+    DAUER: String(k.dauer),
+    FRIST: k.frist || "",
+    LOGO_URL: projekt?.logoUrl || "",
+    KNOPF_FARBE: f.knopf,
+    KNOPF_TEXTFARBE: knopfTextfarbe(f.knopf),
+    AKZENT_FARBE: f.akzent,
+    DATENSCHUTZ_URL: projekt?.datenschutzUrl || "",
+    IMPRESSUM_URL: projekt?.impressumUrl || "",
+    ART: art === "reminder" ? "erinnerung" : "einladung",
+    GRUND: k.sie
+      ? `Sie erhalten diese Nachricht, weil ${firma || "Ihr Unternehmen"} Sie zu dieser Befragung eingeladen hat.`
+      : `Du erhältst diese Nachricht, weil ${firma || "dein Unternehmen"} dich zu dieser Befragung eingeladen hat.`,
+  };
+}
+
 async function mailBauen(db, welle, projekt, art, basis, empfaenger, entwurf, dauer) {
   const t = { ...texte(welle, projekt), ...(entwurf || {}) };
   const reminder = art === "reminder";
@@ -311,7 +345,47 @@ async function mailBauen(db, welle, projekt, art, basis, empfaenger, entwurf, da
     betreff,
     html: mailHtml({ betreff, text, link, projekt, sie: k.sie }),
     text: mailNurText({ text, link }),
+    layoutId: layoutId(welle, reminder ? "reminder" : "einladung"),
+    params: layoutParams({ betreff, text, link, projekt, k, art }),
   };
+}
+
+// --- Brevo-Layouts ----------------------------------------------------------
+async function brevoAbruf(pfad: string) {
+  const r = await fetch(`https://api.brevo.com/v3${pfad}`, {
+    headers: { "api-key": env("BREVO_API_KEY"), "accept": "application/json" },
+  });
+  if (!r.ok) throw new Error(`Brevo antwortet mit ${r.status}: ${(await r.text()).slice(0, 200)}`);
+  return await r.json();
+}
+
+async function brevoLayouts() {
+  if (!env("BREVO_API_KEY")) return { layouts: [], verfuegbar: false };
+  const out = [];
+  for (let offset = 0; offset < 1000; offset += 100) {
+    const d = await brevoAbruf(`/smtp/templates?templateStatus=true&limit=100&offset=${offset}&sort=desc`);
+    const teil = Array.isArray(d?.templates) ? d.templates : [];
+    for (const t of teil) {
+      out.push({ id: String(t.id), name: t.name || `Vorlage ${t.id}`, betreff: t.subject || "", geaendert: t.modifiedAt || "" });
+    }
+    if (teil.length < 100) break;
+  }
+  return { layouts: out, verfuegbar: true };
+}
+
+// Näherungsweise Darstellung eines Brevo-Layouts für die Vorschau: ersetzt
+// {{ params.NAME }}; Bedingungen und Schleifen der Brevo-Vorlagensprache werden
+// nicht ausgewertet. Verbindlich ist die Testmail.
+function brevoVorschau(html: string, params: Record<string, string>) {
+  let roh = false;
+  return String(html || "")
+    .replace(/\{%\s*autoescape\s+off\s*%\}/gi, () => { roh = true; return ""; })
+    .replace(/\{%\s*endautoescape\s*%\}/gi, "")
+    .replace(/\{\{\s*params\.([A-Za-z0-9_]+)\s*(\|[^}]*)?\}\}/g, (_m, name) => {
+      const wert = params[name] ?? "";
+      return name === "TEXT_HTML" || roh ? wert : esc(wert);
+    })
+    .replace(/\{%[^%]*%\}/g, "");
 }
 
 // ---------------------------------------------------------------------------
@@ -456,7 +530,20 @@ async function vorschau(db, welle, body) {
   const basis = basisUrl(body);
   const beispiel = istPersoenlich(welle) ? { token: "BEISPIEL" } : null;
   const mail = await mailBauen(db, welle, projekt, body.art === "reminder" ? "reminder" : "einladung", basis, beispiel, body.entwurf, dauer);
-  return { betreff: mail.betreff, html: mail.html };
+  if (mail.layoutId) {
+    try {
+      const vorlage = await brevoAbruf(`/smtp/templates/${mail.layoutId}`);
+      return {
+        betreff: mail.betreff,
+        html: brevoVorschau(vorlage.htmlContent, mail.params),
+        layout: vorlage.name || `Vorlage ${mail.layoutId}`,
+        hinweis: "Brevo-Layout, näherungsweise dargestellt — verbindlich ist die Testmail.",
+      };
+    } catch (e) {
+      return { betreff: mail.betreff, html: mail.html, hinweis: `Brevo-Layout nicht abrufbar (${e.message}) — gezeigt wird das Standardlayout.` };
+    }
+  }
+  return { betreff: mail.betreff, html: mail.html, layout: "UmfrageHub-Standard" };
 }
 
 // --- Versandkanal Resend ----------------------------------------------------
