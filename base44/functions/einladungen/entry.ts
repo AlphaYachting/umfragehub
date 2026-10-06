@@ -567,7 +567,10 @@ async function sendeMitBrevo(mails, absender, art) {
   const nutzlast = (m) => {
     const n: Record<string, unknown> = {
       sender,
-      to: [{ email: m.an }],
+      // false = Öffnungen und Klicks nur anonym in der Gesamtstatistik, nicht je
+      // Adresse. Greift, sobald im Brevo-Konto die Einwilligungssteuerung je
+      // Kontakt aktiv ist; sonst ignoriert Brevo das Feld.
+      to: [{ email: m.an, contactPixelTrackingConsent: false }],
       subject: m.betreff,
       tags: ["umfragehub", art],
     };
