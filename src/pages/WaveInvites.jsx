@@ -710,8 +710,8 @@ export default function WaveInvites() {
         {d.kanal.kanal === "brevo" && !pers && (
           <p className="text-xs text-muted-foreground mt-2 flex gap-1.5">
             <Info size={13} className="shrink-0 mt-0.5" />
-            Brevo protokolliert je Adresse, ob die Mail geöffnet und der Link geklickt wurde. Damit „Ein Link für alle“ wirklich anonym bleibt,
-            in Brevo das Öffnungs- und Klick-Tracking für transaktionale Mails abschalten.
+            Brevo protokolliert standardmäßig je Adresse, ob die Mail geöffnet und der Link geklickt wurde. Damit „Ein Link für alle“
+            anonym bleibt, in Brevo die anonymisierte Erfassung für transaktionale Mails einschalten (ganz abschalten nur über den Brevo-Support).
           </p>
         )}
 
