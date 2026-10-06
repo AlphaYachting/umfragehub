@@ -51,8 +51,24 @@ export default async function(req) {
     if (aktion === "senden") return Response.json(await senden(db, welle, body));
     return Response.json({ error: "Unbekannte Aktion." }, { status: 400 });
   } catch (error) {
+    console.error(`einladungen: ${error?.message || error}`);
     return Response.json({ error: error.message }, { status: 500 });
   }
+}
+
+// Brevo-Fehler in eine verständliche Meldung übersetzen
+function brevoFehler(status: number, text: string) {
+  const t = String(text || "");
+  if (/unrecogni[sz]ed IP|IP address/i.test(t)) {
+    return `Brevo blockiert die Anfrage, weil sie von einer unbekannten IP-Adresse kommt. In Brevo unter Sicherheit → Autorisierte IPs die Sperre für unbekannte IP-Adressen deaktivieren (die Server von Base44 haben wechselnde Adressen). Brevo: ${t.slice(0, 160)}`;
+  }
+  if (status === 401 || /key not found|unauthori[sz]ed/i.test(t)) {
+    return `Brevo lehnt den Schlüssel ab (${status}). Bitte prüfen, ob in BREVO_API_KEY ein API-Schlüssel steht (beginnt mit „xkeysib-“) und kein SMTP-Schlüssel. Brevo: ${t.slice(0, 160)}`;
+  }
+  if (/sender|not valid|not verified|domain/i.test(t)) {
+    return `Brevo lehnt den Absender oder die Adresse ab (${status}). Ist die Adresse aus MAIL_ABSENDER in Brevo als Absender bestätigt? Brevo: ${t.slice(0, 160)}`;
+  }
+  return `Brevo antwortet mit ${status}: ${t.slice(0, 200)}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -73,6 +89,12 @@ function kanalInfo() {
   const fehlt: string[] = [];
   if (!brevo && !resend) fehlt.push("BREVO_API_KEY");
   if (!absender) fehlt.push("MAIL_ABSENDER");
+  if (brevo && /^xsmtpsib-/i.test(brevo.trim())) {
+    return {
+      kanal: "probelauf", bereit: false, absender, layouts: false,
+      fehlt: ["BREVO_API_KEY enthält einen SMTP-Schlüssel — benötigt wird ein API-Schlüssel (beginnt mit „xkeysib-“, in Brevo unter SMTP & API → API-Schlüssel)"],
+    };
+  }
   const layouts = !!brevo; // Brevo-Layouts lassen sich auch ohne Absender schon auswählen
   if (fehlt.length) return { kanal: "probelauf", bereit: false, absender, fehlt, layouts };
   return { kanal: brevo ? "brevo" : "resend", bereit: true, absender, fehlt, layouts };
@@ -353,9 +375,9 @@ async function mailBauen(db, welle, projekt, art, basis, empfaenger, entwurf, da
 // --- Brevo-Layouts ----------------------------------------------------------
 async function brevoAbruf(pfad: string) {
   const r = await fetch(`https://api.brevo.com/v3${pfad}`, {
-    headers: { "api-key": env("BREVO_API_KEY"), "accept": "application/json" },
+    headers: { "api-key": env("BREVO_API_KEY").trim(), "accept": "application/json" },
   });
-  if (!r.ok) throw new Error(`Brevo antwortet mit ${r.status}: ${(await r.text()).slice(0, 200)}`);
+  if (!r.ok) throw new Error(brevoFehler(r.status, await r.text()));
   return await r.json();
 }
 
@@ -562,7 +584,7 @@ async function vorschau(db, welle, body) {
 // fehlerhafte Adresse die anderen nicht blockiert; das Ratenlimit des
 // Versand-Endpunkts liegt weit darüber.
 async function sendeMitBrevo(mails, absender, art) {
-  const kopf = { "api-key": env("BREVO_API_KEY"), "Content-Type": "application/json", "accept": "application/json" };
+  const kopf = { "api-key": env("BREVO_API_KEY").trim(), "Content-Type": "application/json", "accept": "application/json" };
   const sender = absenderTeilen(absender);
   const nutzlast = (m) => {
     const n: Record<string, unknown> = {
@@ -588,10 +610,11 @@ async function sendeMitBrevo(mails, absender, art) {
       const r = await fetch("https://api.brevo.com/v3/smtp/email", { method: "POST", headers: kopf, body: JSON.stringify(nutzlast(m)) });
       if (r.ok) return { ok: true, fehler: "" };
       const t = await r.text();
-      if (r.status === 401 || r.status === 403) {
-        throw Object.assign(new Error(`Brevo lehnt die Anmeldung ab (${r.status}): ${t.slice(0, 200)}`), { abbruch: true });
+      if (r.status === 401 || r.status === 403 || /unrecogni[sz]ed IP/i.test(t)) {
+        throw Object.assign(new Error(brevoFehler(r.status, t)), { abbruch: true });
       }
-      return { ok: false, fehler: `${r.status}: ${t.slice(0, 160)}` };
+      console.error(`einladungen: Brevo ${r.status} für eine Adresse: ${t.slice(0, 200)}`);
+      return { ok: false, fehler: brevoFehler(r.status, t).slice(0, 300) };
     } catch (e) {
       if (e.abbruch) throw e;
       return { ok: false, fehler: String(e.message || e).slice(0, 160) };
