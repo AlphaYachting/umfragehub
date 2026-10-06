@@ -32,8 +32,13 @@
       "type": "number"
     },
     "kanal": {
-      "description": "z. B. resend oder probelauf",
+      "description": "brevo, resend oder probelauf",
       "title": "Versandkanal",
+      "type": "string"
+    },
+    "layout": {
+      "description": "ID der verwendeten Brevo-Vorlage, leer = Standardlayout",
+      "title": "Layout",
       "type": "string"
     },
     "wellenId": {
@@ -45,6 +50,7 @@
     "wellenId",
     "art"
   ],
+  "type": "object",
   "rls": {
     "create": {
       "user_condition": {
@@ -66,6 +72,5 @@
         "role": "admin"
       }
     }
-  },
-  "type": "object"
+  }
 }
