@@ -52,7 +52,9 @@ export default async function(req) {
     return Response.json({ error: "Unbekannte Aktion." }, { status: 400 });
   } catch (error) {
     console.error(`einladungen: ${error?.message || error}`);
-    return Response.json({ error: error.message }, { status: 500 });
+    // Status 200 mit Fehlertext, damit die Oberfläche die Meldung anzeigt statt
+    // nur "Request failed with status code 500"
+    return Response.json({ error: error.message, serverfehler: true }, { status: 200 });
   }
 }
 
@@ -76,7 +78,8 @@ function brevoFehler(status: number, text: string) {
 // ---------------------------------------------------------------------------
 function env(name: string): string {
   try {
-    return Deno.env.get(name) || "";
+    // Leerzeichen und versehentlich mitkopierte Anführungszeichen entfernen
+    return (Deno.env.get(name) || "").trim().replace(/^["']+|["']+$/g, "").trim();
   } catch (_e) {
     return "";
   }
