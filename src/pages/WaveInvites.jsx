@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { bestaetigen } from "@/components/shared/Bestaetigen";
 import { useParams } from "react-router-dom";
-import { Upload, Send, Bell, Trash2, Eye, Save, FlaskConical, Info } from "lucide-react";
+import { Upload, Send, Bell, Trash2, Eye, Save, FlaskConical, Info, LayoutTemplate, RefreshCw } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,6 +48,10 @@ export function adressenLesen(text) {
   return { eintraege, unlesbar };
 }
 
+const OHNE_SEGMENT = "Ohne Abteilung";
+const KANAL_NAME = { brevo: "Brevo", resend: "Resend" };
+const BREVO_PLATZHALTER = ["LINK", "KNOPF_TEXT", "TEXT_HTML", "TEXT", "BETREFF", "FIRMA", "DAUER", "FRIST", "LOGO_URL", "KNOPF_FARBE", "KNOPF_TEXTFARBE", "AKZENT_FARBE", "DATENSCHUTZ_URL", "IMPRESSUM_URL", "GRUND", "ART"];
+
 const STATUS_TEXT = { neu: "noch nicht eingeladen", eingeladen: "eingeladen", fehler: "Versand fehlgeschlagen" };
 const ART_TEXT = { einladung: "Einladung", reminder: "Erinnerung", test: "Test" };
 
@@ -62,6 +66,11 @@ export default function WaveInvites() {
   const [eingabe, setEingabe] = useState("");
   const [standardAbteilung, setStandardAbteilung] = useState("");
   const [importiert, setImportiert] = useState(false);
+  const [abgewaehlt, setAbgewaehlt] = useState(() => new Set()); // Segmente, die nicht in diese Welle sollen
+
+  const [layouts, setLayouts] = useState(null); // Brevo-Vorlagen: null = noch nicht geladen
+  const [layoutFehler, setLayoutFehler] = useState("");
+  const [layoutSpeichert, setLayoutSpeichert] = useState(false);
 
   const [vorlage, setVorlage] = useState("einladung"); // welcher Text gerade bearbeitet wird
   const [texte, setTexte] = useState(null);
@@ -107,7 +116,51 @@ export default function WaveInvites() {
     laden();
   }, [laden]);
 
+  const layoutsLaden = useCallback(async () => {
+    setLayoutFehler("");
+    try {
+      const r = await rufe("layouts");
+      setLayouts(r.layouts || []);
+    } catch (e) {
+      setLayouts([]);
+      setLayoutFehler(e.message || "Layouts konnten nicht geladen werden.");
+    }
+  }, [rufe]);
+
+  const brevoAktiv = !!d?.kanal?.layouts;
+  useEffect(() => {
+    if (brevoAktiv && layouts === null) layoutsLaden();
+  }, [brevoAktiv, layouts, layoutsLaden]);
+
   const gelesen = useMemo(() => adressenLesen(eingabe), [eingabe]);
+
+  // Segmente der eingefügten Liste — Zeilen ohne Angabe zählen zur Standardabteilung
+  const segmentVon = useCallback((e) => (e.abteilung || standardAbteilung.trim() || OHNE_SEGMENT), [standardAbteilung]);
+  const segmente = useMemo(() => {
+    const m = new Map();
+    for (const e of gelesen.eintraege) {
+      const s = segmentVon(e);
+      m.set(s, (m.get(s) || 0) + 1);
+    }
+    return [...m.entries()].map(([name, anzahl]) => ({ name, anzahl })).sort((a, b) => a.name.localeCompare(b.name, "de"));
+  }, [gelesen, segmentVon]);
+  const zumImport = useMemo(
+    () => gelesen.eintraege.filter((e) => !abgewaehlt.has(segmentVon(e))),
+    [gelesen, abgewaehlt, segmentVon],
+  );
+
+  function segmentUmschalten(name) {
+    setAbgewaehlt((alt) => {
+      const neu = new Set(alt);
+      if (neu.has(name)) neu.delete(name);
+      else neu.add(name);
+      return neu;
+    });
+  }
+
+  function segmenteAlle(an) {
+    setAbgewaehlt(an ? new Set() : new Set(segmente.map((s) => s.name)));
+  }
 
   function dateiLesen(e) {
     const file = e.target.files?.[0];
@@ -124,14 +177,21 @@ export default function WaveInvites() {
       toast.error("Keine gültige E-Mail-Adresse gefunden.");
       return;
     }
+    if (!zumImport.length) {
+      toast.error("Kein Segment ausgewählt.");
+      return;
+    }
     setImportiert(true);
     try {
-      const r = await rufe("importieren", { eintraege: gelesen.eintraege, standardAbteilung });
+      const r = await rufe("importieren", { eintraege: zumImport, standardAbteilung });
       const teile = [`${r.neu} neu`];
       if (r.doppelt) teile.push(`${r.doppelt} schon vorhanden`);
       if (r.ungueltigAnzahl) teile.push(`${r.ungueltigAnzahl} ungültig`);
+      const weggelassen = gelesen.eintraege.length - zumImport.length;
+      if (weggelassen) teile.push(`${weggelassen} aus anderen Segmenten nicht übernommen`);
       toast.success(`Eingespielt: ${teile.join(", ")}.`);
       setEingabe("");
+      setAbgewaehlt(new Set());
       laden(true);
     } catch (e) {
       toast.error(e.message);
@@ -190,6 +250,27 @@ export default function WaveInvites() {
     } catch (err) {
       toast.error(err.message);
     }
+  }
+
+  async function layoutWaehlen(art, wert) {
+    const feld = art === "reminder" ? "layoutReminder" : "layoutEinladung";
+    const id = wert === "__standard" ? "" : wert;
+    setLayoutSpeichert(true);
+    try {
+      await rufe("einstellungen", { [feld]: id });
+      setD((alt) => ({ ...alt, layouts: { ...alt.layouts, [art]: id } }));
+      toast.success(id ? "Brevo-Layout gewählt." : "Standardlayout gewählt.");
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setLayoutSpeichert(false);
+    }
+  }
+
+  function layoutName(id) {
+    if (!id) return "Standardlayout";
+    const l = (layouts || []).find((x) => x.id === String(id));
+    return l ? l.name : `Brevo-Vorlage ${id}`;
   }
 
   async function vorschauZeigen() {
