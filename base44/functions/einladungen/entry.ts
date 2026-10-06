@@ -426,6 +426,7 @@ async function uebersicht(db, welle) {
     wellenStatus: welle.status,
     texte: texte(welle, projekt),
     eigeneTexte: !!(welle.mailBetreff || welle.mailText || welle.reminderBetreff || welle.reminderText),
+    layouts: { einladung: welle.layoutEinladung || "", reminder: welle.layoutReminder || "" },
     zahlen,
     abteilungen,
     kleingruppe: KLEINGRUPPE,
@@ -446,6 +447,7 @@ async function uebersicht(db, welle) {
       anzahl: v.anzahl || 0,
       erfolgreich: v.erfolgreich || 0,
       fehlgeschlagen: v.fehlgeschlagen || 0,
+      layout: v.layout || "",
       zeitpunkt: v.created_date,
     })),
   };
@@ -520,6 +522,10 @@ async function einstellungen(db, welle, body) {
   for (const feld of ["mailBetreff", "mailText", "reminderBetreff", "reminderText"]) {
     if (typeof body[feld] === "string") daten[feld] = body[feld];
   }
+  // Layout: leer = UmfrageHub-Standard, sonst die ID einer Brevo-Vorlage
+  for (const feld of ["layoutEinladung", "layoutReminder"]) {
+    if (typeof body[feld] === "string" && /^\d{0,10}$/.test(body[feld])) daten[feld] = body[feld];
+  }
   if (Object.keys(daten).length) await db.Welle.update(welle.id, daten);
   return { ok: true };
 }
@@ -544,6 +550,56 @@ async function vorschau(db, welle, body) {
     }
   }
   return { betreff: mail.betreff, html: mail.html, layout: "UmfrageHub-Standard" };
+}
+
+// --- Versandkanal Brevo -----------------------------------------------------
+// Erwartet [{ an, betreff, html, text, layoutId, params }] und liefert je Mail
+// { ok, fehler }. Einzelaufrufe (in kleinen Gruppen parallel), damit eine
+// fehlerhafte Adresse die anderen nicht blockiert; das Ratenlimit des
+// Versand-Endpunkts liegt weit darüber.
+async function sendeMitBrevo(mails, absender, art) {
+  const kopf = { "api-key": env("BREVO_API_KEY"), "Content-Type": "application/json", "accept": "application/json" };
+  const sender = absenderTeilen(absender);
+  const nutzlast = (m) => {
+    const n: Record<string, unknown> = {
+      sender,
+      to: [{ email: m.an }],
+      subject: m.betreff,
+      tags: ["umfragehub", art],
+    };
+    if (m.layoutId) {
+      n.templateId = m.layoutId;
+      n.params = m.params;
+    } else {
+      n.htmlContent = m.html;
+      n.textContent = m.text;
+    }
+    return n;
+  };
+  const einzeln = async (m) => {
+    try {
+      const r = await fetch("https://api.brevo.com/v3/smtp/email", { method: "POST", headers: kopf, body: JSON.stringify(nutzlast(m)) });
+      if (r.ok) return { ok: true, fehler: "" };
+      const t = await r.text();
+      if (r.status === 401 || r.status === 403) {
+        throw Object.assign(new Error(`Brevo lehnt die Anmeldung ab (${r.status}): ${t.slice(0, 200)}`), { abbruch: true });
+      }
+      return { ok: false, fehler: `${r.status}: ${t.slice(0, 160)}` };
+    } catch (e) {
+      if (e.abbruch) throw e;
+      return { ok: false, fehler: String(e.message || e).slice(0, 160) };
+    }
+  };
+  const ergebnis = [];
+  for (let i = 0; i < mails.length; i += 5) {
+    ergebnis.push(...await Promise.all(mails.slice(i, i + 5).map(einzeln)));
+  }
+  return ergebnis;
+}
+
+function sendeUeberKanal(kanal, mails, art) {
+  if (kanal.kanal === "brevo") return sendeMitBrevo(mails, kanal.absender, art);
+  return sendeMitResend(mails, kanal.absender);
 }
 
 // --- Versandkanal Resend ----------------------------------------------------
@@ -601,11 +657,11 @@ async function senden(db, welle, body) {
     const vorlage = body.vorlage === "reminder" ? "reminder" : "einladung";
     const mail = await mailBauen(db, welle, projekt, vorlage, basis, pers ? { token: "TEST" } : null, body.entwurf, dauer);
     if (!kanal.bereit) {
-      await db.Versand.create({ wellenId: welle.id, art: "test", kanal: "probelauf", anzahl: 1, erfolgreich: 0, fehlgeschlagen: 0, betreff: mail.betreff });
+      await db.Versand.create({ wellenId: welle.id, art: "test", kanal: "probelauf", anzahl: 1, erfolgreich: 0, fehlgeschlagen: 0, betreff: mail.betreff, layout: mail.layoutId ? String(mail.layoutId) : "" });
       return { probelauf: true, wuerdeSenden: 1, beispiele: [an], kanal };
     }
-    const [r] = await sendeMitResend([{ an, ...mail }], kanal.absender);
-    await db.Versand.create({ wellenId: welle.id, art: "test", kanal: kanal.kanal, anzahl: 1, erfolgreich: r.ok ? 1 : 0, fehlgeschlagen: r.ok ? 0 : 1, betreff: mail.betreff });
+    const [r] = await sendeUeberKanal(kanal, [{ an, ...mail }], "test");
+    await db.Versand.create({ wellenId: welle.id, art: "test", kanal: kanal.kanal, anzahl: 1, erfolgreich: r.ok ? 1 : 0, fehlgeschlagen: r.ok ? 0 : 1, betreff: mail.betreff, layout: mail.layoutId ? String(mail.layoutId) : "" });
     return r.ok ? { gesendet: 1, fehler: 0, rest: 0, kanal } : { error: `Testversand fehlgeschlagen: ${r.fehler}` };
   }
 
@@ -657,7 +713,7 @@ async function senden(db, welle, body) {
     const mail = await mailBauen(db, welle, projekt, art, basis, e, null, dauer);
     mails.push({ an: e.email, ...mail });
   }
-  const ergebnis = await sendeMitResend(mails, kanal.absender);
+  const ergebnis = await sendeUeberKanal(kanal, mails, art);
 
   const jetzt = new Date().toISOString();
   let gesendet = 0;
@@ -685,6 +741,7 @@ async function senden(db, welle, body) {
   await db.Versand.create({
     wellenId: welle.id, art, kanal: kanal.kanal, abteilung: abteilung || "",
     anzahl: stapel.length, erfolgreich: gesendet, fehlgeschlagen: fehler, betreff: mails[0].betreff,
+    layout: mails[0].layoutId ? String(mails[0].layoutId) : "",
   });
   return { gesendet, fehler, rest: kandidaten.length - stapel.length, kanal };
 }
