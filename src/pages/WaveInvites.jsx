@@ -52,6 +52,21 @@ const OHNE_SEGMENT = "Ohne Abteilung";
 const KANAL_NAME = { brevo: "Brevo", resend: "Resend" };
 const BREVO_PLATZHALTER = ["LINK", "KNOPF_TEXT", "TEXT_HTML", "TEXT", "BETREFF", "FIRMA", "DAUER", "FRIST", "LOGO_URL", "KNOPF_FARBE", "KNOPF_TEXTFARBE", "AKZENT_FARBE", "DATENSCHUTZ_URL", "IMPRESSUM_URL", "GRUND", "ART"];
 
+const EREIGNIS_TEXT = {
+  requests: "an Brevo übergeben",
+  delivered: "zugestellt",
+  deferred: "verzögert — Brevo versucht es erneut",
+  softBounces: "vorübergehend abgewiesen (Soft Bounce)",
+  hardBounces: "abgewiesen (Hard Bounce)",
+  bounces: "abgewiesen",
+  blocked: "von Brevo blockiert",
+  invalid: "ungültige Adresse",
+  spam: "als Spam gemeldet",
+  error: "Fehler bei Brevo",
+  unsubscribed: "abgemeldet",
+};
+const EREIGNIS_PROBLEM = new Set(["deferred", "softBounces", "hardBounces", "bounces", "blocked", "invalid", "spam", "error"]);
+
 const STATUS_TEXT = { neu: "noch nicht eingeladen", eingeladen: "eingeladen", fehler: "Versand fehlgeschlagen" };
 const ART_TEXT = { einladung: "Einladung", reminder: "Erinnerung", test: "Test" };
 
@@ -77,6 +92,8 @@ export default function WaveInvites() {
   const [texteGeaendert, setTexteGeaendert] = useState(false);
   const [vorschau, setVorschau] = useState(null); // { betreff, html }
   const [testAdresse, setTestAdresse] = useState("");
+  const [zustellung, setZustellung] = useState(null); // { adresse, ereignisse }
+  const [prueft, setPrueft] = useState(false);
 
   const [abteilung, setAbteilung] = useState("__alle");
   const [sendet, setSendet] = useState("");
@@ -279,6 +296,23 @@ export default function WaveInvites() {
       setVorschau(r);
     } catch (err) {
       toast.error(err.message);
+    }
+  }
+
+  async function zustellungPruefen() {
+    const adresse = testAdresse.trim();
+    if (!MAIL_REGEX.test(adresse)) {
+      toast.error("Bitte die Testadresse eingeben.");
+      return;
+    }
+    setPrueft(true);
+    try {
+      const r = await rufe("zustellung", { email: adresse });
+      setZustellung({ adresse, ereignisse: r.ereignisse || [] });
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setPrueft(false);
     }
   }
 
@@ -661,11 +695,42 @@ export default function WaveInvites() {
               <Button variant="outline" size="sm" onClick={testSenden} disabled={sendet === "test"}>
                 <Send size={15} /> {sendet === "test" ? "Sendet…" : "Testmail"}
               </Button>
+              {d.kanal.kanal === "brevo" && (
+                <Button variant="ghost" size="sm" onClick={zustellungPruefen} disabled={prueft}>
+                  <RefreshCw size={14} /> {prueft ? "Prüft…" : "Zustellung prüfen"}
+                </Button>
+              )}
             </div>
             <Button variant="outline" size="sm" onClick={texteSpeichern} disabled={!texteGeaendert}>
               <Save size={15} /> Vorlagen speichern
             </Button>
           </div>
+          {zustellung && (
+            <div className="rounded-lg border border-border p-3 text-sm">
+              <div className="font-medium mb-1.5">Zustellung an {zustellung.adresse} (letzte 2 Tage, laut Brevo)</div>
+              {zustellung.ereignisse.length === 0 ? (
+                <p className="text-xs text-muted-foreground">
+                  Noch keine Ereignisse — Brevo meldet sie oft erst nach ein bis zwei Minuten. Später erneut prüfen.
+                </p>
+              ) : (
+                <div className="space-y-1">
+                  {zustellung.ereignisse.map((e, i) => {
+                    const zeit = alsDatum(e.zeit);
+                    return (
+                      <div key={i} className={`text-xs flex gap-3 ${EREIGNIS_PROBLEM.has(e.ereignis) ? "text-status-attention" : "text-muted-foreground"}`}>
+                        <span className="w-24 shrink-0">{zeit ? datumKurz(zeit, true) : ""}</span>
+                        <span className="font-medium shrink-0">{EREIGNIS_TEXT[e.ereignis] || e.ereignis}</span>
+                        <span className="truncate" title={e.grund}>{e.grund}{e.absender ? ` · von ${e.absender}` : ""}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              <p className="text-xs text-muted-foreground mt-2">
+                „zugestellt“ heißt: Der Mailserver des Empfängers hat die Mail angenommen. Fehlt sie trotzdem im Posteingang, liegt sie im Spam-Ordner oder in der Quarantäne des Mailservers.
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
