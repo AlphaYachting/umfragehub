@@ -631,7 +631,7 @@ export default function WaveInvites() {
                   Betreff und Text unten werden übergeben; das Layout setzt sie mit <code>{"{{ params.NAME }}"}</code> ein:{" "}
                   {BREVO_PLATZHALTER.map((p, i) => <span key={p}>{i ? ", " : ""}<code>{p}</code></span>)}.
                   Den Fließtext als HTML so einsetzen: <code>{"{% autoescape off %}{{ params.TEXT_HTML }}{% endautoescape %}"}</code>.
-                  Der Knopf verlinkt auf <code>{"{{ params.LINK }}"}</code>.
+                  Der Knopf verlinkt auf <code>{"{{ params.LINK }}"}</code>. Die Vorlage muss in der neuen Brevo-Vorlagensprache angelegt sein — alte Vorlagen mit <code>%NAME%</code> bekommen keine Werte.
                 </p>
               </details>
             )}
@@ -710,8 +710,8 @@ export default function WaveInvites() {
         {d.kanal.kanal === "brevo" && !pers && (
           <p className="text-xs text-muted-foreground mt-2 flex gap-1.5">
             <Info size={13} className="shrink-0 mt-0.5" />
-            Brevo protokolliert standardmäßig je Adresse, ob die Mail geöffnet und der Link geklickt wurde. Damit „Ein Link für alle“
-            anonym bleibt, in Brevo die anonymisierte Erfassung für transaktionale Mails einschalten (ganz abschalten nur über den Brevo-Support).
+            UmfrageHub verlangt bei jeder Mail, dass Brevo Öffnungen und Klicks nicht je Adresse erfasst. Das wirkt, sobald im Brevo-Konto die
+            Tracking-Einwilligung je Kontakt bzw. die anonymisierte Erfassung für transaktionale Mails aktiv ist — bitte dort prüfen.
           </p>
         )}
 
