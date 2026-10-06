@@ -37,6 +37,16 @@
       "title": "Gesch\u00e4tzte Dauer (Minuten)",
       "type": "number"
     },
+    "layoutEinladung": {
+      "description": "ID einer Brevo-Vorlage f\u00fcr die Einladung. Leer = UmfrageHub-Standardlayout im Projekt-Design.",
+      "title": "Einladung: Layout",
+      "type": "string"
+    },
+    "layoutReminder": {
+      "description": "ID einer Brevo-Vorlage f\u00fcr die Erinnerung. Leer = UmfrageHub-Standardlayout im Projekt-Design.",
+      "title": "Erinnerung: Layout",
+      "type": "string"
+    },
     "linkToken": {
       "title": "Link Token",
       "type": "string"
