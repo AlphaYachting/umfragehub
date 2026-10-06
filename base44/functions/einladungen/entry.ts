@@ -39,6 +39,7 @@ export default async function(req) {
 
     if (aktion === "status") return Response.json(kanalInfo());
     if (aktion === "layouts") return Response.json(await brevoLayouts());
+    if (aktion === "zustellung") return Response.json(await brevoZustellung(body));
     if (!wellenId) return Response.json({ error: "wellenId fehlt." }, { status: 400 });
     const welle = await db.Welle.get(wellenId);
     if (!welle) return Response.json({ error: "Welle nicht gefunden." }, { status: 404 });
@@ -396,6 +397,21 @@ async function brevoLayouts() {
     if (teil.length < 100) break;
   }
   return { layouts: out, verfuegbar: true };
+}
+
+// Zustellstatus einer Adresse (für Testmails). Öffnungen und Klicks werden
+// bewusst NICHT geliefert — nur, ob Brevo die Mail zustellen konnte.
+const ZUSTELL_EREIGNISSE = new Set(["requests", "delivered", "deferred", "softBounces", "hardBounces", "bounces", "blocked", "invalid", "spam", "error", "unsubscribed"]);
+async function brevoZustellung({ email }) {
+  if (!env("BREVO_API_KEY")) return { error: "Brevo ist nicht eingerichtet." };
+  const adresse = String(email || "").trim().toLowerCase();
+  if (!MAIL_REGEX.test(adresse)) return { error: "Bitte eine gültige Adresse angeben." };
+  const d = await brevoAbruf(`/smtp/statistics/events?email=${encodeURIComponent(adresse)}&days=2&limit=50&sort=desc`);
+  const ereignisse = (Array.isArray(d?.events) ? d.events : [])
+    .filter((e) => ZUSTELL_EREIGNISSE.has(e.event))
+    .slice(0, 15)
+    .map((e) => ({ zeit: e.date, ereignis: e.event, grund: e.reason || "", betreff: e.subject || "", absender: e.from || "" }));
+  return { ereignisse };
 }
 
 // Näherungsweise Darstellung eines Brevo-Layouts für die Vorschau: ersetzt
