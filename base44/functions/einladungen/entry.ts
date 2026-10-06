@@ -377,14 +377,18 @@ async function brevoLayouts() {
 // {{ params.NAME }}; Bedingungen und Schleifen der Brevo-Vorlagensprache werden
 // nicht ausgewertet. Verbindlich ist die Testmail.
 function brevoVorschau(html: string, params: Record<string, string>) {
-  let roh = false;
-  return String(html || "")
-    .replace(/\{%\s*autoescape\s+off\s*%\}/gi, () => { roh = true; return ""; })
-    .replace(/\{%\s*endautoescape\s*%\}/gi, "")
-    .replace(/\{\{\s*params\.([A-Za-z0-9_]+)\s*(\|[^}]*)?\}\}/g, (_m, name) => {
-      const wert = params[name] ?? "";
-      return name === "TEXT_HTML" || roh ? wert : esc(wert);
+  const ersetze = (s: string, roh: boolean) =>
+    s.replace(/\{\{\s*params\.([A-Za-z0-9_]+)\s*(\|[^}]*)?\}\}/g, (_m, name) => {
+      const wert = String(params[name] ?? "");
+      return roh ? wert : esc(wert);
+    });
+  const teile = String(html || "").split(/(\{%\s*autoescape\s+off\s*%\}[\s\S]*?\{%\s*endautoescape\s*%\})/i);
+  return teile
+    .map((t) => {
+      const m = /^\{%\s*autoescape\s+off\s*%\}([\s\S]*?)\{%\s*endautoescape\s*%\}$/i.exec(t);
+      return m ? ersetze(m[1], true) : ersetze(t, false);
     })
+    .join("")
     .replace(/\{%[^%]*%\}/g, "");
 }
 
