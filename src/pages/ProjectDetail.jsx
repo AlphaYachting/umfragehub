@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { bestaetigen, eingabe } from "@/components/shared/Bestaetigen";
 import { useParams, Link } from "react-router-dom";
 import { Plus, Save, Trash2, CopyPlus, Pencil, LineChart, Table2, Mail, MoreHorizontal } from "lucide-react";
@@ -33,6 +33,7 @@ import LinkAktionen from "@/components/verwaltung/LinkAktionen";
 import VerlaufChart from "@/components/verwaltung/VerlaufChart";
 import {
   ladeProjekt,
+  projektAusZwischenspeicher,
   wellenKennzahlen,
   wellenHinweis,
   verlaufProTag,
@@ -57,16 +58,24 @@ export default function ProjectDetail() {
   const [welleEndetAm, setWelleEndetAm] = useState("");
   const [beschaeftigt, setBeschaeftigt] = useState(null);
   const [reiter, setReiter] = useState("wellen"); // Wellen-ID, an der gerade gearbeitet wird
+  const ungespeichertRef = useRef(false);
+  ungespeichertRef.current = ungespeichert;
+
+  function anwenden(d, still) {
+    const wellenSortiert = [...d.wellen].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    // Beim Auffrischen im Hintergrund keine ungespeicherten Eingaben überschreiben
+    if (!(still && ungespeichertRef.current)) {
+      setProjekt(d.projekt);
+      setUngespeichert(false);
+    }
+    setWellen(wellenSortiert);
+    setSessionsJeWelle(d.sessionsJeWelle);
+  }
 
   async function laden(still = false) {
     if (!still) setLoading(true);
     try {
-      const d = await ladeProjekt(id);
-      d.wellen.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
-      setProjekt(d.projekt);
-      setWellen(d.wellen);
-      setSessionsJeWelle(d.sessionsJeWelle);
-      setUngespeichert(false);
+      anwenden(await ladeProjekt(id), still);
     } catch (e) {
       toast.error("Projekt konnte nicht geladen werden.");
     } finally {
@@ -75,7 +84,15 @@ export default function ProjectDetail() {
   }
 
   useEffect(() => {
-    laden();
+    // Bekannte Daten sofort zeigen, frische Daten still nachladen
+    const vorab = projektAusZwischenspeicher(id);
+    if (vorab) {
+      anwenden(vorab, false);
+      setLoading(false);
+      laden(true);
+    } else {
+      laden();
+    }
   }, [id]);
 
   const wellenMitZahlen = useMemo(
