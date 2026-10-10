@@ -159,6 +159,19 @@ export async function alle(entitaet, query = null, sort = "-created_date") {
   return out;
 }
 
+// Viele Anfragen gleichzeitig, aber in kleinen Gruppen — schneller als eine nach der
+// anderen, ohne den Server mit Dutzenden Anfragen auf einmal zu überrollen.
+// Ergebnisse kommen in derselben Reihenfolge zurück wie die Eingabe.
+export async function inGruppen(liste, fn, gleichzeitig = 6) {
+  const out = new Array(liste.length);
+  for (let i = 0; i < liste.length; i += gleichzeitig) {
+    const teil = liste.slice(i, i + gleichzeitig);
+    const erg = await Promise.all(teil.map((x, j) => fn(x, i + j)));
+    erg.forEach((r, j) => { out[i + j] = r; });
+  }
+  return out;
+}
+
 // Zwischenspeicher: Was in dieser Sitzung schon geladen wurde, zeigt die Seite beim
 // nächsten Öffnen sofort an und frischt es im Hintergrund auf. Nur im Arbeitsspeicher
 // des Browserfensters, verschwindet beim Neuladen.
