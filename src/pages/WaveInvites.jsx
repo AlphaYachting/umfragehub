@@ -115,10 +115,13 @@ export default function WaveInvites() {
   const laden = useCallback(async (still = false) => {
     if (!still) setLoading(true);
     try {
-      const w = await base44.entities.Welle.get(id);
+      // Welle und Einladungsübersicht gleichzeitig holen — sie hängen nicht voneinander ab
+      const [w, r] = await Promise.all([
+        base44.entities.Welle.get(id),
+        rufe("uebersicht"),
+      ]);
       setWelle(w);
       base44.entities.Projekt.get(w.projektId).then(setProjekt).catch(() => {});
-      const r = await rufe("uebersicht");
       setD(r);
       setTexte((alt) => (alt && still ? alt : r.texte));
       setFehler("");
