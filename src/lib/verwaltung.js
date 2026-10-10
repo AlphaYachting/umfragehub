@@ -180,6 +180,8 @@ export async function ladeGesamt() {
     alle(base44.entities.Welle),
     alle(base44.entities.Session),
   ]);
+  // Die Übersicht ist jetzt der neueste Stand — ältere Projekt-Einträge verwerfen
+  for (const k of [...zwischenspeicher.keys()]) if (k.startsWith("projekt:")) zwischenspeicher.delete(k);
   return merken("gesamt", { projekte, wellen, sessions });
 }
 
