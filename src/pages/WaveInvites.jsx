@@ -115,13 +115,15 @@ export default function WaveInvites() {
   const laden = useCallback(async (still = false) => {
     if (!still) setLoading(true);
     try {
-      // Welle und Einladungsübersicht gleichzeitig holen — sie hängen nicht voneinander ab
-      const [w, r] = await Promise.all([
-        base44.entities.Welle.get(id),
-        rufe("uebersicht"),
-      ]);
+      // Welle und Einladungsübersicht gleichzeitig anfordern — sie hängen nicht
+      // voneinander ab. Die Welle wird trotzdem zuerst gesetzt, damit der Kopf auch
+      // dann erscheint, wenn die Einladungsfunktion einen Fehler meldet.
+      const uebersicht = rufe("uebersicht");
+      uebersicht.catch(() => {}); // Fehler wird unten beim Warten behandelt
+      const w = await base44.entities.Welle.get(id);
       setWelle(w);
       base44.entities.Projekt.get(w.projektId).then(setProjekt).catch(() => {});
+      const r = await uebersicht;
       setD(r);
       setTexte((alt) => (alt && still ? alt : r.texte));
       setFehler("");
