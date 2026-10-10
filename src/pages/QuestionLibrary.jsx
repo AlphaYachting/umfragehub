@@ -38,9 +38,13 @@ export default function QuestionLibrary() {
   async function laden() {
     setLoading(true);
     try {
-      const liste = await base44.entities.Bibliotheksfrage.list("-created_date", 500);
+      // Fragen und Container gleichzeitig holen
+      const [liste, containerListe] = await Promise.all([
+        base44.entities.Bibliotheksfrage.list("-created_date", 500),
+        base44.entities.BibliotheksContainer.list("-created_date", 500),
+      ]);
       setFragen(liste);
-      let containers = await base44.entities.BibliotheksContainer.list("-created_date", 500);
+      let containers = containerListe;
       // Einmalige Migration: beim ersten Laden Container-Namen aus bestehenden
       // Bibliotheksfragen in die neue Entity übernehmen
       if (containers.length === 0) {
