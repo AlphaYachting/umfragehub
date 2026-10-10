@@ -159,6 +159,20 @@ export async function alle(entitaet, query = null, sort = "-created_date") {
   return out;
 }
 
+// Zwischenspeicher: Was in dieser Sitzung schon geladen wurde, zeigt die Seite beim
+// nächsten Öffnen sofort an und frischt es im Hintergrund auf. Nur im Arbeitsspeicher
+// des Browserfensters, verschwindet beim Neuladen.
+const zwischenspeicher = new Map();
+
+export function gemerkt(schluessel) {
+  return zwischenspeicher.get(schluessel) || null;
+}
+
+function merken(schluessel, wert) {
+  zwischenspeicher.set(schluessel, wert);
+  return wert;
+}
+
 // Alles für die Projektübersicht in drei parallelen Abfragen
 export async function ladeGesamt() {
   const [projekte, wellen, sessions] = await Promise.all([
@@ -166,7 +180,7 @@ export async function ladeGesamt() {
     alle(base44.entities.Welle),
     alle(base44.entities.Session),
   ]);
-  return { projekte, wellen, sessions };
+  return merken("gesamt", { projekte, wellen, sessions });
 }
 
 // Projekt mit Wellen und Sessions je Welle
@@ -180,6 +194,23 @@ export async function ladeProjekt(projektId) {
   );
   const sessionsJeWelle = {};
   wellen.forEach((w, i) => { sessionsJeWelle[w.id] = listen[i]; });
+  return merken(`projekt:${projektId}`, { projekt, wellen, sessionsJeWelle });
+}
+
+// Projektdaten aus dem Zwischenspeicher — entweder vom letzten Besuch des Projekts
+// oder aus der Übersicht, die bereits alle Projekte, Wellen und Sessions kennt.
+export function projektAusZwischenspeicher(projektId) {
+  const direkt = gemerkt(`projekt:${projektId}`);
+  if (direkt) {
+    return { projekt: direkt.projekt, wellen: [...direkt.wellen], sessionsJeWelle: direkt.sessionsJeWelle };
+  }
+  const g = gemerkt("gesamt");
+  const projekt = g?.projekte.find((p) => p.id === projektId);
+  if (!projekt) return null;
+  const wellen = g.wellen.filter((w) => w.projektId === projektId);
+  const jeWelle = gruppiere(g.sessions, "wellenId");
+  const sessionsJeWelle = {};
+  for (const w of wellen) sessionsJeWelle[w.id] = jeWelle[w.id] || [];
   return { projekt, wellen, sessionsJeWelle };
 }
 
