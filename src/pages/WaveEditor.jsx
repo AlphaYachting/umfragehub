@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { werteSortiererVorlage, WERTE_SORTIERER_TYP } from "@/lib/werteSortierer";
+import { alle } from "@/lib/verwaltung";
 
 export default function WaveEditor() {
   const { id } = useParams();
@@ -40,21 +41,28 @@ export default function WaveEditor() {
   const laden = useCallback(async () => {
     setLoading(true);
     try {
-      const w = await base44.entities.Welle.get(id);
-      setWelle(w);
-      const p = await base44.entities.Projekt.get(w.projektId);
-      setProjekt(p);
-      const bs = await base44.entities.Block.filter({ wellenId: id });
+      // Zwei Runden statt einer Anfrage nach der anderen:
+      // 1. Welle, Blöcke und Teilnahmen gleichzeitig, 2. Projekt und alle Fragen gleichzeitig
+      const [w, bs, ss] = await Promise.all([
+        base44.entities.Welle.get(id),
+        alle(base44.entities.Block, { wellenId: id }, "reihenfolge"),
+        alle(base44.entities.Session, { wellenId: id }),
+      ]);
       bs.sort((a, b) => (a.reihenfolge ?? 0) - (b.reihenfolge ?? 0));
-      setBloecke(bs);
-      const ss = await base44.entities.Session.filter({ wellenId: id });
-      setSessionCount(ss.length);
+      const [p, ...fragenListen] = await Promise.all([
+        base44.entities.Projekt.get(w.projektId),
+        ...bs.map((b) => alle(base44.entities.Frage, { blockId: b.id }, "reihenfolge")),
+      ]);
       const fMap = {};
-      for (const b of bs) {
-        const fs = await base44.entities.Frage.filter({ blockId: b.id });
+      bs.forEach((b, i) => {
+        const fs = fragenListen[i];
         fs.sort((a, b) => (a.reihenfolge ?? 0) - (b.reihenfolge ?? 0));
         fMap[b.id] = fs;
-      }
+      });
+      setWelle(w);
+      setProjekt(p);
+      setBloecke(bs);
+      setSessionCount(ss.length);
       setFragen(fMap);
     } catch (e) {
       toast.error("Welle konnte nicht geladen werden.");
