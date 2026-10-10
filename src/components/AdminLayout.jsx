@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Menu, LogOut } from "lucide-react";
 import { Toaster as Meldungen } from "sonner";
@@ -9,6 +9,25 @@ import Kopfsuche from "@/components/Kopfsuche";
 import { BestaetigenHost } from "@/components/shared/Bestaetigen";
 
 const MERKER = "umfragehub_leiste_schmal";
+
+// Die übrigen Verwaltungsseiten im Leerlauf vorladen, damit der Wechsel
+// zwischen Projekt, Welle und Bibliothek ohne Nachladen geht.
+let vorgeladen = false;
+function seitenVorladen() {
+  if (vorgeladen) return;
+  vorgeladen = true;
+  const laden = () => {
+    import("@/pages/Projects");
+    import("@/pages/ProjectDetail");
+    import("@/pages/WaveDashboard");
+    import("@/pages/WaveEditor");
+    import("@/pages/WaveInvites");
+    import("@/pages/RawData");
+    import("@/pages/QuestionLibrary");
+  };
+  if (typeof window !== "undefined" && "requestIdleCallback" in window) window.requestIdleCallback(laden, { timeout: 3000 });
+  else setTimeout(laden, 1500);
+}
 
 function merkerLesen() {
   try {
@@ -29,6 +48,10 @@ export default function AdminLayout() {
   useEffect(() => {
     setMobilOffen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    seitenVorladen();
+  }, []);
 
   function umschalten() {
     const neu = !schmal;
@@ -129,7 +152,9 @@ export default function AdminLayout() {
           </div>
         </div>
         <div className="p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto">
-          <Outlet />
+          <Suspense fallback={<div className="v-seite v-lade">Lade …</div>}>
+            <Outlet />
+          </Suspense>
         </div>
       </main>
 
