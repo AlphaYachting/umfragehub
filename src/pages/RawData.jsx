@@ -22,10 +22,13 @@ export default function RawData() {
   const laden = useCallback(async () => {
     setLoading(true);
     try {
-      const w = await base44.entities.Welle.get(id);
+      // Welle und Rohdaten gleichzeitig holen — sie hängen nicht voneinander ab
+      const [w, res] = await Promise.all([
+        base44.entities.Welle.get(id),
+        base44.functions.invoke("rohdaten", { wellenId: id }),
+      ]);
       setWelle(w);
       base44.entities.Projekt.get(w.projektId).then(setProjekt).catch(() => {});
-      const res = await base44.functions.invoke("rohdaten", { wellenId: id });
       const d = res?.data;
       if (!d || d.error) {
         toast.error(d?.error || "Daten konnten nicht geladen werden.");
