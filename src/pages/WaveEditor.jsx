@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { werteSortiererVorlage, WERTE_SORTIERER_TYP } from "@/lib/werteSortierer";
-import { alle } from "@/lib/verwaltung";
+import { alle, inGruppen } from "@/lib/verwaltung";
 
 export default function WaveEditor() {
   const { id } = useParams();
@@ -218,36 +218,33 @@ export default function WaveEditor() {
     setFragen({ ...fragen, [quellBlockId]: quelle, [zielBlockId]: ziel });
     try {
       await base44.entities.Frage.update(bewegt.id, { blockId: zielBlockId });
-      for (let i = 0; i < quellListe.length; i++) {
-        if (quellListe[i].reihenfolge !== i) await base44.entities.Frage.update(quellListe[i].id, { reihenfolge: i });
-      }
-      for (let i = 0; i < zielListe.length; i++) {
-        if (zielListe[i].reihenfolge !== i || zielListe[i].id === bewegt.id) {
-          await base44.entities.Frage.update(zielListe[i].id, { reihenfolge: i });
-        }
-      }
+      const aenderungen = [
+        ...quellListe.map((f, i) => ({ f, i })).filter(({ f, i }) => f.reihenfolge !== i),
+        ...zielListe.map((f, i) => ({ f, i })).filter(({ f, i }) => f.reihenfolge !== i || f.id === bewegt.id),
+      ];
+      await inGruppen(aenderungen, ({ f, i }) => base44.entities.Frage.update(f.id, { reihenfolge: i }));
     } catch (e) {
       toast.error("Verschieben fehlgeschlagen.");
     }
   }
 
   async function reorderBlocks(neueReihenfolge) {
-    setBloecke(neueReihenfolge);
-    for (let i = 0; i < neueReihenfolge.length; i++) {
-      const b = neueReihenfolge[i];
-      if (b.reihenfolge !== i) {
-        await base44.entities.Block.update(b.id, { reihenfolge: i });
-      }
+    setBloecke(neueReihenfolge.map((b, i) => ({ ...b, reihenfolge: i })));
+    const aenderungen = neueReihenfolge.map((b, i) => ({ b, i })).filter(({ b, i }) => b.reihenfolge !== i);
+    try {
+      await inGruppen(aenderungen, ({ b, i }) => base44.entities.Block.update(b.id, { reihenfolge: i }));
+    } catch (e) {
+      toast.error("Reihenfolge konnte nicht gespeichert werden.");
     }
   }
 
   async function reorderFragen(blockId, neueReihenfolge) {
-    setFragen({ ...fragen, [blockId]: neueReihenfolge });
-    for (let i = 0; i < neueReihenfolge.length; i++) {
-      const f = neueReihenfolge[i];
-      if (f.reihenfolge !== i) {
-        await base44.entities.Frage.update(f.id, { reihenfolge: i });
-      }
+    setFragen({ ...fragen, [blockId]: neueReihenfolge.map((f, i) => ({ ...f, reihenfolge: i })) });
+    const aenderungen = neueReihenfolge.map((f, i) => ({ f, i })).filter(({ f, i }) => f.reihenfolge !== i);
+    try {
+      await inGruppen(aenderungen, ({ f, i }) => base44.entities.Frage.update(f.id, { reihenfolge: i }));
+    } catch (e) {
+      toast.error("Reihenfolge konnte nicht gespeichert werden.");
     }
   }
 
@@ -283,19 +280,16 @@ export default function WaveEditor() {
     const blockId = bibZielBlock;
     if (!blockId) return;
     const startReihenfolge = (fragen[blockId] || []).length;
-    const neue = [];
-    for (let i = 0; i < ausgewaehlteFragen.length; i++) {
-      const vf = ausgewaehlteFragen[i];
-      // Schema v2: alle Fragefelder mitnehmen (vorher fehlten erklaerung,
-      // stufenWorte und matrixZeilen — Matrix-Fragen kamen ohne Zeilen an)
-      const erstellt = await base44.entities.Frage.create({
+    // Schema v2: alle Fragefelder mitnehmen (vorher fehlten erklaerung,
+    // stufenWorte und matrixZeilen — Matrix-Fragen kamen ohne Zeilen an)
+    const neue = await inGruppen(ausgewaehlteFragen, (vf, i) =>
+      base44.entities.Frage.create({
         ...frageFelderAuslesen(vf),
         optionen: vf.optionen || [],
         blockId,
         reihenfolge: startReihenfolge + i,
-      });
-      neue.push(erstellt);
-    }
+      })
+    );
     setFragen({ ...fragen, [blockId]: [...(fragen[blockId] || []), ...neue] });
     toast.success(`${ausgewaehlteFragen.length} Frage(n) übernommen.`);
   }
@@ -314,18 +308,14 @@ export default function WaveEditor() {
         motivationstext: "",
       });
       neueBloecke.push(block);
-      neueFragenMap[block.id] = [];
-
-      for (let j = 0; j < g.fragen.length; j++) {
-        const vf = g.fragen[j];
-        const erstellt = await base44.entities.Frage.create({
+      neueFragenMap[block.id] = await inGruppen(g.fragen, (vf, j) =>
+        base44.entities.Frage.create({
           ...frageFelderAuslesen(vf),
           optionen: vf.optionen || [],
           blockId: block.id,
           reihenfolge: j,
-        });
-        neueFragenMap[block.id].push(erstellt);
-      }
+        })
+      );
     }
 
     setBloecke([...bloecke, ...neueBloecke]);
