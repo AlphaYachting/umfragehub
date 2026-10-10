@@ -28,6 +28,7 @@ import { kachel } from "@/components/verwaltung/Kachel";
 import { TON_TEXT, HINWEIS_TON } from "@/lib/designTon";
 import {
   ladeGesamt,
+  gemerkt,
   gruppiere,
   wellenKennzahlen,
   wellenHinweis,
@@ -44,7 +45,8 @@ const FILTER = [
 
 export default function Projects() {
   const navigate = useNavigate();
-  const [daten, setDaten] = useState({ projekte: [], wellen: [], sessions: [] });
+  // Zuletzt Geladenes sofort zeigen, frische Daten kommen im Hintergrund
+  const [daten, setDaten] = useState(() => gemerkt("gesamt") || { projekte: [], wellen: [], sessions: [] });
   const [loading, setLoading] = useState(true);
   const [suche, setSuche] = useState("");
   const [filter, setFilter] = useState("laufend");
