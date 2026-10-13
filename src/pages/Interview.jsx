@@ -67,6 +67,14 @@ export default function Interview() {
   // Warteschlange für fehlgeschlagene Antworten (Paket 0.3)
   const warteschlangeRef = useRef([]);
   const [warteschlangeGroesse, setWarteschlangeGroesse] = useState(0);
+  // Speichern läuft im Hintergrund, aber streng der Reihe nach — so muss niemand
+  // nach „Weiter“ auf den Server warten, und keine ältere Antwort überholt eine neuere.
+  const speicherKetteRef = useRef(Promise.resolve());
+  function inKette(fn) {
+    const naechste = speicherKetteRef.current.then(fn).catch(() => {});
+    speicherKetteRef.current = naechste;
+    return naechste;
+  }
 
   const frageHeadingRef = useRef(null);
   const weiterRef = useRef(null);
@@ -251,8 +259,8 @@ export default function Interview() {
       warteschlangeRef.current = queue;
       setWarteschlangeGroesse(queue.length);
       setOfflineHinweis(true);
-      // nach kurzer Wartezeit einmal erneut versuchen
-      setTimeout(() => { warteschlangeLeeren(); }, 2500);
+      // nach kurzer Wartezeit einmal erneut versuchen — ebenfalls in der Reihe
+      setTimeout(() => { inKette(() => warteschlangeLeeren()); }, 2500);
     } else {
       // erfolgreich — falls diese Frage in der Warteschlange war, entfernen
       const queue = warteschlangeRef.current.filter((e) => e.frage.id !== frage.id);
@@ -298,9 +306,12 @@ export default function Interview() {
     const wert = expliziterWert !== undefined ? expliziterWert : answers[item.frage.id];
     if (!testModus && item.frage.pflicht && !istBeantwortet(item.frage, wert)) return;
 
-    await antwortSpeichern(item.frage, wert);
-    // vor dem Weiter eventuell noch offene Antworten nachsenden
-    await warteschlangeLeeren();
+    // Antwort im Hintergrund speichern (und offene Antworten nachsenden) — die nächste
+    // Frage erscheint sofort. Vor dem Abschluss wird auf alles gewartet.
+    inKette(async () => {
+      await antwortSpeichern(item.frage, wert);
+      await warteschlangeLeeren();
+    });
 
     const istLetzteImBlock = currentIndex === fragenListe.length - 1 ||
       fragenListe[currentIndex + 1].blockIndex !== item.blockIndex;
@@ -351,8 +362,13 @@ export default function Interview() {
     if (currentIndex === 0) return;
     // FEHLER 2: aktuelle Antwort speichern, bevor zurückgegangen wird (ohne Pflichtprüfung)
     const item = fragenListe[currentIndex];
-    if (item) await antwortSpeichern(item.frage, answers[item.frage.id]);
-    await warteschlangeLeeren();
+    if (item) {
+      const wert = answers[item.frage.id];
+      inKette(async () => {
+        await antwortSpeichern(item.frage, wert);
+        await warteschlangeLeeren();
+      });
+    }
     setCurrentIndex(currentIndex - 1);
     setAnimKey((k) => k + 1);
     window.scrollTo({ top: 0, behavior: "auto" });
@@ -368,7 +384,8 @@ export default function Interview() {
   }
 
   async function abschliessen() {
-    // erst Warteschlange leeren, dann Abschluss (Paket 0.3)
+    // erst alle laufenden Speichervorgänge abwarten, dann Warteschlange leeren, dann Abschluss (Paket 0.3)
+    await speicherKetteRef.current;
     await warteschlangeLeeren();
     if (warteschlangeRef.current.length) {
       // ein zweiter Versuch mit Wartezeit
