@@ -50,7 +50,14 @@ async function loadInterview(base44, { linkToken, sessionToken, vorschau }) {
       return Response.json({ error: "entwurf" });
     }
   }
-  const projekt = await base44.asServiceRole.entities.Projekt.get(welle.projektId);
+  // Projekt, Blöcke und eine laufende Session gleichzeitig holen — nicht nacheinander
+  const [projekt, bloecke, sListe] = await Promise.all([
+    base44.asServiceRole.entities.Projekt.get(welle.projektId),
+    base44.asServiceRole.entities.Block.filter({ wellenId: welle.id }),
+    sessionToken
+      ? base44.asServiceRole.entities.Session.filter({ token: sessionToken, wellenId: welle.id })
+      : Promise.resolve([]),
+  ]);
   // LÜCKE 2: reduziertes Projekt-Objekt — kein Briefing, kein Name/Status/ID.
   // Der Kundenname wird als "firma" durchgereicht, weil er im Fragetext
   // ({{firma}}) ohnehin sichtbar ist — Schema v2, Platzhalter.
@@ -68,23 +75,18 @@ async function loadInterview(base44, { linkToken, sessionToken, vorschau }) {
     impressumUrl: projekt.impressumUrl,
     ansprache: projekt.ansprache,
   };
-  const bloecke = await base44.asServiceRole.entities.Block.filter({ wellenId: welle.id });
   bloecke.sort((a, b) => (a.reihenfolge ?? 0) - (b.reihenfolge ?? 0));
-  const bloeckeMitFragen = [];
-  for (const b of bloecke) {
-    const fragen = await base44.asServiceRole.entities.Frage.filter({ blockId: b.id });
+  const session = sListe.length ? sListe[0] : null;
+  // Fragen aller Blöcke und bisherige Antworten gleichzeitig holen
+  const [fragenListen, antworten] = await Promise.all([
+    Promise.all(bloecke.map((b) => base44.asServiceRole.entities.Frage.filter({ blockId: b.id }))),
+    session ? base44.asServiceRole.entities.Antwort.filter({ sessionId: session.id }) : Promise.resolve([]),
+  ]);
+  const bloeckeMitFragen = bloecke.map((b, i) => {
+    const fragen = fragenListen[i];
     fragen.sort((a, b) => (a.reihenfolge ?? 0) - (b.reihenfolge ?? 0));
-    bloeckeMitFragen.push({ ...b, fragen });
-  }
-  let session = null;
-  let antworten = [];
-  if (sessionToken) {
-    const sListe = await base44.asServiceRole.entities.Session.filter({ token: sessionToken, wellenId: welle.id });
-    if (sListe.length) {
-      session = sListe[0];
-      antworten = await base44.asServiceRole.entities.Antwort.filter({ sessionId: session.id });
-    }
-  }
+    return { ...b, fragen };
+  });
   // Befragte bekommen nur, was die Befragung braucht — keine Mailvorlagen, keine Planungszahlen
   const { mailBetreff, mailText, reminderBetreff, reminderText, eingeladen, ...welleReduziert } = welle;
   return Response.json({
@@ -151,17 +153,6 @@ async function resumeSession(base44, { sessionToken }) {
   const session = sListe[0];
   const antworten = await base44.asServiceRole.entities.Antwort.filter({ sessionId: session.id });
   return Response.json({ session, antworten });
-}
-
-// Lädt alle Fragen einer Welle (über ihre Blöcke) und indiziert sie nach ID
-async function fragenDerWelle(base44, welle) {
-  const bloecke = await base44.asServiceRole.entities.Block.filter({ wellenId: welle.id });
-  const fragen = {};
-  for (const b of bloecke) {
-    const liste = await base44.asServiceRole.entities.Frage.filter({ blockId: b.id });
-    for (const f of liste) fragen[f.id] = f;
-  }
-  return fragen;
 }
 
 // Serverseitige Mindestprüfung einer Antwort gegen den Fragetyp
@@ -244,15 +235,20 @@ async function saveAnswer(base44, { sessionToken, frageId, data }) {
   if (session.status === "abgeschlossen") {
     return Response.json({ error: "abgeschlossen" });
   }
-  // Frage muss zu dieser Welle gehören
-  const welle = await base44.asServiceRole.entities.Welle.get(session.wellenId);
+  // Welle, ihre Blöcke, die Frage und eine vorhandene Antwort gleichzeitig holen.
+  // Vorher wurden dafür alle Fragen aller Blöcke nacheinander geladen — bei jeder Antwort.
+  const [welle, bloecke, frage, existing] = await Promise.all([
+    base44.asServiceRole.entities.Welle.get(session.wellenId),
+    base44.asServiceRole.entities.Block.filter({ wellenId: session.wellenId }),
+    base44.asServiceRole.entities.Frage.get(frageId).catch(() => null),
+    base44.asServiceRole.entities.Antwort.filter({ sessionId: session.id, frageId }),
+  ]);
   // LÜCKE 1: geschlossene Welle nimmt keine neuen Antworten an
   if (welle.status === "geschlossen") {
     return Response.json({ error: "geschlossen" });
   }
-  const fragen = await fragenDerWelle(base44, welle);
-  const frage = fragen[frageId];
-  if (!frage) {
+  // Frage muss zu dieser Welle gehören
+  if (!frage || !bloecke.some((b) => b.id === frage.blockId)) {
     return Response.json({ error: "frage_nicht_in_welle" });
   }
   // Werttyp prüfen
@@ -260,7 +256,6 @@ async function saveAnswer(base44, { sessionToken, frageId, data }) {
   if (fehler) {
     return Response.json({ error: `antwort_ungueltig`, details: fehler });
   }
-  const existing = await base44.asServiceRole.entities.Antwort.filter({ sessionId: session.id, frageId });
   const daten = {
     auswahl: data.auswahl || [],
     zahl: data.zahl,
@@ -269,12 +264,13 @@ async function saveAnswer(base44, { sessionToken, frageId, data }) {
     eingabeart: data.eingabeart || "tippen",
     transkriptKorrigiert: !!data.transkriptKorrigiert,
   };
-  if (existing.length) {
-    await base44.asServiceRole.entities.Antwort.update(existing[0].id, daten);
-  } else {
-    await base44.asServiceRole.entities.Antwort.create({ sessionId: session.id, frageId, ...daten });
-  }
-  await base44.asServiceRole.entities.Session.update(session.id, { letzteFrageId: frageId });
+  // Antwort und Fortschritt der Session gleichzeitig schreiben
+  await Promise.all([
+    existing.length
+      ? base44.asServiceRole.entities.Antwort.update(existing[0].id, daten)
+      : base44.asServiceRole.entities.Antwort.create({ sessionId: session.id, frageId, ...daten }),
+    base44.asServiceRole.entities.Session.update(session.id, { letzteFrageId: frageId }),
+  ]);
   return Response.json({ ok: true });
 }
 
