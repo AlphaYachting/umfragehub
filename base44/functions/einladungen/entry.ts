@@ -14,7 +14,8 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 //
 // Versandkanal: Umgebungsvariable BREVO_API_KEY (bevorzugt) oder RESEND_API_KEY,
 // dazu MAIL_ABSENDER (z. B. "Befragung <befragung@beispiel.at>" — bei Brevo muss
-// diese Adresse dort als Absender bestätigt sein). Optional APP_URL für die Links.
+// diese Adresse dort als Absender bestätigt sein). Links in Mails zeigen immer auf
+// OEFFENTLICHE_URL (https://andifragt.at); APP_URL überschreibt das nur bei Bedarf.
 //
 // Layouts (nur Brevo): je Welle kann für Einladung und Erinnerung eine
 // transaktionale Brevo-Vorlage gewählt werden. Ohne Auswahl gilt das
@@ -310,8 +311,14 @@ function mailNurText({ text, link }) {
   return `${text}\n\nZur Befragung: ${link}`;
 }
 
-function basisUrl(body) {
-  const url = env("APP_URL") || String(body.basisUrl || "");
+// Öffentliche Adresse der Befragung — gleicher Wert wie OEFFENTLICHE_URL in
+// src/lib/verwaltung.js. Die Adresse, von der aus die Verwaltung gerade läuft
+// (body.basisUrl), wird bewusst NICHT verwendet: sonst landen Editor- oder
+// Vorschau-Adressen in echten Einladungen.
+const OEFFENTLICHE_URL = "https://andifragt.at";
+
+function basisUrl(_body) {
+  const url = env("APP_URL") || OEFFENTLICHE_URL;
   return url.replace(/\/+$/, "");
 }
 
