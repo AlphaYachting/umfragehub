@@ -27,6 +27,24 @@
   src: url('/fonts/inter-700.woff2') format('woff2');
 }
 
+/* Gilroy, die Hausschrift von Rittler & Co, wie auf werbe-agentur-graz.at.
+   Wird von dort geladen (der Server erlaubt das ausdrücklich) und nur dort
+   genutzt, wo .schrift-marke gesetzt ist (öffentliche Startseite). Die Dateien
+   enthalten keine Gedankenstriche und typografischen Anführungszeichen; dafür
+   springt Inter ein. Fällt der Server aus, läuft die Seite komplett in Inter. */
+@font-face { font-family: 'Gilroy'; font-weight: 400; font-style: normal; font-display: swap;
+  src: url('https://www.werbe-agentur-graz.at/files/theme/fonts/gilroy/Gilroy-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'Gilroy'; font-weight: 500; font-style: normal; font-display: swap;
+  src: url('https://www.werbe-agentur-graz.at/files/theme/fonts/gilroy/Gilroy-Medium.woff2') format('woff2'); }
+@font-face { font-family: 'Gilroy'; font-weight: 600; font-style: normal; font-display: swap;
+  src: url('https://www.werbe-agentur-graz.at/files/theme/fonts/gilroy/Gilroy-SemiBold.woff2') format('woff2'); }
+@font-face { font-family: 'Gilroy'; font-weight: 700; font-style: normal; font-display: swap;
+  src: url('https://www.werbe-agentur-graz.at/files/theme/fonts/gilroy/Gilroy-Bold.woff2') format('woff2'); }
+@font-face { font-family: 'Gilroy'; font-weight: 800; font-style: normal; font-display: swap;
+  src: url('https://www.werbe-agentur-graz.at/files/theme/fonts/gilroy/Gilroy-ExtraBold.woff2') format('woff2'); }
+@font-face { font-family: 'Gilroy'; font-weight: 900; font-style: normal; font-display: swap;
+  src: url('https://www.werbe-agentur-graz.at/files/theme/fonts/gilroy/Gilroy-Black.woff2') format('woff2'); }
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -50,6 +68,7 @@
   /* Textmarker für das betonte Wort im Fragetext — bewusst nicht in der Akzentfarbe */
   --farbe-marker: #b5ecce;
   --schrift: 'Inter', 'Gilroy', 'Helvetica Neue', Arial, sans-serif;
+  --schrift-marke: 'Gilroy', 'Inter', 'Helvetica Neue', Arial, sans-serif;
   /* Die Befragung bleibt hell, auch wenn das Handy im Dunkelmodus ist oder der Browser
      Seiten automatisch abdunkelt */
   color-scheme: only light;
