@@ -229,8 +229,10 @@ export default function Startseite() {
             <ol className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
               {SCHRITTE.map(({ bild, alt, titel, text }) => (
                 <li key={titel}>
-                  {/* Alle vier Signets haben dasselbe Raster (163 × 128), der ANDI-Kasten ist überall gleich groß */}
-                  <img src={bild} alt={alt} className="h-20 w-auto" width="163" height="128" loading="lazy" />
+                  {/* Alle vier Signets haben dasselbe Raster (163 × 128), der ANDI-Kasten ist überall gleich groß.
+                      Der Kasten beginnt bei x = 11 von 163; bei 80 px Höhe sind das knapp 7 px, die das
+                      negative Außenmaß ausgleicht, damit der Kasten bündig mit der Textkante steht. */}
+                  <img src={bild} alt={alt} className="h-20 w-auto -ml-[7px]" width="163" height="128" loading="lazy" />
                   <h3 className="mt-4 text-lg font-bold">{titel}</h3>
                   <p className="mt-2 leading-relaxed" style={{ color: "var(--farbe-text-daempft)" }}>{text}</p>
                 </li>
