@@ -8,12 +8,15 @@
 // /\evil.com parses same-origin but normalizes to a protocol-relative
 // //evil.com when assigned to location.href — an open redirect. So require the
 // resolved path to be exactly one leading slash (no "//" prefix, no backslash).
+// Ohne returnTo geht es nach dem Login in die Verwaltung — "/" ist die öffentliche Startseite.
+export const START = "/verwaltung";
+
 export function safeReturnTo() {
   const raw = new URLSearchParams(window.location.search).get("returnTo");
-  if (!raw) return "/";
+  if (!raw) return START;
   try {
     const url = new URL(raw, window.location.origin);
-    if (url.origin !== window.location.origin) return "/";
+    if (url.origin !== window.location.origin) return START;
     // Only access_token/clear_access_token are still URL-read by app-params.js, but the
     // whole bootstrap set stays stripped: one going back to a URL read must not silently
     // become injectable again. Normal app-flow params (e.g. the OAuth consent ctx) are kept.
@@ -21,9 +24,9 @@ export function safeReturnTo() {
       url.searchParams.delete(p);
     }
     const path = url.pathname + url.search;
-    if (!path.startsWith("/") || path.startsWith("//") || path.includes("\\")) return "/";
+    if (!path.startsWith("/") || path.startsWith("//") || path.includes("\\")) return START;
     return path;
   } catch {
-    return "/";
+    return START;
   }
 }
