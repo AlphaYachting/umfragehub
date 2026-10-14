@@ -49,8 +49,8 @@ const SCHRITTE = [
   {
     bild: "/marke/andi-fragt.svg",
     alt: "ANDI fragt",
-    titel: "Digitale Befragung",
-    text: "Du, deine Mitarbeitenden und auf Wunsch deine Kunden antworten online, anonym und dann, wann es passt. Dein eigener Aufwand: rund 60 Minuten.",
+    titel: "Digitale Interviews",
+    text: "Du, deine Mitarbeitenden und auf Wunsch deine Kunden beantworten die Interviews online: anonym, am Handy oder am Computer, wann es passt. Dein eigener Aufwand: rund 60 Minuten.",
   },
   {
     bild: "/marke/andi-weiss.svg",
@@ -74,7 +74,7 @@ const SCHRITTE = [
 
 const VERSPRECHEN = [
   { icon: Lock, titel: "Volle Anonymität", text: "Niemand sieht, wer was geantwortet hat. Ergebnisse gibt es erst ab einer Mindestzahl an Teilnehmenden." },
-  { icon: Smartphone, titel: "Orts- und zeitunabhängig", text: "Am Handy oder am Computer, ohne App und ohne Anmeldung. Unterbrechen und später weitermachen geht jederzeit." },
+  { icon: Smartphone, titel: "Orts- und zeitunabhängig", text: "Digitale Interviews am Handy oder am Computer, ohne App und ohne Anmeldung. Unterbrechen und später weitermachen geht jederzeit." },
   { icon: Mic, titel: "Sprechen statt tippen", text: "Offene Antworten lassen sich einsprechen. So sagen Menschen mehr als in ein Textfeld." },
   { icon: ListChecks, titel: "Mehr als Ankreuzen", text: "Werte sortieren, abwägen, erzählen: Die Fragen holen heraus, was in Standardumfragen untergeht." },
 ];
@@ -125,8 +125,9 @@ export default function Startseite() {
     <div className="min-h-screen bg-white" style={{ color: "var(--farbe-text)", fontFamily: "var(--schrift-marke)" }}>
       {/* Kopf */}
       <header className="max-w-6xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
-        <a href="#top" aria-label="andi fragt. Zur Startseite" className="block">
-          <img src="/marke/andi-fragt.svg" alt="ANDI fragt" className="h-12 sm:h-14 w-auto" width="160" height="130" />
+        {/* Schriftzug wie in der ersten Fassung, um 30 % vergrößert (18 px auf rund 23 px) */}
+        <a href="#top" className="text-[1.4625rem] font-bold leading-none" aria-label="andi fragt. Zur Startseite">
+          andi fragt<span style={{ color: "var(--farbe-akzent)" }}>.</span>
         </a>
         <nav className="flex items-center gap-5 text-sm">
           <a href="#eingeladen" className="hidden sm:inline font-medium hover:underline">Ich wurde eingeladen</a>
@@ -149,8 +150,9 @@ export default function Startseite() {
           </h1>
           <p className="mt-6 text-lg sm:text-xl leading-relaxed max-w-2xl" style={{ color: "var(--farbe-text-daempft)" }}>
             Deine Mitarbeitenden wissen oft genau, warum Kunden bleiben, was wirklich funktioniert und wo es hakt.
-            In der Geschäftsführung kommt davon wenig an. <strong className="font-semibold" style={{ color: "var(--farbe-text)" }}>andi fragt.</strong>{" "}
-            holt dieses Wissen anonym ab und macht es messbar. Klarheit statt Bauchgefühl.
+            In der Geschäftsführung kommt davon wenig an. Mit digitalen Interviews holt{" "}
+            <strong className="font-semibold" style={{ color: "var(--farbe-text)" }}>andi fragt.</strong> dieses Wissen anonym ab
+            und macht es messbar. Klarheit statt Bauchgefühl.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-3">
             <a
