@@ -23,12 +23,20 @@ export const PROJEKT_STATUS = {
 // ---------------------------------------------------------------------------
 // Links
 // ---------------------------------------------------------------------------
+// Öffentliche Adresse für alles, was Befragte bekommen (Link, QR-Code,
+// Einladungstext, Mail). Unabhängig davon, von wo aus die Verwaltung gerade
+// bedient wird (Base44-Editor, Vorschau, *.base44.app oder andifragt.at).
+// Gleicher Wert steht als Standard in base44/functions/einladungen/entry.ts.
+export const OEFFENTLICHE_URL = "https://andifragt.at";
+
 export function teilnahmeUrl(linkToken) {
-  return `${window.location.origin}/i/${linkToken}`;
+  return `${OEFFENTLICHE_URL}/i/${linkToken}`;
 }
 
+// Die Vorschau bleibt bewusst auf der aktuellen Umgebung: im Editor zeigt sie so
+// den noch nicht veröffentlichten Stand, auf andifragt.at den Live-Stand.
 export function vorschauUrl(linkToken) {
-  return `${teilnahmeUrl(linkToken)}?test=1`;
+  return `${window.location.origin}/i/${linkToken}?test=1`;
 }
 
 export async function inZwischenablage(text) {
