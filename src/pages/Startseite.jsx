@@ -79,6 +79,10 @@ const VERSPRECHEN = [
   { icon: ListChecks, titel: "Mehr als Ankreuzen", text: "Werte sortieren, abwägen, erzählen: Die Fragen holen heraus, was in Standardumfragen untergeht." },
 ];
 
+// Einheitliche Icons: alle Inhalts-Icons gleich groß, gleiche Strichstärke, Akzentfarbe.
+// Pfeile in Knöpfen bleiben bewusst kleiner (16 px), passend zur Knopfschrift.
+const ICON = { size: 28, strokeWidth: 1.5, style: { color: "var(--farbe-akzent)" }, "aria-hidden": "true" };
+
 // Akzeptiert den ganzen Link (https://andifragt.at/i/CODE) oder nur den Code.
 function codeAuslesen(eingabe) {
   const roh = String(eingabe || "").trim();
@@ -201,7 +205,7 @@ export default function Startseite() {
           <div className="mt-10 grid gap-8 md:grid-cols-3">
             {ZWECKE.map(({ icon: Icon, titel, text }) => (
               <div key={titel}>
-                <Icon size={28} strokeWidth={1.5} style={{ color: "var(--farbe-akzent)" }} aria-hidden="true" />
+                <Icon {...ICON} />
                 <h3 className="mt-4 text-lg font-bold">{titel}</h3>
                 <p className="mt-2 leading-relaxed" style={{ color: "var(--farbe-text-daempft)" }}>{text}</p>
               </div>
@@ -225,7 +229,8 @@ export default function Startseite() {
             <ol className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
               {SCHRITTE.map(({ bild, alt, titel, text }) => (
                 <li key={titel}>
-                  <img src={bild} alt={alt} className="h-20 w-auto" width="160" height="130" loading="lazy" />
+                  {/* Alle vier Signets haben dasselbe Raster (163 × 128), der ANDI-Kasten ist überall gleich groß */}
+                  <img src={bild} alt={alt} className="h-20 w-auto" width="163" height="128" loading="lazy" />
                   <h3 className="mt-4 text-lg font-bold">{titel}</h3>
                   <p className="mt-2 leading-relaxed" style={{ color: "var(--farbe-text-daempft)" }}>{text}</p>
                 </li>
@@ -239,14 +244,12 @@ export default function Startseite() {
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
             <Etikett>Für die Befragten</Etikett>
             <h2 className="mt-3 text-3xl sm:text-4xl font-black uppercase leading-tight">Ehrliche Antworten brauchen Vertrauen</h2>
-            <div className="mt-10 grid gap-8 sm:grid-cols-2">
+            <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
               {VERSPRECHEN.map(({ icon: Icon, titel, text }) => (
-                <div key={titel} className="flex gap-4">
-                  <Icon size={24} strokeWidth={1.5} className="shrink-0 mt-0.5" style={{ color: "var(--farbe-gut)" }} aria-hidden="true" />
-                  <div>
-                    <h3 className="font-bold">{titel}</h3>
-                    <p className="mt-1 leading-relaxed text-white/75">{text}</p>
-                  </div>
+                <div key={titel}>
+                  <Icon {...ICON} />
+                  <h3 className="mt-4 text-lg font-bold">{titel}</h3>
+                  <p className="mt-2 leading-relaxed text-white/75">{text}</p>
                 </div>
               ))}
             </div>
