@@ -207,7 +207,7 @@ export default function Startseite() {
           </div>
           <p className="mt-10 text-sm" style={{ color: "var(--farbe-text-daempft)" }}>
             Mehr zum Markenprüfstand auf{" "}
-            <a href={MARKENPRUEFSTAND} target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline" style={{ color: "var(--farbe-akzent-tief)" }}>
+            <a href={MARKENPRUEFSTAND} target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline whitespace-nowrap" style={{ color: "var(--farbe-akzent-tief)" }}>
               werbe-agentur-graz.at
             </a>
           </p>
