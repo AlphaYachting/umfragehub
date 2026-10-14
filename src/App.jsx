@@ -3,7 +3,6 @@ import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
@@ -24,6 +23,7 @@ const RawData = lazy(() => import('@/pages/RawData'));
 const WaveInvites = lazy(() => import('@/pages/WaveInvites'));
 const QuestionLibrary = lazy(() => import('@/pages/QuestionLibrary'));
 const Interview = lazy(() => import('@/pages/Interview'));
+const Startseite = lazy(() => import('@/pages/Startseite'));
 
 const Laden = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -58,6 +58,8 @@ const AuthenticatedApp = () => {
   return (
     <Suspense fallback={<Laden />}>
     <Routes>
+      {/* Öffentlich: Startseite für alle, die andifragt.at ohne Befragungslink aufrufen */}
+      <Route path="/" element={<Startseite />} />
       <Route path="/i/:linkToken" element={<Interview />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
@@ -65,7 +67,7 @@ const AuthenticatedApp = () => {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route element={<AdminLayout />}>
-          <Route path="/" element={<Projects />} />
+          <Route path="/verwaltung" element={<Projects />} />
           <Route path="/projekt/:id" element={<ProjectDetail />} />
           <Route path="/welle/:id/editor" element={<WaveEditor />} />
           <Route path="/welle/:id/dashboard" element={<WaveDashboard />} />
@@ -74,7 +76,8 @@ const AuthenticatedApp = () => {
           <Route path="/bibliothek" element={<QuestionLibrary />} />
         </Route>
       </Route>
-      <Route path="*" element={<PageNotFound />} />
+      {/* Unbekannte Adressen landen auf der Startseite */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
     </Suspense>
   );
