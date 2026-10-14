@@ -86,7 +86,7 @@ export default function AdminLayout() {
         )}
       >
         <div className="p-4 border-b border-sidebar-border flex items-center gap-3">
-          <Link to="/" className="w-8 h-8 rounded-lg bg-primary text-primary-foreground font-bold text-sm inline-flex items-center justify-center shrink-0">
+          <Link to="/verwaltung" className="w-8 h-8 rounded-lg bg-primary text-primary-foreground font-bold text-sm inline-flex items-center justify-center shrink-0">
             R
           </Link>
           {!schmal && (
