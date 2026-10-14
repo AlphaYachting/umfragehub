@@ -9,11 +9,11 @@ export const NAVIGATION = [
     einklappbar: false,
     items: [
       {
-        path: "/",
+        path: "/verwaltung",
         label: "Übersicht",
         icon: LayoutDashboard,
         // Projekt- und Wellenseiten gehören zur Übersicht
-        aktivBei: (pfad) => pfad === "/" || pfad.startsWith("/projekt") || pfad.startsWith("/welle"),
+        aktivBei: (pfad) => pfad === "/verwaltung" || pfad.startsWith("/projekt") || pfad.startsWith("/welle"),
       },
     ],
   },
