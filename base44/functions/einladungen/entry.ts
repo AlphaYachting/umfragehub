@@ -318,7 +318,11 @@ function mailNurText({ text, link }) {
 const OEFFENTLICHE_URL = "https://andifragt.at";
 
 function basisUrl(_body) {
-  const url = env("APP_URL") || OEFFENTLICHE_URL;
+  // Eine alte APP_URL auf base44.app/Vorschau darf die öffentliche Domain nicht verdrängen.
+  const gesetzt = env("APP_URL");
+  const url = gesetzt && !/base44\.app|preview-sandbox|localhost|127\.0\.0\.1/.test(gesetzt)
+    ? gesetzt
+    : OEFFENTLICHE_URL;
   return url.replace(/\/+$/, "");
 }
 
