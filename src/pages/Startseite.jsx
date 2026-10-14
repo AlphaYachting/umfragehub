@@ -87,12 +87,10 @@ function codeAuslesen(eingabe) {
   return /^[A-Za-z0-9_-]{8,64}$/.test(code) ? code : null;
 }
 
-function Etikett({ children, hell = false }) {
+// Kleine Bereichsbeschriftung wie auf werbe-agentur-graz.at: Medium, Versalien, weit gesperrt.
+function Etikett({ children }) {
   return (
-    <p
-      className="text-xs sm:text-sm font-medium uppercase tracking-[0.2em]"
-      style={{ color: hell ? "var(--farbe-akzent)" : "var(--farbe-akzent)" }}
-    >
+    <p className="text-xs sm:text-sm font-medium uppercase tracking-[0.2em]" style={{ color: "var(--farbe-akzent)" }}>
       {children}
     </p>
   );
