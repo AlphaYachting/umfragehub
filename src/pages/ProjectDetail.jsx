@@ -267,7 +267,7 @@ export default function ProjectDetail() {
   return (
     <div className="v-seite">
       <Seitenkopf
-        zurueck={{ to: "/", label: "Übersicht" }}
+        zurueck={{ to: "/verwaltung", label: "Übersicht" }}
         bereich="Projekt"
         titel={projekt.name}
         versalien={false}
