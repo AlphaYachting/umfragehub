@@ -11,6 +11,7 @@ import {
   SORT_WEISS_NICHT,
   SORT_PASST_NICHT,
 } from "@/lib/werteSortierer";
+import { antippenVerb } from "@/lib/interview";
 
 // Werte-Sortierer für Befragte — drei Schritte auf einer Frageseite:
 //   1. Sortieren (Karte für Karte, Wischen oder Pfeiltasten)
@@ -51,6 +52,8 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache, textK
   const [mausGeraet] = useState(() =>
     typeof window !== "undefined" && window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches
   );
+  // Am Computer „Klicke“, am Handy „Tippe“ — „tippen“ wird am Computer als Tastatur verstanden
+  const verb = antippenVerb(sie, mausGeraet);
   // Weggeworfene Karte fliegt als eigene Kopie hinaus — die nächste Karte ist sofort bedienbar
   const [flug, setFlug] = useState(null);
 
@@ -260,7 +263,7 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache, textK
           Dauer etwa {minuten} {minuten === 1 ? "Minute" : "Minuten"}. {sie ? "Entscheiden Sie" : "Entscheide"} aus dem Bauch heraus — es gibt kein richtig oder falsch.
         </p>
         <p className="ws-hinweis ws-unten-hinweis">
-          {sie ? "Tippen Sie" : "Tippe"} unten auf „Los geht's“{mausGeraet ? (sie ? " oder drücken Sie Enter" : " oder drücke Enter") : ""}.
+          {verb} unten auf „Los geht's“{mausGeraet ? (sie ? " oder drücken Sie Enter" : " oder drücke Enter") : ""}.
         </p>
       </div>
     );
@@ -341,13 +344,12 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache, textK
           <span>Passt <b>{zaehle(SORT_PASST)}</b></span>
         </div>
 
-        {position < 3 && (
-          <p className="ws-wischhinweis">
-            {mausGeraet
-              ? <>Pfeiltasten: <kbd>←</kbd> passt nicht · <kbd>↓</kbd> weiß nicht · <kbd>→</kbd> passt</>
-              : "Wischen: rechts = passt · links = passt nicht · unten = weiß nicht"}
-          </p>
-        )}
+        {/* Nach drei Karten ausgeblendet, der Platz bleibt aber reserviert — sonst ruckelt die Seite */}
+        <p className="ws-wischhinweis" style={position < 3 ? undefined : { visibility: "hidden" }} aria-hidden={position >= 3 || undefined}>
+          {mausGeraet
+            ? <>Pfeiltasten: <kbd>←</kbd> passt nicht · <kbd>↓</kbd> weiß nicht · <kbd>→</kbd> passt</>
+            : "Wischen: rechts = passt · links = passt nicht · unten = weiß nicht"}
+        </p>
 
         <div className="ws-fuss">
           {position > 0 ? (
@@ -397,7 +399,7 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache, textK
     ? `${sie ? "Ihr" : "Dein"} Stapel hat nur ${stapel.length}. ${sie ? "Ergänzen Sie" : "Ergänze"} aus „Weiß nicht“.`
     : stapel.length === N && gewaehlt.length === N
       ? `Genau ${N} in ${sie ? "Ihrem" : "deinem"} Stapel – die sind schon eingetragen.`
-      : `${sie ? "Tippen Sie" : "Tippe"} die Begriffe in der Reihenfolge an, wie gut sie ${istBest ? "passen" : "nicht passen"}. Nochmal tippen nimmt sie wieder raus.`;
+      : `${verb} die Begriffe in der Reihenfolge an, wie gut sie ${istBest ? "passen" : "nicht passen"}. Nochmal ${mausGeraet ? "klicken" : "tippen"} nimmt sie wieder raus.`;
 
   return (
     <div className="ws">
@@ -425,7 +427,7 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache, textK
             <li key={i}>
               <div className={`ws-platz ${i === gewaehlt.length ? "ws-platz-naechster" : ""}`}>
                 <span className="ws-platz-nr">{i + 1}</span>
-                <span className="ws-platz-text">{i === gewaehlt.length ? `${sie ? "Tippen Sie" : "Tippe"} unten auf einen Begriff` : ""}</span>
+                <span className="ws-platz-text">{i === gewaehlt.length ? `↓ ${verb} unten auf einen Begriff` : ""}</span>
               </div>
             </li>
           );
@@ -467,7 +469,7 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache, textK
           <>
             <p className="ws-hinweis" style={{ margin: 0 }}>
               {platzVoll
-                ? `${sie ? "Tippen Sie" : "Tippe"} unten auf „Weiter zu Schritt 3“.`
+                ? `${verb} unten auf „Weiter zu Schritt 3“.`
                 : `Noch ${N - gewaehlt.length} ${N - gewaehlt.length === 1 ? "Begriff" : "Begriffe"}.`}
             </p>
             <button type="button" className="ws-link" onClick={rueckgaengig}>
@@ -478,7 +480,7 @@ export default function WerteSortierer({ frage, wert, onChange, ansprache, textK
           <>
             <p className="ws-hinweis" style={{ margin: 0 }}>
               {platzVoll
-                ? `Fertig. ${sie ? "Tippen Sie" : "Tippe"} unten auf „Weiter“.`
+                ? `Fertig. ${verb} unten auf „Weiter“.`
                 : `Noch ${N - gewaehlt.length} ${N - gewaehlt.length === 1 ? "Begriff" : "Begriffe"}.`}
             </p>
             <button type="button" className="ws-link" onClick={() => setPhase("best")}>
