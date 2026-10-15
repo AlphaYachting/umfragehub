@@ -11,6 +11,7 @@ import {
   platzhalterErsetzen,
   matrixZeilenMitIds,
   kapitelTitelAnzeige,
+  istMausGeraet,
 } from "@/lib/interview";
 import FrageAntwort from "@/components/interview/FrageAntwort";
 import { werteSortiererFertig } from "@/lib/werteSortierer";
@@ -55,8 +56,6 @@ export default function Interview() {
   const [answers, setAnswers] = useState({});
   const [sessionToken, setSessionToken] = useState(null);
   const [naechsterBlock, setNaechsterBlock] = useState(null);
-  const [startZeit, setStartZeit] = useState(null);
-  const [beantwortetCount, setBeantwortetCount] = useState(0);
   const [animKey, setAnimKey] = useState(0);
   const [erklaerungOffen, setErklaerungOffen] = useState({});
   const [offlineHinweis, setOfflineHinweis] = useState(false);
@@ -77,10 +76,19 @@ export default function Interview() {
   }
 
   const frageHeadingRef = useRef(null);
-  const weiterRef = useRef(null);
-  const autoWeiterStateRef = useRef({});
-  // FEHLER 1: blockiert Auto-Weiter bei Fragen, die beim Betreten schon beantwortet waren
-  const beimBetretenBeantwortetRef = useRef(false);
+  // Kurze Klicksperre nach jedem Seitenwechsel: Ein Doppelklick auf „Weiter“ (oder ein Klick,
+  // der noch der vorigen Frage galt) darf nicht auf der neuen Frage landen und sie überspringen.
+  const KLICKSPERRE_MS = 400;
+  const klickSperreBisRef = useRef(0);
+  function klicksKurzSperren() {
+    klickSperreBisRef.current = performance.now() + KLICKSPERRE_MS;
+  }
+  function klickSperreAbfangen(e) {
+    if (performance.now() < klickSperreBisRef.current) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }
 
   const kannFortsetzen = !testModus && !!speicherLesen(`interview_${linkToken}`);
 
@@ -128,20 +136,6 @@ export default function Interview() {
           };
         });
         setAnswers(aMap);
-        // FEHLER 1: Auto-Weiter-Gedächtnis für bereits beantwortete Fragen vorbelegen
-        (d.antworten || []).forEach((a) => {
-          const w = {
-            auswahl: a.auswahl || [],
-            zahl: a.zahl,
-            text: a.text || "",
-            matrixWerte: a.matrixWerte || {},
-            eingabeart: a.eingabeart,
-            transkriptKorrigiert: a.transkriptKorrigiert,
-          };
-          autoWeiterStateRef.current[a.frageId] = JSON.stringify(w);
-        });
-        setBeantwortetCount((d.antworten || []).length);
-        setStartZeit(new Date(d.session.startedAt).getTime());
         if (d.session.status === "abgeschlossen") {
           setScreen("abschluss");
         } else {
@@ -173,18 +167,13 @@ export default function Interview() {
     if (screen === "frage" || screen === "blockuebergang") {
       window.scrollTo({ top: 0, behavior: "auto" });
     }
-    // FEHLER 1: merken, ob die Frage beim Betreten schon beantwortet war
-    if (screen === "frage") {
-      const item = fragenListe[currentIndex];
-      beimBetretenBeantwortetRef.current = !!(item && istBeantwortet(item.frage, answers[item.frage.id]));
-    }
   }, [screen, currentIndex, animKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function starten() {
+    klicksKurzSperren();
     if (testModus) {
       setScreen("frage");
       setCurrentIndex(0);
-      setStartZeit(Date.now());
       return;
     }
     try {
@@ -200,7 +189,6 @@ export default function Interview() {
       }
       setSessionToken(d.sessionToken);
       speicherSchreiben(`interview_${linkToken}`, d.sessionToken);
-      setStartZeit(Date.now());
       setScreen("frage");
       setCurrentIndex(0);
     } catch (e) {
@@ -299,12 +287,13 @@ export default function Interview() {
     if (expliziterWert !== undefined && (typeof expliziterWert !== "object" || expliziterWert === null || "nativeEvent" in expliziterWert)) {
       expliziterWert = undefined;
     }
-    // Werte-Sortierer: „Weiter“ führt zuerst durch die Schritte des Moduls (Einleitung → … → Schritt 3)
-    if (expliziterWert === undefined && item.frage.typ === "werte_sortierer" && sortiererAbfangenRef.current) {
-      if (sortiererAbfangenRef.current()) return;
+    // Mehrstufige Fragen (Werte-Sortierer, Werte-Auswahl): „Weiter“ führt zuerst durch ihre Schritte
+    if (expliziterWert === undefined && (item.frage.typ === "werte_sortierer" || item.frage.typ === "werte_auswahl") && sortiererAbfangenRef.current) {
+      if (sortiererAbfangenRef.current()) { klicksKurzSperren(); return; }
     }
     const wert = expliziterWert !== undefined ? expliziterWert : answers[item.frage.id];
     if (!testModus && item.frage.pflicht && !istBeantwortet(item.frage, wert)) return;
+    klicksKurzSperren();
 
     // Antwort im Hintergrund speichern (und offene Antworten nachsenden) — die nächste
     // Frage erscheint sofort. Vor dem Abschluss wird auf alles gewartet.
@@ -336,30 +325,13 @@ export default function Interview() {
     setAnimKey((k) => k + 1);
   }, [currentIndex, fragenListe, answers, sessionToken, testModus]);
 
-  weiterRef.current = weiter;
-
-  // Automatisch weiter bei Einfachauswahl (Paket 5.3) — nur bei neuer Auswahl
-  useEffect(() => {
-    const item = fragenListe[currentIndex];
-    if (!item || screen !== "frage") return;
-    const typ = item.frage.typ;
-    if (typ !== "single_choice" && typ !== "ja_nein") return;
-    const wert = answers[item.frage.id];
-    if (!istBeantwortet(item.frage, wert)) return;
-    // FEHLER 1: keine Automatik bei Fragen, die beim Betreten schon beantwortet waren
-    if (beimBetretenBeantwortetRef.current) return;
-    const key = item.frage.id;
-    const serialized = JSON.stringify(wert);
-    if (autoWeiterStateRef.current[key] === serialized) return;
-    autoWeiterStateRef.current[key] = serialized;
-    const timer = setTimeout(() => {
-      weiterRef.current?.();
-    }, 480);
-    return () => clearTimeout(timer);
-  }, [answers, currentIndex, fragenListe, screen]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Kein automatisches Weiter nach einer Auswahl: Es lief parallel zum Weiter-Knopf, und ein
+  // Klick knapp danach traf schon die nächste Frage (übersprungen oder ungewollt beantwortet).
+  // Überall gilt jetzt dasselbe: wählen, dann „Weiter“.
 
   async function zurueck() {
     if (currentIndex === 0) return;
+    klicksKurzSperren();
     // FEHLER 2: aktuelle Antwort speichern, bevor zurückgegangen wird (ohne Pflichtprüfung)
     const item = fragenListe[currentIndex];
     if (item) {
@@ -405,6 +377,7 @@ export default function Interview() {
   }
 
   function blockuebergangWeiter() {
+    klicksKurzSperren();
     setCurrentIndex(currentIndex + 1);
     setScreen("frage");
     setAnimKey((k) => k + 1);
@@ -412,18 +385,12 @@ export default function Interview() {
 
   const gesamt = fragenListe.length;
   const fortschritt = gesamt > 0 ? Math.round((currentIndex / gesamt) * 100) : 0;
+  // Restzeit = feste Schätzung nach Fragetyp. Keine Hochrechnung aus der verstrichenen Zeit:
+  // Die enthielt jede Pause und zeigte nach dem Fortsetzen absurde Werte (z. B. „1347 Min.“).
   const verbleibendeBasisSek = fragenListe.slice(currentIndex).reduce(
     (s, item) => s + geschaetzteFrageDauerSekunden(item.frage.typ), 0
   );
-  let pace = 1;
-  if (startZeit && beantwortetCount > 0) {
-    const verstrichenSek = (Date.now() - startZeit) / 1000;
-    const basisBeantwortet = fragenListe.slice(0, currentIndex).reduce(
-      (s, item) => s + geschaetzteFrageDauerSekunden(item.frage.typ), 0
-    );
-    if (basisBeantwortet > 0) pace = verstrichenSek / basisBeantwortet;
-  }
-  const verbleibendeMin = Math.max(1, Math.round((verbleibendeBasisSek * pace) / 60));
+  const verbleibendeMin = Math.max(1, Math.round(verbleibendeBasisSek / 60));
   // Gesamtdauer für die Startseite — dieselbe Rechnung wie die Restzeit im Kopf der Fragen,
   // damit beide Angaben zusammenpassen.
   const gesamtDauerMin = Math.max(1, Math.round(
@@ -531,7 +498,7 @@ export default function Interview() {
       welle.einladungsModus === "persoenlich" && einladungsToken
         ? { icon: Shield, lead: "Antworten bleiben anonym.", text: `Wir sehen nur, ob ${a.duSie} teilgenommen ${a.hastHaben} — nicht, was ${a.duSie} ${a.duSie === "Sie" ? "antworten" : "antwortest"}. Antworten werden ohne Name, E-Mail und Gerät gespeichert und erst ab ${welle.mindestTeilnehmer || 6} abgeschlossenen Befragungen überhaupt sichtbar.` }
         : { icon: Shield, lead: "Vollständig anonym.", text: `Wir sehen nicht, wer ${a.duSie} ${a.bistSind}. Es werden weder Name noch E-Mail noch Gerät gespeichert. Einzelantworten werden erst ab ${welle.mindestTeilnehmer || 6} abgeschlossenen Befragungen überhaupt sichtbar.` },
-      { icon: Heart, lead: "Kein richtig, kein falsch.", text: `Zu jeder Frage gibt es eine Erklärung, warum wir sie stellen – einfach auf „Warum fragen wir das?“ tippen.` },
+      { icon: Heart, lead: "Kein richtig, kein falsch.", text: `Zu jeder Frage gibt es eine Erklärung, warum wir sie stellen – einfach auf „Warum fragen wir das?“ ${istMausGeraet() ? "klicken" : "tippen"}.` },
       { icon: Clock, lead: `Etwa ${gesamtDauerMin} Minuten.`, text: `Eine Frage pro Seite, ${a.duSie} ${a.kannstKönnen} jederzeit zurück.` },
       { icon: PauseCircle, lead: "Pausieren geht.", text: `${a.duSie === "Sie" ? "Schließen Sie" : "Schließ"} den Tab einfach — auf demselben Gerät geht es später dort weiter, wo ${a.duSie} aufgehört ${a.hastHaben}.` },
     ];
@@ -618,7 +585,7 @@ export default function Interview() {
     const blockTitel = kapitelTitelAnzeige(naechsterBlock?.titel);
     const titelAnzeigen = blockTitel && blockTitel !== "Neuer Block";
     return (
-      <div className="min-h-screen flex items-center justify-center p-5" style={{ background: "var(--farbe-bg)" }}>
+      <div className="min-h-screen flex items-center justify-center p-5" style={{ background: "var(--farbe-bg)" }} onClickCapture={klickSperreAbfangen}>
         <div className="max-w-[560px] w-full text-center">
           <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: "var(--farbe-akzent)", marginBottom: 16 }}>
             Kapitel {blockNr} von {totalBloecke}
@@ -684,7 +651,8 @@ export default function Interview() {
   const frage = item.frage;
   const wert = answers[frage.id] || {};
   const blockNr = item.blockIndex + 1;
-  const istSortierer = frage.typ === "werte_sortierer";
+  // Mehrstufige Fragen steuern Beschriftung und Freigabe des Weiter-Knopfs selbst (onStatus)
+  const istSortierer = frage.typ === "werte_sortierer" || frage.typ === "werte_auswahl";
   const sortiererAktiv = istSortierer && sortiererStatus && sortiererStatus.frageId === frage.id;
   const weiterGesperrt = istSortierer
     ? !testModus && !(sortiererAktiv && sortiererStatus.kannWeiter)
@@ -694,7 +662,7 @@ export default function Interview() {
     : (currentIndex === gesamt - 1 ? "Abschließen" : "Weiter");
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "var(--farbe-bg)" }}>
+    <div className="min-h-screen flex flex-col interview-seite" style={{ background: "var(--farbe-bg)" }} onClickCapture={klickSperreAbfangen}>
       <div className="w-full h-1" style={{ background: "var(--farbe-linie)" }}>
         <div className="h-full transition-all duration-300" style={{ width: `${fortschritt}%`, background: "var(--farbe-akzent)" }} />
       </div>
