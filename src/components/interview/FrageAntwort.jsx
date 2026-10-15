@@ -2,7 +2,10 @@ import React, { useState, useRef, useEffect } from "react";
 import { Check } from "lucide-react";
 import SprachAufnahme from "./SprachAufnahme";
 import WerteSortierer from "./WerteSortierer";
-import { matrixZeilenMitIds, platzhalterErsetzen } from "@/lib/interview";
+import { matrixZeilenMitIds, platzhalterErsetzen, antippenVerb } from "@/lib/interview";
+
+// Werte-Auswahl: genau so viele werden gewählt und anschließend gereiht
+const WERTE_AUSWAHL_ANZAHL = 3;
 
 // Ab dieser Optionszahl werden kurze Mehrfachauswahl-Optionen als Begriffe zum Antippen
 // dargestellt statt als lange Kartenliste.
@@ -123,6 +126,35 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
   useEffect(() => {
     setReglerBeruehrt(v.zahl !== undefined && v.zahl !== null);
   }, [frage.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Werte-Auswahl: der Weiter-Knopf unten führt durch beide Stufen (auswählen → reihen),
+  // wie beim Werte-Sortierer. So gibt es nur EINEN Weiter-Knopf, immer an derselben Stelle.
+  const istWerteAuswahl = frage.typ === "werte_auswahl";
+  const werteAuswahlStatus = istWerteAuswahl
+    ? `${werteStep}|${auswahl.length}|${ranking.length}|${frage.pflicht ? 1 : 0}`
+    : "";
+  useEffect(() => {
+    if (!istWerteAuswahl || !onStatus) return;
+    const fertig = werteStep === 1
+      ? auswahl.length === WERTE_AUSWAHL_ANZAHL
+      : ranking.length === WERTE_AUSWAHL_ANZAHL;
+    onStatus({ kannWeiter: fertig || !frage.pflicht, beschriftung: null });
+  }, [werteAuswahlStatus]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => {
+    if (!istWerteAuswahl) return;
+    if (onStatus) onStatus(null);
+    if (weiterAbfangen) weiterAbfangen(null);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  if (istWerteAuswahl && weiterAbfangen) {
+    weiterAbfangen(() => {
+      if (werteStep === 1 && auswahl.length === WERTE_AUSWAHL_ANZAHL) {
+        setWerteStep(2);
+        window.scrollTo({ top: 0, behavior: "auto" });
+        return true;
+      }
+      return false;
+    });
+  }
 
   function setAuswahl(neu) {
     onChange({ ...v, auswahl: neu, ranking: [] });
@@ -469,10 +501,12 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
 
   // werte_auswahl
   if (frage.typ === "werte_auswahl") {
+    const sie = ansprache === "sie";
+    const voll = auswahl.length >= WERTE_AUSWAHL_ANZAHL;
     function toggle(opt) {
       if (auswahl.includes(opt)) {
         setAuswahl(auswahl.filter((x) => x !== opt));
-      } else {
+      } else if (!voll) {
         setAuswahl([...auswahl, opt]);
       }
     }
@@ -491,41 +525,37 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
       <div className="space-y-3">
         {werteStep === 1 && (
           <>
-            <p className="text-sm text-slate-500">Wähle die drei Werte aus, die {ansprache === "sie" ? "Sie" : "du"} als am wichtigsten empfindest.</p>
+            <p aria-live="polite" className="interview-mitlaufend" style={{ color: voll ? "var(--farbe-text)" : "var(--farbe-text-daempft)", fontSize: "14px", fontWeight: 600 }}>
+              {auswahl.length} von {WERTE_AUSWAHL_ANZAHL} gewählt
+            </p>
             <div className="space-y-2">
               {(frage.optionen || []).map((opt) => {
                 const aktiv = auswahl.includes(opt);
+                const gesperrt = voll && !aktiv;
                 return (
                   <button
                     key={opt}
                     type="button"
                     aria-pressed={aktiv}
-                    onClick={(e) => { einrastenSpuerbar(e.currentTarget); toggle(opt); }}
+                    aria-disabled={gesperrt}
+                    onClick={(e) => { if (gesperrt) return; einrastenSpuerbar(e.currentTarget); toggle(opt); }}
                     className={`interview-auswahl-karte ${aktiv ? "interview-auswahl-karte-aktiv" : ""}`}
+                    style={gesperrt ? { opacity: 0.45, cursor: "not-allowed" } : undefined}
                   >
                     <span className={`interview-marker interview-marker-eckig ${aktiv ? "interview-marker-aktiv" : ""}`}>
                       <Check className="interview-marker-haken" size={12} strokeWidth={3} />
                     </span>
-                    <span>{opt}</span>
+                    <span>{t(opt)}</span>
                   </button>
                 );
               })}
             </div>
-            <button
-              type="button"
-              disabled={auswahl.length < 3}
-              onClick={() => setWerteStep(2)}
-              className="text-sm font-medium"
-              style={{ color: auswahl.length < 3 ? "var(--farbe-grau-mid)" : "var(--farbe-text)" }}
-            >
-              {auswahl.length < 3 ? `Noch ${3 - auswahl.length} wählen` : "Weiter zur Reihenfolge →"}
-            </button>
           </>
         )}
         {werteStep === 2 && (
           <>
-            <p className="text-sm text-slate-500">
-              Tippe die drei wichtigsten in Reihenfolge an (1. Platz zuerst).
+            <p style={{ color: "var(--farbe-text-daempft)", fontSize: "14px", lineHeight: 1.5 }}>
+              {antippenVerb(sie)} sie der Reihe nach an – das Wichtigste zuerst.
             </p>
             <div className="space-y-2">
               {auswahl.map((opt) => {
@@ -540,7 +570,7 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
                     <span className={`interview-marker interview-marker-eckig ${place >= 0 ? "interview-marker-aktiv" : ""}`}>
                       {place >= 0 && <span style={{ color: "#fff", fontSize: "12px", fontWeight: 700, lineHeight: 1 }}>{place + 1}</span>}
                     </span>
-                    <span style={{ flex: 1 }}>{opt}</span>
+                    <span style={{ flex: 1 }}>{t(opt)}</span>
                   </button>
                 );
               })}
@@ -548,7 +578,8 @@ export default function FrageAntwort({ frage, wert, onChange, ansprache, textKon
             <button
               type="button"
               onClick={() => { setWerteStep(1); setRanking([]); onChange({ ...v, auswahl, ranking: [] }); }}
-              className="text-sm text-slate-400"
+              className="text-sm"
+              style={{ color: "var(--farbe-grau-mid)", minHeight: 36 }}
             >
               ← Zurück zur Auswahl
             </button>
