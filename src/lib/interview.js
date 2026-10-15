@@ -12,6 +12,19 @@ export function generiereToken(length = 24) {
   return out;
 }
 
+// Gerät mit Maus oder Trackpad (Computer)? Dort heißt es „klicken“, am Handy „tippen“ —
+// „tippen“ verstehen viele am Computer als „mit der Tastatur schreiben“.
+export function istMausGeraet() {
+  return typeof window !== "undefined" && !!window.matchMedia &&
+    window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+}
+
+// „Klicke“ / „Klicken Sie“ am Computer, „Tippe“ / „Tippen Sie“ am Handy
+export function antippenVerb(sie, maus = istMausGeraet()) {
+  if (maus) return sie ? "Klicken Sie" : "Klicke";
+  return sie ? "Tippen Sie" : "Tippe";
+}
+
 // Geschätzte Dauer einer einzelnen Frage in Sekunden, nach Typ
 export function geschaetzteFrageDauerSekunden(typ) {
   switch (typ) {
