@@ -413,6 +413,13 @@
     animation: einrasten 120ms ease-out;
   }
 
+  /* Frageseite: nichts darf seitlich überstehen. Die hinausfliegende Karte im Werte-Sortierer
+     machte die Seite kurz breiter als den Bildschirm — Handy-Browser sprangen dann nach oben.
+     „clip“ statt „hidden“: erzeugt keinen eigenen Scrollbereich, die Fußzeile bleibt sticky. */
+  .interview-seite {
+    overflow-x: clip;
+  }
+
   .interview-fusszeile {
     position: sticky;
     bottom: 0;
