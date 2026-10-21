@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Check, Eye, Users, HeartHandshake, Lock, Mic, Smartphone, ListChecks } from "lucide-react";
+import {
+  ArrowRight, ArrowUpRight, Search, Eye, Users, Heart, TrendingUp,
+  Lock, Smartphone, MessageCircle, Pencil,
+} from "lucide-react";
 
 // Öffentliche Startseite von andifragt.at, für alle, die die Domain ohne
 // Befragungslink aufrufen.
 //
-// Aufbau (Konzept 10/2026): drei Befragungen, drei Ziele.
-//   01 Positionierung: Wir befragen, damit dich deine Kunden besser sehen.
-//   02 Team: Damit die Guten bleiben und Bessere kommen.
-//   03 Kunden: Deine Kunden können mehr zu deinem Erfolg beitragen, als du glaubst.
-// Danach Ablauf (ANDI fragt / weiß / macht / zeigt), Vertrauen, Einstieg für Eingeladene.
-// Begriffe abgestimmt auf werbe-agentur-graz.at/positionierung-agentur.
+// Umgesetzt nach dem freigegebenen Prototyp (Design-Canvas „andi fragt. Startseite“, 21.10.2026):
+//   Einstieg, vier Kacheln, vier Themen (Positionierung, Team, Kunden, Vertrieb) mit
+//   Denkweg „Wir fragen / Wir erkennen / Du gewinnst“, Ablauf, Vertrauen, Eingeladene.
+// Grundsatz: Wir zeigen nichts vom Befragungstool, sondern dass wir wissen,
+// wie man fragt und was man aus den Antworten macht.
 //
 // Bewusst ohne Datenzugriff: Die Seite lädt nichts aus der Datenbank und
 // verrät nicht, welche Befragungen es gibt.
@@ -24,6 +26,22 @@ const KONTAKT_TEL = "+43 316 570 117";
 const IMPRESSUM = "https://www.werbe-agentur-graz.at/impressum";
 const DATENSCHUTZ = "https://www.werbe-agentur-graz.at/datenschutz";
 const MARKENPRUEFSTAND = "https://www.werbe-agentur-graz.at/positionierung-agentur";
+
+// Farben wie im Prototyp. Kleine pinke Beschriftungen etwas dunkler als der Akzent,
+// damit sie auf Weiß und Hellgrau gut lesbar sind (Kontrast über 4,5 : 1).
+const F = {
+  akzent: "var(--farbe-akzent)",
+  etikett: "#d4164a",
+  etikettDunkel: "#ff7a98",
+  link: "#c4103f",
+  text: "var(--farbe-text)",
+  daempft: "var(--farbe-text-daempft)",
+  grau: "var(--farbe-grau)",
+  hauch: "var(--farbe-akzent-hauch)",
+  hauchRand: "#f3c6d1",
+  linie: "var(--farbe-linie)",
+  gut: "var(--farbe-gut)",
+};
 
 const mailAn = (betreff) => `mailto:${KONTAKT_MAIL}?subject=${encodeURIComponent(betreff)}`;
 
@@ -42,6 +60,11 @@ const THEMEN = [
     ],
     knopf: "Markenprüfstand anfragen",
     betreff: "andi fragt. Positionierung",
+    wen: ["Geschäftsführung", "Team", "Kunden"],
+    frage: "Warum kaufen Kunden wirklich bei uns und nicht beim Mitbewerb?",
+    andi: true,
+    gewinn: "Eine Positionierung mit Kernbotschaften, die deine Kunden auf Anhieb wiedererkennen.",
+    rechts: false,
   },
   {
     id: "team",
@@ -55,19 +78,22 @@ const THEMEN = [
       "Gute Leute bleiben, wenn sie wissen, wofür sie arbeiten, und wenn jemand zuhört. Die anonyme Teambefragung zeigt, was dein Team hält, was es bremst und was es sich wünscht.",
       "Daraus entsteht eine Arbeitgebermarke, die stimmt: Dein Team erkennt sich darin wieder, und gute Bewerberinnen und Bewerber sehen, warum es sich lohnt, zu dir zu kommen.",
     ],
-    punkte: [
+    knopf: "Teambefragung anfragen",
+    betreff: "andi fragt. Teambefragung",
+    wen: ["Mitarbeitende", "Führungskräfte", "Jede Abteilung"],
+    frage: "Was hält dich hier, auch an Tagen, an denen es schwierig ist?",
+    erkennen: [
       "Stimmung und Zufriedenheit, auch je Abteilung",
       "Was dein Team hält und was es bremst",
       "Wie gut Ziele und Werte im Alltag ankommen",
-      "Die Grundlage für eine glaubwürdige Arbeitgebermarke",
     ],
-    knopf: "Teambefragung anfragen",
-    betreff: "andi fragt. Teambefragung",
+    gewinn: "Eine glaubwürdige Arbeitgebermarke, die gute Leute hält und die richtigen anzieht.",
+    rechts: true,
   },
   {
     id: "kunden",
     nr: "03",
-    icon: HeartHandshake,
+    icon: Heart,
     kurz: "Kunden",
     versprechen: "Mehr Erfolg, als du glaubst.",
     h2: "Deine Kunden können mehr zu deinem Erfolg beitragen,",
@@ -76,30 +102,52 @@ const THEMEN = [
       "Kunden sagen selten von sich aus, warum sie bei dir kaufen, was sie fast zur Konkurrenz getrieben hätte oder was sie sich noch wünschen. Gefragt erzählen sie es gern.",
       "Die Kundenbefragung liefert die Außensicht, die im Alltag fehlt. Im Vergleich mit Führung und Team zeigt sie, wo dein Selbstbild und das Bild deiner Kunden auseinandergehen und wo deine größten Chancen liegen.",
     ],
-    punkte: [
-      "Warum Kunden bleiben und wann sie wechseln würden",
-      "Wie deine Marke von außen wirkt",
-      "Welche Leistungen sie schätzen und welche sie vermissen",
-      "Der Abgleich mit dem Bild von Führung und Team",
-    ],
     knopf: "Kundenbefragung anfragen",
     betreff: "andi fragt. Kundenbefragung",
+    wen: ["Stammkunden", "Neukunden", "Partner"],
+    frage: "Was müsste passieren, damit du uns ohne Zögern weiterempfiehlst?",
+    erkennen: [
+      "Warum Kunden bleiben und wann sie wechseln würden",
+      "Welche Leistungen sie schätzen und welche sie vermissen",
+      "Wo dein Selbstbild und ihr Bild auseinandergehen",
+    ],
+    gewinn: "Leistungen und Botschaften, die genau dort ansetzen, wo deine Kunden entscheiden.",
+    rechts: false,
+  },
+  {
+    id: "vertrieb",
+    nr: "04",
+    icon: TrendingUp,
+    kurz: "Vertrieb",
+    versprechen: "Verkaufen, was wirklich ankommt.",
+    h2: "Bevor du den Vertrieb neu aufstellst, frag die,",
+    akzent: "die verkaufen.",
+    absaetze: [
+      "Eine neue Vertriebsidee klingt am Besprechungstisch oft besser als im Alltag. Außendienst, Innendienst und Kunden wissen am genauesten, wo Abschlüsse gelingen und wo sie hängen bleiben.",
+      "Die Vertriebsbefragung holt dieses Wissen ab, bevor du investierst. So baust du auf dem auf, was funktioniert, und dein Team zieht mit, weil es gefragt wurde.",
+    ],
+    knopf: "Vertriebsbefragung anfragen",
+    betreff: "andi fragt. Vertriebsbefragung",
+    wen: ["Außendienst", "Innendienst", "Kunden"],
+    frage: "Bei welchem Argument nicken Kunden, und bei welchem schalten sie ab?",
+    erkennen: [
+      "Wo Abschlüsse gelingen und wo sie hängen bleiben",
+      "Welche Argumente beim Kunden wirklich ankommen",
+      "Wie Außendienst, Innendienst und Kunden zusammenspielen",
+    ],
+    gewinn: "Einen Vertrieb, der auf dem aufbaut, was beim Kunden ankommt, und ein Team, das mitzieht.",
+    rechts: true,
   },
 ];
 
-const SAEULEN = [
-  { buchstabe: "A", titel: "Aufmerksamkeit", frage: "Was zieht an?" },
-  { buchstabe: "N", titel: "Nutzen", frage: "Was bringt es deinem Kunden?" },
-  { buchstabe: "D", titel: "Differenzierung", frage: "Warum gerade du?" },
-  { buchstabe: "I", titel: "Identität", frage: "Was macht dich unverwechselbar?" },
-];
+const SAEULEN = ["Aufmerksamkeit", "Nutzen", "Differenzierung", "Identität"];
 
 const SCHRITTE = [
   {
     bild: "/marke/andi-fragt.svg",
     alt: "ANDI fragt",
     titel: "Digitale Interviews",
-    text: "Führung, Team und auf Wunsch deine Kunden beantworten die Interviews online: anonym, am Handy oder am Computer, wann es passt. Dein eigener Aufwand: rund 60 Minuten.",
+    text: "Führung, Team, Vertrieb und auf Wunsch deine Kunden beantworten die Interviews online: anonym, am Handy oder am Computer, wann es passt. Dein eigener Aufwand: rund 60 Minuten.",
   },
   {
     bild: "/marke/andi-weiss.svg",
@@ -117,21 +165,19 @@ const SCHRITTE = [
     bild: "/marke/andi-zeigt.svg",
     alt: "ANDI zeigt",
     titel: "Kommunikation",
-    text: "Aus der Essenz werden klare Botschaften für Kunden, Team und Bewerbende. Den Weg dorthin besprechen wir gemeinsam.",
+    text: "Aus der Essenz werden klare Botschaften für Kunden, Team, Vertrieb und Bewerbende. Den Weg dorthin besprechen wir gemeinsam.",
   },
 ];
 
 const VERSPRECHEN = [
   { icon: Lock, titel: "Volle Anonymität", text: "Niemand sieht, wer was geantwortet hat. Ergebnisse gibt es erst ab einer Mindestzahl an Teilnehmenden." },
-  { icon: Smartphone, titel: "Orts- und zeitunabhängig", text: "Digitale Interviews am Handy oder am Computer, ohne App und ohne Anmeldung. Unterbrechen und später weitermachen geht jederzeit." },
-  { icon: Mic, titel: "Sprechen statt tippen", text: "Offene Antworten lassen sich einsprechen. So sagen Menschen mehr als in ein Textfeld." },
-  { icon: ListChecks, titel: "Mehr als Ankreuzen", text: "Werte sortieren, abwägen, erzählen: Die Fragen holen heraus, was in Standardumfragen untergeht." },
+  { icon: Smartphone, titel: "Orts- und zeitunabhängig", text: "Am Handy oder am Computer, wann es passt. Unterbrechen und später weitermachen geht jederzeit." },
+  { icon: MessageCircle, titel: "Fragen, die jeder versteht", text: "Klar formuliert, ohne Fachsprache und ohne Suggestion. So antworten alle ehrlich, vom Lehrling bis zur Geschäftsführung." },
+  { icon: Pencil, titel: "Raum für eigene Worte", text: "Neben kurzen Einschätzungen gibt es offene Fragen. Dort steckt oft die wertvollste Antwort." },
 ];
 
-// Einheitliche Icons: Inhalts-Icons 28 px, Häkchen in Listen 20 px, Pfeile in Knöpfen 16 px.
-// Alle mit gleicher Strichstärke und in der Akzentfarbe.
-const ICON = { size: 28, strokeWidth: 1.5, style: { color: "var(--farbe-akzent)" }, "aria-hidden": "true" };
-const HAEKCHEN = { size: 20, strokeWidth: 2, style: { color: "var(--farbe-akzent)" }, "aria-hidden": "true" };
+// Icons: Inhalts-Icons 28 px, Pfeile in Knöpfen 16 px, Schritt-Symbole 16 px.
+const ICON = { size: 28, strokeWidth: 1.5, style: { color: F.akzent }, "aria-hidden": "true" };
 
 // Akzeptiert den ganzen Link (https://andifragt.at/i/CODE) oder nur den Code.
 function codeAuslesen(eingabe) {
@@ -141,10 +187,13 @@ function codeAuslesen(eingabe) {
   return /^[A-Za-z0-9_-]{8,64}$/.test(code) ? code : null;
 }
 
-// Kleine Bereichsbeschriftung wie auf werbe-agentur-graz.at: Medium, Versalien, weit gesperrt.
-function Etikett({ children }) {
+// Kleine Bereichsbeschriftung: Medium, Versalien, weit gesperrt.
+function Etikett({ children, dunkel = false, className = "" }) {
   return (
-    <p className="text-xs sm:text-sm font-medium uppercase tracking-[0.2em]" style={{ color: "var(--farbe-akzent)" }}>
+    <p
+      className={`text-[13px] font-medium uppercase tracking-[0.2em] ${className}`}
+      style={{ color: dunkel ? F.etikettDunkel : F.etikett }}
+    >
       {children}
     </p>
   );
@@ -154,50 +203,138 @@ function Hauptknopf({ href, children }) {
   return (
     <a
       href={href}
-      className="inline-flex items-center justify-center gap-2 rounded px-6 py-3.5 font-semibold uppercase text-sm tracking-wide text-white"
-      style={{ background: "var(--farbe-akzent)" }}
+      className="inline-flex items-center justify-center gap-2 min-h-[48px] rounded px-6 text-sm font-semibold uppercase tracking-[0.04em] text-white"
+      style={{ background: F.akzent }}
     >
       {children} <ArrowRight size={16} aria-hidden="true" />
     </a>
   );
 }
 
-// Text eines Themas: Etikett, Überschrift mit Akzentwort, Absätze, Knopf.
-function ThemaText({ thema }) {
+const H2 = "text-[30px] lg:text-[40px] font-black uppercase leading-[1.12]";
+
+// Ein Schritt im Denkweg: Symbol links mit Verbindungslinie, Inhalt rechts.
+function Schritt({ symbol, label, letzter = false, children }) {
   return (
-    <div>
-      <Etikett>
-        {thema.nr} {thema.kurz}
-      </Etikett>
-      <h2 className="mt-3 text-3xl sm:text-4xl font-black uppercase leading-tight">
-        {thema.h2} <span style={{ color: "var(--farbe-akzent)" }}>{thema.akzent}</span>
-      </h2>
-      {thema.absaetze.map((a) => (
-        <p key={a} className="mt-5 text-lg leading-relaxed" style={{ color: "var(--farbe-text-daempft)" }}>
-          {a}
-        </p>
-      ))}
-      <div className="mt-8">
-        <Hauptknopf href={mailAn(thema.betreff)}>{thema.knopf}</Hauptknopf>
+    <li className="grid grid-cols-[32px_minmax(0,1fr)] gap-x-4">
+      <span className="flex flex-col items-center" aria-hidden="true">
+        {symbol}
+        {!letzter && <span className="flex-1 w-0.5 my-1.5" style={{ background: F.hauchRand }} />}
+      </span>
+      <div className={letzter ? "" : "pb-7"}>
+        <p className="mt-1.5 text-xs font-medium uppercase tracking-[0.18em]" style={{ color: F.daempft }}>{label}</p>
+        {children}
       </div>
+    </li>
+  );
+}
+
+const kreis = "flex items-center justify-center w-8 h-8 rounded-full shrink-0";
+
+function Denkweg({ thema }) {
+  return (
+    <div className="rounded-[20px] p-7 sm:p-9" style={{ background: F.hauch }}>
+      <p className="text-xs font-medium uppercase tracking-[0.2em]" style={{ color: F.daempft }}>Wen wir fragen</p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {thema.wen.map((w) => (
+          <span
+            key={w}
+            className="inline-flex items-center min-h-[32px] px-3.5 rounded-full bg-white text-sm font-medium"
+            style={{ border: `1px solid ${F.hauchRand}` }}
+          >
+            {w}
+          </span>
+        ))}
+      </div>
+
+      <ol className="mt-8">
+        <Schritt
+          label="Wir fragen"
+          symbol={<span className={`${kreis} text-white text-lg font-black`} style={{ background: F.akzent }}>?</span>}
+        >
+          <p className="mt-2 text-2xl font-bold leading-[1.3]">{thema.frage}</p>
+        </Schritt>
+
+        <Schritt
+          label={thema.andi ? "Wir prüfen mit ANDI" : "Wir erkennen"}
+          symbol={
+            <span className={`${kreis} bg-white box-border`} style={{ border: `2px solid ${F.akzent}`, color: F.akzent }}>
+              <Search size={16} strokeWidth={2.5} />
+            </span>
+          }
+        >
+          {thema.andi ? (
+            <div className="mt-2.5 grid grid-cols-2 gap-x-4 gap-y-2">
+              {SAEULEN.map((s) => (
+                <div key={s} className="flex items-baseline gap-2.5">
+                  <span className="text-[22px] font-black" style={{ color: F.akzent }} aria-hidden="true">{s[0]}</span>
+                  <span className="text-[15px] font-semibold">{s}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <ul className="mt-2.5 flex flex-col gap-2">
+              {thema.erkennen.map((p) => (
+                <li key={p} className="flex gap-2.5 text-[15px] leading-normal">
+                  <span className="shrink-0 w-1.5 h-1.5 mt-[9px] rounded-full" style={{ background: F.akzent }} aria-hidden="true" />
+                  <span>{p}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Schritt>
+
+        <Schritt
+          label="Du gewinnst"
+          letzter
+          symbol={
+            <span className={`${kreis} text-white`} style={{ background: F.text }}>
+              <ArrowUpRight size={16} strokeWidth={2.5} />
+            </span>
+          }
+        >
+          <p className="mt-2 text-lg font-semibold leading-[1.45]">{thema.gewinn}</p>
+        </Schritt>
+      </ol>
     </div>
   );
 }
 
-// Liste „Was du erfährst“ für Team und Kunden.
-function Erkenntnisse({ punkte, hintergrund }) {
+function Thema({ thema }) {
   return (
-    <div className="rounded-lg p-6 sm:p-8" style={{ background: hintergrund }}>
-      <h3 className="text-lg font-bold">Was du erfährst</h3>
-      <ul className="mt-5 space-y-4">
-        {punkte.map((p) => (
-          <li key={p} className="flex gap-3 leading-relaxed">
-            <Check {...HAEKCHEN} className="shrink-0 mt-1" />
-            <span>{p}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <section id={thema.id} className="py-[104px] scroll-mt-4" style={{ borderTop: `1px solid ${F.linie}` }}>
+      <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 min-[960px]:grid-cols-2 gap-12 min-[960px]:gap-20 items-center">
+        <div className={thema.rechts ? "min-[960px]:order-2" : ""}>
+          {/* Große Kontur-Ziffer, angelehnt an die Kontur-Schrift in den Rittler-Angeboten */}
+          <span
+            aria-hidden="true"
+            className="block text-[112px] font-black leading-[0.9] tracking-[-0.02em]"
+            style={{ color: "transparent", WebkitTextStroke: `2px ${F.akzent}` }}
+          >
+            {thema.nr}
+          </span>
+          <Etikett className="mt-6">{thema.kurz}</Etikett>
+          <h2 className={`mt-3 ${H2}`}>
+            {thema.h2} <span style={{ color: F.akzent }}>{thema.akzent}</span>
+          </h2>
+          {thema.absaetze.map((a) => (
+            <p key={a} className="mt-5 text-lg leading-[1.65]" style={{ color: F.daempft }}>{a}</p>
+          ))}
+          <div className="mt-8">
+            <Hauptknopf href={mailAn(thema.betreff)}>{thema.knopf}</Hauptknopf>
+          </div>
+          {thema.andi && (
+            <p className="mt-6 text-sm" style={{ color: F.daempft }}>
+              Mehr zum Markenprüfstand auf{" "}
+              <a href={MARKENPRUEFSTAND} target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline whitespace-nowrap" style={{ color: F.link }}>
+                werbe-agentur-graz.at
+              </a>
+            </p>
+          )}
+        </div>
+        <Denkweg thema={thema} />
+      </div>
+    </section>
   );
 }
 
@@ -224,22 +361,19 @@ export default function Startseite() {
     navigate(`/i/${gefunden}`);
   }
 
-  const [positionierung, team, kunden] = THEMEN;
-
   return (
-    <div className="min-h-screen bg-white" style={{ color: "var(--farbe-text)", fontFamily: "var(--schrift-marke)" }}>
+    <div className="min-h-screen bg-white" style={{ color: F.text, fontFamily: "var(--schrift-marke)" }}>
       {/* Kopf */}
-      <header className="max-w-6xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
-        {/* Schriftzug wie in der ersten Fassung, um 30 % vergrößert (18 px auf rund 23 px) */}
-        <a href="#top" className="text-[1.4625rem] font-bold leading-none" aria-label="andi fragt. Zur Startseite">
-          andi fragt<span style={{ color: "var(--farbe-akzent)" }}>.</span>
+      <header className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+        <a href="#top" className="text-[23px] font-bold leading-none" aria-label="andi fragt. Zur Startseite">
+          andi fragt<span style={{ color: F.akzent }}>.</span>
         </a>
         <nav className="flex items-center gap-5 text-sm">
           <a href="#eingeladen" className="hidden sm:inline font-medium hover:underline">Ich wurde eingeladen</a>
           <a
             href={mailAn("andi fragt. Termin vereinbaren")}
-            className="inline-flex items-center rounded px-4 py-2 text-sm font-semibold text-white"
-            style={{ background: "var(--farbe-text)" }}
+            className="inline-flex items-center min-h-[44px] px-4 rounded font-semibold text-white"
+            style={{ background: F.text }}
           >
             Kontakt
           </a>
@@ -248,43 +382,43 @@ export default function Startseite() {
 
       <main id="top">
         {/* Einstieg */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-12 sm:pt-16 sm:pb-16">
+        <section className="max-w-6xl mx-auto px-6 pt-14 pb-16">
           <Etikett>Die ANDI-Methode von Rittler &amp; Co</Etikett>
-          <h1 className="mt-4 text-4xl sm:text-6xl lg:text-7xl font-black uppercase leading-[0.98] max-w-5xl">
-            Die Antwort steckt <span style={{ color: "var(--farbe-akzent)" }}>im Unternehmen.</span>
+          <h1 className="mt-4 max-w-[960px] text-[clamp(40px,6vw,76px)] font-black uppercase leading-[0.98]">
+            Die Antwort steckt <span style={{ color: F.akzent }}>im Unternehmen.</span>
           </h1>
-          <p className="mt-6 text-lg sm:text-xl leading-relaxed max-w-2xl" style={{ color: "var(--farbe-text-daempft)" }}>
+          <p className="mt-6 max-w-[680px] text-xl leading-[1.6]" style={{ color: F.daempft }}>
             Wer täglich mit deinen Kunden arbeitet, weiß oft am besten, warum sie bei dir bleiben. Mit digitalen
-            Interviews holt <strong className="font-semibold" style={{ color: "var(--farbe-text)" }}>andi fragt.</strong>{" "}
-            dieses Wissen anonym ab: bei Führung, Team und Kunden. Klarheit statt Bauchgefühl.
+            Interviews holt <strong className="font-semibold" style={{ color: F.text }}>andi fragt.</strong> dieses
+            Wissen anonym ab: bei Führung, Team, Vertrieb und Kunden. Klarheit statt Bauchgefühl.
           </p>
-          <div className="mt-8 flex flex-col sm:flex-row gap-3">
+          <div className="mt-8 flex flex-wrap gap-3">
             <Hauptknopf href={mailAn("andi fragt. Termin vereinbaren")}>Termin vereinbaren</Hauptknopf>
             <a
               href="#ablauf"
-              className="inline-flex items-center justify-center rounded px-6 py-3.5 font-semibold text-sm border"
-              style={{ borderColor: "var(--farbe-linie-kraeftig)" }}
+              className="inline-flex items-center justify-center min-h-[48px] px-6 rounded text-sm font-semibold"
+              style={{ border: "1px solid var(--farbe-linie-kraeftig)" }}
             >
               So läuft es ab
             </a>
           </div>
 
-          {/* Drei Befragungen auf einen Blick */}
-          <nav aria-label="Die drei Befragungen" className="mt-14 sm:mt-20 grid gap-4 md:grid-cols-3">
+          {/* Vier Befragungen auf einen Blick */}
+          <nav aria-label="Die vier Befragungen" className="mt-[72px] grid gap-4 grid-cols-[repeat(auto-fit,minmax(230px,1fr))]">
             {THEMEN.map(({ id, nr, icon: Icon, kurz, versprechen }) => (
               <a
                 key={id}
                 href={`#${id}`}
-                className="group flex flex-col rounded-lg p-6 border transition-colors hover:border-[color:var(--farbe-akzent)]"
-                style={{ background: "var(--farbe-grau)", borderColor: "var(--farbe-grau)" }}
+                className="group flex flex-col p-6 rounded-lg border border-transparent transition-colors hover:border-[color:var(--farbe-akzent)]"
+                style={{ background: F.grau }}
               >
-                <div className="flex items-center justify-between">
+                <span className="flex items-center justify-between">
                   <Icon {...ICON} />
-                  <span className="text-sm font-semibold" style={{ color: "var(--farbe-grau-mid)" }}>{nr}</span>
-                </div>
-                <p className="mt-5 text-xs font-medium uppercase tracking-[0.2em]" style={{ color: "var(--farbe-akzent)" }}>{kurz}</p>
-                <p className="mt-2 text-xl font-bold leading-snug">{versprechen}</p>
-                {/* mt-auto: „Mehr dazu“ steht in allen drei Kacheln auf einer Linie, auch wenn ein Satz umbricht */}
+                  <span className="text-sm font-semibold" style={{ color: F.daempft }}>{nr}</span>
+                </span>
+                <span className="mt-5 text-xs font-medium uppercase tracking-[0.2em]" style={{ color: F.etikett }}>{kurz}</span>
+                <span className="mt-2 text-xl font-bold leading-[1.3]">{versprechen}</span>
+                {/* mt-auto: „Mehr dazu“ steht in allen Kacheln auf einer Linie */}
                 <span className="mt-auto pt-4 inline-flex items-center gap-1.5 text-sm font-semibold">
                   Mehr dazu <ArrowRight size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-0.5" />
                 </span>
@@ -293,72 +427,24 @@ export default function Startseite() {
           </nav>
         </section>
 
-        {/* 01 Positionierung */}
-        <section id={positionierung.id} className="py-16 sm:py-24 scroll-mt-4" style={{ background: "var(--farbe-grau)" }}>
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 grid gap-12 lg:grid-cols-2 lg:gap-16 items-start">
-            <div>
-              <ThemaText thema={positionierung} />
-              <p className="mt-6 text-sm" style={{ color: "var(--farbe-text-daempft)" }}>
-                Mehr zum Markenprüfstand auf{" "}
-                <a href={MARKENPRUEFSTAND} target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline whitespace-nowrap" style={{ color: "var(--farbe-akzent-tief)" }}>
-                  werbe-agentur-graz.at
-                </a>
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-bold">Was ANDI prüft: vier Säulen einer starken Marke</h3>
-              {/* Auch am Handy 2 × 2, damit der Abschnitt nicht in die Länge geht */}
-              <div className="mt-5 grid gap-3 sm:gap-4 grid-cols-2">
-                {SAEULEN.map(({ buchstabe, titel, frage }) => (
-                  <div key={titel} className="bg-white rounded-lg p-4 sm:p-6">
-                    <span className="block text-4xl sm:text-5xl font-black leading-none" style={{ color: "var(--farbe-akzent)" }} aria-hidden="true">
-                      {buchstabe}
-                    </span>
-                    <h4 className="mt-3 sm:mt-4 text-base sm:text-lg font-bold break-words hyphens-auto" lang="de">{titel}</h4>
-                    <p className="mt-1 text-sm sm:text-base" style={{ color: "var(--farbe-text-daempft)" }}>{frage}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 02 Team */}
-        <section id={team.id} className="py-16 sm:py-24 scroll-mt-4">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 grid gap-12 lg:grid-cols-2 lg:gap-16 items-start">
-            <ThemaText thema={team} />
-            <div className="lg:pt-12">
-              <Erkenntnisse punkte={team.punkte} hintergrund="var(--farbe-grau)" />
-            </div>
-          </div>
-        </section>
-
-        {/* 03 Kunden */}
-        <section id={kunden.id} className="py-16 sm:py-24 scroll-mt-4" style={{ background: "var(--farbe-grau)" }}>
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 grid gap-12 lg:grid-cols-2 lg:gap-16 items-start">
-            <ThemaText thema={kunden} />
-            <div className="lg:pt-12">
-              <Erkenntnisse punkte={kunden.punkte} hintergrund="#ffffff" />
-            </div>
-          </div>
-        </section>
+        {THEMEN.map((t) => (
+          <Thema key={t.id} thema={t} />
+        ))}
 
         {/* Ablauf */}
-        <section id="ablauf" className="py-16 sm:py-24 scroll-mt-4">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <section id="ablauf" className="py-24 scroll-mt-4" style={{ background: F.grau }}>
+          <div className="max-w-6xl mx-auto px-6">
             <Etikett>Ablauf</Etikett>
-            <h2 className="mt-3 text-3xl sm:text-4xl font-black uppercase leading-tight">
-              In 4 Schritten vom Interview <span style={{ color: "var(--farbe-akzent)" }}>zur Wirkung.</span>
+            <h2 className={`mt-3 ${H2}`}>
+              In 4 Schritten vom Interview <span style={{ color: F.akzent }}>zur Wirkung.</span>
             </h2>
-            <ol className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+            <ol className="mt-10 grid gap-10 grid-cols-[repeat(auto-fit,minmax(230px,1fr))]">
               {SCHRITTE.map(({ bild, alt, titel, text }) => (
                 <li key={titel}>
-                  {/* Alle vier Signets haben dasselbe Raster (163 × 128), der ANDI-Kasten ist überall gleich groß.
-                      Der Kasten beginnt bei x = 11 von 163; bei 80 px Höhe sind das knapp 7 px, die das
-                      negative Außenmaß ausgleicht, damit der Kasten bündig mit der Textkante steht. */}
-                  <img src={bild} alt={alt} className="h-20 w-auto -ml-[7px]" width="163" height="128" loading="lazy" />
+                  {/* Alle vier Signets haben dasselbe Raster (163 × 128); -7 px setzt den ANDI-Kasten bündig zur Textkante */}
+                  <img src={bild} alt={alt} className="block h-20 w-auto -ml-[7px]" width="163" height="128" loading="lazy" />
                   <h3 className="mt-4 text-lg font-bold">{titel}</h3>
-                  <p className="mt-2 leading-relaxed" style={{ color: "var(--farbe-text-daempft)" }}>{text}</p>
+                  <p className="mt-2 leading-[1.65]" style={{ color: F.daempft }}>{text}</p>
                 </li>
               ))}
             </ol>
@@ -366,16 +452,16 @@ export default function Startseite() {
         </section>
 
         {/* Versprechen an die Befragten */}
-        <section className="py-16 sm:py-20 text-white" style={{ background: "var(--farbe-text)" }}>
-          <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <Etikett>Für die Befragten</Etikett>
-            <h2 className="mt-3 text-3xl sm:text-4xl font-black uppercase leading-tight">Ehrliche Antworten brauchen Vertrauen</h2>
-            <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <section className="py-20 text-white" style={{ background: F.text }}>
+          <div className="max-w-6xl mx-auto px-6">
+            <Etikett dunkel>Für die Befragten</Etikett>
+            <h2 className={`mt-3 ${H2}`}>Ehrliche Antworten brauchen Vertrauen</h2>
+            <div className="mt-10 grid gap-8 grid-cols-[repeat(auto-fit,minmax(230px,1fr))]">
               {VERSPRECHEN.map(({ icon: Icon, titel, text }) => (
                 <div key={titel}>
                   <Icon {...ICON} />
                   <h3 className="mt-4 text-lg font-bold">{titel}</h3>
-                  <p className="mt-2 leading-relaxed text-white/75">{text}</p>
+                  <p className="mt-2 leading-[1.65]" style={{ color: "#d4d4d4" }}>{text}</p>
                 </div>
               ))}
             </div>
@@ -383,13 +469,13 @@ export default function Startseite() {
         </section>
 
         {/* Eingeladene */}
-        <section id="eingeladen" className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20 scroll-mt-4">
+        <section id="eingeladen" className="max-w-6xl mx-auto px-6 py-20 scroll-mt-4">
           <div className="max-w-xl">
             <h2 className="text-2xl font-bold">Du wurdest zu einer Befragung eingeladen?</h2>
-            <p className="mt-3 leading-relaxed" style={{ color: "var(--farbe-text-daempft)" }}>
+            <p className="mt-3 leading-[1.65]" style={{ color: F.daempft }}>
               Öffne am besten den Link aus deiner Einladung oder scanne den QR-Code. Hast du nur den Code, gib ihn hier ein.
             </p>
-            <form onSubmit={zurBefragung} className="mt-6 flex flex-col sm:flex-row gap-3" noValidate>
+            <form onSubmit={zurBefragung} className="mt-6 flex flex-wrap gap-3" noValidate>
               <label htmlFor="befragungscode" className="sr-only">Befragungscode oder Link</label>
               <input
                 id="befragungscode"
@@ -402,15 +488,15 @@ export default function Startseite() {
                 autoComplete="off"
                 autoCapitalize="off"
                 spellCheck={false}
-                className="flex-1 h-12 rounded border px-4 text-base outline-none focus:ring-2"
-                style={{ borderColor: "var(--farbe-rahmen)", fontFamily: "inherit" }}
+                className="flex-[1_1_260px] min-w-0 h-12 rounded px-4 text-base outline-none focus:ring-2"
+                style={{ border: "1px solid #8a8a8a", fontFamily: "inherit" }}
                 aria-invalid={!!fehler}
                 aria-describedby={fehler ? "code-fehler" : undefined}
               />
               <button
                 type="submit"
                 className="h-12 inline-flex items-center justify-center gap-2 rounded px-5 font-semibold"
-                style={{ background: "var(--farbe-gut)", color: "var(--farbe-text)", fontFamily: "inherit" }}
+                style={{ background: F.gut, color: F.text, fontFamily: "inherit" }}
               >
                 Zur Befragung <ArrowRight size={16} aria-hidden="true" />
               </button>
@@ -425,13 +511,13 @@ export default function Startseite() {
       </main>
 
       {/* Fuß */}
-      <footer className="border-t" style={{ borderColor: "var(--farbe-linie)" }}>
+      <footer style={{ borderTop: `1px solid ${F.linie}` }}>
         <div
-          className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between text-sm"
-          style={{ color: "var(--farbe-text-daempft)" }}
+          className="max-w-6xl mx-auto px-6 py-8 flex flex-wrap gap-x-8 gap-y-4 items-center justify-between text-sm"
+          style={{ color: F.daempft }}
         >
           <div className="flex flex-wrap gap-x-4 gap-y-1">
-            <strong className="font-semibold" style={{ color: "var(--farbe-text)" }}>Rittler &amp; Co GmbH</strong>
+            <strong className="font-semibold" style={{ color: F.text }}>Rittler &amp; Co GmbH</strong>
             <span>Peter-Rosegger-Straße 27, 8053 Graz</span>
             <a href={`tel:${KONTAKT_TEL.replace(/\s/g, "")}`} className="hover:underline">{KONTAKT_TEL}</a>
             <a href={`mailto:${KONTAKT_MAIL}`} className="hover:underline">{KONTAKT_MAIL}</a>
