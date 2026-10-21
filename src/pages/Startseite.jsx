@@ -117,7 +117,7 @@ const SCHRITTE = [
     bild: "/marke/andi-zeigt.svg",
     alt: "ANDI zeigt",
     titel: "Kommunikation",
-    text: "Aus der Essenz werden klare Botschaften für Kunden, Team und Bewerber. Den Weg dorthin besprechen wir gemeinsam.",
+    text: "Aus der Essenz werden klare Botschaften für Kunden, Team und Bewerbende. Den Weg dorthin besprechen wir gemeinsam.",
   },
 ];
 
@@ -275,7 +275,7 @@ export default function Startseite() {
               <a
                 key={id}
                 href={`#${id}`}
-                className="group rounded-lg p-6 border transition-colors hover:border-[color:var(--farbe-akzent)]"
+                className="group flex flex-col rounded-lg p-6 border transition-colors hover:border-[color:var(--farbe-akzent)]"
                 style={{ background: "var(--farbe-grau)", borderColor: "var(--farbe-grau)" }}
               >
                 <div className="flex items-center justify-between">
@@ -284,7 +284,8 @@ export default function Startseite() {
                 </div>
                 <p className="mt-5 text-xs font-medium uppercase tracking-[0.2em]" style={{ color: "var(--farbe-akzent)" }}>{kurz}</p>
                 <p className="mt-2 text-xl font-bold leading-snug">{versprechen}</p>
-                <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold">
+                {/* mt-auto: „Mehr dazu“ steht in allen drei Kacheln auf einer Linie, auch wenn ein Satz umbricht */}
+                <span className="mt-auto pt-4 inline-flex items-center gap-1.5 text-sm font-semibold">
                   Mehr dazu <ArrowRight size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-0.5" />
                 </span>
               </a>
