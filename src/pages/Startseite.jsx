@@ -264,7 +264,8 @@ function Denkweg({ thema }) {
           }
         >
           {thema.andi ? (
-            <div className="mt-2.5 grid grid-cols-2 gap-x-4 gap-y-2">
+            /* Auf schmalen Handys untereinander: „Aufmerksamkeit“ in Gilroy passt nicht in eine halbe Spalte */
+            <div className="mt-2.5 grid grid-cols-1 min-[480px]:grid-cols-2 gap-x-4 gap-y-2">
               {SAEULEN.map((s) => (
                 <div key={s} className="flex items-baseline gap-2.5">
                   <span className="text-[22px] font-black" style={{ color: F.akzent }} aria-hidden="true">{s[0]}</span>
