@@ -307,14 +307,15 @@ export default function Startseite() {
             </div>
             <div>
               <h3 className="text-lg font-bold">Was ANDI prüft: vier Säulen einer starken Marke</h3>
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              {/* Auch am Handy 2 × 2, damit der Abschnitt nicht in die Länge geht */}
+              <div className="mt-5 grid gap-3 sm:gap-4 grid-cols-2">
                 {SAEULEN.map(({ buchstabe, titel, frage }) => (
-                  <div key={titel} className="bg-white rounded-lg p-6">
-                    <span className="block text-5xl font-black leading-none" style={{ color: "var(--farbe-akzent)" }} aria-hidden="true">
+                  <div key={titel} className="bg-white rounded-lg p-4 sm:p-6">
+                    <span className="block text-4xl sm:text-5xl font-black leading-none" style={{ color: "var(--farbe-akzent)" }} aria-hidden="true">
                       {buchstabe}
                     </span>
-                    <h4 className="mt-4 text-lg font-bold">{titel}</h4>
-                    <p className="mt-1" style={{ color: "var(--farbe-text-daempft)" }}>{frage}</p>
+                    <h4 className="mt-3 sm:mt-4 text-base sm:text-lg font-bold break-words hyphens-auto" lang="de">{titel}</h4>
+                    <p className="mt-1 text-sm sm:text-base" style={{ color: "var(--farbe-text-daempft)" }}>{frage}</p>
                   </div>
                 ))}
               </div>
