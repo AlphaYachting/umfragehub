@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   ArrowRight, ArrowUpRight, Search, Eye, Users, Heart, TrendingUp,
   Lock, Smartphone, MessageCircle, Pencil,
@@ -526,7 +526,7 @@ export default function Startseite() {
           <div className="flex gap-5">
             <a href={IMPRESSUM} target="_blank" rel="noopener noreferrer" className="hover:underline">Impressum</a>
             <a href={DATENSCHUTZ} target="_blank" rel="noopener noreferrer" className="hover:underline">Datenschutz</a>
-            <Link to="/verwaltung" className="hover:underline">Login</Link>
+            {/* Bewusst kein Link zur Verwaltung: Zugang nur über andifragt.at/verwaltung (Wunsch 22.10.2026) */}
           </div>
         </div>
       </footer>
