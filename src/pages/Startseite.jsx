@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRight, ArrowUpRight, Search, Eye, Users, Heart, TrendingUp,
   Lock, Smartphone, MessageCircle, Pencil,
 } from "lucide-react";
+import { Wortmarke } from "@/components/oeffentlich/Oeffentlich";
 
 // Öffentliche Startseite von andifragt.at, für alle, die die Domain ohne
 // Befragungslink aufrufen.
@@ -16,6 +17,10 @@ import {
 //
 // Bewusst ohne Datenzugriff: Die Seite lädt nichts aus der Datenbank und
 // verrät nicht, welche Befragungen es gibt.
+//
+// Sprachregel (24.10.2026): Auf der Seite steht nirgends Befragung, es heißt immer Interview.
+// Die vier Themen haben je ein rundes Foto (public/bilder) und verlinken auf ihre Modulseite.
+// Im Ablauf steht die Wortmarken-Familie andi fragt. / weiß. / macht. / zeigt. statt der Signets.
 //
 // Typografie: Die Gilroy-Dateien enthalten keine Gedankenstriche,
 // typografischen Anführungszeichen oder Mittelpunkte. Texte hier deshalb mit
@@ -51,8 +56,11 @@ const THEMEN = [
     nr: "01",
     icon: Eye,
     kurz: "Positionierung",
+    pfad: "/positionierung",
+    bild: "/bilder/positionierung.webp",
+    alt: "Berater im Gespräch mit einem Kunden in dessen Werkstatt",
     versprechen: "Sichtbar für deine Kunden.",
-    h2: "Wir befragen, damit dich deine Kunden",
+    h2: "Wir fragen nach, damit dich deine Kunden",
     akzent: "besser sehen.",
     absaetze: [
       "Viele Unternehmen sind besser als ihr Auftritt. Die Gründe, warum Kunden wirklich bei dir kaufen, kennt oft dein Team. In keinem Prospekt und auf keiner Website stehen sie.",
@@ -71,15 +79,18 @@ const THEMEN = [
     nr: "02",
     icon: Users,
     kurz: "Team",
+    pfad: "/team",
+    bild: "/bilder/team.webp",
+    alt: "Team lacht gemeinsam in der Kaffeepause",
     versprechen: "Die Guten bleiben, Bessere kommen.",
     h2: "Damit die Guten bleiben und",
     akzent: "Bessere kommen.",
     absaetze: [
-      "Gute Leute bleiben, wenn sie wissen, wofür sie arbeiten, und wenn jemand zuhört. Die anonyme Teambefragung zeigt, was dein Team hält, was es bremst und was es sich wünscht.",
+      "Gute Leute bleiben, wenn sie wissen, wofür sie arbeiten, und wenn jemand zuhört. Das anonyme Team-Interview zeigt, was dein Team hält, was es bremst und was es sich wünscht.",
       "Daraus entsteht eine Arbeitgebermarke, die stimmt: Dein Team erkennt sich darin wieder, und gute Bewerberinnen und Bewerber sehen, warum es sich lohnt, zu dir zu kommen.",
     ],
-    knopf: "Teambefragung anfragen",
-    betreff: "andi fragt. Teambefragung",
+    knopf: "Team-Interview anfragen",
+    betreff: "andi fragt. Team-Interview",
     wen: ["Mitarbeitende", "Führungskräfte", "Jede Abteilung"],
     frage: "Was hält dich hier, auch an Tagen, an denen es schwierig ist?",
     erkennen: [
@@ -95,15 +106,18 @@ const THEMEN = [
     nr: "03",
     icon: Heart,
     kurz: "Kunden",
+    pfad: "/kunden",
+    bild: "/bilder/kunden.webp",
+    alt: "Kunde im Gespräch mit Mitarbeitenden am Empfang",
     versprechen: "Mehr Erfolg, als du glaubst.",
     h2: "Deine Kunden können mehr zu deinem Erfolg beitragen,",
     akzent: "als du glaubst.",
     absaetze: [
       "Kunden sagen selten von sich aus, warum sie bei dir kaufen, was sie fast zur Konkurrenz getrieben hätte oder was sie sich noch wünschen. Gefragt erzählen sie es gern.",
-      "Die Kundenbefragung liefert die Außensicht, die im Alltag fehlt. Im Vergleich mit Führung und Team zeigt sie, wo dein Selbstbild und das Bild deiner Kunden auseinandergehen und wo deine größten Chancen liegen.",
+      "Das Kunden-Interview liefert die Außensicht, die im Alltag fehlt. Im Vergleich mit Führung und Team zeigt es, wo dein Selbstbild und das Bild deiner Kunden auseinandergehen und wo deine größten Chancen liegen.",
     ],
-    knopf: "Kundenbefragung anfragen",
-    betreff: "andi fragt. Kundenbefragung",
+    knopf: "Kunden-Interview anfragen",
+    betreff: "andi fragt. Kunden-Interview",
     wen: ["Stammkunden", "Neukunden", "Partner"],
     frage: "Was müsste passieren, damit du uns ohne Zögern weiterempfiehlst?",
     erkennen: [
@@ -119,15 +133,18 @@ const THEMEN = [
     nr: "04",
     icon: TrendingUp,
     kurz: "Vertrieb",
+    pfad: "/vertrieb",
+    bild: "/bilder/vertrieb.webp",
+    alt: "Außendienstmitarbeiter mit Headset im Auto",
     versprechen: "Verkaufen, was wirklich ankommt.",
     h2: "Bevor du den Vertrieb neu aufstellst, frag die,",
     akzent: "die verkaufen.",
     absaetze: [
       "Eine neue Vertriebsidee klingt am Besprechungstisch oft besser als im Alltag. Außendienst, Innendienst und Kunden wissen am genauesten, wo Abschlüsse gelingen und wo sie hängen bleiben.",
-      "Die Vertriebsbefragung holt dieses Wissen ab, bevor du investierst. So baust du auf dem auf, was funktioniert, und dein Team zieht mit, weil es gefragt wurde.",
+      "Das Vertriebs-Interview holt dieses Wissen ab, bevor du investierst. So baust du auf dem auf, was funktioniert, und dein Team zieht mit, weil es gefragt wurde.",
     ],
-    knopf: "Vertriebsbefragung anfragen",
-    betreff: "andi fragt. Vertriebsbefragung",
+    knopf: "Vertriebs-Interview anfragen",
+    betreff: "andi fragt. Vertriebs-Interview",
     wen: ["Außendienst", "Innendienst", "Kunden"],
     frage: "Bei welchem Argument nicken Kunden, und bei welchem schalten sie ab?",
     erkennen: [
@@ -144,26 +161,22 @@ const SAEULEN = ["Aufmerksamkeit", "Nutzen", "Differenzierung", "Identität"];
 
 const SCHRITTE = [
   {
-    bild: "/marke/andi-fragt.svg",
-    alt: "ANDI fragt",
+    verb: "fragt",
     titel: "Digitale Interviews",
     text: "Führung, Team, Vertrieb und auf Wunsch deine Kunden beantworten die Interviews online: anonym, am Handy oder am Computer, wann es passt. Dein eigener Aufwand: rund 60 Minuten.",
   },
   {
-    bild: "/marke/andi-weiss.svg",
-    alt: "ANDI weiß",
+    verb: "weiß",
     titel: "Analyse und Auswertung",
     text: "Wir verdichten alle Antworten mit der ANDI-Methode, entwickelt aus über 500 Markenprojekten. Wir suchen nicht den Durchschnitt, sondern die Abweichungen.",
   },
   {
-    bild: "/marke/andi-macht.svg",
-    alt: "ANDI macht",
+    verb: "macht",
     titel: "Klarheit und Essenz",
     text: "Die wahren Stärken deines Unternehmens werden sichtbar: ehrlich, messbar, auf den Punkt. Mit klaren Empfehlungen statt Worthülsen.",
   },
   {
-    bild: "/marke/andi-zeigt.svg",
-    alt: "ANDI zeigt",
+    verb: "zeigt",
     titel: "Kommunikation",
     text: "Aus der Essenz werden klare Botschaften für Kunden, Team, Vertrieb und Bewerbende. Den Weg dorthin besprechen wir gemeinsam.",
   },
@@ -306,14 +319,27 @@ function Thema({ thema }) {
     <section id={thema.id} className="py-[104px] scroll-mt-4" style={{ borderTop: `1px solid ${F.linie}` }}>
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 min-[960px]:grid-cols-2 gap-12 min-[960px]:gap-20 items-center">
         <div className={thema.rechts ? "min-[960px]:order-2" : ""}>
-          {/* Große Kontur-Ziffer, angelehnt an die Kontur-Schrift in den Rittler-Angeboten */}
-          <span
-            aria-hidden="true"
-            className="block text-[112px] font-black leading-[0.9] tracking-[-0.02em]"
-            style={{ color: "transparent", WebkitTextStroke: `2px ${F.akzent}` }}
-          >
-            {thema.nr}
-          </span>
+          {/* Große Kontur-Ziffer, angelehnt an die Kontur-Schrift in den Rittler-Angeboten, daneben das runde Foto */}
+          <div className="flex items-center gap-7">
+            <span
+              aria-hidden="true"
+              className="block text-[clamp(80px,9vw,112px)] font-black leading-[0.9] tracking-[-0.02em]"
+              style={{ color: "transparent", WebkitTextStroke: `2px ${F.akzent}` }}
+            >
+              {thema.nr}
+            </span>
+            <span className="relative shrink-0 w-[clamp(150px,18vw,208px)] aspect-square">
+              <span aria-hidden="true" className="absolute -inset-2.5 rounded-full" style={{ border: `2px solid ${F.hauchRand}` }} />
+              <img
+                src={thema.bild}
+                alt={thema.alt}
+                width="208"
+                height="208"
+                loading="lazy"
+                className="relative block w-full h-full rounded-full object-cover"
+              />
+            </span>
+          </div>
           <Etikett className="mt-6">{thema.kurz}</Etikett>
           <h2 className={`mt-3 ${H2}`}>
             {thema.h2} <span style={{ color: F.akzent }}>{thema.akzent}</span>
@@ -324,6 +350,12 @@ function Thema({ thema }) {
           <div className="mt-8">
             <Hauptknopf href={mailAn(thema.betreff)}>{thema.knopf}</Hauptknopf>
           </div>
+          <p className="mt-5 text-[15px]">
+            <Link to={thema.pfad} className="group inline-flex items-center gap-1.5 min-h-[44px] font-semibold hover:underline" style={{ color: F.text }}>
+              Alles zum Modul {thema.kurz}
+              <ArrowRight size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          </p>
           {thema.andi && (
             <p className="mt-6 text-sm" style={{ color: F.daempft }}>
               Mehr zum Markenprüfstand auf{" "}
@@ -356,7 +388,7 @@ export default function Startseite() {
     e.preventDefault();
     const gefunden = codeAuslesen(code);
     if (!gefunden) {
-      setFehler("Das sieht nicht nach einem Befragungscode aus. Am einfachsten öffnest du den Link aus deiner Einladung.");
+      setFehler("Das sieht nicht nach einem Interview-Code aus. Am einfachsten öffnest du den Link aus deiner Einladung.");
       return;
     }
     navigate(`/i/${gefunden}`);
@@ -404,8 +436,8 @@ export default function Startseite() {
             </a>
           </div>
 
-          {/* Vier Befragungen auf einen Blick */}
-          <nav aria-label="Die vier Befragungen" className="mt-[72px] grid gap-4 grid-cols-[repeat(auto-fit,minmax(230px,1fr))]">
+          {/* Die vier Module auf einen Blick */}
+          <nav aria-label="Die vier Module" className="mt-[72px] grid gap-4 grid-cols-[repeat(auto-fit,minmax(230px,1fr))]">
             {THEMEN.map(({ id, nr, icon: Icon, kurz, versprechen }) => (
               <a
                 key={id}
@@ -440,10 +472,10 @@ export default function Startseite() {
               In 4 Schritten vom Interview <span style={{ color: F.akzent }}>zur Wirkung.</span>
             </h2>
             <ol className="mt-10 grid gap-10 grid-cols-[repeat(auto-fit,minmax(230px,1fr))]">
-              {SCHRITTE.map(({ bild, alt, titel, text }) => (
+              {SCHRITTE.map(({ verb, titel, text }) => (
                 <li key={titel}>
-                  {/* Alle vier Signets haben dasselbe Raster (163 × 128); -7 px setzt den ANDI-Kasten bündig zur Textkante */}
-                  <img src={bild} alt={alt} className="block h-20 w-auto -ml-[7px]" width="163" height="128" loading="lazy" />
+                  {/* Wortmarken-Familie statt der handgeschriebenen Signets */}
+                  <p><Wortmarke verb={verb} groesse={34} /></p>
                   <h3 className="mt-4 text-lg font-bold">{titel}</h3>
                   <p className="mt-2 leading-[1.65]" style={{ color: F.daempft }}>{text}</p>
                 </li>
@@ -452,10 +484,10 @@ export default function Startseite() {
           </div>
         </section>
 
-        {/* Versprechen an die Befragten */}
+        {/* Versprechen an alle, die wir interviewen */}
         <section className="py-20 text-white" style={{ background: F.text }}>
           <div className="max-w-6xl mx-auto px-6">
-            <Etikett dunkel>Für die Befragten</Etikett>
+            <Etikett dunkel>Für alle, die wir interviewen</Etikett>
             <h2 className={`mt-3 ${H2}`}>Ehrliche Antworten brauchen Vertrauen</h2>
             <div className="mt-10 grid gap-8 grid-cols-[repeat(auto-fit,minmax(230px,1fr))]">
               {VERSPRECHEN.map(({ icon: Icon, titel, text }) => (
@@ -472,14 +504,14 @@ export default function Startseite() {
         {/* Eingeladene */}
         <section id="eingeladen" className="max-w-6xl mx-auto px-6 py-20 scroll-mt-4">
           <div className="max-w-xl">
-            <h2 className="text-2xl font-bold">Du wurdest zu einer Befragung eingeladen?</h2>
+            <h2 className="text-2xl font-bold">Du wurdest zu einem Interview eingeladen?</h2>
             <p className="mt-3 leading-[1.65]" style={{ color: F.daempft }}>
               Öffne am besten den Link aus deiner Einladung oder scanne den QR-Code. Hast du nur den Code, gib ihn hier ein.
             </p>
             <form onSubmit={zurBefragung} className="mt-6 flex flex-wrap gap-3" noValidate>
-              <label htmlFor="befragungscode" className="sr-only">Befragungscode oder Link</label>
+              <label htmlFor="interviewcode" className="sr-only">Interview-Code oder Link</label>
               <input
-                id="befragungscode"
+                id="interviewcode"
                 value={code}
                 onChange={(e) => {
                   setCode(e.target.value);
@@ -499,7 +531,7 @@ export default function Startseite() {
                 className="h-12 inline-flex items-center justify-center gap-2 rounded px-5 font-semibold"
                 style={{ background: F.gut, color: F.text, fontFamily: "inherit" }}
               >
-                Zur Befragung <ArrowRight size={16} aria-hidden="true" />
+                Zum Interview <ArrowRight size={16} aria-hidden="true" />
               </button>
             </form>
             {fehler && (
