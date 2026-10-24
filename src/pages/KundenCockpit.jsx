@@ -89,13 +89,14 @@ export default function KundenCockpit() {
       const d = res?.data;
       if (!d || d.error) {
         const e = d?.error || "serverfehler";
-        if (e === "passwort" || e === "gesperrt" || e === "zugang") {
+        if (e === "passwort" || e === "gesperrt" || e === "zugang" || e === "anmelden") {
           schreiben(speicherSchluessel(code), null);
           setBrauchtPasswort(true);
           setDaten(null);
         }
         setFehler(
-          e === "passwort" ? "Das Passwort stimmt nicht. Bitte prüfe die Schreibweise."
+          e === "anmelden" ? ""
+          : e === "passwort" ? "Das Passwort stimmt nicht. Bitte prüfe die Schreibweise."
           : e === "gesperrt" ? `Zu viele Versuche. Bitte versuche es in ${d?.minuten || 15} Minuten noch einmal.`
           : e === "zugang" ? "Dieser Link ist nicht gültig oder nicht mehr freigeschaltet."
           : "Das Cockpit ist gerade nicht erreichbar. Bitte versuche es später noch einmal."
