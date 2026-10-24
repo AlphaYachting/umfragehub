@@ -31,6 +31,12 @@ export default async function (req) {
     const base44 = createClientFromRequest(req);
     const db = base44.asServiceRole.entities;
     const body = await req.json();
+    // Vorschau für eingeloggte Admins: ohne Passwort, optional mit Phase
+    // „abgeschlossen“, um die Signale schon während der Befragung zu sehen.
+    if (body.adminVorschau) {
+      const user = await base44.auth.me().catch(() => null);
+      body.adminVorschau = !!(user && user.role === 'admin');
+    }
     if (body.aktion === 'laden') return Response.json(await laden(db, body));
     if (body.aktion === 'interesse') return Response.json(await interesse(db, body));
     return Response.json({ error: 'unbekannt' });
@@ -43,12 +49,14 @@ export default async function (req) {
 // ---------------------------------------------------------------------------
 // Zugang prüfen
 // ---------------------------------------------------------------------------
-async function pruefen(db, { code, passwort }) {
+async function pruefen(db, { code, passwort, adminVorschau }) {
   const c = String(code || '').trim();
   if (!/^[A-Za-z0-9]{10,64}$/.test(c)) return { fehler: 'zugang' };
   const liste = await db.Kundenzugang.filter({ code: c });
   const z = liste && liste[0];
-  if (!z || z.aktiv === false) return { fehler: 'zugang' };
+  if (!z) return { fehler: 'zugang' };
+  if (adminVorschau) return { zugang: z };
+  if (z.aktiv === false) return { fehler: 'zugang' };
 
   const jetzt = Date.now();
   const gesperrt = alsDatum(z.gesperrtBis);
@@ -88,7 +96,7 @@ async function laden(db, body) {
 
   const aenderung: Record<string, unknown> = {};
   if (z.fehlversuche) aenderung.fehlversuche = 0;
-  if (body.zaehlen) {
+  if (body.zaehlen && !body.adminVorschau) {
     aenderung.aufrufe = (z.aufrufe || 0) + 1;
     aenderung.zuletztGeoeffnet = new Date().toISOString();
   }
@@ -114,7 +122,8 @@ async function laden(db, body) {
     { bereiche: true, verlauf: true, zeiten: true, ablauf: true, module: true, signale: true },
     z.anzeigen || {},
   );
-  const phase = wellen.length && wellen.every((w) => w.status === 'geschlossen') ? 'abgeschlossen' : 'laeuft';
+  const echtePhase = wellen.length && wellen.every((w) => w.status === 'geschlossen') ? 'abgeschlossen' : 'laeuft';
+  const phase = body.adminVorschau && body.phase === 'abgeschlossen' ? 'abgeschlossen' : echtePhase;
 
   // Gruppen
   const gruppen = jeWelle.map(({ w, sessions, empfaenger }) => {
@@ -180,6 +189,7 @@ async function laden(db, body) {
   return {
     stand: new Date().toISOString(),
     phase,
+    vorschau: !!body.adminVorschau,
     anzeigen,
     projekt: {
       name: projekt?.name || '',
@@ -503,6 +513,7 @@ async function signaleBerechnen(db, jeWelle, antworten) {
 // Interesse vormerken
 // ---------------------------------------------------------------------------
 async function interesse(db, body) {
+  if (body.adminVorschau) return { ok: true, interesse: [], vorschau: true };
   const p = await pruefen(db, body);
   if (p.fehler) return { error: p.fehler, minuten: p.minuten };
   const z = p.zugang;
