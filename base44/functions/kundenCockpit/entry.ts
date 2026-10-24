@@ -382,7 +382,7 @@ async function signaleBerechnen(db, jeWelle, antworten) {
     const fertig = sessions.filter((s) => s.status === 'abgeschlossen');
     const mindest = Number(w.mindestTeilnehmer ?? 6);
     // Werte je Item (Frage oder Matrixzeile), auf 0 bis 4 umgerechnet
-    const werte = {};
+    const werte: Record<string, number[]> = {};
     for (const s of fertig) {
       for (const a of antwortenJeSession[s.id] || []) {
         const f = fragen[a.frageId];
