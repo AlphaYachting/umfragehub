@@ -393,12 +393,10 @@ async function signaleBerechnen(db, jeWelle, antworten) {
         const norm = (v) => ((Number(v) - min) / (max - min)) * 4;
         const basis = f.schluessel || f.id;
         if (f.typ === 'matrix') {
-          const ids = f.matrixZeilenIds || [];
+          // Schlüssel der Matrixzeile: stabile Zeilen-ID, sonst der Zeilenindex
           for (const [k, v] of Object.entries(a.matrixWerte || {})) {
             if (typeof v !== 'number') continue;
-            const idx = ids.indexOf(k);
-            const zid = idx >= 0 ? k : k;
-            (werte[`${basis}:${zid}`] ||= []).push(norm(v));
+            (werte[`${basis}:${k}`] ||= []).push(norm(v));
           }
         } else if (typeof a.zahl === 'number') {
           (werte[basis] ||= []).push(norm(a.zahl));
