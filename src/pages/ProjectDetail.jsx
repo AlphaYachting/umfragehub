@@ -58,7 +58,9 @@ export default function ProjectDetail() {
   const [welleEingeladen, setWelleEingeladen] = useState("");
   const [welleEndetAm, setWelleEndetAm] = useState("");
   const [beschaeftigt, setBeschaeftigt] = useState(null);
-  const [reiter, setReiter] = useState("wellen"); // Wellen-ID, an der gerade gearbeitet wird
+  const [reiter, setReiter] = useState(() =>
+    new URLSearchParams(window.location.search).get("reiter") === "kunde" ? "kunde" : "wellen"
+  ); // Wellen-ID, an der gerade gearbeitet wird
   const ungespeichertRef = useRef(false);
   ungespeichertRef.current = ungespeichert;
 
