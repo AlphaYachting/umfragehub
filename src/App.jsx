@@ -24,6 +24,7 @@ const WaveInvites = lazy(() => import('@/pages/WaveInvites'));
 const QuestionLibrary = lazy(() => import('@/pages/QuestionLibrary'));
 const Interview = lazy(() => import('@/pages/Interview'));
 const Startseite = lazy(() => import('@/pages/Startseite'));
+const KundenCockpit = lazy(() => import('@/pages/KundenCockpit'));
 
 const Laden = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -61,6 +62,8 @@ const AuthenticatedApp = () => {
       {/* Öffentlich: Startseite für alle, die andifragt.at ohne Befragungslink aufrufen */}
       <Route path="/" element={<Startseite />} />
       <Route path="/i/:linkToken" element={<Interview />} />
+      {/* Öffentlich mit Passwort: Kunden-Cockpit des Auftraggebers */}
+      <Route path="/k/:code" element={<KundenCockpit />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
