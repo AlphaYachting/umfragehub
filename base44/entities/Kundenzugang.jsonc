@@ -89,6 +89,28 @@
       "title": "Projekt ID",
       "type": "string"
     },
+    "versand": {
+      "description": "Protokoll der verschickten Zugangsmails",
+      "items": {
+        "properties": {
+          "am": {
+            "type": "string"
+          },
+          "an": {
+            "type": "string"
+          },
+          "getrennt": {
+            "type": "boolean"
+          },
+          "ok": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "title": "Zugangsmails",
+      "type": "array"
+    },
     "workshopTermin": {
       "title": "Workshop-Termin (Text)",
       "type": "string"
@@ -103,6 +125,7 @@
     "projektId",
     "code"
   ],
+  "type": "object",
   "rls": {
     "create": {
       "user_condition": {
@@ -124,6 +147,5 @@
         "role": "admin"
       }
     }
-  },
-  "type": "object"
+  }
 }
