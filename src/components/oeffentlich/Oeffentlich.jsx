@@ -109,7 +109,8 @@ export function Hauptknopf({ href, children, farbe = F.akzent, schrift = "#fffff
 }
 
 // Die Wortmarken-Familie: andi fragt. / andi weiß. / andi macht. / andi zeigt.
-export function Wortmarke({ verb = "fragt", groesse = 23, gewicht = 700, farbe, className = "" }) {
+// Gilroy Black (900) mit leicht engerer Laufweite, genau wie im Kunden-Cockpit.
+export function Wortmarke({ verb = "fragt", groesse = 24, gewicht = 900, farbe, className = "" }) {
   return (
     <span className={className} style={{ fontSize: groesse, fontWeight: gewicht, lineHeight: 1, color: farbe, letterSpacing: "-0.01em" }}>
       andi {verb}
