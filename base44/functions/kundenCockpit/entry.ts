@@ -442,8 +442,8 @@ async function signaleBerechnen(db, jeWelle, antworten) {
     if (!A || !B) continue;
     let anzahl = 0;
     let verglichen = 0;
-    for (const [k, va] of Object.entries(A.werte)) {
-      const vb = B.werte[k];
+    for (const [k, va] of Object.entries(A.werte) as [string, number[]][]) {
+      const vb: number[] | undefined = B.werte[k];
       if (!vb || va.length < A.mindest || vb.length < B.mindest) continue;
       verglichen++;
       const ma = mittel(va);
