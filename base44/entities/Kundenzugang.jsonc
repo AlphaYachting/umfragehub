@@ -1,0 +1,129 @@
+{
+  "description": "Zugang des Auftraggebers zum Kunden-Cockpit eines Projekts (Link mit Passwort). Zeigt nur Teilnahmezahlen, nie Antworten.",
+  "name": "Kundenzugang",
+  "properties": {
+    "aktiv": {
+      "default": true,
+      "title": "Aktiv",
+      "type": "boolean"
+    },
+    "analyseAb": {
+      "title": "Analyse ab (Text)",
+      "type": "string"
+    },
+    "anzeigen": {
+      "properties": {
+        "ablauf": {
+          "default": true,
+          "type": "boolean"
+        },
+        "bereiche": {
+          "default": true,
+          "type": "boolean"
+        },
+        "module": {
+          "default": true,
+          "type": "boolean"
+        },
+        "signale": {
+          "default": true,
+          "type": "boolean"
+        },
+        "verlauf": {
+          "default": true,
+          "type": "boolean"
+        },
+        "zeiten": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "title": "Sichtbare Bereiche",
+      "type": "object"
+    },
+    "aufrufe": {
+      "default": 0,
+      "title": "Aufrufe",
+      "type": "number"
+    },
+    "code": {
+      "description": "Zuf\u00e4lliger Code im Link andifragt.at/k/<code>",
+      "title": "Link-Code",
+      "type": "string"
+    },
+    "fehlversuche": {
+      "default": 0,
+      "title": "Fehlversuche",
+      "type": "number"
+    },
+    "gesperrtBis": {
+      "format": "date-time",
+      "title": "Gesperrt bis",
+      "type": "string"
+    },
+    "interesse": {
+      "items": {
+        "properties": {
+          "am": {
+            "type": "string"
+          },
+          "modul": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "title": "Vorgemerktes Interesse",
+      "type": "array"
+    },
+    "kommunikationAb": {
+      "title": "Kommunikation ab (Text)",
+      "type": "string"
+    },
+    "passwort": {
+      "description": "Von UmfrageHub erzeugt, nur f\u00fcr Admins lesbar",
+      "title": "Passwort",
+      "type": "string"
+    },
+    "projektId": {
+      "title": "Projekt ID",
+      "type": "string"
+    },
+    "workshopTermin": {
+      "title": "Workshop-Termin (Text)",
+      "type": "string"
+    },
+    "zuletztGeoeffnet": {
+      "format": "date-time",
+      "title": "Zuletzt ge\u00f6ffnet",
+      "type": "string"
+    }
+  },
+  "required": [
+    "projektId",
+    "code"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  },
+  "type": "object"
+}
