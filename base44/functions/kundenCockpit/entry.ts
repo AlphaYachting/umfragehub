@@ -37,6 +37,12 @@ export default async function (req) {
       const user = await base44.auth.me().catch(() => null);
       body.adminVorschau = !!(user && user.role === 'admin');
     }
+    // Zugangsmail an den Kunden: nur für eingeloggte Admins der Verwaltung
+    if (body.aktion === 'zugangVorschau' || body.aktion === 'zugangSenden') {
+      const user = await base44.auth.me().catch(() => null);
+      if (!user || user.role !== 'admin') return Response.json({ error: 'nicht_berechtigt' });
+      return Response.json(await zugangsmail(db, body, user));
+    }
     if (body.aktion === 'laden') return Response.json(await laden(db, body));
     if (body.aktion === 'interesse') return Response.json(await interesse(db, body));
     return Response.json({ error: 'unbekannt' });
@@ -553,6 +559,139 @@ async function meldungSenden(projekt, modulName) {
       tags: ['umfragehub', 'kundencockpit'],
     }),
   });
+}
+
+// ---------------------------------------------------------------------------
+// Zugangsmail an den Kunden (Link und Passwort), im Look von andi fragt.
+// ---------------------------------------------------------------------------
+const OEFFENTLICHE_URL = 'https://andifragt.at';
+const KONTAKT = { mail: 'office@rittler.co', tel: '+43 316 570 117' };
+
+async function zugangsmail(db, body, user) {
+  const liste = await db.Kundenzugang.filter({ code: String(body.code || '') });
+  const z = liste && liste[0];
+  if (!z) return { error: 'Kundenzugang nicht gefunden.' };
+  const projekt = await db.Projekt.get(z.projektId);
+  const sie = projekt?.ansprache === 'sie';
+  const link = `${OEFFENTLICHE_URL}/k/${z.code}`;
+  const getrennt = !!body.getrennt;
+  const betreff = String(body.betreff || '').trim() || (sie ? 'Ihr Befragungs-Cockpit' : 'Dein Befragungs-Cockpit');
+  const text = String(body.text || '').trim();
+
+  const mails = [{
+    betreff,
+    html: mailRahmen(betreff, absaetze(text) + zugangsblock({ link, passwort: getrennt ? null : z.passwort, sie })),
+    textContent: `${text}\n\nLink: ${link}\n${getrennt ? (sie ? 'Das Passwort erhalten Sie in einer eigenen Mail.' : 'Das Passwort bekommst du in einer eigenen Mail.') : `Passwort: ${z.passwort}`}`,
+  }];
+  if (getrennt) {
+    const b2 = sie ? 'Passwort für Ihr Befragungs-Cockpit' : 'Passwort für dein Befragungs-Cockpit';
+    const t2 = sie
+      ? 'Guten Tag,\n\nhier ist wie angekündigt das Passwort für Ihr Befragungs-Cockpit. Den Link haben Sie in der vorigen Mail erhalten.'
+      : 'Hallo,\n\nhier ist wie angekündigt das Passwort für dein Befragungs-Cockpit. Den Link hast du in der vorigen Mail bekommen.';
+    mails.push({
+      betreff: b2,
+      html: mailRahmen(b2, absaetze(t2) + passwortblock(z.passwort)),
+      textContent: `${t2}\n\nPasswort: ${z.passwort}`,
+    });
+  }
+
+  if (body.aktion === 'zugangVorschau') {
+    return { ok: true, mails: mails.map((m) => ({ betreff: m.betreff, html: m.html })) };
+  }
+
+  const an = String(body.an || '')
+    .split(/[,;\s]+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (!an.length || an.length > 5 || an.some((a) => !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(a))) {
+    return { error: 'Bitte eine bis fünf gültige E-Mail-Adressen eingeben.' };
+  }
+  const key = env('BREVO_API_KEY');
+  const absender = env('MAIL_ABSENDER');
+  if (!key || !absender) return { error: 'Der Mailversand ist nicht eingerichtet (BREVO_API_KEY oder MAIL_ABSENDER fehlt).' };
+  const mm = /^\s*"?(.*?)"?\s*<([^>]+)>\s*$/.exec(absender);
+  const sender = mm && mm[1] ? { name: mm[1].trim(), email: mm[2].trim() } : { email: (mm ? mm[2] : absender).trim() };
+  const kopie = body.kopieAnMich && user?.email ? [{ email: user.email }] : undefined;
+
+  for (const m of mails) {
+    const r = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: { 'api-key': key, 'Content-Type': 'application/json', accept: 'application/json' },
+      body: JSON.stringify({
+        sender,
+        to: an.map((email) => ({ email })),
+        ...(kopie ? { bcc: kopie } : {}),
+        replyTo: { email: KONTAKT.mail },
+        subject: m.betreff,
+        htmlContent: m.html,
+        textContent: m.textContent,
+        tags: ['umfragehub', 'kundencockpit-zugang'],
+      }),
+    });
+    if (!r.ok) {
+      const t = await r.text();
+      console.error('kundenCockpit Zugangsmail:', r.status, t.slice(0, 200));
+      return { error: `Brevo hat die Mail abgelehnt (${r.status}). ${t.slice(0, 160)}` };
+    }
+  }
+  const protokoll = [...(z.versand || []), { an: an.join(', '), am: new Date().toISOString(), getrennt, ok: true }].slice(-20);
+  await db.Kundenzugang.update(z.id, { versand: protokoll });
+  return { ok: true, versand: protokoll };
+}
+
+function absaetze(text) {
+  return String(text || '')
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((p) => `<p style="margin:0 0 16px 0;">${escapeHtml(p).replace(/\n/g, '<br>')}</p>`)
+    .join('');
+}
+
+const SCHRIFT = 'Arial,Helvetica,sans-serif';
+
+function zugangsblock({ link, passwort, sie }) {
+  const pwZeile = passwort
+    ? `<tr><td style="padding:14px 0 0 0;font-family:${SCHRIFT};font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#5a5a5a;">Passwort</td></tr>
+<tr><td style="padding:4px 0 0 0;font-family:'Courier New',Courier,monospace;font-size:20px;font-weight:700;color:#2d2d2d;">${escapeHtml(passwort)}</td></tr>`
+    : `<tr><td style="padding:14px 0 0 0;font-family:${SCHRIFT};font-size:14px;color:#5a5a5a;">${sie ? 'Das Passwort erhalten Sie in einer eigenen Mail.' : 'Das Passwort bekommst du in einer eigenen Mail.'}</td></tr>`;
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 24px 0;background:#fff0f3;border-radius:12px;">
+<tr><td style="padding:20px 24px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+<tr><td style="font-family:${SCHRIFT};font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#5a5a5a;">Link</td></tr>
+<tr><td style="padding:4px 0 0 0;font-family:${SCHRIFT};font-size:15px;"><a href="${escapeHtml(link)}" style="color:#c4103f;word-break:break-all;">${escapeHtml(link)}</a></td></tr>
+${pwZeile}
+</table>
+</td></tr></table>
+<table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="border-radius:6px;background:#e02551;">
+<a href="${escapeHtml(link)}" style="display:inline-block;padding:14px 28px;font-family:${SCHRIFT};font-size:15px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:#ffffff;text-decoration:none;border-radius:6px;">Cockpit öffnen</a>
+</td></tr></table>`;
+}
+
+function passwortblock(passwort) {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 8px 0;background:#fff0f3;border-radius:12px;">
+<tr><td style="padding:20px 24px;">
+<div style="font-family:${SCHRIFT};font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#5a5a5a;">Passwort</div>
+<div style="padding-top:4px;font-family:'Courier New',Courier,monospace;font-size:22px;font-weight:700;color:#2d2d2d;">${escapeHtml(passwort)}</div>
+</td></tr></table>`;
+}
+
+// Tabellenlayout mit Inline-Styles: sieht in Outlook, Gmail und am Handy gleich aus
+function mailRahmen(betreff, inhalt) {
+  return `<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(betreff)}</title></head>
+<body style="margin:0;padding:0;background:#f6f5f4;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f5f4;">
+<tr><td align="center" style="padding:24px 12px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:14px;overflow:hidden;">
+<tr><td style="background:#2d2d2d;padding:22px 32px;font-family:${SCHRIFT};font-size:22px;font-weight:700;color:#ffffff;">andi fragt<span style="color:#ff3764;">.</span></td></tr>
+<tr><td style="padding:28px 32px 28px 32px;font-family:${SCHRIFT};font-size:16px;line-height:1.55;color:#2d2d2d;">${inhalt}</td></tr>
+</table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
+<tr><td style="padding:16px 32px;font-family:${SCHRIFT};font-size:12px;line-height:1.6;color:#767676;">Das Cockpit zeigt ausschließlich Teilnahmezahlen. Antworten einzelner Personen sind für niemanden einsehbar.<br>andi fragt. ist ein Angebot von Rittler &amp; Co, <a href="mailto:${KONTAKT.mail}" style="color:#767676;">${KONTAKT.mail}</a>, ${KONTAKT.tel}</td></tr>
+</table>
+</td></tr></table>
+</body></html>`;
 }
 
 // ---------------------------------------------------------------------------
