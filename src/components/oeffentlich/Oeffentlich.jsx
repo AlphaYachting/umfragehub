@@ -43,7 +43,7 @@ export const MODULE = [
 ];
 
 export const H1_STIL = {
-  margin: 0,
+
   fontSize: "clamp(40px, 6vw, 76px)",
   fontWeight: 900,
   textTransform: "uppercase",
@@ -51,15 +51,15 @@ export const H1_STIL = {
 };
 
 export const H2_STIL = {
-  margin: 0,
+
   fontSize: "clamp(30px, 3.4vw, 40px)",
   fontWeight: 900,
   textTransform: "uppercase",
   lineHeight: 1.12,
 };
 
-export const LEAD_STIL = { margin: 0, maxWidth: 680, fontSize: 20, lineHeight: 1.6 };
-export const TEXT_STIL = { margin: 0, fontSize: 18, lineHeight: 1.65 };
+export const LEAD_STIL = { maxWidth: 680, fontSize: 20, lineHeight: 1.6 };
+export const TEXT_STIL = { fontSize: 18, lineHeight: 1.65 };
 export const BREITE = "max-w-6xl mx-auto px-6";
 
 export function useSeitentitel(titel) {
@@ -77,7 +77,7 @@ export function Etikett({ children, dunkel = false, className = "", style }) {
   return (
     <p
       className={`text-[13px] font-medium uppercase tracking-[0.2em] ${className}`}
-      style={{ margin: 0, color: dunkel ? F.etikettDunkel : F.etikett, ...style }}
+      style={{ color: dunkel ? F.etikettDunkel : F.etikett, ...style }}
     >
       {children}
     </p>
@@ -89,7 +89,7 @@ export function Kleinlabel({ children, dunkel = false, style }) {
   return (
     <p
       className="text-xs font-medium uppercase tracking-[0.18em]"
-      style={{ margin: 0, color: dunkel ? F.hellAufDunkel : F.daempft, ...style }}
+      style={{ color: dunkel ? F.hellAufDunkel : F.daempft, ...style }}
     >
       {children}
     </p>
@@ -266,7 +266,7 @@ export function Modulseite({ titel, modul, hintergrund = "#ffffff", dunkel = fal
 
 export function Beispielhinweis({ dunkel = false, children = "Beispiel zur Veranschaulichung, keine echten Daten.", className = "mt-4" }) {
   return (
-    <p className={`text-[13px] ${className}`} style={{ margin: 0, color: dunkel ? "#b3b3b3" : F.daempft }}>
+    <p className={`text-[13px] ${className}`} style={{ color: dunkel ? "#b3b3b3" : F.daempft }}>
       {children}
     </p>
   );
