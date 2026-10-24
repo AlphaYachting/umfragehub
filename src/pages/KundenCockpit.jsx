@@ -598,7 +598,7 @@ function Verlauf({ v, nr }) {
   } else if (staerkster && staerkster.neu > 0) {
     einsicht = {
       titel: `Stärkster Tag bisher: ${datumKurz(staerkster.datum)}`,
-      text: `An diesem Tag wurden ${staerkster.neu} Interviews fertig. Meist kommen die meisten Antworten gleich nach der Einladung.`,
+      text: `An diesem Tag wurden ${staerkster.neu} Interviews fertig. Die meisten Antworten kommen in den ersten Tagen nach einer Einladung oder Erinnerung.`,
     };
   }
 
@@ -679,7 +679,7 @@ function Zeiten({ z, t, nr }) {
   const maxTz = Math.max(1, ...z.tageszeiten.map((x) => x.n));
   const maxWt = Math.max(1, ...z.wochentage.map((x) => x.n));
   const summe = z.tageszeiten.reduce((a, x) => a + x.n, 0) || 1;
-  const spitze = z.tageszeiten.find((x) => x.n === maxTz);
+  const spitzen = z.tageszeiten.filter((x) => x.n === maxTz).map((x) => x.name);
   const abend = z.tageszeiten.find((x) => x.name === "Abend")?.n || 0;
   const abendAnteil = Math.round((abend / summe) * 100);
   const wtSpitze = z.wochentage.find((x) => x.n === maxWt);
@@ -707,7 +707,7 @@ function Zeiten({ z, t, nr }) {
             ))}
           </ul>
           <p className="mt-5 text-sm leading-relaxed" style={{ color: F.daempft }}>
-            {spitze ? `${spitze.name} ist die stärkste Zeit.` : ""}
+            {spitzen.length === 1 ? `${spitzen[0]} ist die stärkste Zeit.` : `${spitzen.slice(0, -1).join(", ")} und ${spitzen[spitzen.length - 1]} sind gleich stark.`}
             {abendAnteil >= 15 ? ` ${abendAnteil} % der Interviews entstehen am Abend, also in Ruhe von zu Hause aus.` : ""}
           </p>
         </div>
@@ -893,7 +893,7 @@ function Verborgen() {
   return (
     <span aria-hidden="true" className="flex items-center gap-2 text-[13px]" style={{ color: F.grauMid }}>
       <Lock size={12} strokeWidth={2.4} />
-      <span style={{ filter: "blur(4px)" }}>Verborgenes Thema</span>
+      <span className="whitespace-nowrap" style={{ filter: "blur(4px)" }}>Verborgenes Thema</span>
     </span>
   );
 }
@@ -1003,7 +1003,7 @@ function Signale({ s, nr }) {
             <span className="inline-flex items-center min-h-[28px] px-3 rounded-full text-[13px] font-semibold" style={{ background: "#f1efed" }}>Alle Gruppen</span>
             <h3 className="mt-4 text-[26px] leading-tight font-extrabold">Worüber am meisten gesprochen wurde</h3>
             <p className="mt-6 text-[64px] leading-none font-extrabold" style={{ color: F.akzent }}>
-              {String(s.intensitaet.spitze.faktor).replace(".", ",")}<span className="text-[30px]">fach</span>
+              {Number(s.intensitaet.spitze.faktor).toFixed(1).replace(".", ",")}<span className="text-[30px]">fach</span>
             </p>
             <p className="mt-2 max-w-[320px] text-sm leading-snug" style={{ color: F.daempft }}>so viel Text je Antwort wie im Schnitt beim Thema {s.intensitaet.spitze.name}</p>
             <p className="mt-6 text-[15px] leading-relaxed" style={{ color: F.daempft }}>Wo Menschen viel schreiben, ist ihnen etwas wichtig. Ob Lob oder Kritik, zeigen wir dir im Workshop.</p>
@@ -1019,10 +1019,10 @@ function Signale({ s, nr }) {
                       <li key={k.name} className="grid items-center gap-3.5 text-sm" style={{ gridTemplateColumns: "minmax(120px,180px) minmax(0,1fr) 44px" }}>
                         <span className="font-semibold">{k.name}</span>
                         <span className="relative h-4 rounded-full" style={{ background: F.grau }}>
-                          <span className="absolute inset-y-0 left-0 rounded-full" style={{ width: `${(k.faktor / max) * 100}%`, background: k === s.intensitaet.spitze ? F.akzent : F.dunkel }} />
+                          <span className="absolute inset-y-0 left-0 rounded-full" style={{ width: `${(k.faktor / max) * 100}%`, background: k.name === s.intensitaet.spitze.name ? F.akzent : F.dunkel }} />
                           <span aria-hidden="true" className="absolute -top-1.5 -bottom-1.5 border-l-2 border-dashed" style={{ left: `${schnitt}%`, borderColor: F.grauMid }} />
                         </span>
-                        <span className="text-right font-bold">{String(k.faktor).replace(".", ",")}</span>
+                        <span className="text-right font-bold">{Number(k.faktor).toFixed(1).replace(".", ",")}</span>
                       </li>
                     ))}
                   </ul>
@@ -1083,9 +1083,11 @@ function Module({ d, nr, onInteresse }) {
     if (!zgs.has("kunden")) {
       liste.push({
         key: "kunden",
-        hook: teamEingeladen && teamFertig
+        hook: teamEingeladen && teamFertig / teamEingeladen >= 0.5
           ? `${Math.round((teamFertig / teamEingeladen) * 100)} % deines Teams haben ihre Sicht gesagt. Mit der Außensicht deiner Kunden wird das Bild vollständig.`
-          : "Mit der Außensicht deiner Kunden wird das Bild vollständig.",
+          : teamFertig
+            ? "Dein Team sagt gerade seine Sicht. Mit der Außensicht deiner Kunden wird das Bild vollständig."
+            : "Mit der Außensicht deiner Kunden wird das Bild vollständig.",
       });
     }
     liste.push({
