@@ -104,7 +104,7 @@ export default function KundenzugangBox({ projekt }) {
   async function passwortNeu() {
     if (!await bestaetigen("Neues Passwort erzeugen? Das bisherige Passwort funktioniert danach nicht mehr.")) return;
     setZeigen(true);
-    await aendern({ passwort: neuesPasswort(), fehlversuche: 0, gesperrtBis: null }, "Neues Passwort erzeugt.");
+    await aendern({ passwort: neuesPasswort(), fehlversuche: 0, gesperrtBis: new Date(0).toISOString() }, "Neues Passwort erzeugt.");
   }
 
   async function kopiere(text, meldung) {
