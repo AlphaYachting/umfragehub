@@ -607,7 +607,7 @@ const FMT = new Intl.DateTimeFormat('en-GB', {
 const WT_EN = { Mon: 0, Tue: 1, Wed: 2, Thu: 3, Fri: 4, Sat: 5, Sun: 6 };
 
 function teile(d) {
-  const t = {};
+  const t: Record<string, string> = {};
   for (const p of FMT.formatToParts(d)) t[p.type] = p.value;
   return {
     schluessel: `${t.year}-${t.month}-${t.day}`,
