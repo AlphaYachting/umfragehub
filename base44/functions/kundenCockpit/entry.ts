@@ -578,9 +578,10 @@ async function zugangsmail(db, body, user) {
   const betreff = String(body.betreff || '').trim() || (sie ? 'Ihr Befragungs-Cockpit' : 'Dein Befragungs-Cockpit');
   const text = String(body.text || '').trim();
 
+  const [haupt, gruss] = grussAbtrennen(text);
   const mails = [{
     betreff,
-    html: mailRahmen(betreff, absaetze(text) + zugangsblock({ link, passwort: getrennt ? null : z.passwort, sie })),
+    html: mailRahmen(betreff, absaetze(haupt) + zugangsblock({ link, passwort: getrennt ? null : z.passwort, sie }) + absaetze(gruss)),
     textContent: `${text}\n\nLink: ${link}\n${getrennt ? (sie ? 'Das Passwort erhalten Sie in einer eigenen Mail.' : 'Das Passwort bekommst du in einer eigenen Mail.') : `Passwort: ${z.passwort}`}`,
   }];
   if (getrennt) {
@@ -590,8 +591,8 @@ async function zugangsmail(db, body, user) {
       : 'Hallo,\n\nhier ist wie angekündigt das Passwort für dein Befragungs-Cockpit. Den Link hast du in der vorigen Mail bekommen.';
     mails.push({
       betreff: b2,
-      html: mailRahmen(b2, absaetze(t2) + passwortblock(z.passwort)),
-      textContent: `${t2}\n\nPasswort: ${z.passwort}`,
+      html: mailRahmen(b2, absaetze(t2) + passwortblock(z.passwort) + absaetze(gruss)),
+      textContent: `${t2}\n\nPasswort: ${z.passwort}${gruss ? `\n\n${gruss}` : ''}`,
     });
   }
 
@@ -639,6 +640,16 @@ async function zugangsmail(db, body, user) {
   return { ok: true, versand: protokoll };
 }
 
+// Grußformel am Ende abtrennen, damit Link und Passwort davor stehen
+function grussAbtrennen(text) {
+  const teile = String(text || '').split(/\n\s*\n/);
+  const letzter = (teile[teile.length - 1] || '').trim();
+  if (teile.length > 1 && /^(viele|liebe|beste|herzliche|schöne|freundliche)\s+grüße|^mit\s+(freundlichen|besten|herzlichen)|^lg\b|^gruß/i.test(letzter)) {
+    return [teile.slice(0, -1).join('\n\n'), letzter];
+  }
+  return [text, ''];
+}
+
 function absaetze(text) {
   return String(text || '')
     .split(/\n\s*\n/)
@@ -665,7 +676,8 @@ ${pwZeile}
 </td></tr></table>
 <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="border-radius:6px;background:#e02551;">
 <a href="${escapeHtml(link)}" style="display:inline-block;padding:14px 28px;font-family:${SCHRIFT};font-size:15px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:#ffffff;text-decoration:none;border-radius:6px;">Cockpit öffnen</a>
-</td></tr></table>`;
+</td></tr></table>
+<div style="height:24px;line-height:24px;font-size:0;">&nbsp;</div>`;
 }
 
 function passwortblock(passwort) {
@@ -685,7 +697,7 @@ function mailRahmen(betreff, inhalt) {
 <tr><td align="center" style="padding:24px 12px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:14px;overflow:hidden;">
 <tr><td style="background:#2d2d2d;padding:22px 32px;font-family:${SCHRIFT};font-size:22px;font-weight:700;color:#ffffff;">andi fragt<span style="color:#ff3764;">.</span></td></tr>
-<tr><td style="padding:28px 32px 28px 32px;font-family:${SCHRIFT};font-size:16px;line-height:1.55;color:#2d2d2d;">${inhalt}</td></tr>
+<tr><td style="padding:28px 32px 12px 32px;font-family:${SCHRIFT};font-size:16px;line-height:1.55;color:#2d2d2d;">${inhalt}</td></tr>
 </table>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
 <tr><td style="padding:16px 32px;font-family:${SCHRIFT};font-size:12px;line-height:1.6;color:#767676;">Das Cockpit zeigt ausschließlich Teilnahmezahlen. Antworten einzelner Personen sind für niemanden einsehbar.<br>andi fragt. ist ein Angebot von Rittler &amp; Co, <a href="mailto:${KONTAKT.mail}" style="color:#767676;">${KONTAKT.mail}</a>, ${KONTAKT.tel}</td></tr>
