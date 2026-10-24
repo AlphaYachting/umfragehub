@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, Search, RefreshCw, X } from "lucide-react";
+import { Plus, Search, RefreshCw, X, MonitorSmartphone, KeyRound } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import {
@@ -54,6 +54,18 @@ export default function Projects() {
   const [neuName, setNeuName] = useState("");
   const [neuKunde, setNeuKunde] = useState("");
   const [speichern, setSpeichern] = useState(false);
+  // Kundenzugänge je Projekt (nur Link-Code) für den Knopf „Kundenansicht“
+  const [zugaenge, setZugaenge] = useState({});
+
+  useEffect(() => {
+    base44.entities.Kundenzugang.list("-created_date", 200)
+      .then((liste) => {
+        const m = {};
+        for (const z of liste || []) if (!m[z.projektId]) m[z.projektId] = z.code;
+        setZugaenge(m);
+      })
+      .catch(() => {});
+  }, []);
 
   async function laden() {
     setLoading(true);
@@ -267,6 +279,26 @@ export default function Projects() {
                       wert={abgeschlossen}
                       wertHinweis="abgeschlossen"
                       onClick={() => navigate(`/projekt/${p.id}`)}
+                      aktion={zugaenge[p.id] ? (
+                        <a
+                          href={`/k/${zugaenge[p.id]}?vorschau=1`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          title="Kundenansicht öffnen"
+                        >
+                          <Button variant="outline" size="sm"><MonitorSmartphone /> <span className="hidden sm:inline">Kundenansicht</span></Button>
+                        </a>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          title="Kundenzugang einrichten"
+                          onClick={(e) => { e.stopPropagation(); navigate(`/projekt/${p.id}?reiter=kunde`); }}
+                        >
+                          <KeyRound /> <span className="hidden sm:inline">Kundenzugang</span>
+                        </Button>
+                      )}
                     />
                   );
                 })}
