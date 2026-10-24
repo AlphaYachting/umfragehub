@@ -224,10 +224,10 @@ export function Kopf({ modul, dunkel = false, randUnten = true }) {
   );
 }
 
-export function Fuss({ dunkel = false }) {
+export function Fuss({ dunkel = false, hintergrund }) {
   const farbe = dunkel ? "#b3b3b3" : F.daempft;
   return (
-    <footer style={{ borderTop: `1px solid ${dunkel ? "#444444" : F.linie}` }}>
+    <footer style={{ borderTop: `1px solid ${dunkel ? "#444444" : F.linie}`, background: hintergrund }}>
       <div className={`${BREITE} py-8 flex flex-wrap gap-x-8 gap-y-4 items-center justify-between text-sm`} style={{ color: farbe }}>
         <div className="flex flex-wrap gap-x-4 gap-y-1">
           <strong className="font-semibold" style={{ color: dunkel ? "#ffffff" : F.text }}>Rittler &amp; Co GmbH</strong>
@@ -247,7 +247,7 @@ export function Fuss({ dunkel = false }) {
 }
 
 // Rahmen jeder Modulseite: Hintergrund, Schrift, Kopf, Fuß, beim Öffnen nach oben.
-export function Modulseite({ titel, modul, hintergrund = "#ffffff", dunkel = false, kopfRand = true, children }) {
+export function Modulseite({ titel, modul, hintergrund = "#ffffff", dunkel = false, kopfRand = true, fussDunkel, fussHintergrund, children }) {
   useSeitentitel(titel);
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -259,7 +259,7 @@ export function Modulseite({ titel, modul, hintergrund = "#ffffff", dunkel = fal
     >
       <Kopf modul={modul} dunkel={dunkel} randUnten={kopfRand} />
       <main>{children}</main>
-      <Fuss dunkel={dunkel} />
+      <Fuss dunkel={fussDunkel ?? dunkel} hintergrund={fussHintergrund} />
     </div>
   );
 }
