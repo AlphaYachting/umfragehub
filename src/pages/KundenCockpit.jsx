@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { ArrowRight, Lock, Check, TrendingUp, Activity, Sparkles, CalendarDays, RefreshCw } from "lucide-react";
+import { ArrowRight, Lock, Check, TrendingUp, Sparkles, CalendarDays, RefreshCw } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
 // Kunden-Cockpit unter /k/:code: der Auftraggeber sieht mit Passwort, wie weit
@@ -590,10 +590,11 @@ function Verlauf({ v, nr }) {
 
   let einsicht;
   if (v.schuebe.length) {
-    const teile = v.schuebe.map((s) => `nach der am ${datumKurz(s.datum)} ${s.anzahl}`);
+    const [erste, ...weitere] = v.schuebe;
+    const rest = weitere.map((s) => `, nach der am ${datumKurz(s.datum)} weitere ${s.anzahl}`).join("");
     einsicht = {
       titel: "Jede Erinnerung bringt einen Schub.",
-      text: `Am Tag der Erinnerung und am Tag danach kamen ${teile.join(", ")} fertige Interviews dazu.`.replace("kamen nach der", "kamen nach der"),
+      text: `Nach der Erinnerung am ${datumKurz(erste.datum)} kamen in zwei Tagen ${erste.anzahl} fertige Interviews dazu${rest}.`,
     };
   } else if (staerkster && staerkster.neu > 0) {
     einsicht = {
@@ -1152,5 +1153,3 @@ function Module({ d, nr, onInteresse }) {
   );
 }
 
-// Activity wird für künftige Kennzahlen bereitgehalten
-void Activity;
