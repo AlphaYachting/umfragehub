@@ -89,7 +89,7 @@ export default function KundenCockpit() {
       const d = res?.data;
       if (!d || d.error) {
         const e = d?.error || "serverfehler";
-        if (e === "passwort" || e === "gesperrt" || (e === "zugang" && !daten)) {
+        if (e === "passwort" || e === "gesperrt" || e === "zugang") {
           schreiben(speicherSchluessel(code), null);
           setBrauchtPasswort(true);
           setDaten(null);
@@ -111,8 +111,6 @@ export default function KundenCockpit() {
     } finally {
       setLaedt(false);
     }
-    // daten absichtlich nicht als Abhängigkeit: nur für die Fehlerunterscheidung gelesen
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code, vorschau, vorschauPhase]);
 
   // Erster Aufruf: Vorschau oder gemerktes Passwort, sonst Anmeldung
