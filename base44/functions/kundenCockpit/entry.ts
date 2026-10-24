@@ -57,6 +57,8 @@ async function pruefen(db, { code, passwort, adminVorschau }) {
   if (!z) return { fehler: 'zugang' };
   if (adminVorschau) return { zugang: z };
   if (z.aktiv === false) return { fehler: 'zugang' };
+  // Ohne Passwort (z. B. Vorschau-Link ohne Admin-Anmeldung): nur Anmeldung zeigen, kein Fehlversuch
+  if (!String(passwort || '').trim()) return { fehler: 'anmelden' };
 
   const jetzt = Date.now();
   const gesperrt = alsDatum(z.gesperrtBis);
