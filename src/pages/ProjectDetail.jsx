@@ -31,6 +31,7 @@ import StatusBadge from "@/components/verwaltung/StatusBadge";
 import Fortschritt from "@/components/verwaltung/Fortschritt";
 import LinkAktionen from "@/components/verwaltung/LinkAktionen";
 import VerlaufChart from "@/components/verwaltung/VerlaufChart";
+import KundenzugangBox from "@/components/verwaltung/KundenzugangBox";
 import {
   ladeProjekt,
   projektAusZwischenspeicher,
@@ -300,7 +301,12 @@ export default function ProjectDetail() {
           <TabsTrigger value="einstellungen">
             Einstellungen{ungespeichert ? " •" : ""}
           </TabsTrigger>
+          <TabsTrigger value="kunde">Kundenzugang</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="kunde" className="mt-4">
+          <KundenzugangBox projekt={projekt} />
+        </TabsContent>
 
         {/* ------------------------------------------------------------------ */}
         <TabsContent value="wellen" className="mt-4 space-y-5">
