@@ -412,7 +412,7 @@ async function signaleBerechnen(db, jeWelle, antworten) {
   // 1) Einigkeit: bevorzugt das Team, sonst die größte Welle
   const basis = [...auswertbar].sort((a, b) =>
     (a.w.zielgruppe === 'mitarbeiter' ? -1 : 0) - (b.w.zielgruppe === 'mitarbeiter' ? -1 : 0) || b.fertig - a.fertig)[0];
-  const items = Object.values(basis.werte)
+  const items = (Object.values(basis.werte) as number[][])
     .filter((v) => v.length >= basis.mindest)
     .map((v) => ({ sd: standardabweichung(v), v }));
   const einig = items.filter((i) => i.sd <= EINIG_BIS).sort((a, b) => a.sd - b.sd);
