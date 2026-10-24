@@ -25,6 +25,10 @@ const QuestionLibrary = lazy(() => import('@/pages/QuestionLibrary'));
 const Interview = lazy(() => import('@/pages/Interview'));
 const Startseite = lazy(() => import('@/pages/Startseite'));
 const KundenCockpit = lazy(() => import('@/pages/KundenCockpit'));
+const ModulPositionierung = lazy(() => import('@/pages/modul/Positionierung'));
+const ModulTeam = lazy(() => import('@/pages/modul/Team'));
+const ModulKunden = lazy(() => import('@/pages/modul/Kunden'));
+const ModulVertrieb = lazy(() => import('@/pages/modul/Vertrieb'));
 
 const Laden = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -61,6 +65,11 @@ const AuthenticatedApp = () => {
     <Routes>
       {/* Öffentlich: Startseite für alle, die andifragt.at ohne Befragungslink aufrufen */}
       <Route path="/" element={<Startseite />} />
+      {/* Öffentlich: die vier Modulseiten */}
+      <Route path="/positionierung" element={<ModulPositionierung />} />
+      <Route path="/team" element={<ModulTeam />} />
+      <Route path="/kunden" element={<ModulKunden />} />
+      <Route path="/vertrieb" element={<ModulVertrieb />} />
       <Route path="/i/:linkToken" element={<Interview />} />
       {/* Öffentlich mit Passwort: Kunden-Cockpit des Auftraggebers */}
       <Route path="/k/:code" element={<KundenCockpit />} />
