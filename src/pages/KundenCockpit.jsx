@@ -230,8 +230,7 @@ function Anmeldung({ passwort, setPasswort, onSubmit, fehler, laedt }) {
 
       <section className="flex-[1_1_420px] min-w-0 flex items-center justify-center px-6 py-14">
         <div className="w-full max-w-[400px]">
-          <img src="/marke/andi-fragt.svg" alt="ANDI fragt" className="w-24 h-auto block" />
-          <h2 className="mt-7 text-[32px] leading-tight font-extrabold">Willkommen</h2>
+          <h2 className="text-[32px] leading-tight font-extrabold">Willkommen</h2>
           <p className="mt-3 text-base leading-relaxed" style={{ color: F.daempft }}>
             Gib das Passwort ein, das du von Rittler &amp; Co bekommen hast.
           </p>
@@ -416,7 +415,7 @@ function Einstieg({ d, standText, onAktualisieren }) {
               </span>
             ) : (
               <span className="inline-flex items-center gap-2 min-h-[30px] px-3 rounded-full text-[13px] font-semibold" style={{ background: "rgba(69,208,133,0.16)", color: "#7fe0ab" }}>
-                <span aria-hidden="true" className="w-2 h-2 rounded-full" style={{ background: F.gut, boxShadow: "0 0 0 4px rgba(69,208,133,0.25)" }} /> Live
+                <LivePunkt /> Live
               </span>
             )}
             <span className="text-[13px]" style={{ color: "#cfcbc7" }}>Stand heute, {standText}</span>
@@ -763,12 +762,35 @@ function Zeiten({ z, t, nr }) {
 }
 
 // ---------------------------------------------------------------------------
-const SIGNETS = [
-  { bild: "/marke/andi-fragt.svg", alt: "ANDI fragt", titel: "andi fragt", text: "Digitale Interviews mit allen Gruppen." },
-  { bild: "/marke/andi-weiss.svg", alt: "ANDI weiß", titel: "andi weiß", text: "Wir verdichten alle Antworten mit der ANDI-Methode und suchen die Abweichungen." },
-  { bild: "/marke/andi-macht.svg", alt: "ANDI macht", titel: "andi macht", text: "Klarheit und Essenz: die wahren Stärken, gemeinsam im Workshop geschärft." },
-  { bild: "/marke/andi-zeigt.svg", alt: "ANDI zeigt", titel: "andi zeigt", text: "Klare Botschaften für Kunden, Team, Vertrieb und Bewerbende." },
+// Die vier Schritte als Wortmarken-Familie der Dachmarke „andi fragt.“:
+// andi + Verb + Punkt. Der Punkt zeigt den Stand (pink = läuft, grün = erledigt, grau = geplant).
+const SCHRITTE = [
+  { verb: "fragt", kurz: "Digitale Interviews", text: "Alle Gruppen antworten anonym, am Handy oder am Computer." },
+  { verb: "weiß", kurz: "Analyse", text: "Wir verdichten alle Antworten mit der ANDI-Methode und suchen die Abweichungen." },
+  { verb: "macht", kurz: "Klarheit und Essenz", text: "Die wahren Stärken, gemeinsam im Workshop geschärft." },
+  { verb: "zeigt", kurz: "Kommunikation", text: "Klare Botschaften für Kunden, Team, Vertrieb und Bewerbende." },
 ];
+
+const PUNKT = { aktiv: F.akzent, fertig: F.gut, offen: "#cfcbc7" };
+
+function Wortmarke({ verb, status = "aktiv", className = "", zweizeilig = false }) {
+  const offen = status === "offen";
+  return (
+    <span className={`font-black tracking-[-0.01em] ${className}`} style={{ color: offen ? "#9a9692" : F.text }}>
+      andi{zweizeilig ? <br /> : " "}{verb}<span style={{ color: PUNKT[status] }}>.</span>
+    </span>
+  );
+}
+
+// Pulsierender Live-Punkt; bei „Bewegung reduzieren“ ruhig
+function LivePunkt() {
+  return (
+    <span aria-hidden="true" className="relative inline-flex w-2.5 h-2.5">
+      <span className="absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping motion-reduce:animate-none" style={{ background: F.gut }} />
+      <span className="relative inline-flex w-2.5 h-2.5 rounded-full" style={{ background: F.gut }} />
+    </span>
+  );
+}
 
 function schritte(d) {
   const abgeschlossen = d.phase === "abgeschlossen";
@@ -780,7 +802,7 @@ function schritte(d) {
     { status: abgeschlossen ? "aktiv" : "offen", datum: abgeschlossen ? "Analyse läuft" : (t.analyseAb || "nach den Interviews") },
     { status: "offen", datum: t.workshop ? `Workshop ${t.workshop}` : "Termin folgt" },
     { status: "offen", datum: t.kommunikationAb || "nach dem Workshop" },
-  ].map((s, i) => ({ ...SIGNETS[i], ...s }));
+  ].map((s, i) => ({ ...SCHRITTE[i], ...s }));
 }
 
 function Ablauf({ d, nr }) {
@@ -794,13 +816,13 @@ function Ablauf({ d, nr }) {
         {liste.map((s, i) => {
           const aktiv = s.status === "aktiv";
           return (
-            <li key={s.titel} className="rounded-2xl px-6 py-7 flex flex-col gap-3.5" style={{ border: aktiv ? `2px solid ${F.akzent}` : `1px solid ${F.linie}`, background: aktiv ? F.hauch : "#fff" }}>
+            <li key={s.verb} className="rounded-2xl px-6 py-7 flex flex-col gap-3.5" style={{ border: aktiv ? `2px solid ${F.akzent}` : `1px solid ${F.linie}`, background: aktiv ? F.hauch : "#fff" }}>
               <div className="flex items-center justify-between gap-3">
                 <span className="text-[15px] font-extrabold" style={{ color: aktiv ? F.akzentTief : F.grauMid }}>0{i + 1}</span>
                 <span className="inline-flex items-center min-h-[26px] px-2.5 rounded-full text-xs font-semibold" style={{ background: aktiv ? F.akzentTief : "#f1efed", color: aktiv ? "#fff" : F.daempft }}>{label[s.status]}</span>
               </div>
-              <img src={s.bild} alt={s.alt} className="w-[104px] h-auto block" style={{ opacity: aktiv ? 1 : 0.55 }} />
-              <h3 className="text-[22px] font-extrabold">{s.titel}</h3>
+              <p className="mt-2.5 text-[34px] leading-none"><Wortmarke verb={s.verb} status={s.status} /></p>
+              <h3 className="text-[13px] font-semibold uppercase tracking-[0.16em]" style={{ color: aktiv ? F.akzentTief : F.daempft }}>{s.kurz}</h3>
               <p className="text-[15px] leading-relaxed" style={{ color: F.daempft }}>{s.text}</p>
               <p className="mt-auto pt-3 text-sm font-semibold" style={{ borderTop: `1px solid ${F.linie}` }}>{s.datum}</p>
             </li>
@@ -848,7 +870,7 @@ function Workshop({ d, nr }) {
   return (
     <section id="ablauf" className="max-w-[1160px] mx-auto px-6 pt-28 scroll-mt-4">
       <div className="rounded-[20px] px-6 sm:px-10 py-12 flex flex-wrap items-center gap-10" style={{ background: F.hauch }}>
-        <img src="/marke/andi-macht.svg" alt="ANDI macht" className="w-[150px] h-auto block" />
+        <p aria-hidden="true" className="shrink-0 text-[56px] sm:text-[64px] leading-[0.95]"><Wortmarke verb="macht" zweizeilig /></p>
         <div className="flex-[1_1_420px] min-w-0">
           <Etikett>{nr} Workshop</Etikett>
           <h2 className="mt-3 text-[28px] sm:text-[36px] leading-[1.12] font-black uppercase">
@@ -872,12 +894,12 @@ function Workshop({ d, nr }) {
           const aktiv = s.status === "aktiv";
           const fertig = s.status === "fertig";
           return (
-            <li key={s.titel} className="rounded-xl px-5 py-4 flex items-center gap-3.5" style={{ border: aktiv ? `2px solid ${F.akzent}` : `1px solid ${F.linie}`, background: aktiv ? F.hauch : "#fff" }}>
+            <li key={s.verb} className="rounded-xl px-5 py-4 flex items-center gap-3.5" style={{ border: aktiv ? `2px solid ${F.akzent}` : `1px solid ${F.linie}`, background: aktiv ? F.hauch : "#fff" }}>
               <span className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold" style={{ background: fertig ? F.gut : aktiv ? F.akzentTief : "#f1efed", color: fertig ? "#1b4d33" : aktiv ? "#fff" : F.daempft }}>
                 {fertig ? <Check size={16} strokeWidth={3} aria-label="erledigt" /> : i + 1}
               </span>
               <span>
-                <span className="block text-[17px] font-extrabold">{s.titel}</span>
+                <span className="block text-[19px]"><Wortmarke verb={s.verb} status={s.status} /></span>
                 <span className="block text-[13px]" style={{ color: F.daempft }}>{s.datum}</span>
               </span>
             </li>
