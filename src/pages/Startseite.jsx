@@ -398,8 +398,8 @@ export default function Startseite() {
     <div className="min-h-screen bg-white" style={{ color: F.text, fontFamily: "var(--schrift-marke)" }}>
       {/* Kopf */}
       <header className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-        <a href="#top" className="text-[23px] font-bold leading-none" aria-label="andi fragt. Zur Startseite">
-          andi fragt<span style={{ color: F.akzent }}>.</span>
+        <a href="#top" className="leading-none" aria-label="andi fragt. Zur Startseite">
+          <Wortmarke />
         </a>
         <nav className="flex items-center gap-5 text-sm">
           <a href="#eingeladen" className="hidden sm:inline font-medium hover:underline">Ich wurde eingeladen</a>
