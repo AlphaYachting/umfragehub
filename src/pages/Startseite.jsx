@@ -436,7 +436,7 @@ function KundenSlider() {
         .kundenslider:hover .kundenslider-spur { animation-play-state: paused; }
         .kundenslider-reihe { display: flex; align-items: center; margin: 0; padding: 0; list-style: none; }
         .kundenslider-logo { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; height: 88px; padding: 0 44px; }
-        .kundenslider-logo img { display: block; object-fit: contain; filter: grayscale(1) contrast(1.15) brightness(.55); opacity: .7; transition: filter .4s ease, opacity .4s ease; }
+        .kundenslider-logo img { display: block; object-fit: contain; filter: grayscale(1) contrast(1.3); mix-blend-mode: multiply; opacity: .8; transition: filter .4s ease, opacity .4s ease; }
         .kundenslider-logo img:hover { filter: none; opacity: 1; }
         @keyframes kundenslider-lauf { from { transform: translateX(-33.3333%); } to { transform: translateX(0); } }
         @media (max-width: 640px) { .kundenslider-logo { padding: 0 28px; height: 72px; } }
