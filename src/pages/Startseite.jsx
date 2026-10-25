@@ -417,7 +417,7 @@ function SliderLogo({ name, datei, kopie }) {
 }
 
 // Kunden-Slider: Die Logos wandern langsam von links nach rechts, nahtlos im Kreis
-// (zwei gleiche Reihen hintereinander). Beim Darüberfahren hält der Slider an,
+// (drei gleiche Reihen hintereinander, damit auch breite Bildschirme immer voll sind). Beim Darüberfahren hält der Slider an,
 // das Logo darunter zeigt seine Farben. Läuft bewusst immer (Wunsch 25.10.2026).
 function KundenSlider() {
   const reihe = (kopie) => (
@@ -438,7 +438,7 @@ function KundenSlider() {
         .kundenslider-logo { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; height: 88px; padding: 0 44px; }
         .kundenslider-logo img { display: block; object-fit: contain; filter: grayscale(1) contrast(1.15) brightness(.55); opacity: .7; transition: filter .4s ease, opacity .4s ease; }
         .kundenslider-logo img:hover { filter: none; opacity: 1; }
-        @keyframes kundenslider-lauf { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+        @keyframes kundenslider-lauf { from { transform: translateX(-33.3333%); } to { transform: translateX(0); } }
         @media (max-width: 640px) { .kundenslider-logo { padding: 0 28px; height: 72px; } }
       `}</style>
       <div className="max-w-6xl mx-auto px-6 text-center">
@@ -447,6 +447,7 @@ function KundenSlider() {
       <div className="kundenslider mt-8">
         <div className="kundenslider-spur">
           {reihe(false)}
+          {reihe(true)}
           {reihe(true)}
         </div>
       </div>
