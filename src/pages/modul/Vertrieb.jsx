@@ -7,7 +7,7 @@ import {
 
 // Modulseite 04 Vertrieb (für Vertriebsleitung, Geschäftsführung, Verkaufsteam).
 // Eigener Look: dunkle Seite. Der Einstieg ist live und bleibt unverändert.
-// Darunter nach dem Prototyp „Vertriebserfolg“: Hebelrechner, sechs Blickwinkel,
+// Darunter nach dem Prototyp Vertriebserfolg: Hebelrechner, sechs Blickwinkel,
 // Schätzspiel, Argument-Check, Ablauf, Ergebnis. Alle Zahlen sind Beispiele.
 
 const BETREFF = "andi fragt. Vertriebs-Interview";
