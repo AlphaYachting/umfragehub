@@ -388,9 +388,9 @@ function EinstiegsFrage() {
 
 // Ein Logo im Slider. Alle Logos bekommen dieselbe optische Fläche, damit breite
 // Schriftzüge (smaXtec) nicht riesig und quadratische Zeichen (Makava) nicht winzig wirken.
-const LOGO_FLAECHE = 4200; // px² je Logo
-const LOGO_MAX_B = 170;
-const LOGO_MAX_H = 58;
+const LOGO_FLAECHE = 4000; // px² je Logo
+const LOGO_MAX_B = 150;
+const LOGO_MAX_H = 56;
 
 function SliderLogo({ name, datei, kopie }) {
   const [mass, setMass] = useState(null);
@@ -420,12 +420,41 @@ function SliderLogo({ name, datei, kopie }) {
   );
 }
 
-// Kunden-Slider: Die Logos wandern langsam von links nach rechts, nahtlos im Kreis
-// (drei gleiche Reihen hintereinander, damit auch breite Bildschirme immer voll sind). Beim Darüberfahren hält der Slider an,
-// das Logo darunter zeigt seine Farben. Läuft bewusst immer (Wunsch 25.10.2026).
+// Kunden-Slider in ruhigen Einzelschritten (Wunsch 25.10.2026: nicht durchlaufen):
+// Die Reihe steht SLIDER_PAUSE ms still und gleitet dann um genau ein Logo nach rechts.
+// Drei gleiche Reihen hintereinander; nach einer vollen Runde springt die Spur
+// unsichtbar zurück, dadurch läuft es endlos ohne Lücke. Beim Darüberfahren hält er an.
+const SLIDER_PAUSE = 2600;
+const SLIDER_GLEITEN = 900;
+
 function KundenSlider() {
-  const reihe = (kopie) => (
-    <ul className="kundenslider-reihe" aria-hidden={kopie ? "true" : undefined}>
+  const anzahl = KUNDENLOGOS.length;
+  const [schritt, setSchritt] = useState(0);
+  const [gleitet, setGleitet] = useState(true);
+  const [angehalten, setAngehalten] = useState(false);
+
+  // Nächster Schritt nach der Pause
+  useEffect(() => {
+    if (angehalten) return undefined;
+    const t = setTimeout(() => {
+      setGleitet(true);
+      setSchritt((s) => s + 1);
+    }, SLIDER_PAUSE);
+    return () => clearTimeout(t);
+  }, [schritt, angehalten]);
+
+  // Nach einer vollen Runde ohne Animation an den Anfang zurück (sieht identisch aus)
+  useEffect(() => {
+    if (schritt < anzahl) return undefined;
+    const t = setTimeout(() => {
+      setGleitet(false);
+      setSchritt(0);
+    }, SLIDER_GLEITEN + 60);
+    return () => clearTimeout(t);
+  }, [schritt, anzahl]);
+
+  const reihe = (kopie, schluessel) => (
+    <ul key={schluessel} className="kundenslider-reihe" aria-hidden={kopie ? "true" : undefined}>
       {KUNDENLOGOS.map((l) => (
         <SliderLogo key={l.name} {...l} kopie={kopie} />
       ))}
@@ -435,24 +464,32 @@ function KundenSlider() {
   return (
     <section aria-label="Kunden von Rittler & Co" className="py-16" style={{ background: F.grau }}>
       <style>{`
-        .kundenslider { overflow: hidden; background: var(--farbe-grau); -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
-        .kundenslider-spur { display: flex; width: max-content; background: var(--farbe-grau); animation: kundenslider-lauf 60s linear infinite; will-change: transform; }
-        .kundenslider:hover .kundenslider-spur { animation-play-state: paused; }
+        .kundenslider { --platz: 210px; overflow: hidden; background: var(--farbe-grau); -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
+        .kundenslider-spur { display: flex; width: max-content; background: var(--farbe-grau); will-change: transform; }
         .kundenslider-reihe { display: flex; align-items: center; margin: 0; padding: 0; list-style: none; }
-        .kundenslider-logo { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; height: 88px; padding: 0 44px; }
+        .kundenslider-logo { flex: 0 0 var(--platz); width: var(--platz); height: 96px; display: flex; align-items: center; justify-content: center; }
         .kundenslider-logo img { display: block; object-fit: contain; filter: grayscale(1) contrast(1.3); mix-blend-mode: multiply; opacity: .8; transition: filter .4s ease, opacity .4s ease; }
         .kundenslider-logo img:hover { filter: none; opacity: 1; }
-        @keyframes kundenslider-lauf { from { transform: translateX(-33.3333%); } to { transform: translateX(0); } }
-        @media (max-width: 640px) { .kundenslider-logo { padding: 0 28px; height: 72px; } }
+        @media (max-width: 640px) { .kundenslider { --platz: 160px; } .kundenslider-logo { height: 80px; } .kundenslider-logo img { transform: scale(.82); } }
       `}</style>
       <div className="max-w-6xl mx-auto px-6 text-center">
         <Etikett>Kunden, die Rittler &amp; Co vertrauen</Etikett>
       </div>
-      <div className="kundenslider mt-8">
-        <div className="kundenslider-spur">
-          {reihe(false)}
-          {reihe(true)}
-          {reihe(true)}
+      <div
+        className="kundenslider mt-8"
+        onMouseEnter={() => setAngehalten(true)}
+        onMouseLeave={() => setAngehalten(false)}
+      >
+        <div
+          className="kundenslider-spur"
+          style={{
+            transform: `translate3d(calc(var(--platz) * ${schritt - anzahl}), 0, 0)`,
+            transition: gleitet ? `transform ${SLIDER_GLEITEN}ms cubic-bezier(.65, 0, .35, 1)` : "none",
+          }}
+        >
+          {reihe(false, "a")}
+          {reihe(true, "b")}
+          {reihe(true, "c")}
         </div>
       </div>
     </section>
