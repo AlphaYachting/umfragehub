@@ -21,6 +21,8 @@ import { Wortmarke } from "@/components/oeffentlich/Oeffentlich";
 // Sprachregel (24.10.2026): Auf der Seite steht nirgends Befragung, es heißt immer Interview.
 // Die vier Themen haben je ein rundes Foto (public/bilder) und verlinken auf ihre Modulseite.
 // Im Ablauf steht die Wortmarken-Familie andi fragt. / weiß. / macht. / zeigt. statt der Signets.
+// Ergänzt 25.10.2026 nach Spiegelung aus Zielgruppensicht: wechselnde andi-Frage im Einstieg,
+// Fakten unter dem Einstieg, Telefon beim Knopf, Logo-Laufband, Anonymität aus Sicht der Geschäftsführung.
 //
 // Typografie: Die Gilroy-Dateien enthalten keine Gedankenstriche,
 // typografischen Anführungszeichen oder Mittelpunkte. Texte hier deshalb mit
@@ -620,7 +622,7 @@ export default function Startseite() {
           <div className="max-w-6xl mx-auto px-6">
             <Etikett dunkel>Für alle, die wir interviewen</Etikett>
             <h2 className={`mt-3 ${H2}`}>Ehrliche Antworten brauchen Vertrauen</h2>
-            <p className="mt-5 max-w-[720px] text-lg leading-[1.65]" style={{ color: F.hellAufDunkel ?? "#d4d4d4" }}>
+            <p className="mt-5 max-w-[720px] text-lg leading-[1.65]" style={{ color: "#d4d4d4" }}>
               Die wichtigste Frage vorab: Sagen deine Leute auch die Wahrheit? Ja, wenn sie sicher sein können,
               dass niemand erfährt, wer was gesagt hat. Darum gilt für alle, die wir interviewen:
             </p>
