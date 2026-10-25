@@ -349,13 +349,13 @@ function Denkweg({ thema }) {
   );
 }
 
-// Die Frage im Einstieg wechselt alle fünf Sekunden. Bei reduzierter Bewegung bleibt die erste stehen.
+// Die Frage im Einstieg wechselt alle fünf Sekunden (weiches Ein- und Ausblenden).
+// Ohne eigene Wortmarke davor: "andi fragt." steht schon im Kopf (Wunsch 25.10.2026).
 function EinstiegsFrage() {
   const [nr, setNr] = useState(0);
   const [sichtbar, setSichtbar] = useState(true);
 
   useEffect(() => {
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
     let wechsel;
     const takt = setInterval(() => {
       setSichtbar(false);
@@ -372,9 +372,8 @@ function EinstiegsFrage() {
 
   return (
     <div className="mt-6">
-      <Wortmarke groesse={22} />
       <p
-        className="mt-2 max-w-[780px] min-h-[3.9em] sm:min-h-[2.6em] text-[clamp(21px,2.5vw,30px)] font-bold leading-[1.3] transition-opacity duration-300"
+        className="max-w-[780px] min-h-[3.9em] sm:min-h-[2.6em] text-[clamp(21px,2.5vw,30px)] font-bold leading-[1.3] transition-opacity duration-300"
         style={{ opacity: sichtbar ? 1 : 0 }}
       >
         {EINSTIEGSFRAGEN[nr]}
@@ -383,43 +382,70 @@ function EinstiegsFrage() {
   );
 }
 
-// Laufband mit Kundenlogos. Zwei gleiche Reihen hintereinander, damit die Bewegung nahtlos läuft.
-// Stoppt beim Darüberfahren; bei reduzierter Bewegung stehen die Logos still und umbrechen.
-function LogoBand() {
+// Ein Logo im Slider. Alle Logos bekommen dieselbe optische Fläche, damit breite
+// Schriftzüge (smaXtec) nicht riesig und quadratische Zeichen (Makava) nicht winzig wirken.
+const LOGO_FLAECHE = 4200; // px² je Logo
+const LOGO_MAX_B = 170;
+const LOGO_MAX_H = 58;
+
+function SliderLogo({ name, datei, kopie }) {
+  const [mass, setMass] = useState(null);
+
+  function vermessen(e) {
+    const { naturalWidth: b, naturalHeight: h } = e.currentTarget;
+    if (!b || !h) return;
+    const verhaeltnis = b / h;
+    let hoehe = Math.sqrt(LOGO_FLAECHE / verhaeltnis);
+    let breite = hoehe * verhaeltnis;
+    if (breite > LOGO_MAX_B) { breite = LOGO_MAX_B; hoehe = breite / verhaeltnis; }
+    if (hoehe > LOGO_MAX_H) { hoehe = LOGO_MAX_H; breite = hoehe * verhaeltnis; }
+    setMass({ breite: Math.round(breite), hoehe: Math.round(hoehe) });
+  }
+
+  return (
+    <li className="kundenslider-logo">
+      <img
+        src={LOGO_BASIS + datei}
+        alt={kopie ? "" : name}
+        title={kopie ? undefined : name}
+        decoding="async"
+        onLoad={vermessen}
+        style={mass ? { width: mass.breite, height: mass.hoehe } : { height: 40, width: "auto" }}
+      />
+    </li>
+  );
+}
+
+// Kunden-Slider: Die Logos wandern langsam von links nach rechts, nahtlos im Kreis
+// (zwei gleiche Reihen hintereinander). Beim Darüberfahren hält der Slider an,
+// das Logo darunter zeigt seine Farben. Läuft bewusst immer (Wunsch 25.10.2026).
+function KundenSlider() {
   const reihe = (kopie) => (
-    <ul className="logoband-reihe" aria-hidden={kopie ? "true" : undefined}>
-      {KUNDENLOGOS.map(({ name, datei }) => (
-        <li key={name} className="logoband-logo">
-          <img src={LOGO_BASIS + datei} alt={kopie ? "" : name} loading="lazy" decoding="async" />
-        </li>
+    <ul className="kundenslider-reihe" aria-hidden={kopie ? "true" : undefined}>
+      {KUNDENLOGOS.map((l) => (
+        <SliderLogo key={l.name} {...l} kopie={kopie} />
       ))}
     </ul>
   );
 
   return (
-    <section aria-label="Kunden von Rittler & Co" className="py-12" style={{ borderTop: `1px solid ${F.linie}` }}>
+    <section aria-label="Kunden von Rittler & Co" className="py-16" style={{ background: F.grau }}>
       <style>{`
-        .logoband { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
-        .logoband-spur { display: flex; width: max-content; animation: logoband-lauf 45s linear infinite; }
-        .logoband:hover .logoband-spur { animation-play-state: paused; }
-        .logoband-reihe { display: flex; align-items: center; margin: 0; padding: 0; list-style: none; }
-        .logoband-logo { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; width: 180px; height: 72px; padding: 0 24px; }
-        .logoband-logo img { display: block; max-width: 100%; max-height: 44px; width: auto; height: auto; object-fit: contain; filter: grayscale(1); opacity: .65; transition: filter .3s, opacity .3s; }
-        .logoband-logo img:hover { filter: none; opacity: 1; }
-        @keyframes logoband-lauf { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-        @media (max-width: 640px) { .logoband-logo { width: 140px; padding: 0 16px; } .logoband-logo img { max-height: 36px; } }
-        @media (prefers-reduced-motion: reduce) {
-          .logoband { -webkit-mask-image: none; mask-image: none; }
-          .logoband-spur { animation: none; width: auto; justify-content: center; }
-          .logoband-reihe { flex-wrap: wrap; justify-content: center; }
-          .logoband-reihe[aria-hidden] { display: none; }
-        }
+        .kundenslider { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+        .kundenslider-spur { display: flex; width: max-content; animation: kundenslider-lauf 60s linear infinite; will-change: transform; }
+        .kundenslider:hover .kundenslider-spur { animation-play-state: paused; }
+        .kundenslider-reihe { display: flex; align-items: center; margin: 0; padding: 0; list-style: none; }
+        .kundenslider-logo { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; height: 88px; padding: 0 44px; }
+        .kundenslider-logo img { display: block; object-fit: contain; filter: grayscale(1) contrast(1.15) brightness(.55); opacity: .7; transition: filter .4s ease, opacity .4s ease; }
+        .kundenslider-logo img:hover { filter: none; opacity: 1; }
+        @keyframes kundenslider-lauf { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+        @media (max-width: 640px) { .kundenslider-logo { padding: 0 28px; height: 72px; } }
       `}</style>
-      <div className="max-w-6xl mx-auto px-6">
-        <Etikett>Diese Unternehmen vertrauen Rittler &amp; Co</Etikett>
+      <div className="max-w-6xl mx-auto px-6 text-center">
+        <Etikett>Kunden, die Rittler &amp; Co vertrauen</Etikett>
       </div>
-      <div className="logoband mt-6">
-        <div className="logoband-spur">
+      <div className="kundenslider mt-8">
+        <div className="kundenslider-spur">
           {reihe(false)}
           {reihe(true)}
         </div>
@@ -591,7 +617,7 @@ export default function Startseite() {
           </nav>
         </section>
 
-        <LogoBand />
+        <KundenSlider />
 
         {THEMEN.map((t) => (
           <Thema key={t.id} thema={t} />
