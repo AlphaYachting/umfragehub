@@ -431,7 +431,7 @@ function KundenSlider() {
   return (
     <section aria-label="Kunden von Rittler & Co" className="py-16" style={{ background: F.grau }}>
       <style>{`
-        .kundenslider { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+        .kundenslider { overflow: hidden; background: var(--farbe-grau); -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
         .kundenslider-spur { display: flex; width: max-content; animation: kundenslider-lauf 60s linear infinite; will-change: transform; }
         .kundenslider:hover .kundenslider-spur { animation-play-state: paused; }
         .kundenslider-reihe { display: flex; align-items: center; margin: 0; padding: 0; list-style: none; }
