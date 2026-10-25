@@ -209,7 +209,7 @@ function Schaetzspiel() {
                 <p className="text-xs font-bold uppercase tracking-[0.14em]" style={{ color: F.etikett }}>{a.thema}</p>
                 <p className="mt-3 text-[21px] leading-[1.3] font-bold min-h-[82px]">{a.aussage}</p>
                 <p className="mt-[18px] mb-2.5 text-sm font-semibold" style={{ color: F.daempft }}>Wie viele stimmen zu?</p>
-                <div className="flex flex-wrap gap-2" role="group" aria-label={`Deine Schätzung zu: ${a.aussage}`}>
+                <div className="flex flex-wrap gap-1.5" role="group" aria-label={`Deine Schätzung zu: ${a.aussage}`}>
                   {SCHAETZWERTE.map((w) => {
                     const an = t === w;
                     return (
@@ -218,7 +218,7 @@ function Schaetzspiel() {
                         type="button"
                         aria-pressed={an}
                         onClick={() => setTipp((alt) => alt.map((x, j) => (j === i ? w : x)))}
-                        className="min-h-[44px] px-4 rounded-full text-[15px] font-bold cursor-pointer"
+                        className="min-h-[44px] px-3 rounded-full text-[15px] font-bold cursor-pointer"
                         style={{ border: `2px solid ${F.dunkel}`, background: an ? F.dunkel : "#ffffff", color: an ? "#ffffff" : F.dunkel }}
                       >
                         {w} %
