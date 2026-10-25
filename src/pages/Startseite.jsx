@@ -159,6 +159,39 @@ const THEMEN = [
 
 const SAEULEN = ["Aufmerksamkeit", "Nutzen", "Differenzierung", "Identität"];
 
+// Einstieg: andi stellt reihum die Frage, auf die die Überschrift antwortet (25.10.2026).
+// Je Modul eine Frage, an die Geschäftsführung gerichtet.
+const EINSTIEGSFRAGEN = [
+  "Warum kaufen deine Kunden wirklich bei dir und nicht beim Mitbewerb?",
+  "Was hält deine besten Leute eigentlich bei dir?",
+  "Was müsste passieren, damit dich deine Kunden ohne Zögern weiterempfehlen?",
+  "Bei welchem Argument nicken deine Kunden, und bei welchem schalten sie ab?",
+];
+
+// Vertrauen gleich unter dem Einstieg statt versteckt im Ablauf.
+const FAKTEN = [
+  { zahl: "über 500", text: "Markenprojekte als Grundlage der Methode" },
+  { zahl: "über 20 Jahre", text: "Rittler & Co, Werbeagentur in Graz" },
+  { zahl: "rund 60 Min.", text: "dein eigener Aufwand" },
+  { zahl: "100 % anonym", text: "für alle, die wir interviewen" },
+];
+
+// Kundenlogos von werbe-agentur-graz.at/kunden (die ersten zehn, Stand 25.10.2026).
+// Vorläufige Auswahl: Alfons legt die endgültigen Logos noch fest.
+const LOGO_BASIS = "https://www.werbe-agentur-graz.at/assets/images/";
+const KUNDENLOGOS = [
+  { name: "Wienerberger", datei: "a/wienerberger_logo-57ntkym2r6gjj09.svg" },
+  { name: "Weingut Pfeifer", datei: "8/pfeifer_logo-mtajnnff161zty3.svg" },
+  { name: "Glavassevich & Fauster", datei: "6/glavassevich_logo-h6pktrctxqcsfpp.svg" },
+  { name: "smaXtec", datei: "6/smaxtec-logo-172f1k1wvz6zk9n.svg" },
+  { name: "Haas Fertigbau", datei: "w/haas-fertigbau-8kp08ynrz293pp2.webp" },
+  { name: "Weingut Tement", datei: "v/tement-t8dxfnf0e58we3v.webp" },
+  { name: "Makava", datei: "a/MAKAvA-hm6gza1tc6bdxps.webp" },
+  { name: "MFL Maschinenfabrik Liezen", datei: "n/mfl-logo-1dht9cbesf9q86n.svg" },
+  { name: "WIGA", datei: "w/wiga-logo-qxxjhwww5vteyzf.webp" },
+  { name: "BFI Steiermark", datei: "4/client_bfi-bvp23r5xxf0t9ta.svg" },
+];
+
 const SCHRITTE = [
   {
     verb: "fragt",
@@ -178,7 +211,7 @@ const SCHRITTE = [
   {
     verb: "zeigt",
     titel: "Kommunikation",
-    text: "Aus der Essenz werden klare Botschaften für Kunden, Team, Vertrieb und Bewerbende. Den Weg dorthin besprechen wir gemeinsam.",
+    text: "Wir präsentieren dir die Ergebnisse persönlich. Aus der Essenz werden klare Botschaften für Kunden, Team, Vertrieb und Bewerbende.",
   },
 ];
 
@@ -314,6 +347,85 @@ function Denkweg({ thema }) {
   );
 }
 
+// Die Frage im Einstieg wechselt alle fünf Sekunden. Bei reduzierter Bewegung bleibt die erste stehen.
+function EinstiegsFrage() {
+  const [nr, setNr] = useState(0);
+  const [sichtbar, setSichtbar] = useState(true);
+
+  useEffect(() => {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
+    let wechsel;
+    const takt = setInterval(() => {
+      setSichtbar(false);
+      wechsel = setTimeout(() => {
+        setNr((n) => (n + 1) % EINSTIEGSFRAGEN.length);
+        setSichtbar(true);
+      }, 350);
+    }, 5000);
+    return () => {
+      clearInterval(takt);
+      clearTimeout(wechsel);
+    };
+  }, []);
+
+  return (
+    <div className="mt-6">
+      <Wortmarke groesse={22} />
+      <p
+        className="mt-2 max-w-[780px] min-h-[3.9em] sm:min-h-[2.6em] text-[clamp(21px,2.5vw,30px)] font-bold leading-[1.3] transition-opacity duration-300"
+        style={{ opacity: sichtbar ? 1 : 0 }}
+      >
+        {EINSTIEGSFRAGEN[nr]}
+      </p>
+    </div>
+  );
+}
+
+// Laufband mit Kundenlogos. Zwei gleiche Reihen hintereinander, damit die Bewegung nahtlos läuft.
+// Stoppt beim Darüberfahren; bei reduzierter Bewegung stehen die Logos still und umbrechen.
+function LogoBand() {
+  const reihe = (kopie) => (
+    <ul className="logoband-reihe" aria-hidden={kopie ? "true" : undefined}>
+      {KUNDENLOGOS.map(({ name, datei }) => (
+        <li key={name} className="logoband-logo">
+          <img src={LOGO_BASIS + datei} alt={kopie ? "" : name} loading="lazy" decoding="async" />
+        </li>
+      ))}
+    </ul>
+  );
+
+  return (
+    <section aria-label="Kunden von Rittler & Co" className="py-12" style={{ borderTop: `1px solid ${F.linie}` }}>
+      <style>{`
+        .logoband { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+        .logoband-spur { display: flex; width: max-content; animation: logoband-lauf 45s linear infinite; }
+        .logoband:hover .logoband-spur { animation-play-state: paused; }
+        .logoband-reihe { display: flex; align-items: center; margin: 0; padding: 0; list-style: none; }
+        .logoband-logo { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; width: 180px; height: 72px; padding: 0 24px; }
+        .logoband-logo img { display: block; max-width: 100%; max-height: 44px; width: auto; height: auto; object-fit: contain; filter: grayscale(1); opacity: .65; transition: filter .3s, opacity .3s; }
+        .logoband-logo img:hover { filter: none; opacity: 1; }
+        @keyframes logoband-lauf { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @media (max-width: 640px) { .logoband-logo { width: 140px; padding: 0 16px; } .logoband-logo img { max-height: 36px; } }
+        @media (prefers-reduced-motion: reduce) {
+          .logoband { -webkit-mask-image: none; mask-image: none; }
+          .logoband-spur { animation: none; width: auto; justify-content: center; }
+          .logoband-reihe { flex-wrap: wrap; justify-content: center; }
+          .logoband-reihe[aria-hidden] { display: none; }
+        }
+      `}</style>
+      <div className="max-w-6xl mx-auto px-6">
+        <Etikett>Diese Unternehmen vertrauen Rittler &amp; Co</Etikett>
+      </div>
+      <div className="logoband mt-6">
+        <div className="logoband-spur">
+          {reihe(false)}
+          {reihe(true)}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Thema({ thema }) {
   return (
     <section id={thema.id} className="py-[104px] scroll-mt-4" style={{ borderTop: `1px solid ${F.linie}` }}>
@@ -417,6 +529,7 @@ export default function Startseite() {
         {/* Einstieg */}
         <section className="max-w-6xl mx-auto px-6 pt-14 pb-16">
           <Etikett>Die ANDI-Methode von Rittler &amp; Co</Etikett>
+          <EinstiegsFrage />
           <h1 className="mt-4 max-w-[960px] text-[clamp(40px,6vw,76px)] font-black uppercase leading-[0.98]">
             Die Antwort steckt <span style={{ color: F.akzent }}>im Unternehmen.</span>
           </h1>
@@ -435,6 +548,22 @@ export default function Startseite() {
               So läuft es ab
             </a>
           </div>
+          <p className="mt-4 text-[15px]" style={{ color: F.daempft }}>
+            Lieber gleich reden? Ruf an:{" "}
+            <a href={`tel:${KONTAKT_TEL.replace(/\s/g, "")}`} className="font-semibold hover:underline whitespace-nowrap" style={{ color: F.text }}>
+              {KONTAKT_TEL}
+            </a>
+          </p>
+
+          {/* Vertrauen auf einen Blick */}
+          <dl className="mt-12 grid gap-x-8 gap-y-6 grid-cols-2 lg:grid-cols-4 pt-8" style={{ borderTop: `1px solid ${F.linie}` }}>
+            {FAKTEN.map(({ zahl, text }) => (
+              <div key={zahl}>
+                <dt className="text-[clamp(22px,2.4vw,30px)] font-black leading-tight" style={{ color: F.akzent }}>{zahl}</dt>
+                <dd className="mt-1 text-[15px] leading-snug" style={{ color: F.daempft }}>{text}</dd>
+              </div>
+            ))}
+          </dl>
 
           {/* Die vier Module auf einen Blick */}
           <nav aria-label="Die vier Module" className="mt-[72px] grid gap-4 grid-cols-[repeat(auto-fit,minmax(230px,1fr))]">
@@ -459,6 +588,8 @@ export default function Startseite() {
             ))}
           </nav>
         </section>
+
+        <LogoBand />
 
         {THEMEN.map((t) => (
           <Thema key={t.id} thema={t} />
@@ -489,6 +620,10 @@ export default function Startseite() {
           <div className="max-w-6xl mx-auto px-6">
             <Etikett dunkel>Für alle, die wir interviewen</Etikett>
             <h2 className={`mt-3 ${H2}`}>Ehrliche Antworten brauchen Vertrauen</h2>
+            <p className="mt-5 max-w-[720px] text-lg leading-[1.65]" style={{ color: F.hellAufDunkel ?? "#d4d4d4" }}>
+              Die wichtigste Frage vorab: Sagen deine Leute auch die Wahrheit? Ja, wenn sie sicher sein können,
+              dass niemand erfährt, wer was gesagt hat. Darum gilt für alle, die wir interviewen:
+            </p>
             <div className="mt-10 grid gap-8 grid-cols-[repeat(auto-fit,minmax(230px,1fr))]">
               {VERSPRECHEN.map(({ icon: Icon, titel, text }) => (
                 <div key={titel}>
