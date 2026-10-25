@@ -178,20 +178,24 @@ const FAKTEN = [
   { zahl: "100 % anonym", text: "für alle, die wir interviewen" },
 ];
 
-// Kundenlogos von werbe-agentur-graz.at/kunden (die ersten zehn, Stand 25.10.2026).
-// Vorläufige Auswahl: Alfons legt die endgültigen Logos noch fest.
+// Kundenlogos von werbe-agentur-graz.at/kunden. Auswahl Alfons 25.10.2026 zuerst,
+// danach die bisherigen. Jedes Logo nur einmal.
 const LOGO_BASIS = "https://www.werbe-agentur-graz.at/assets/images/";
 const KUNDENLOGOS = [
+  { name: "ATL Immoinvest", datei: "0/atl-10q4b2q7w8t7zzz.webp" },
+  { name: "Haas Fertigbau", datei: "w/haas-fertigbau-8kp08ynrz293pp2.webp" },
+  { name: "Steirerfleisch", datei: "b/steirerfleisch-76b8yv3vhvdpreq.webp" },
+  { name: "Zeta", datei: "4/zeta-logo-1-bsm76qw5w9w7xpr.webp" },
+  { name: "smaXtec", datei: "6/smaxtec-logo-172f1k1wvz6zk9n.svg" },
+  { name: "WIGA", datei: "w/wiga-logo-qxxjhwww5vteyzf.webp" },
+  { name: "Amiblu", datei: "7/amiblu-ma278bdy0xtmt5j.webp" },
+  { name: "BFI Steiermark", datei: "4/client_bfi-bvp23r5xxf0t9ta.svg" },
   { name: "Wienerberger", datei: "a/wienerberger_logo-57ntkym2r6gjj09.svg" },
   { name: "Weingut Pfeifer", datei: "8/pfeifer_logo-mtajnnff161zty3.svg" },
   { name: "Glavassevich & Fauster", datei: "6/glavassevich_logo-h6pktrctxqcsfpp.svg" },
-  { name: "smaXtec", datei: "6/smaxtec-logo-172f1k1wvz6zk9n.svg" },
-  { name: "Haas Fertigbau", datei: "w/haas-fertigbau-8kp08ynrz293pp2.webp" },
   { name: "Weingut Tement", datei: "v/tement-t8dxfnf0e58we3v.webp" },
   { name: "Makava", datei: "a/MAKAvA-hm6gza1tc6bdxps.webp" },
   { name: "MFL Maschinenfabrik Liezen", datei: "n/mfl-logo-1dht9cbesf9q86n.svg" },
-  { name: "WIGA", datei: "w/wiga-logo-qxxjhwww5vteyzf.webp" },
-  { name: "BFI Steiermark", datei: "4/client_bfi-bvp23r5xxf0t9ta.svg" },
 ];
 
 const SCHRITTE = [
