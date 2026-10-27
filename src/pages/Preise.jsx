@@ -26,8 +26,8 @@ const runden = (n) => Math.round(n / 100) * 100;
 const STUFEN = [
   { id: "klein", name: "Kleinbetrieb", hinweis: "bis 6 im Team, bis 20 Kunden", basis: 2900, weiteres: 1100, paket: 5900, welle: 500 },
   { id: "b20", name: "6 bis 20 Personen", basis: 3800, weiteres: 1500, paket: 7900, welle: 900 },
-  { id: "b50", name: "21 bis 50 Personen", basis: 6900, weiteres: 2400, paket: 12900, welle: 900 },
-  { id: "b100", name: "51 bis 100 Personen", basis: 8900, weiteres: 2900, paket: 15900, welle: 900 },
+  { id: "b50", name: "21 bis 50 Personen", basis: 5400, weiteres: 2100, paket: 10900, welle: 900 },
+  { id: "b100", name: "51 bis 100 Personen", basis: 7400, weiteres: 2900, paket: 14900, welle: 900 },
   { id: "gross", name: "über 100 Personen", basis: null },
 ];
 const KLEIN = STUFEN[0];
