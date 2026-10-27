@@ -372,8 +372,8 @@ export const FAQ = {
       },
       {
         q: "Wie viel Zeit kostet das mich und mein Team?",
-        kopf: "Dich etwa zwei Stunden: Zielgespräch, Freigabe des Interviews und die Präsentation.",
-        text: "Dein Team [rund 15 Minuten pro Person], am Handy oder am Computer, wann es passt.",
+        kopf: "Dich wenig: Zielgespräch, Freigabe des Interviews und die Präsentation.",
+        text: "Zusammen [rund zwei Stunden]. Dein Team [rund 15 Minuten pro Person], am Handy oder am Computer, wann es passt.",
       },
       {
         q: "Kann ich nur den Einstieg buchen?",
