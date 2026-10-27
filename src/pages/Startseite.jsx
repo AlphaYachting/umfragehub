@@ -591,6 +591,7 @@ export default function Startseite() {
         </a>
         <nav className="flex items-center gap-5 text-sm">
           <a href="#eingeladen" className="hidden sm:inline font-medium hover:underline">Ich wurde eingeladen</a>
+          <Link to="/preise" className="hidden sm:inline font-medium hover:underline">Preise</Link>
           <Link to="/ueber-uns" className="hidden sm:inline font-medium hover:underline">Über uns</Link>
           <Link
             to="/kontakt"
