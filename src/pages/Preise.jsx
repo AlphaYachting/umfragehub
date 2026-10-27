@@ -67,10 +67,10 @@ function Punkt({ children, farbe = F.etikett }) {
 function Preis({ ab, betrag, nach, hell = false }) {
   const leise = hell ? F.hellAufDunkel : F.daempft;
   return (
-    <p className="mt-6 flex items-baseline gap-2">
+    <p className="mt-6 flex flex-wrap items-baseline gap-x-2 gap-y-1">
       {ab && <span className="text-sm" style={{ color: leise }}>ab</span>}
-      <span className="text-[40px] font-black leading-none">{betrag}</span>
-      <span className="text-sm" style={{ color: leise }}>{nach}</span>
+      <span className="text-[38px] font-black leading-none whitespace-nowrap">{betrag}</span>
+      <span className="text-sm whitespace-nowrap" style={{ color: leise }}>{nach}</span>
     </p>
   );
 }
