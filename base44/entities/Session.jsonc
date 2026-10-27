@@ -32,6 +32,12 @@
     "letzteFrageId": {
       "type": "string",
       "title": "Letzte Frage ID"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "title": "Beschreibung",
+      "description": "Kurze Beschreibung des Datensatzes f\u00fcr Suche und Vorschau, bis 1000 Zeichen."
     }
   },
   "required": [

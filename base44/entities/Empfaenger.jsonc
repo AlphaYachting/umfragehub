@@ -11,6 +11,12 @@
       "title": "Anzahl Erinnerungen",
       "type": "number"
     },
+    "description": {
+      "description": "Kurze Beschreibung des Datensatzes f\u00fcr Suche und Vorschau, bis 1000 Zeichen.",
+      "maxLength": 1000,
+      "title": "Beschreibung",
+      "type": "string"
+    },
     "eingeladenAm": {
       "format": "date-time",
       "title": "Eingeladen am",

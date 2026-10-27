@@ -212,13 +212,20 @@ export function Kopf({ modul, dunkel = false, randUnten = true }) {
               </Link>
             );
           })}
-          <a
-            href={mailAn("andi fragt. Termin vereinbaren")}
+          <Link
+            to="/ueber-uns"
+            className="hidden min-[900px]:inline-flex items-center min-h-[44px]"
+            style={{ color: schrift, textDecoration: "none" }}
+          >
+            Über uns
+          </Link>
+          <Link
+            to="/kontakt"
             className="inline-flex items-center min-h-[44px] px-4 rounded"
             style={{ background: dunkel ? F.akzent : F.dunkel, color: "#ffffff", textDecoration: "none" }}
           >
             Kontakt
-          </a>
+          </Link>
         </nav>
       </div>
     </header>
@@ -238,6 +245,8 @@ export function Fuss({ dunkel = false, hintergrund }) {
         </div>
         <div className="flex gap-5">
           <Link to="/" className="hover:underline" style={{ color: farbe }}>Zur Startseite</Link>
+          <Link to="/ueber-uns" className="hover:underline" style={{ color: farbe }}>Über uns</Link>
+          <Link to="/kontakt" className="hover:underline" style={{ color: farbe }}>Kontakt</Link>
           <a href={IMPRESSUM} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: farbe }}>Impressum</a>
           <a href={DATENSCHUTZ} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: farbe }}>Datenschutz</a>
           {/* Bewusst kein Link zur Verwaltung */}

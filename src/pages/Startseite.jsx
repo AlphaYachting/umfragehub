@@ -590,13 +590,14 @@ export default function Startseite() {
         </a>
         <nav className="flex items-center gap-5 text-sm">
           <a href="#eingeladen" className="hidden sm:inline font-medium hover:underline">Ich wurde eingeladen</a>
-          <a
-            href={mailAn("andi fragt. Termin vereinbaren")}
+          <Link to="/ueber-uns" className="hidden sm:inline font-medium hover:underline">Über uns</Link>
+          <Link
+            to="/kontakt"
             className="inline-flex items-center min-h-[44px] px-4 rounded font-semibold text-white"
             style={{ background: F.text }}
           >
             Kontakt
-          </a>
+          </Link>
         </nav>
       </header>
 
@@ -766,6 +767,8 @@ export default function Startseite() {
             <a href={`mailto:${KONTAKT_MAIL}`} className="hover:underline">{KONTAKT_MAIL}</a>
           </div>
           <div className="flex gap-5">
+            <Link to="/ueber-uns" className="hover:underline">Über uns</Link>
+            <Link to="/kontakt" className="hover:underline">Kontakt</Link>
             <a href={IMPRESSUM} target="_blank" rel="noopener noreferrer" className="hover:underline">Impressum</a>
             <a href={DATENSCHUTZ} target="_blank" rel="noopener noreferrer" className="hover:underline">Datenschutz</a>
             {/* Bewusst kein Link zur Verwaltung: Zugang nur über andifragt.at/verwaltung (Wunsch 22.10.2026) */}

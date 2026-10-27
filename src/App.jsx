@@ -29,6 +29,8 @@ const ModulPositionierung = lazy(() => import('@/pages/modul/Positionierung'));
 const ModulTeam = lazy(() => import('@/pages/modul/Team'));
 const ModulKunden = lazy(() => import('@/pages/modul/Kunden'));
 const ModulVertrieb = lazy(() => import('@/pages/modul/Vertrieb'));
+const UeberUns = lazy(() => import('@/pages/UeberUns'));
+const Kontakt = lazy(() => import('@/pages/Kontakt'));
 
 const Laden = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -70,6 +72,9 @@ const AuthenticatedApp = () => {
       <Route path="/team" element={<ModulTeam />} />
       <Route path="/kunden" element={<ModulKunden />} />
       <Route path="/vertrieb" element={<ModulVertrieb />} />
+      {/* Öffentlich: Über uns und Kontakt */}
+      <Route path="/ueber-uns" element={<UeberUns />} />
+      <Route path="/kontakt" element={<Kontakt />} />
       <Route path="/i/:linkToken" element={<Interview />} />
       {/* Öffentlich mit Passwort: Kunden-Cockpit des Auftraggebers */}
       <Route path="/k/:code" element={<KundenCockpit />} />

@@ -11,6 +11,12 @@
       "title": "Begr\u00fc\u00dfungstext",
       "type": "string"
     },
+    "description": {
+      "description": "Kurze Beschreibung des Datensatzes f\u00fcr Suche und Vorschau, bis 1000 Zeichen.",
+      "maxLength": 1000,
+      "title": "Beschreibung",
+      "type": "string"
+    },
     "eingeladen": {
       "description": "Wie viele Personen den Link bekommen haben \u2014 Grundlage f\u00fcr die R\u00fccklaufquote. Optional.",
       "title": "Eingeladene Personen",
