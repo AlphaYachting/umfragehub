@@ -4,6 +4,7 @@ import {
   F, BREITE, H1_STIL, H2_STIL, LEAD_STIL, TEXT_STIL, mailAn,
   Etikett, Hauptknopf, FuerDich, RundesFoto, Modulseite, Beispielhinweis,
 } from "@/components/oeffentlich/Oeffentlich";
+import Faq from "@/components/oeffentlich/Faq";
 
 // Modulseite 04 Vertrieb (für Vertriebsleitung, Geschäftsführung, Verkaufsteam).
 // Eigener Look: dunkle Seite. Der Einstieg ist live und bleibt unverändert.
@@ -522,6 +523,9 @@ export default function Vertrieb() {
           <Beispielhinweis className="mt-[18px]">Die Sätze in den Karten sind Beispiele.</Beispielhinweis>
         </div>
       </section>
+
+      {/* Häufige Fragen */}
+      <Faq seite="vertrieb" look="dunkel" />
 
       {/* Abschluss */}
       <section>

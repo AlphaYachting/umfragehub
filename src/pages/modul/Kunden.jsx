@@ -3,6 +3,7 @@ import {
   F, BREITE, H1_STIL, H2_STIL, LEAD_STIL, TEXT_STIL, mailAn,
   Etikett, Hauptknopf, FuerDich, RundesFoto, Modulseite,
 } from "@/components/oeffentlich/Oeffentlich";
+import Faq from "@/components/oeffentlich/Faq";
 
 // Modulseite 03 Kunden (für Geschäftsführung, Verkauf, Kundenservice).
 // Eigener Look: grauer Grund, Foto mit Fragezeichen, Kundenreise zum Antippen.
@@ -211,6 +212,9 @@ export default function Kunden() {
           </ol>
         </div>
       </section>
+
+      {/* Häufige Fragen */}
+      <Faq seite="kunden" look="grau" />
 
       {/* Abschluss */}
       <section className={`${BREITE} py-24`}>

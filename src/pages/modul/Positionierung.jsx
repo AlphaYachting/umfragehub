@@ -3,6 +3,7 @@ import {
   F, BREITE, H1_STIL, H2_STIL, LEAD_STIL, TEXT_STIL, MARKENPRUEFSTAND, mailAn,
   Etikett, Hauptknopf, FuerDich, RundesFoto, Modulseite, Beispielhinweis,
 } from "@/components/oeffentlich/Oeffentlich";
+import Faq from "@/components/oeffentlich/Faq";
 
 // Modulseite 01 Positionierung (für Inhaber, Geschäftsführung, Marketing).
 // Eigener Look: weiß, Kontur-Schrift, dunkler Umschalter Selbstbild gegen Kundenbild.
@@ -290,6 +291,9 @@ export default function Positionierung() {
           </a>
         </div>
       </section>
+
+      {/* Häufige Fragen */}
+      <Faq seite="positionierung" look="weiss" />
 
       {/* Abschluss */}
       <section className="mt-[104px]" style={{ background: F.akzent, color: "#ffffff" }}>

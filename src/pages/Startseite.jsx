@@ -5,6 +5,7 @@ import {
   Lock, Smartphone, MessageCircle, Pencil,
 } from "lucide-react";
 import { Wortmarke } from "@/components/oeffentlich/Oeffentlich";
+import Faq from "@/components/oeffentlich/Faq";
 
 // Öffentliche Startseite von andifragt.at, für alle, die die Domain ohne
 // Befragungslink aufrufen.
@@ -711,6 +712,9 @@ export default function Startseite() {
             </div>
           </div>
         </section>
+
+        {/* Häufige Fragen */}
+        <Faq seite="startseite" look="weiss" />
 
         {/* Eingeladene */}
         <section id="eingeladen" className="max-w-6xl mx-auto px-6 py-20 scroll-mt-4">

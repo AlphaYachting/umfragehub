@@ -3,6 +3,7 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import {
   BREITE, Etikett, F, H1_STIL, Hauptknopf, KONTAKT_MAIL, KONTAKT_TEL, LEAD_STIL, Modulseite, TEXT_STIL, mailAn,
 } from "@/components/oeffentlich/Oeffentlich";
+import Faq from "@/components/oeffentlich/Faq";
 
 // Öffentliche Kontaktseite von andifragt.at.
 //
@@ -103,6 +104,9 @@ export default function Kontakt() {
           </p>
         </div>
       </section>
+
+      {/* Häufige Fragen */}
+      <Faq seite="kontakt" look="weiss" />
     </Modulseite>
   );
 }

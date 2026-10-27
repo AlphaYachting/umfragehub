@@ -4,6 +4,7 @@ import { Eye, Heart, TrendingUp, Users } from "lucide-react";
 import {
   BREITE, Etikett, F, H1_STIL, H2_STIL, Hauptknopf, LEAD_STIL, Modulseite, TEXT_STIL, mailAn,
 } from "@/components/oeffentlich/Oeffentlich";
+import Faq from "@/components/oeffentlich/Faq";
 
 // Öffentliche Seite „Über uns“ von andifragt.at.
 //
@@ -165,6 +166,9 @@ export default function UeberUns() {
           </dl>
         </div>
       </section>
+
+      {/* Häufige Fragen */}
+      <Faq seite="ueberUns" look="weiss" />
     </Modulseite>
   );
 }

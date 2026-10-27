@@ -5,6 +5,7 @@ import {
   F, BREITE, H1_STIL, H2_STIL, LEAD_STIL, TEXT_STIL, mailAn,
   Etikett, Hauptknopf, FuerDich, RundesFoto, Modulseite, Beispielhinweis,
 } from "@/components/oeffentlich/Oeffentlich";
+import Faq from "@/components/oeffentlich/Faq";
 
 // Modulseite 02 Team (für Geschäftsführung, Personal und HR, Führungskräfte).
 // Eigener Look: rosa Grund, Sprechblasen um das Teamfoto, Schätzspiel
@@ -652,6 +653,9 @@ export default function Team() {
           Die Sätze in den Karten sind Beispiele. Dazu kommen wie in jedem Modul Analyse-Handout und Präsentation bei dir.
         </Beispielhinweis>
       </section>
+
+      {/* Häufige Fragen */}
+      <Faq seite="team" look="rosa" />
 
       {/* Abschluss */}
       <section className="rounded-t-[40px]" style={{ background: F.dunkel, color: "#ffffff" }}>
