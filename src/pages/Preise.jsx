@@ -199,9 +199,14 @@ function Rechner() {
                 >
                   <span className="text-base font-bold">{s.name}</span>
                   {s.hinweis && <span className="text-[13px] opacity-80">{s.hinweis}</span>}
-                  <span className="text-[13px] opacity-80">
-                    {s.basis ? `${fmt(s.basis)}, jedes weitere ${fmt(s.weiteres)}` : "auf Anfrage"}
-                  </span>
+                  {s.basis ? (
+                    <>
+                      <span className="text-[13px] opacity-80 whitespace-nowrap">Basis {fmt(s.basis)}</span>
+                      <span className="text-[13px] opacity-80 whitespace-nowrap">jedes weitere {fmt(s.weiteres)}</span>
+                    </>
+                  ) : (
+                    <span className="text-[13px] opacity-80">auf Anfrage</span>
+                  )}
                 </button>
               );
             })}
