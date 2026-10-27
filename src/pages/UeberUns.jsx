@@ -8,9 +8,10 @@ import Faq from "@/components/oeffentlich/Faq";
 
 // Öffentliche Seite „Über uns“ von andifragt.at.
 //
-// Zweck: Suchmaschinen und Erstbesucher erfahren in wenigen Absätzen, was die
-// Plattform macht, für wen sie gedacht ist und wer dahinter steht. Damit ist
-// die Seite auch die inhaltliche Heimat für die Marke andi fragt.
+// Zweck: Suchmaschinen und Erstbesucher erfahren in wenigen Absätzen, wie andi fragt.
+// arbeitet (zuerst die richtigen Fragen finden, dann das Interview entwickeln), für wen
+// es gedacht ist und wer dahinter steht. Damit ist die Seite auch die inhaltliche Heimat
+// für die Marke andi fragt. Das Tool selbst wird nicht gezeigt oder beschrieben.
 //
 // Typografie wie auf den Modulseiten: Gilroy hat keine Gedankenstriche,
 // typografischen Anführungszeichen oder Mittelpunkte. Texte deshalb mit
@@ -29,8 +30,8 @@ const SAEULEN = ["Aufmerksamkeit", "Nutzen", "Differenzierung", "Identität"];
 const FAKTEN = [
   { zahl: "über 500", text: "Markenprojekte als Grundlage der Methode" },
   { zahl: "über 20 Jahre", text: "Rittler & Co, Werbeagentur in Graz" },
-  { zahl: "100 % anonym", text: "für alle, die wir interviewen" },
-  { zahl: "wenige Minuten", text: "Aufwand für jede teilnehmende Person" },
+  { zahl: "4 Schritte", text: "von der Einschätzung bis zur Präsentation" },
+  { zahl: "nur gebündelt", text: "Ergebnisse ab einer Mindestzahl, niemand erkennbar" },
 ];
 
 const ABSATZ = { ...TEXT_STIL, color: F.daempft };
@@ -45,37 +46,41 @@ export default function UeberUns() {
           Wir fragen lieber, <span style={{ color: F.akzent }}>als zu raten.</span>
         </h1>
         <p className="mt-6" style={{ ...LEAD_STIL, color: F.daempft }}>
-          andi fragt. ist die Interview-Plattform der ANDI-Methode von Rittler &amp; Co, Werbeagentur in Graz.
-          Wir holen das Wissen ab, das in Unternehmen längst vorhanden ist: bei Führung, Team, Vertrieb und Kunden.
+          andi fragt. ist das strategische Interview-Verfahren von Rittler &amp; Co, Werbeagentur in Graz. Wir
+          finden zuerst heraus, welche Fragen dein Unternehmen weiterbringen, und holen dann das Wissen ab, das
+          längst da ist: bei Führung, Team, Vertrieb und Kunden.
         </p>
       </section>
 
-      {/* Was die Plattform macht */}
+      {/* Unser Ansatz */}
       <section className={`${BREITE} py-14 grid gap-12 min-[960px]:grid-cols-[minmax(0,1fr)_360px]`}>
         <div className="max-w-[680px]">
-          <Etikett>Die Plattform</Etikett>
-          <h2 className="mt-3" style={H2_STIL}>Was andi fragt. macht</h2>
+          <Etikett>Unser Ansatz</Etikett>
+          <h2 className="mt-3" style={H2_STIL}>
+            Erst die richtigen Fragen. <span style={{ color: F.akzent }}>Dann die Antworten.</span>
+          </h2>
           <p className="mt-5" style={ABSATZ}>
             Gute Antworten stecken fast immer schon im Unternehmen: im Kopf der Geschäftsführung, im Alltag
             des Teams, im Gespräch des Vertriebs und in der Sicht der Kunden. Nur ausgesprochen werden sie
-            selten. Genau dort setzt andi fragt. an.
+            selten, weil niemand die richtigen Fragen stellt.
           </p>
           <p className="mt-4" style={ABSATZ}>
-            Die Plattform führt digitale Interviews durch. Die befragten Personen antworten anonym, am Handy
-            oder am Computer und wann es ihnen passt, eine Frage pro Bildschirm. Unterbrechen und später
-            weitermachen ist jederzeit möglich. Aus den Antworten gewinnen wir mit der ANDI-Methode eine klare
-            Positionierung, eine glaubwürdige Arbeitgebermarke, eine ehrliche Kundensicht und einen Vertrieb,
-            der auf dem aufbaut, was beim Kunden wirklich ankommt.
+            Genau dort fangen wir an. In über 500 Markenprojekten haben wir gelernt, wo sich Unternehmen
+            typischerweise verschätzen: beim Kaufgrund der Kunden, beim Grund, warum gute Leute gehen, beim
+            Argument, an dem Abschlüsse hängen. Im Zielgespräch prüfen wir, wo diese Stellen bei dir liegen,
+            und entwickeln erst dann das Interview, für jede Gruppe eigens. Daraus entstehen eine klare
+            Positionierung, eine glaubwürdige Arbeitgebermarke, eine ehrliche Kundensicht und ein Vertrieb, der
+            auf dem aufbaut, was beim Kunden wirklich ankommt.
           </p>
           <p className="mt-4" style={ABSATZ}>
-            Anonymität ist dabei kein Zusatz, sondern die Voraussetzung. Die Plattform speichert keine
-            IP-Adressen, führt keine Teilnehmerlisten und gibt Ergebnisse erst frei, wenn eine Mindestzahl an
-            Rückmeldungen erreicht ist. Wer mitmacht, kann ehrlich antworten, auch wenn die Antwort unbequem ist.
+            Anonymität ist dabei kein Zusatz, sondern die Voraussetzung. Ehrlich wird nur geantwortet, wo
+            niemand erkennbar ist. Ergebnisse gibt es deshalb nur gebündelt und erst ab einer Mindestzahl an
+            Interviews je Gruppe. Wer mitmacht, kann sagen, was er denkt, auch wenn es unbequem ist.
           </p>
           <p className="mt-4" style={ABSATZ}>
-            Wer mit andi fragt. arbeitet, bekommt keine Datenberge, sondern Klarheit: wenige Sätze und
-            Empfehlungen, die sich im Alltag umsetzen lassen. Dafür wurden Plattform und Fragen im eigenen Haus
-            gebaut, aus der Arbeit an Marken, nicht am Reißbrett.
+            Am Ende stehen keine Datenberge, sondern Entscheidungen: wenige klare Sätze und Empfehlungen, die
+            sich im Alltag umsetzen lassen. Gelesen und eingeordnet wird jede Antwort von Menschen, nicht von
+            einer Software.
           </p>
         </div>
 
@@ -98,19 +103,21 @@ export default function UeberUns() {
       {/* Für wen */}
       <section className="py-16 text-white" style={{ background: F.dunkel }}>
         <div className={BREITE}>
-          <Etikett dunkel>Zielgruppe</Etikett>
-          <h2 className="mt-3 max-w-[760px]" style={H2_STIL}>Für wen wir fragen</h2>
+          <Etikett dunkel>Für wen wir fragen</Etikett>
+          <h2 className="mt-3 max-w-[760px]" style={H2_STIL}>
+            Für Unternehmen <span style={{ color: F.akzent }}>vor einer Entscheidung.</span>
+          </h2>
           <p className="mt-5 max-w-[820px]" style={{ ...TEXT_STIL, color: F.hellAufDunkel }}>
-            andi fragt. ist für Unternehmen gedacht, die sich selbst besser verstehen wollen, bevor sie
-            investieren: Geschäftsführung und Inhaberschaft, Personal- und Marketingverantwortliche sowie
-            Vertriebsleitungen. Der Aufwand auf Kundenseite bleibt gering, die Fragen beantworten die
-            Mitarbeitenden, Kundinnen und Kunden selbst.
+            andi fragt. ist für Unternehmen, die vor einer Entscheidung stehen und sie nicht auf Bauchgefühl
+            bauen wollen: neuer Auftritt, gute Leute halten und gewinnen, Vertrieb neu ausrichten, Übergabe an
+            die nächste Generation. Mit uns am Tisch sitzen Geschäftsführung und Inhaberschaft, Personal- und
+            Marketingverantwortliche sowie Vertriebsleitungen.
           </p>
           <p className="mt-4 max-w-[820px]" style={{ ...TEXT_STIL, color: F.hellAufDunkel }}>
-            Drei Perspektiven kommen zusammen: Führung, Belegschaft und Markt. Sie werden getrennt befragt und
-            gemeinsam ausgewertet, weil die interessanten Antworten dort entstehen, wo die Sichtweisen
-            auseinandergehen. Und für alle, die zu einem Interview eingeladen wurden, ist die Teilnahme
-            freiwillig, anonym, kostenlos und in wenigen Minuten erledigt.
+            Drei Perspektiven kommen zusammen: Führung, Belegschaft und Markt. Jede bekommt ihr eigenes
+            Interview, ausgewertet wird gemeinsam, weil die wertvollsten Erkenntnisse dort liegen, wo die
+            Sichtweisen auseinandergehen. Für alle, die zu einem Interview eingeladen werden, ist die Teilnahme
+            freiwillig, anonym und kostenlos.
           </p>
         </div>
       </section>
@@ -123,15 +130,15 @@ export default function UeberUns() {
           <div className="max-w-[680px]">
             <p style={ABSATZ}>
               Hinter andi fragt. steht die Rittler &amp; Co GmbH in Graz. Seit über 20 Jahren begleiten wir
-              Unternehmen bei Marke, Positionierung und Auftritt, mit mehr als 500 Markenprojekten als Grundlage.
-              Die Plattform wurde im eigenen Haus gebaut, damit Interviews so ablaufen, wie wir sie uns für die
-              befragten Personen wünschen: schlicht, anonym und ohne Zeitdruck.
+              Unternehmen bei Marke, Positionierung und Auftritt, in mehr als 500 Markenprojekten. Dabei haben
+              wir immer wieder erlebt, dass die besten Antworten schon im Unternehmen stecken und nur niemand
+              die richtigen Fragen stellt.
             </p>
             <p className="mt-4" style={ABSATZ}>
-              Aus dieser Praxis ist die ANDI-Methode entstanden. Sie prüft jede Antwort in vier Schritten und
-              sucht nicht den Durchschnitt, sondern die Abweichung, weil dort die eigentliche Erkenntnis liegt.
-              Wer ein Interview startet, bekommt die Auswertung persönlich präsentiert, mit klaren Empfehlungen
-              für die nächsten Entscheidungen.
+              Aus dieser Praxis ist die ANDI-Methode entstanden. Sie beginnt mit der Einschätzung der Lage,
+              prüft jede Antwort in vier Schritten und sucht nicht den Durchschnitt, sondern die Abweichung, weil
+              sie zeigt, wo eine Entscheidung anders ausfallen muss. Die Ergebnisse präsentieren wir persönlich,
+              mit klaren Empfehlungen für die nächsten Schritte.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-2">
               <span className="mr-1 text-xs font-medium uppercase tracking-[0.2em]" style={{ color: F.daempft }}>
