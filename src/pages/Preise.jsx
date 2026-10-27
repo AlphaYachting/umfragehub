@@ -31,6 +31,12 @@ const STUFEN = [
   { id: "gross", name: "über 100 Personen", basis: null },
 ];
 const KLEIN = STUFEN[0];
+
+// Grün aus dem Corporate für alles, was ein Vorteil ist: Ersparnis, inklusive, Gesamtpreis,
+// Haken. Pink bleibt für Marke, Überschriften und Knöpfe, damit Preise nicht wie eine Warnung wirken.
+// Auf Dunkel das helle Corporate-Grün, auf Hell ein tieferes Grün (Kontrast rund 5 zu 1).
+const GRUEN = F.gut;
+const GRUEN_TEXT = "#167a45";
 const EINSTIEG = 950;
 const MAX_WELLEN = 4;
 
@@ -50,13 +56,13 @@ function Pille({ children }) {
       className="inline-flex items-center gap-2 min-h-[36px] px-4 rounded-full text-sm font-medium"
       style={{ background: F.hauch, border: `1px solid ${F.hauchRand}` }}
     >
-      <Check size={16} strokeWidth={2.5} aria-hidden="true" style={{ color: F.etikett }} />
+      <Check size={16} strokeWidth={2.5} aria-hidden="true" style={{ color: GRUEN_TEXT }} />
       {children}
     </span>
   );
 }
 
-function Punkt({ children, farbe = F.etikett }) {
+function Punkt({ children, farbe = GRUEN_TEXT }) {
   return (
     <li className="flex gap-2.5">
       <Check size={18} strokeWidth={2.5} aria-hidden="true" className="shrink-0 mt-[3px]" style={{ color: farbe }} />
@@ -65,12 +71,12 @@ function Punkt({ children, farbe = F.etikett }) {
   );
 }
 
-function Preis({ ab, betrag, nach, hell = false, groesse = 38 }) {
+function Preis({ ab, betrag, nach, hell = false, groesse = 38, farbe }) {
   const leise = hell ? F.hellAufDunkel : F.daempft;
   return (
     <p className="mt-4 flex flex-wrap items-baseline gap-x-2 gap-y-1">
       {ab && <span className="text-sm" style={{ color: leise }}>ab</span>}
-      <span className="font-black leading-none whitespace-nowrap" style={{ fontSize: groesse }}>{betrag}</span>
+      <span className="font-black leading-none whitespace-nowrap" style={{ fontSize: groesse, color: farbe }}>{betrag}</span>
       <span className="text-sm whitespace-nowrap" style={{ color: leise }}>{nach}</span>
     </p>
   );
@@ -133,7 +139,7 @@ function Treppe() {
           <li key={x.name} className="p-4 rounded-xl" style={{ background: F.dunkelKarte }}>
             <p className="text-[13px]" style={{ color: F.hellAufDunkel }}>{x.name}</p>
             <p className="mt-1.5 text-[26px] font-black leading-none whitespace-nowrap">{fmt(x.preis)}</p>
-            <p className="mt-2 text-[13px] font-semibold whitespace-nowrap" style={{ color: x.spart ? F.akzent : F.hellAufDunkel }}>
+            <p className="mt-2 text-[13px] font-semibold whitespace-nowrap" style={{ color: x.spart ? GRUEN : F.hellAufDunkel }}>
               {fmt(x.je)} je Modul
             </p>
           </li>
@@ -166,16 +172,16 @@ function Rechner() {
     gewaehlt.slice(1).forEach((m) => zeilen.push({ label: `Weiteres Modul ${m.name}`, betrag: fmt(stufe.weiteres) }));
     modulSumme = stufe.basis + (n - 1) * stufe.weiteres;
     if (n === 4 && stufe.paket < modulSumme) {
-      zeilen.push({ label: "Vorteil für alle vier Module", betrag: "-" + fmt(modulSumme - stufe.paket) });
+      zeilen.push({ label: "Vorteil für alle vier Module", betrag: "-" + fmt(modulSumme - stufe.paket), gut: true });
       modulSumme = stufe.paket;
     }
-    if (n >= 2) zeilen.push({ label: "Abgleich der Sichtweisen", betrag: "inklusive" });
+    if (n >= 2) zeilen.push({ label: "Abgleich der Sichtweisen", betrag: "inklusive", gut: true });
     summe = modulSumme;
     if (wellen > 0) {
       zeilen.push({ label: `${wellen} ${wellen === 1 ? "zusätzliche Welle" : "zusätzliche Wellen"}`, betrag: fmt(stufe.welle * wellen) });
       summe += stufe.welle * wellen;
     }
-    zeilen.push({ label: "Rücklaufgarantie", betrag: "inklusive" });
+    zeilen.push({ label: "Rücklaufgarantie", betrag: "inklusive", gut: true });
   }
   const pulsSumme = zeigPreis ? 2 * runden(modulSumme * 0.4) : 0;
 
@@ -339,17 +345,17 @@ function Rechner() {
               {zeilen.map((z) => (
                 <li key={z.label} className="flex justify-between gap-4 py-3 text-[15px]" style={{ borderBottom: "1px solid #4a4a4a" }}>
                   <span style={{ color: "#e4e4e4" }}>{z.label}</span>
-                  <span className="shrink-0 font-semibold">{z.betrag}</span>
+                  <span className="shrink-0 font-semibold" style={z.gut ? { color: GRUEN } : undefined}>{z.betrag}</span>
                 </li>
               ))}
             </ul>
             <div className="mt-5 flex items-baseline justify-between gap-4">
               <span className="text-[15px]" style={{ color: F.hellAufDunkel }}>einmalig</span>
-              <span className="text-[48px] font-black leading-none" style={{ color: F.akzent }} aria-live="polite">{fmt(summe)}</span>
+              <span className="text-[48px] font-black leading-none" style={{ color: GRUEN }} aria-live="polite">{fmt(summe)}</span>
             </div>
             {n >= 2 && (
               <p className="mt-2.5 text-sm leading-[1.5] text-right" style={{ color: F.hellAufDunkel }}>
-                Das sind <strong className="text-white">{fmt(modulSumme / n)}</strong> je Modul.
+                Das sind <strong style={{ color: GRUEN }}>{fmt(modulSumme / n)}</strong> je Modul.
                 <br />
                 Einzeln nacheinander gebucht: <s>{fmt(n * stufe.basis)}</s>
               </p>
@@ -361,7 +367,7 @@ function Rechner() {
               </div>
             )}
             {anstoss && naechstes && (
-              <div className="mt-6 p-4 rounded-lg" style={{ border: `1px dashed ${F.akzent}` }}>
+              <div className="mt-6 p-4 rounded-lg" style={{ border: `1px dashed ${GRUEN}` }}>
                 <p className="text-[15px] leading-[1.5]">{anstoss}</p>
                 <button
                   type="button"
@@ -475,7 +481,7 @@ function Preistabellen() {
                   {s.id === "klein" ? `Kleinbetrieb, ${s.hinweis}` : s.name}
                 </th>
                 <td className={ZELLE}>{s.basis ? fmt(s.basis) : "auf Anfrage"}</td>
-                <td className={ZELLE} style={s.basis ? { color: F.etikett } : undefined}>{s.basis ? fmt(s.weiteres) : "auf Anfrage"}</td>
+                <td className={ZELLE} style={s.basis ? { color: GRUEN_TEXT } : undefined}>{s.basis ? fmt(s.weiteres) : "auf Anfrage"}</td>
                 <td className={ZELLE}>{s.basis ? fmt(s.paket) : "auf Anfrage"}</td>
               </tr>
             ))}
@@ -566,7 +572,7 @@ export default function Preise() {
             <article className="flex flex-col p-6 rounded-[20px] bg-white" style={{ border: `2px solid ${F.dunkel}` }}>
               <Kleinlabel>Schritt 1</Kleinlabel>
               <h3 className="mt-2 text-[22px] font-black leading-[1.15] tracking-[-0.01em]">Erstgespräch</h3>
-              <Preis betrag="0 €" nach="30 Minuten" groesse={34} />
+              <Preis betrag="0 €" nach="30 Minuten" groesse={34} farbe={GRUEN_TEXT} />
               <p className="mt-3 text-[15px] leading-[1.55]" style={{ color: F.daempft }}>
                 Du erzählst, wo es hakt. Wir sagen dir ehrlich, ob wir helfen können. Per Video oder Telefon, kein Verkaufsgespräch.
               </p>
@@ -597,7 +603,7 @@ export default function Preise() {
               <Kleinlabel dunkel>Schritt 3</Kleinlabel>
               <h3 className="mt-2 text-[22px] font-black leading-[1.15] tracking-[-0.01em]">Das Interview</h3>
               <Preis ab betrag={fmt(KLEIN.basis)} nach="erstes Modul" groesse={34} hell />
-              <p className="mt-1.5 text-[15px] font-bold" style={{ color: F.akzent }}>jedes weitere ab {fmt(KLEIN.weiteres)}</p>
+              <p className="mt-1.5 text-[15px] font-bold" style={{ color: GRUEN }}>jedes weitere ab {fmt(KLEIN.weiteres)}</p>
               <p className="mt-3 text-[15px] leading-[1.55]" style={{ color: "#e4e4e4" }}>
                 Fragen entwickeln, einladen, auswerten, präsentieren. Alles inklusive.
               </p>
