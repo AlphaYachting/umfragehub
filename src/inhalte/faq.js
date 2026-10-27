@@ -309,7 +309,7 @@ export const FAQ = {
       {
         q: "Was passiert im Erstgespräch?",
         kopf: "Im Erstgespräch hören wir zu und schätzen deine Lage ein.",
-        text: "Welche Entscheidung steht an, was weißt du schon, was vermutest du nur? Danach sagen wir dir offen, ob ein Interview Sinn ergibt und welches Modul passt. Die eigentlichen Fragen entwickeln wir im Zielgespräch, wenn du beauftragt hast. Das Erstgespräch ist [kostenlos und unverbindlich, dauert rund 30 Minuten und findet bei dir, bei uns in Graz oder online statt].",
+        text: "Welche Entscheidung steht an, was weißt du schon, was vermutest du nur? Danach sagen wir dir offen, ob ein Interview Sinn ergibt und welches Modul passt. Die eigentlichen Fragen entwickeln wir im Zielgespräch, wenn du beauftragt hast. Das Erstgespräch ist kostenlos und unverbindlich, dauert 30 Minuten und läuft per Video oder Telefon.",
       },
       {
         q: "Was soll ich zum Erstgespräch vorbereiten?",
@@ -335,6 +335,60 @@ export const FAQ = {
         q: "Mein Interview-Link funktioniert nicht. Was tun?",
         kopf: "Öffne am besten den Link direkt aus deiner Einladung oder gib deinen Interview-Code auf der Startseite ein.",
         text: "Klappt das nicht, ruf uns an. Wir schicken dir einen neuen Link, deine Antworten bleiben dabei anonym.",
+      },
+    ],
+  },
+
+  preise: {
+    etikett: "Fragen zum Preis",
+    titelA: "Kurz",
+    titelB: "beantwortet.",
+    lead: "Was Geschäftsführer, Personal- und Vertriebsverantwortliche vor dem ersten Gespräch über Preis und Aufwand wissen wollen.",
+    fragen: [
+      {
+        q: "Was kostet das Erstgespräch?",
+        kopf: "Nichts.",
+        text: "Es dauert 30 Minuten, per Video oder Telefon. Wir hören zu, schätzen deine Lage ein und sagen dir ehrlich, welches Modul passt.",
+      },
+      {
+        q: "Ist das Erstgespräch ein Verkaufsgespräch?",
+        kopf: "Nein. Es geht um deine Lage, nicht um unser Produkt.",
+        text: "Passt keines unserer Module, sagen wir dir das, und oft auch, was du stattdessen tun kannst.",
+      },
+      {
+        q: "Warum ist jedes weitere Modul so viel günstiger?",
+        kopf: "Weil die meiste Arbeit am Anfang steckt.",
+        text: "Dein Unternehmen verstehen, deine Lage einschätzen, die richtigen Fragen finden: Darauf baut jedes weitere Modul auf. Diesen Vorteil geben wir dir weiter. Und ab zwei Modulen zeigen wir dir ohne Aufpreis, wo dein Team die Lage anders sieht als deine Kunden. Genau dort liegen meist die wertvollsten Erkenntnisse.",
+      },
+      {
+        q: "Kann ich ein Modul später dazunehmen?",
+        kopf: "Ja. Innerhalb von sechs Monaten nach deinem Basismodul gilt der Preis für weitere Module.",
+        text: "Danach beginnen wir mit einem neuen Zielgespräch, dann ist es wieder ein Basismodul.",
+      },
+      {
+        q: "Wir sind nur fünf Leute. Bleibt das Team-Interview anonym?",
+        kopf: "Bei kleinen Teams fassen wir alle Antworten zusammen, ohne Aufteilung nach Gruppen, und geben Aussagen nur sinngemäß wieder.",
+        text: "Ehrlich gesagt: Bei drei oder vier Personen lässt sich manches trotzdem zuordnen. Dann empfehlen wir zuerst das Kunden-Interview. Deine Kunden wissen oft mehr, als du glaubst.",
+      },
+      {
+        q: "Wie viel Zeit kostet das mich und mein Team?",
+        kopf: "Dich etwa zwei Stunden: Zielgespräch, Freigabe des Interviews und die Präsentation.",
+        text: "Dein Team [rund 15 Minuten pro Person], am Handy oder am Computer, wann es passt.",
+      },
+      {
+        q: "Kann ich nur den Einstieg buchen?",
+        kopf: "Ja.",
+        text: "Du bekommst den Spiegel deiner Annahmen und entscheidest danach in Ruhe. Startest du innerhalb von 8 Wochen ein Interview, rechnen wir die 950 € voll an.",
+      },
+      {
+        q: "Rechnet ihr nach Stunden ab?",
+        kopf: "Nein. Jedes Modul hat einen Fixpreis.",
+        text: "Was im Angebot steht, zahlst du.",
+      },
+      {
+        q: "Was, wenn mehr Menschen teilnehmen als geplant?",
+        kopf: "Solange ihr in der gewählten Gruppengröße bleibt, ändert sich nichts.",
+        text: "Wird die Gruppe größer, sagen wir es dir vorher, nicht erst auf der Rechnung.",
       },
     ],
   },
