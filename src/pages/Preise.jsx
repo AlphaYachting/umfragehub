@@ -25,11 +25,12 @@ const runden = (n) => Math.round(n / 100) * 100;
 // Preisstufen je Modul. basis = erstes Modul, weiteres = jedes weitere, paket = alle vier.
 const STUFEN = [
   { id: "klein", name: "Kleinbetrieb", hinweis: "bis 6 im Team, bis 20 Kunden", basis: 2900, weiteres: 1100, paket: 5900, welle: 500 },
-  { id: "b20", name: "6 bis 20 Personen", basis: 4900, weiteres: 1900, paket: 9900, welle: 900 },
+  { id: "b20", name: "6 bis 20 Personen", basis: 3800, weiteres: 1500, paket: 7900, welle: 900 },
   { id: "b50", name: "21 bis 50 Personen", basis: 6900, weiteres: 2400, paket: 12900, welle: 900 },
   { id: "b100", name: "51 bis 100 Personen", basis: 8900, weiteres: 2900, paket: 15900, welle: 900 },
   { id: "gross", name: "über 100 Personen", basis: null },
 ];
+const KLEIN = STUFEN[0];
 const EINSTIEG = 950;
 const MAX_WELLEN = 4;
 
@@ -64,12 +65,12 @@ function Punkt({ children, farbe = F.etikett }) {
   );
 }
 
-function Preis({ ab, betrag, nach, hell = false }) {
+function Preis({ ab, betrag, nach, hell = false, groesse = 38 }) {
   const leise = hell ? F.hellAufDunkel : F.daempft;
   return (
-    <p className="mt-6 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+    <p className="mt-4 flex flex-wrap items-baseline gap-x-2 gap-y-1">
       {ab && <span className="text-sm" style={{ color: leise }}>ab</span>}
-      <span className="text-[38px] font-black leading-none whitespace-nowrap">{betrag}</span>
+      <span className="font-black leading-none whitespace-nowrap" style={{ fontSize: groesse }}>{betrag}</span>
       <span className="text-sm whitespace-nowrap" style={{ color: leise }}>{nach}</span>
     </p>
   );
@@ -87,14 +88,57 @@ function Kartenknopf({ to, href, children, voll = false, dunkel = false }) {
   );
 }
 
-function Treppenzeile({ label, preis, je }) {
+// Preistreppe unter den Karten: zeigt, wie der Preis je Modul sinkt.
+// Umschaltbar zwischen Kleinbetrieb und 6 bis 20 Personen.
+function Treppe() {
+  const [stufeId, setStufeId] = useState("klein");
+  const s = STUFEN.find((x) => x.id === stufeId);
+  const reihe = [
+    { name: "1 Modul", preis: s.basis, je: s.basis, spart: false },
+    { name: "2 Module", preis: s.basis + s.weiteres, je: (s.basis + s.weiteres) / 2, spart: true },
+    { name: "Alle 4 Module", preis: s.paket, je: s.paket / 4, spart: true },
+  ];
   return (
-    <div className="flex justify-between items-baseline gap-2 py-2.5" style={{ borderBottom: "1px solid #4a4a4a" }}>
-      <span className="text-[15px]">{label}</span>
-      <span className="flex flex-col items-end">
-        <strong className="text-[17px] font-black">{preis}</strong>
-        {je && <span className="text-[13px] whitespace-nowrap" style={{ color: F.hellAufDunkel }}>{je} je Modul</span>}
-      </span>
+    <div
+      className="mt-5 p-7 md:p-8 rounded-[20px] grid gap-6 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] items-center"
+      style={{ background: F.dunkel, color: "#ffffff" }}
+    >
+      <div>
+        <p className="text-xl font-black leading-[1.25]">
+          Je mehr Blickwinkel, <span style={{ color: F.akzent }}>desto günstiger jeder einzelne.</span>
+        </p>
+        <p className="mt-2 text-sm leading-[1.55]" style={{ color: F.hellAufDunkel }}>
+          Ab zwei Modulen ist der Abgleich der Sichtweisen inklusive.
+        </p>
+        <div role="group" aria-label="Betriebsgröße" className="mt-4 flex flex-wrap gap-2">
+          {["klein", "b20"].map((id) => {
+            const an = id === stufeId;
+            return (
+              <button
+                key={id}
+                type="button"
+                aria-pressed={an}
+                onClick={() => setStufeId(id)}
+                className="min-h-[44px] px-4 rounded-full text-sm font-semibold cursor-pointer"
+                style={{ background: an ? "#ffffff" : "transparent", color: an ? F.dunkel : "#ffffff", border: "1px solid #ffffff", fontFamily: "inherit" }}
+              >
+                {id === "klein" ? "Kleinbetrieb" : "6 bis 20 Personen"}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <ol className="grid gap-3 grid-cols-1 sm:grid-cols-3">
+        {reihe.map((x) => (
+          <li key={x.name} className="p-4 rounded-xl" style={{ background: F.dunkelKarte }}>
+            <p className="text-[13px]" style={{ color: F.hellAufDunkel }}>{x.name}</p>
+            <p className="mt-1.5 text-[26px] font-black leading-none whitespace-nowrap">{fmt(x.preis)}</p>
+            <p className="mt-2 text-[13px] font-semibold whitespace-nowrap" style={{ color: x.spart ? F.akzent : F.hellAufDunkel }}>
+              {fmt(x.je)} je Modul
+            </p>
+          </li>
+        ))}
+      </ol>
     </div>
   );
 }
@@ -102,8 +146,8 @@ function Treppenzeile({ label, preis, je }) {
 // ---------- Rechner ----------
 
 function Rechner() {
-  const [mods, setMods] = useState(["team"]);
-  const [stufeId, setStufeId] = useState("b20");
+  const [mods, setMods] = useState(["kunden"]);
+  const [stufeId, setStufeId] = useState("klein");
   const [wellen, setWellen] = useState(0);
   const [puls, setPuls] = useState(false);
 
@@ -507,7 +551,7 @@ export default function Preise() {
         </div>
       </section>
 
-      {/* Vier Schritte */}
+      {/* Vier Schritte: kurze Karten, Details stehen im Rechner und in den Tabellen */}
       <section className="py-24" style={{ borderTop: `1px solid ${F.linie}` }}>
         <div className={BREITE}>
           <Etikett>In vier Schritten</Etikett>
@@ -518,74 +562,46 @@ export default function Preise() {
             Du entscheidest nach jedem Schritt neu. Nichts davon verpflichtet dich zum nächsten.
           </p>
 
-          <div className="mt-14 grid gap-5 items-stretch grid-cols-[repeat(auto-fit,minmax(250px,1fr))]">
-            <article className="flex flex-col p-8 rounded-[20px] bg-white" style={{ border: `2px solid ${F.dunkel}` }}>
-              <Kleinlabel>Schritt 1 Reden</Kleinlabel>
-              <h3 className="mt-3 text-[26px] font-black leading-[1.1] tracking-[-0.01em]">Das Erstgespräch</h3>
-              <Preis betrag="0 €" nach="30 Minuten" />
-              <p className="mt-5 text-base leading-[1.6]" style={{ color: F.daempft }}>
-                Du erzählst, wo es hakt. Wir fragen nach und sagen dir ehrlich, ob und wie wir helfen können.
+          <div className="mt-12 grid gap-4 items-stretch grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            <article className="flex flex-col p-6 rounded-[20px] bg-white" style={{ border: `2px solid ${F.dunkel}` }}>
+              <Kleinlabel>Schritt 1</Kleinlabel>
+              <h3 className="mt-2 text-[22px] font-black leading-[1.15] tracking-[-0.01em]">Erstgespräch</h3>
+              <Preis betrag="0 â¬" nach="30 Minuten" groesse={34} />
+              <p className="mt-3 text-[15px] leading-[1.55]" style={{ color: F.daempft }}>
+                Du erzählst, wo es hakt. Wir sagen dir ehrlich, ob wir helfen können. Per Video oder Telefon, kein Verkaufsgespräch.
               </p>
-              <ul className="mt-6 flex flex-col gap-2.5 text-[15px]">
-                <Punkt>Per Video oder Telefon</Punkt>
-                <Punkt>Kein Verkaufsgespräch</Punkt>
-              </ul>
-              <div className="mt-auto pt-8">
+              <div className="mt-auto pt-6">
                 <Kartenknopf href="#erstgespraech" voll dunkel>Termin wählen</Kartenknopf>
               </div>
             </article>
 
-            <article className="flex flex-col p-8 rounded-[20px]" style={{ background: F.grau }}>
-              <Kleinlabel>Schritt 2 Einstieg</Kleinlabel>
-              <h3 className="mt-3 text-[26px] font-black leading-[1.1] tracking-[-0.01em]"><Wortmarke groesse={26} /> zuerst dich</h3>
-              <Preis betrag={fmt(EINSTIEG)} nach="einmalig" />
-              <p className="mt-5 text-base leading-[1.6]" style={{ color: F.daempft }}>
-                Zielgespräch und rund zehn Fragen an die Geschäftsführung. Du bekommst einen Spiegel deiner Annahmen: Was weißt du sicher,
-                was vermutest du nur, was gehört auf den Prüfstand?
+            <article className="flex flex-col p-6 rounded-[20px]" style={{ background: F.grau }}>
+              <Kleinlabel>Schritt 2</Kleinlabel>
+              <h3 className="mt-2 text-[22px] font-black leading-[1.15] tracking-[-0.01em]"><Wortmarke groesse={22} /> zuerst dich</h3>
+              <Preis betrag={fmt(EINSTIEG)} nach="einmalig" groesse={34} />
+              <p className="mt-3 text-[15px] leading-[1.55]" style={{ color: F.daempft }}>
+                Zielgespräch und zehn Fragen an dich: ein Spiegel deiner Annahmen. Voll angerechnet, wenn du in 8 Wochen ein Interview startest.
               </p>
-              <ul className="mt-6 flex flex-col gap-2.5 text-[15px]">
-                <Punkt>Ein eigenes Ergebnis, das du behältst</Punkt>
-                <Punkt><strong className="font-semibold">Voll angerechnet</strong>, wenn du innerhalb von 8 Wochen ein Interview startest</Punkt>
-              </ul>
-              <div className="mt-auto pt-8">
+              <div className="mt-auto pt-6">
                 <Kartenknopf to={KONTAKT}>Einstieg anfragen</Kartenknopf>
               </div>
             </article>
 
-            <article className="relative flex flex-col p-8 rounded-[20px]" style={{ background: F.dunkel, color: "#ffffff" }}>
+            <article className="relative flex flex-col p-6 rounded-[20px]" style={{ background: F.dunkel, color: "#ffffff" }}>
               <span
-                className="absolute -top-3.5 left-8 inline-flex items-center min-h-[28px] px-3 rounded-full text-xs font-semibold uppercase tracking-[0.12em]"
+                className="absolute -top-3.5 left-6 inline-flex items-center min-h-[28px] px-3 rounded-full text-xs font-semibold uppercase tracking-[0.12em]"
                 style={{ background: F.akzent, color: "#ffffff" }}
               >
                 Das Herzstück
               </span>
-              <Kleinlabel dunkel>Schritt 3 Interview</Kleinlabel>
-              <h3 className="mt-3 text-[26px] font-black leading-[1.1] tracking-[-0.01em]">Das Interview-Modul</h3>
-              <Preis ab betrag="2.900 €" nach="Basismodul" hell />
-              <p className="mt-2 text-base font-bold" style={{ color: F.akzent }}>Jedes weitere Modul ab 1.100 €</p>
-              <p className="mt-1.5 text-[13px]" style={{ color: F.hellAufDunkel }}>
-                2.900 € für Kleinbetriebe bis 6 Mitarbeitende, ab 6 Personen pro Modul 4.900 €
+              <Kleinlabel dunkel>Schritt 3</Kleinlabel>
+              <h3 className="mt-2 text-[22px] font-black leading-[1.15] tracking-[-0.01em]">Das Interview</h3>
+              <Preis ab betrag={fmt(KLEIN.basis)} nach="erstes Modul" groesse={34} hell />
+              <p className="mt-1.5 text-[15px] font-bold" style={{ color: F.akzent }}>jedes weitere ab {fmt(KLEIN.weiteres)}</p>
+              <p className="mt-3 text-[15px] leading-[1.55]" style={{ color: "#e4e4e4" }}>
+                Fragen entwickeln, einladen, auswerten, präsentieren. Alles inklusive.
               </p>
-              <p className="mt-5 text-base leading-[1.6]" style={{ color: "#e4e4e4" }}>
-                Positionierung, Team, Kunden oder Vertrieb. Wir entwickeln das Interview aus deiner Lage, laden ein, erinnern, werten aus
-                und zeigen dir, was daraus folgt.
-              </p>
-              <ul className="mt-6 flex flex-col gap-2.5 text-[15px]">
-                <Punkt farbe={F.akzent}>Zielgespräch und Interviewentwicklung</Punkt>
-                <Punkt farbe={F.akzent}>Einladung und Erinnerung, eine Welle</Punkt>
-                <Punkt farbe={F.akzent}>Auswertung mit menschlicher Einschätzung</Punkt>
-                <Punkt farbe={F.akzent}>Präsentation mit Prioritäten für deine Entscheidung</Punkt>
-              </ul>
-              <div className="mt-6 p-4 rounded-xl" style={{ background: F.dunkelKarte }}>
-                <p className="text-xs font-medium uppercase tracking-[0.16em]" style={{ color: F.hellAufDunkel }}>Je mehr Blickwinkel, desto günstiger</p>
-                <Treppenzeile label="1 Modul" preis="4.900 €" />
-                <Treppenzeile label="2 Module" preis="6.800 €" je="3.400 €" />
-                <Treppenzeile label="Alle 4 Module" preis="9.900 €" je="2.475 €" />
-                <p className="mt-2.5 text-[13px]" style={{ color: F.hellAufDunkel }}>
-                  Bei 6 bis 20 Personen pro Modul. Abgleich der Sichtweisen ab zwei Modulen inklusive.
-                </p>
-              </div>
-              <div className="mt-auto pt-8">
+              <div className="mt-auto pt-6">
                 <a
                   href="#rechner"
                   className="inline-flex items-center gap-2 min-h-[48px] px-5 rounded text-sm font-semibold uppercase tracking-[0.04em]"
@@ -596,23 +612,20 @@ export default function Preise() {
               </div>
             </article>
 
-            <article className="flex flex-col p-8 rounded-[20px]" style={{ background: F.hauch }}>
-              <Kleinlabel>Schritt 4 Dranbleiben</Kleinlabel>
-              <h3 className="mt-3"><Wortmarke verb="bleibt dran" groesse={26} /></h3>
-              <Preis ab betrag="1.200 €" nach="je Puls" />
-              <p className="mt-5 text-base leading-[1.6]" style={{ color: F.daempft }}>
-                Ein- oder zweimal im Jahr mit demselben Kern nachfragen. So siehst du, ob deine Maßnahmen wirken, und erkennst Veränderungen,
-                bevor sie teuer werden.
+            <article className="flex flex-col p-6 rounded-[20px]" style={{ background: F.hauch }}>
+              <Kleinlabel>Schritt 4</Kleinlabel>
+              <h3 className="mt-2 text-[22px] font-black leading-[1.15] tracking-[-0.01em]"><Wortmarke verb="bleibt dran" groesse={22} /></h3>
+              <Preis ab betrag={fmt(runden(KLEIN.basis * 0.4))} nach="je Puls" groesse={34} />
+              <p className="mt-3 text-[15px] leading-[1.55]" style={{ color: F.daempft }}>
+                Mit demselben Kern nachfragen und sehen, ob deine Maßnahmen wirken.
               </p>
-              <ul className="mt-6 flex flex-col gap-2.5 text-[15px]">
-                <Punkt>Vergleich mit deinem eigenen Ausgangswert</Punkt>
-                <Punkt>45 % des Interviewpreises, in der Jahresbegleitung mit zwei Pulsen 40 %</Punkt>
-              </ul>
-              <div className="mt-auto pt-8">
+              <div className="mt-auto pt-6">
                 <Kartenknopf to={KONTAKT}>Begleitung anfragen</Kartenknopf>
               </div>
             </article>
           </div>
+
+          <Treppe />
         </div>
       </section>
 
