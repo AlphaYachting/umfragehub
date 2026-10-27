@@ -19,7 +19,7 @@ import Faq from "@/components/oeffentlich/Faq";
 const TEL_LINK = `tel:${KONTAKT_TEL.replace(/\s/g, "")}`;
 const KONTAKT = "/kontakt";
 
-const fmt = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " €";
+const fmt = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " €";
 const runden = (n) => Math.round(n / 100) * 100;
 
 // Preisstufen je Modul. basis = erstes Modul, weiteres = jedes weitere, paket = alle vier.
@@ -216,7 +216,7 @@ function Rechner() {
         <fieldset>
           <legend className="text-lg font-bold">3. Zusätzliche Wellen oder Gruppen</legend>
           <p className="mt-1.5 text-[15px]" style={{ color: F.daempft }}>
-            Zum Beispiel Führungskräfte und Team getrennt einladen. Je 900 €, beim Kleinbetrieb 500 €.
+            Zum Beispiel Führungskräfte und Team getrennt einladen. Je 900 €, beim Kleinbetrieb 500 €.
           </p>
           <div className="mt-4 inline-flex items-center gap-1 p-1 rounded-lg bg-white" style={{ border: "1px solid #d6d3d0" }}>
             <button
@@ -266,7 +266,7 @@ function Rechner() {
             <span className="flex flex-col">
               <span className="text-base font-bold">andi bleibt dran. Zwei Pulse im Jahr</span>
               <span className="text-sm" style={{ color: F.daempft }}>
-                Mit demselben Kern nachfragen und Veränderungen messen. 40 % des Interviewpreises je Puls.
+                Mit demselben Kern nachfragen und Veränderungen messen. 40 % des Interviewpreises je Puls.
               </span>
             </span>
           </button>
@@ -344,7 +344,7 @@ function Rechner() {
           Erstgespräch vereinbaren <ArrowRight size={16} aria-hidden="true" />
         </Link>
         <p className="mt-4 text-[13px] text-center" style={{ color: F.hellAufDunkel }}>
-          Erstgespräch kostenlos. Alle Preise netto, zuzüglich 20 % USt.
+          Erstgespräch kostenlos. Alle Preise netto, zuzüglich 20 % USt.
         </p>
       </aside>
     </div>
@@ -450,12 +450,12 @@ function Preistabellen() {
           </thead>
           <tbody>
             {[
-              ["Erstgespräch, 30 Minuten", "0 €"],
+              ["Erstgespräch, 30 Minuten", "0 €"],
               ["Einstieg: Zielgespräch und Fragen an die Geschäftsführung, voll angerechnet", fmt(EINSTIEG)],
-              ["Zusätzliche Welle oder Gruppe", "900 €, Kleinbetrieb 500 €"],
+              ["Zusätzliche Welle oder Gruppe", "900 €, Kleinbetrieb 500 €"],
               ["Abgleich der Sichtweisen ab zwei Modulen", "inklusive"],
-              ["Puls einzeln", "45 % des Interviewpreises"],
-              ["Jahresbegleitung mit zwei Pulsen", "je 40 % des Interviewpreises"],
+              ["Puls einzeln", "45 % des Interviewpreises"],
+              ["Jahresbegleitung mit zwei Pulsen", "je 40 % des Interviewpreises"],
             ].map(([l, p]) => (
               <tr key={l} style={{ borderTop: `1px solid ${F.linie}` }}>
                 <th scope="row" className="px-5 py-4 text-left font-semibold">{l}</th>
@@ -466,7 +466,7 @@ function Preistabellen() {
         </table>
       </div>
       <p className="mt-4 text-sm" style={{ color: F.daempft }}>
-        Alle Preise netto, zuzüglich 20 % USt. Fixpreise, keine Abrechnung nach Stunden. Der Preis für weitere Module gilt,
+        Alle Preise netto, zuzüglich 20 % USt. Fixpreise, keine Abrechnung nach Stunden. Der Preis für weitere Module gilt,
         wenn du sie innerhalb von sechs Monaten nach deinem Basismodul startest.
       </p>
     </>
@@ -522,7 +522,7 @@ export default function Preise() {
             <article className="flex flex-col p-8 rounded-[20px] bg-white" style={{ border: `2px solid ${F.dunkel}` }}>
               <Kleinlabel>Schritt 1 Reden</Kleinlabel>
               <h3 className="mt-3 text-[26px] font-black leading-[1.1] tracking-[-0.01em]">Das Erstgespräch</h3>
-              <Preis betrag="0 €" nach="30 Minuten" />
+              <Preis betrag="0 €" nach="30 Minuten" />
               <p className="mt-5 text-base leading-[1.6]" style={{ color: F.daempft }}>
                 Du erzählst, wo es hakt. Wir fragen nach und sagen dir ehrlich, ob und wie wir helfen können.
               </p>
@@ -561,10 +561,10 @@ export default function Preise() {
               </span>
               <Kleinlabel dunkel>Schritt 3 Interview</Kleinlabel>
               <h3 className="mt-3 text-[26px] font-black leading-[1.1] tracking-[-0.01em]">Das Interview-Modul</h3>
-              <Preis ab betrag="2.900 €" nach="Basismodul" hell />
-              <p className="mt-2 text-base font-bold" style={{ color: F.akzent }}>Jedes weitere Modul ab 1.100 €</p>
+              <Preis ab betrag="2.900 €" nach="Basismodul" hell />
+              <p className="mt-2 text-base font-bold" style={{ color: F.akzent }}>Jedes weitere Modul ab 1.100 €</p>
               <p className="mt-1.5 text-[13px]" style={{ color: F.hellAufDunkel }}>
-                2.900 € für Kleinbetriebe bis 6 Mitarbeitende, ab 6 Personen pro Modul 4.900 €
+                2.900 € für Kleinbetriebe bis 6 Mitarbeitende, ab 6 Personen pro Modul 4.900 €
               </p>
               <p className="mt-5 text-base leading-[1.6]" style={{ color: "#e4e4e4" }}>
                 Positionierung, Team, Kunden oder Vertrieb. Wir entwickeln das Interview aus deiner Lage, laden ein, erinnern, werten aus
@@ -578,9 +578,9 @@ export default function Preise() {
               </ul>
               <div className="mt-6 p-4 rounded-xl" style={{ background: F.dunkelKarte }}>
                 <p className="text-xs font-medium uppercase tracking-[0.16em]" style={{ color: F.hellAufDunkel }}>Je mehr Blickwinkel, desto günstiger</p>
-                <Treppenzeile label="1 Modul" preis="4.900 €" />
-                <Treppenzeile label="2 Module" preis="6.800 €" je="3.400 €" />
-                <Treppenzeile label="Alle 4 Module" preis="9.900 €" je="2.475 €" />
+                <Treppenzeile label="1 Modul" preis="4.900 €" />
+                <Treppenzeile label="2 Module" preis="6.800 €" je="3.400 €" />
+                <Treppenzeile label="Alle 4 Module" preis="9.900 €" je="2.475 €" />
                 <p className="mt-2.5 text-[13px]" style={{ color: F.hellAufDunkel }}>
                   Bei 6 bis 20 Personen pro Modul. Abgleich der Sichtweisen ab zwei Modulen inklusive.
                 </p>
@@ -599,14 +599,14 @@ export default function Preise() {
             <article className="flex flex-col p-8 rounded-[20px]" style={{ background: F.hauch }}>
               <Kleinlabel>Schritt 4 Dranbleiben</Kleinlabel>
               <h3 className="mt-3"><Wortmarke verb="bleibt dran" groesse={26} /></h3>
-              <Preis ab betrag="1.200 €" nach="je Puls" />
+              <Preis ab betrag="1.200 €" nach="je Puls" />
               <p className="mt-5 text-base leading-[1.6]" style={{ color: F.daempft }}>
                 Ein- oder zweimal im Jahr mit demselben Kern nachfragen. So siehst du, ob deine Maßnahmen wirken, und erkennst Veränderungen,
                 bevor sie teuer werden.
               </p>
               <ul className="mt-6 flex flex-col gap-2.5 text-[15px]">
                 <Punkt>Vergleich mit deinem eigenen Ausgangswert</Punkt>
-                <Punkt>45 % des Interviewpreises, in der Jahresbegleitung mit zwei Pulsen 40 %</Punkt>
+                <Punkt>45 % des Interviewpreises, in der Jahresbegleitung mit zwei Pulsen 40 %</Punkt>
               </ul>
               <div className="mt-auto pt-8">
                 <Kartenknopf to={KONTAKT}>Begleitung anfragen</Kartenknopf>
@@ -686,8 +686,8 @@ export default function Preise() {
           <div className="mt-12 grid gap-10 grid-cols-[repeat(auto-fit,minmax(280px,1fr))]">
             {[
               ["01", "Dein Einstieg ist nie verloren.", `Startest du innerhalb von 8 Wochen ein Interview, rechnen wir die ${fmt(EINSTIEG)} für den Einstieg voll an. Und wenn nicht, hast du trotzdem ein Ergebnis in der Hand.`],
-              ["02", "Rücklaufgarantie.", "Nehmen weniger als 60 % der Eingeladenen teil, fassen wir mit einer zusätzlichen Runde nach. Ohne Aufpreis, bis die Stimmen eine Entscheidung tragen."],
-              ["03", "Der nächste Schritt wird günstiger.", "Setzt du die Ergebnisse mit Rittler & Co um, etwa Positionierung, Arbeitgebermarke oder Vertriebskampagne, rechnen wir 30 % des Interviewpreises darauf an."],
+              ["02", "Rücklaufgarantie.", "Nehmen weniger als 60 % der Eingeladenen teil, fassen wir mit einer zusätzlichen Runde nach. Ohne Aufpreis, bis die Stimmen eine Entscheidung tragen."],
+              ["03", "Der nächste Schritt wird günstiger.", "Setzt du die Ergebnisse mit Rittler & Co um, etwa Positionierung, Arbeitgebermarke oder Vertriebskampagne, rechnen wir 30 % des Interviewpreises darauf an."],
             ].map(([nr, titel, text]) => (
               <div key={nr}>
                 <span
