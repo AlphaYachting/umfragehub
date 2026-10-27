@@ -93,7 +93,7 @@ function Treppenzeile({ label, preis, je }) {
       <span className="text-[15px]">{label}</span>
       <span className="flex flex-col items-end">
         <strong className="text-[17px] font-black">{preis}</strong>
-        {je && <span className="text-[13px]" style={{ color: F.hellAufDunkel }}>{je} je Modul</span>}
+        {je && <span className="text-[13px] whitespace-nowrap" style={{ color: F.hellAufDunkel }}>{je} je Modul</span>}
       </span>
     </div>
   );
@@ -604,7 +604,7 @@ export default function Preise() {
                 <Punkt>45 % des Interviewpreises, in der Jahresbegleitung mit zwei Pulsen 40 %</Punkt>
               </ul>
               <div className="mt-auto pt-8">
-                <Kartenknopf to={KONTAKT}>Jahresbegleitung anfragen</Kartenknopf>
+                <Kartenknopf to={KONTAKT}>Begleitung anfragen</Kartenknopf>
               </div>
             </article>
           </div>
