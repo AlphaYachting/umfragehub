@@ -532,7 +532,7 @@ export default function Preise() {
 
             <article className="flex flex-col p-8 rounded-[20px]" style={{ background: F.grau }}>
               <Kleinlabel>Schritt 2 Einstieg</Kleinlabel>
-              <h3 className="mt-3"><Wortmarke groesse={26} /> zuerst dich</h3>
+              <h3 className="mt-3 text-[26px] font-black leading-[1.1] tracking-[-0.01em]"><Wortmarke groesse={26} /> zuerst dich</h3>
               <Preis betrag={fmt(EINSTIEG)} nach="einmalig" />
               <p className="mt-5 text-base leading-[1.6]" style={{ color: F.daempft }}>
                 Zielgespräch und rund zehn Fragen an die Geschäftsführung. Du bekommst einen Spiegel deiner Annahmen: Was weißt du sicher,
