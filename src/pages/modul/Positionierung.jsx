@@ -24,6 +24,15 @@ const KOSTEN = [
   { heute: "Die falschen Anfragen", danach: "Anfragen von Kunden, die zu dir passen.", text: "Eine klare Positionierung zieht die Richtigen an und hält die Schnäppchenjäger fern." },
 ];
 
+// Die ANDI-Methode: vier Prüfsteine mit den Leitfragen vom Markenprüfstand (werbe-agentur-graz.at).
+// Nur das Was, nicht das Wie: die Gewichtung bleibt das Handwerk von Rittler & Co.
+const ANDI = [
+  { b: "A", wort: "Aufmerksamkeit", frage: "Was zieht an?", text: "Welche Probleme und Wünsche deiner Kunden du aufgreifst und wo deine Marke sofort Relevanz erzeugt." },
+  { b: "N", wort: "Nutzen", frage: "Was hat der Kunde davon?", text: "Welche konkreten Vorteile wirklich zählen: Zeit, Kosten, Service oder Betreuung." },
+  { b: "D", wort: "Differenzierung", frage: "Warum gerade du?", text: "Was dich einzigartig macht, etwa Herkunft, besonderes Können oder die Art, wie du arbeitest." },
+  { b: "I", wort: "Identität", frage: "Wofür stehst du?", text: "Welche Werte dich unverwechselbar machen, über deine Produkte hinaus." },
+];
+
 const KREISE = [
   { nr: "1", wer: "Geschäftsführung", text: "Wir beginnen mit deinem Bild: Ziele, Stärken, Wunschkunden.", frage: "Wofür sollen uns Kunden in drei Jahren kennen?" },
   { nr: "2", wer: "Team", text: "Die Menschen, die täglich mit Kunden arbeiten, wissen oft mehr als jede Strategie.", frage: "Wofür bedanken sich Kunden bei dir am häufigsten?" },
@@ -82,6 +91,38 @@ export default function Positionierung() {
             groesse={320}
             ringe={[{ abstand: 14, farbe: F.dunkel }, { abstand: 30, farbe: F.hauchRand }]}
           />
+        </div>
+      </section>
+
+      {/* Die ANDI-Methode: bewusst weit oben, gleich nach dem Einstieg */}
+      <section id="andi" aria-labelledby="andi-titel" style={{ background: F.hauch }}>
+        <div className={`${BREITE} py-24`}>
+          <div className="flex flex-wrap items-end justify-between gap-x-14 gap-y-5">
+            <div className="flex-[1_1_520px] min-w-0">
+              <Etikett>Die ANDI-Methode</Etikett>
+              <h2 id="andi-titel" className="mt-3" style={H2_STIL}>
+                Vier Prüfsteine <span style={{ color: F.akzent }}>für deine Marke.</span>
+              </h2>
+            </div>
+            <p className="flex-[1_1_380px] min-w-0" style={{ ...TEXT_STIL, color: F.daempft }}>
+              Alles, was Geschäftsführung, Team und Kunden im Interview sagen, prüfen wir an vier Fragen. Entwickelt aus
+              über 500 Markenprojekten. Wie wir gewichten, bleibt unser Handwerk.
+            </p>
+          </div>
+          <div className="mt-12 grid gap-5 grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))]">
+            {ANDI.map((s) => (
+              <div key={s.b} className="p-7 rounded-[20px] bg-white">
+                <span aria-hidden="true" className="block text-[80px] font-black leading-[0.8]" style={{ color: F.akzent }}>{s.b}</span>
+                <h3 className="mt-6 text-[13px] font-semibold uppercase tracking-[0.18em]" style={{ color: F.etikett }}>{s.wort}</h3>
+                <p className="mt-2 text-[22px] font-bold leading-[1.25]">{s.frage}</p>
+                <p className="mt-3 leading-[1.6]" style={{ color: F.daempft }}>{s.text}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-10 max-w-[760px] text-lg leading-[1.6] font-semibold">
+            In der Präsentation siehst du für jeden Prüfstein, wo deine Marke stark ist und wo dein Auftritt hinter dem
+            zurückbleibt, was Team und Kunden erleben.
+          </p>
         </div>
       </section>
 
