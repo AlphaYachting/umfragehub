@@ -213,6 +213,18 @@ export function Kopf({ modul, dunkel = false, randUnten = true }) {
             );
           })}
           <Link
+            to="/preise"
+            aria-current={modul === "Preise" ? "page" : undefined}
+            className="hidden min-[900px]:inline-flex items-center min-h-[44px]"
+            style={{
+              color: modul === "Preise" ? (dunkel ? F.etikettDunkel : F.link) : schrift,
+              textDecoration: "none",
+              borderBottom: modul === "Preise" ? `2px solid ${F.akzent}` : "2px solid transparent",
+            }}
+          >
+            Preise
+          </Link>
+          <Link
             to="/ueber-uns"
             className="hidden min-[900px]:inline-flex items-center min-h-[44px]"
             style={{ color: schrift, textDecoration: "none" }}
@@ -245,6 +257,7 @@ export function Fuss({ dunkel = false, hintergrund }) {
         </div>
         <div className="flex gap-5">
           <Link to="/" className="hover:underline" style={{ color: farbe }}>Zur Startseite</Link>
+          <Link to="/preise" className="hover:underline" style={{ color: farbe }}>Preise</Link>
           <Link to="/ueber-uns" className="hover:underline" style={{ color: farbe }}>Über uns</Link>
           <Link to="/kontakt" className="hover:underline" style={{ color: farbe }}>Kontakt</Link>
           <a href={IMPRESSUM} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: farbe }}>Impressum</a>
