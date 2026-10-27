@@ -27,7 +27,7 @@ const KOSTEN = [
 // Die ANDI-Methode: vier Prüfsteine mit den Leitfragen vom Markenprüfstand (werbe-agentur-graz.at).
 // Nur das Was, nicht das Wie: die Gewichtung bleibt das Handwerk von Rittler & Co.
 const ANDI = [
-  { b: "A", wort: "Aufmerksamkeit", frage: "Was zieht an?", text: "Welche Probleme und Wünsche deiner Kunden greifst du auf, und wo erzeugt deine Marke sofort Relevanz?" },
+  { b: "A", wort: "Aufmerksamkeit", frage: "Was zieht an?", text: "Welche Probleme und Wünsche deiner Kunden du aufgreifst und wo deine Marke sofort Relevanz erzeugt." },
   { b: "N", wort: "Nutzen", frage: "Was hat der Kunde davon?", text: "Welche konkreten Vorteile wirklich zählen: Zeit, Kosten, Service oder Betreuung." },
   { b: "D", wort: "Differenzierung", frage: "Warum gerade du?", text: "Was dich einzigartig macht, etwa Herkunft, besonderes Können oder die Art, wie du arbeitest." },
   { b: "I", wort: "Identität", frage: "Wofür stehst du?", text: "Welche Werte dich unverwechselbar machen, über deine Produkte hinaus." },
@@ -112,16 +112,14 @@ export default function Positionierung() {
           <div className="mt-12 grid gap-5 grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))]">
             {ANDI.map((s) => (
               <div key={s.b} className="p-7 rounded-[20px] bg-white">
-                <div className="flex items-baseline gap-3">
-                  <span aria-hidden="true" className="text-[64px] font-black leading-[0.9]" style={{ color: F.akzent }}>{s.b}</span>
-                  <h3 className="text-xl font-black uppercase tracking-[0.02em]">{s.wort}</h3>
-                </div>
-                <p className="mt-[18px] text-xl font-bold leading-[1.3]">{s.frage}</p>
-                <p className="mt-2 leading-[1.6]" style={{ color: F.daempft }}>{s.text}</p>
+                <span aria-hidden="true" className="block text-[80px] font-black leading-[0.8]" style={{ color: F.akzent }}>{s.b}</span>
+                <h3 className="mt-6 text-[13px] font-semibold uppercase tracking-[0.18em]" style={{ color: F.etikett }}>{s.wort}</h3>
+                <p className="mt-2 text-[22px] font-bold leading-[1.25]">{s.frage}</p>
+                <p className="mt-3 leading-[1.6]" style={{ color: F.daempft }}>{s.text}</p>
               </div>
             ))}
           </div>
-          <p className="mt-9 text-[17px] leading-[1.6] font-semibold">
+          <p className="mt-10 max-w-[760px] text-lg leading-[1.6] font-semibold">
             In der Präsentation siehst du für jeden Prüfstein, wo deine Marke stark ist und wo dein Auftritt hinter dem
             zurückbleibt, was Team und Kunden erleben.
           </p>
