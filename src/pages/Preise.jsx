@@ -566,7 +566,7 @@ export default function Preise() {
             <article className="flex flex-col p-6 rounded-[20px] bg-white" style={{ border: `2px solid ${F.dunkel}` }}>
               <Kleinlabel>Schritt 1</Kleinlabel>
               <h3 className="mt-2 text-[22px] font-black leading-[1.15] tracking-[-0.01em]">Erstgespräch</h3>
-              <Preis betrag="0 â¬" nach="30 Minuten" groesse={34} />
+              <Preis betrag="0 €" nach="30 Minuten" groesse={34} />
               <p className="mt-3 text-[15px] leading-[1.55]" style={{ color: F.daempft }}>
                 Du erzählst, wo es hakt. Wir sagen dir ehrlich, ob wir helfen können. Per Video oder Telefon, kein Verkaufsgespräch.
               </p>
