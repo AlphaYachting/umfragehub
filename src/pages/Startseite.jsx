@@ -4,7 +4,7 @@ import {
   ArrowRight, ArrowUpRight, Search, Eye, Users, Heart, TrendingUp,
   Lock, Smartphone, MessageCircle, Pencil,
 } from "lucide-react";
-import { Wortmarke } from "@/components/oeffentlich/Oeffentlich";
+import { Wortmarke, anfrageLink } from "@/components/oeffentlich/Oeffentlich";
 import Faq from "@/components/oeffentlich/Faq";
 
 // Öffentliche Startseite von andifragt.at, für alle, die die Domain ohne
@@ -51,7 +51,8 @@ const F = {
   gut: "var(--farbe-gut)",
 };
 
-const mailAn = (betreff) => `mailto:${KONTAKT_MAIL}?subject=${encodeURIComponent(betreff)}`;
+// Anfrage-Knöpfe führen zum Formular auf der Kontaktseite (28.10.2026)
+const mailAn = anfrageLink;
 
 const THEMEN = [
   {
