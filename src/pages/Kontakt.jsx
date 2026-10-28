@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Mail, MapPin, Phone } from "lucide-react";
 import {
-  BREITE, Etikett, F, H1_STIL, Hauptknopf, KONTAKT_MAIL, KONTAKT_TEL, LEAD_STIL, Modulseite, TEXT_STIL, mailAn,
+  BREITE, Etikett, F, H1_STIL, KONTAKT_MAIL, KONTAKT_TEL, LEAD_STIL, Modulseite, TEXT_STIL,
 } from "@/components/oeffentlich/Oeffentlich";
 import Faq from "@/components/oeffentlich/Faq";
+import Erstgespraech from "@/components/oeffentlich/Erstgespraech";
 
 // Öffentliche Kontaktseite von andifragt.at.
 //
@@ -40,12 +41,20 @@ const WEGE = [
 ];
 
 const ANLIEGEN = [
-  "Ein Interview für dein Unternehmen: Wer soll befragt werden, wie viele Personen, wie lange es dauert.",
+  "Ein Interview für dein Unternehmen: wen wir interviewen, wie viele Personen, wie lange es dauert.",
   "Der Markenprüfstand, unsere Standortbestimmung, wenn du noch nicht weißt, wo du stehst.",
   "Ein Interview, zu dem du eingeladen wurdest: Wenn dein Link nicht funktioniert, ruf an und wir schicken dir einen neuen.",
 ];
 
 export default function Kontakt() {
+  // Anfrage-Knöpfe verlinken auf /kontakt#anfrage. Die Modulseite springt beim Öffnen
+  // nach oben, deshalb kurz danach zum Formular scrollen.
+  useEffect(() => {
+    if (window.location.hash !== "#anfrage") return undefined;
+    const t = setTimeout(() => document.getElementById("anfrage")?.scrollIntoView({ block: "start" }), 60);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <Modulseite titel="Kontakt | andi fragt. Rittler & Co, Graz" modul="Kontakt">
       <section className={`${BREITE} pt-14 pb-6`}>
@@ -54,14 +63,21 @@ export default function Kontakt() {
           Reden wir über <span style={{ color: F.akzent }}>dein Unternehmen.</span>
         </h1>
         <p className="mt-6" style={{ ...LEAD_STIL, color: F.daempft }}>
-          Du willst wissen, was Führung, Team, Vertrieb und Kunden wirklich denken? Dann melde dich bei uns:
-          telefonisch, per E-Mail oder über die Adresse unten. Wir sagen dir offen, ob ein Interview in deiner
-          Situation Sinn ergibt.
+          Du willst wissen, was Führung, Team, Vertrieb und Kunden wirklich denken? Dann frag ein kostenloses
+          Erstgespräch an oder melde dich telefonisch oder per E-Mail. Wir sagen dir offen, ob ein Interview in
+          deiner Situation Sinn ergibt.
         </p>
       </section>
 
+      {/* Anfrageformular Erstgespräch */}
+      <div className="mt-10">
+        <Erstgespraech />
+      </div>
+
       {/* Die drei Wege */}
-      <section className={`${BREITE} py-10`}>
+      <section className={`${BREITE} pt-20 pb-10`}>
+        <Etikett>Lieber direkt?</Etikett>
+        <ul className="mt-5 hidden" aria-hidden="true" />
         <ul className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
           {WEGE.map(({ icon: Icon, label, wert, href, text }) => (
             <li key={label} className="rounded-lg p-6" style={{ background: F.grau, border: `1px solid ${F.linie}` }}>
@@ -79,9 +95,6 @@ export default function Kontakt() {
           ))}
         </ul>
 
-        <div className="mt-8">
-          <Hauptknopf href={mailAn("andi fragt. Termin vereinbaren")}>Termin vereinbaren</Hauptknopf>
-        </div>
       </section>
 
       {/* Worum es gehen kann */}
