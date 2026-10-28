@@ -77,8 +77,7 @@ export default function Kontakt() {
       {/* Die drei Wege */}
       <section className={`${BREITE} pt-20 pb-10`}>
         <Etikett>Lieber direkt?</Etikett>
-        <ul className="mt-5 hidden" aria-hidden="true" />
-        <ul className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
+        <ul className="mt-5 grid gap-4 grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
           {WEGE.map(({ icon: Icon, label, wert, href, text }) => (
             <li key={label} className="rounded-lg p-6" style={{ background: F.grau, border: `1px solid ${F.linie}` }}>
               <Icon size={26} strokeWidth={1.5} style={{ color: F.akzent }} aria-hidden="true" />
@@ -94,7 +93,6 @@ export default function Kontakt() {
             </li>
           ))}
         </ul>
-
       </section>
 
       {/* Worum es gehen kann */}
