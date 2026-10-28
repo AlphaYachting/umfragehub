@@ -33,7 +33,19 @@ export const F = {
   hellAufDunkel: "#d4d4d4",
 };
 
-export const mailAn = (betreff) => `mailto:${KONTAKT_MAIL}?subject=${encodeURIComponent(betreff)}`;
+// Anfrage-Knöpfe führen seit 28.10.2026 zum Formular auf der Kontaktseite statt in eine Mail.
+// Aus dem früheren Mail-Betreff wird das Thema erkannt und im Formular vorausgewählt.
+export function anfrageLink(betreff = "") {
+  const b = String(betreff).toLowerCase();
+  const thema = /positionierung|markenpr/.test(b) ? "positionierung"
+    : /team/.test(b) ? "team"
+      : /kunden/.test(b) ? "kunden"
+        : /vertrieb/.test(b) ? "vertrieb"
+          : /einstieg/.test(b) ? "einstieg"
+            : "";
+  return thema ? `/kontakt?thema=${thema}#anfrage` : "/kontakt#anfrage";
+}
+export const mailAn = anfrageLink;
 
 export const MODULE = [
   { id: "positionierung", pfad: "/positionierung", name: "Positionierung" },
