@@ -171,7 +171,7 @@ export function BeitragKarte({ b, hell = true }) {
       style={{ background: hell ? "#ffffff" : F.grau, color: F.text, textDecoration: "none", border: hell ? "none" : `1px solid ${F.linie}` }}
     >
       <span className="text-xs font-bold uppercase tracking-[0.14em]" style={{ color: F.link }}>{b.leitartikel ? "Leitartikel" : MODUL_NAMEN[b.modul]}</span>
-      <span className="text-[21px] font-bold leading-[1.3]">{b.titel}: {b.titelAkzent}</span>
+      <span className="text-[21px] font-bold leading-[1.3]">{b.titel} {b.titelAkzent}</span>
       <span className="mt-auto text-sm" style={{ color: F.daempft }}>{lesezeit(b)} Minuten Lesezeit</span>
     </Link>
   );
@@ -226,7 +226,7 @@ export default function BeitragSeite({ beitrag }) {
 
   if (!sichtbar) return <Navigate to="/wissen" replace />;
 
-  const titelGanz = `${b.titel}: ${b.titelAkzent}`;
+  const titelGanz = `${b.titel} ${b.titelAkzent}`;
   const datum = b.aktualisiert || b.erschienen || b.geprueft || undefined;
   const ld = [
     {
@@ -279,7 +279,7 @@ export default function BeitragSeite({ beitrag }) {
             {b.themen?.length > 0 && <span className="text-sm" style={{ color: F.daempft }}>{b.themen.join(", ")}</span>}
           </div>
           <h1 className="mt-5 text-[clamp(36px,4.6vw,60px)] font-black leading-[1.04]" style={{ letterSpacing: "-0.01em" }}>
-            {b.titel}: <span style={{ color: F.akzent }}>{b.titelAkzent}</span>
+            {b.titel} <span style={{ color: F.akzent }}>{b.titelAkzent}</span>
           </h1>
           <div className="mt-7 flex flex-wrap items-center gap-x-7 gap-y-3">
             <div className="flex items-center gap-3">
