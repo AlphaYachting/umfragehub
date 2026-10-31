@@ -4,7 +4,7 @@ import {
   ArrowRight, ArrowUpRight, Search, Eye, Users, Heart, TrendingUp,
   Lock, Smartphone, MessageCircle, Pencil,
 } from "lucide-react";
-import { Wortmarke, anfrageLink } from "@/components/oeffentlich/Oeffentlich";
+import { Wortmarke, anfrageLink, wissenImMenue } from "@/components/oeffentlich/Oeffentlich";
 import Faq from "@/components/oeffentlich/Faq";
 
 // Öffentliche Startseite von andifragt.at, für alle, die die Domain ohne
@@ -593,6 +593,7 @@ export default function Startseite() {
         <nav className="flex items-center gap-5 text-sm">
           <a href="#eingeladen" className="hidden sm:inline font-medium hover:underline">Ich wurde eingeladen</a>
           <Link to="/preise" className="hidden sm:inline font-medium hover:underline">Preise</Link>
+          {wissenImMenue() && <Link to="/wissen" className="hidden sm:inline font-medium hover:underline">Wissen</Link>}
           <Link to="/ueber-uns" className="hidden sm:inline font-medium hover:underline">Über uns</Link>
           <Link
             to="/kontakt"
