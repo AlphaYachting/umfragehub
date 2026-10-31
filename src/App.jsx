@@ -32,6 +32,13 @@ const ModulVertrieb = lazy(() => import('@/pages/modul/Vertrieb'));
 const UeberUns = lazy(() => import('@/pages/UeberUns'));
 const Kontakt = lazy(() => import('@/pages/Kontakt'));
 const Preise = lazy(() => import('@/pages/Preise'));
+// Wissensbereich: Übersicht und je Beitrag eine eigene dünne Seite (Titel und Beschreibung je Seite in Base44)
+const Wissen = lazy(() => import('@/pages/wissen/Wissen'));
+const WissenMitarbeiterbefragungErgebnisse = lazy(() => import('@/pages/wissen/beitrag/WissenMitarbeiterbefragungErgebnisse'));
+const WissenWarumKuendigenGuteMitarbeiter = lazy(() => import('@/pages/wissen/beitrag/WissenWarumKuendigenGuteMitarbeiter'));
+const WissenAlleinstellungsmerkmalFinden = lazy(() => import('@/pages/wissen/beitrag/WissenAlleinstellungsmerkmalFinden'));
+const WissenWarumKaufenKundenBeiDerKonkurrenz = lazy(() => import('@/pages/wissen/beitrag/WissenWarumKaufenKundenBeiDerKonkurrenz'));
+const WissenAbschlussquoteErhoehen = lazy(() => import('@/pages/wissen/beitrag/WissenAbschlussquoteErhoehen'));
 
 const Laden = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -78,6 +85,13 @@ const AuthenticatedApp = () => {
       <Route path="/kontakt" element={<Kontakt />} />
       {/* Öffentlich: Preise mit Rechner */}
       <Route path="/preise" element={<Preise />} />
+      <Route path="/wissen" element={<Wissen />} />
+      <Route path="/wissen/mitarbeiterbefragung-ergebnisse" element={<WissenMitarbeiterbefragungErgebnisse />} />
+      <Route path="/wissen/warum-kuendigen-gute-mitarbeiter" element={<WissenWarumKuendigenGuteMitarbeiter />} />
+      <Route path="/wissen/alleinstellungsmerkmal-finden" element={<WissenAlleinstellungsmerkmalFinden />} />
+      <Route path="/wissen/warum-kaufen-kunden-bei-der-konkurrenz" element={<WissenWarumKaufenKundenBeiDerKonkurrenz />} />
+      <Route path="/wissen/abschlussquote-erhoehen" element={<WissenAbschlussquoteErhoehen />} />
+      <Route path="/wissen/*" element={<Navigate to="/wissen" replace />} />
       <Route path="/i/:linkToken" element={<Interview />} />
       {/* Öffentlich mit Passwort: Kunden-Cockpit des Auftraggebers */}
       <Route path="/k/:code" element={<KundenCockpit />} />
