@@ -51,7 +51,7 @@ export default function Wissen() {
       publisher: { "@type": "Organization", name: "Rittler & Co GmbH", url: SITE },
       blogPost: alle
         .filter((b) => b.status === "freigegeben")
-        .map((b) => ({ "@type": "BlogPosting", headline: `${b.titel}: ${b.titelAkzent}`.slice(0, 110), url: `${SITE}/wissen/${b.slug}` })),
+        .map((b) => ({ "@type": "BlogPosting", headline: `${b.titel} ${b.titelAkzent}`.slice(0, 110), url: `${SITE}/wissen/${b.slug}` })),
     },
     {
       "@context": "https://schema.org",
@@ -132,7 +132,7 @@ export default function Wissen() {
                 <span className="inline-flex items-center min-h-[30px] px-3 rounded-full text-xs font-bold uppercase tracking-[0.12em]" style={{ background: F.akzent }}>Leitartikel</span>
                 <EntwurfsMarke b={leit} />
               </span>
-              <h2 className="text-[clamp(26px,2.8vw,36px)] font-black leading-[1.12]">{leit.titel}: {leit.titelAkzent}</h2>
+              <h2 className="text-[clamp(26px,2.8vw,36px)] font-black leading-[1.12]">{leit.titel} {leit.titelAkzent}</h2>
               <p className="text-lg leading-[1.6]" style={{ color: F.hellAufDunkel }}>{leit.teaser}</p>
               <span className="mt-auto pt-[18px] flex flex-wrap items-center justify-between gap-3 text-sm" style={{ borderTop: "1px solid #4a4a4a", color: F.hellAufDunkel }}>
                 <span>Alfons Rittler, {lesezeit(leit)} Minuten Lesezeit</span>
@@ -163,7 +163,7 @@ export default function Wissen() {
                     </span>
                     <EntwurfsMarke b={b} />
                   </span>
-                  <h3 className="text-[21px] font-bold leading-[1.3]">{b.titel}: {b.titelAkzent}</h3>
+                  <h3 className="text-[21px] font-bold leading-[1.3]">{b.titel} {b.titelAkzent}</h3>
                   <p className="leading-[1.6]" style={{ color: F.daempft }}>{b.teaser}</p>
                   <span className="mt-auto pt-3.5 flex items-center justify-between gap-3 text-sm" style={{ borderTop: `1px solid ${F.linie}`, color: F.daempft }}>
                     <span>{lesezeit(b)} Minuten Lesezeit</span>
