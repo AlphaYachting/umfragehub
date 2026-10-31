@@ -183,9 +183,22 @@ export function RundesFoto({ src, alt, groesse = 320, ringe = [], rand, classNam
   );
 }
 
+// Wissensbereich im Menü: live erst, wenn der erste Beitrag freigegeben ist (dann auf true setzen).
+// In der Base44-Vorschau ist der Menüpunkt immer sichtbar, damit die Entwürfe prüfbar sind.
+export const WISSEN_IM_MENUE = false;
+export function wissenImMenue() {
+  if (WISSEN_IM_MENUE) return true;
+  try {
+    return /preview|sandbox|localhost|127\.0\.0\.1/i.test(window.location.hostname);
+  } catch {
+    return false;
+  }
+}
+
 // Kopf der Modulseiten: Wortmarke, das Thema der Seite, Module, Kontakt.
 export function Kopf({ modul, dunkel = false, randUnten = true }) {
   const schrift = dunkel ? "#ffffff" : F.text;
+  const mitWissen = wissenImMenue();
   return (
     <header style={{ borderBottom: randUnten ? `1px solid ${dunkel ? "#444444" : F.linie}` : "none" }}>
       <div className={`${BREITE} min-h-[80px] flex flex-wrap items-center justify-between gap-x-7 gap-y-3`}>
@@ -236,6 +249,20 @@ export function Kopf({ modul, dunkel = false, randUnten = true }) {
           >
             Preise
           </Link>
+          {mitWissen && (
+            <Link
+              to="/wissen"
+              aria-current={modul === "Wissen" ? "page" : undefined}
+              className="hidden min-[900px]:inline-flex items-center min-h-[44px]"
+              style={{
+                color: modul === "Wissen" ? (dunkel ? F.etikettDunkel : F.link) : schrift,
+                textDecoration: "none",
+                borderBottom: modul === "Wissen" ? `2px solid ${F.akzent}` : "2px solid transparent",
+              }}
+            >
+              Wissen
+            </Link>
+          )}
           <Link
             to="/ueber-uns"
             className="hidden min-[900px]:inline-flex items-center min-h-[44px]"
@@ -270,6 +297,7 @@ export function Fuss({ dunkel = false, hintergrund }) {
         <div className="flex gap-5">
           <Link to="/" className="hover:underline" style={{ color: farbe }}>Zur Startseite</Link>
           <Link to="/preise" className="hover:underline" style={{ color: farbe }}>Preise</Link>
+          {wissenImMenue() && <Link to="/wissen" className="hover:underline" style={{ color: farbe }}>Wissen</Link>}
           <Link to="/ueber-uns" className="hover:underline" style={{ color: farbe }}>Über uns</Link>
           <Link to="/kontakt" className="hover:underline" style={{ color: farbe }}>Kontakt</Link>
           <a href={IMPRESSUM} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: farbe }}>Impressum</a>
