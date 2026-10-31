@@ -567,7 +567,7 @@ export default function Startseite() {
 
   useEffect(() => {
     const vorher = document.title;
-    document.title = "andi fragt. | Die ANDI-Methode von Rittler & Co";
+    document.title = "Die richtigen Fragen für dein Unternehmen | andi fragt.";
     return () => {
       document.title = vorher;
     };

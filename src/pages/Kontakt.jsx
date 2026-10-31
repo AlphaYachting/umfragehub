@@ -56,7 +56,7 @@ export default function Kontakt() {
   }, []);
 
   return (
-    <Modulseite titel="Kontakt | andi fragt. Rittler & Co, Graz" modul="Kontakt">
+    <Modulseite titel="Kostenloses Erstgespräch | andi fragt. Graz" modul="Kontakt">
       <section className={`${BREITE} pt-14 pb-6`}>
         <Etikett>Kontakt</Etikett>
         <h1 className="mt-4 max-w-[900px]" style={H1_STIL}>

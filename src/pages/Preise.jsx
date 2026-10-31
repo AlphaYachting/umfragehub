@@ -527,7 +527,7 @@ function Preistabellen() {
 
 export default function Preise() {
   return (
-    <Modulseite titel="Preise | andi fragt. Rittler & Co, Graz" modul="Preise">
+    <Modulseite titel="Preise: Fixpreis statt Kosten pro Kopf | andi fragt." modul="Preise">
       {/* Einstieg */}
       <section className={`${BREITE} pt-14 pb-[72px]`}>
         <Etikett>Preise</Etikett>

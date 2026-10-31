@@ -360,7 +360,7 @@ const ERGEBNIS = [
 
 export default function Vertrieb() {
   return (
-    <Modulseite titel="Vertrieb | andi fragt." modul="Vertrieb" hintergrund={F.dunkel} dunkel>
+    <Modulseite titel="Vertrieb verbessern: wo Abschlüsse hängen | andi fragt." modul="Vertrieb" hintergrund={F.dunkel} dunkel>
       {/* Einstieg mit Foto im gestrichelten Ring (live, unverändert) */}
       <section className={`${BREITE} pt-[88px] pb-24 flex flex-wrap items-center gap-x-16 gap-y-12`}>
         <div className="flex-[3_1_560px] min-w-0">

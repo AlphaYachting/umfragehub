@@ -112,7 +112,7 @@ function Kundenreise() {
 
 export default function Kunden() {
   return (
-    <Modulseite titel="Kunden | andi fragt." modul="Kunden" hintergrund={F.grau} kopfRand={false}>
+    <Modulseite titel="Kundenzufriedenheit: warum Kunden bleiben | andi fragt." modul="Kunden" hintergrund={F.grau} kopfRand={false}>
       {/* Einstieg mit Foto und Fragezeichen */}
       <section className={`${BREITE} pt-20 pb-[88px] flex flex-wrap items-center gap-x-[72px] gap-y-12`}>
         <div className="flex-[3_1_560px] min-w-0">

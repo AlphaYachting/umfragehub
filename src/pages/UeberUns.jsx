@@ -38,7 +38,7 @@ const ABSATZ = { ...TEXT_STIL, color: F.daempft };
 
 export default function UeberUns() {
   return (
-    <Modulseite titel="Über uns | andi fragt. Die ANDI-Methode von Rittler & Co" modul="Über uns">
+    <Modulseite titel="Über uns: Rittler & Co, Graz | andi fragt." modul="Über uns">
       {/* Einstieg */}
       <section className={`${BREITE} pt-14 pb-6`}>
         <Etikett>Über uns</Etikett>

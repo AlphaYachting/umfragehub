@@ -531,7 +531,7 @@ function Zaehler() {
 export default function Team() {
   return (
     <Modulseite
-      titel="Team | andi fragt."
+      titel="Mitarbeiterzufriedenheit ehrlich erfahren | andi fragt."
       modul="Team"
       hintergrund={F.hauch}
       kopfRand={false}

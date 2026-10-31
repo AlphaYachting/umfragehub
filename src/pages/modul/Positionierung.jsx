@@ -64,7 +64,7 @@ export default function Positionierung() {
   const [innen, setInnen] = useState(true);
 
   return (
-    <Modulseite titel="Positionierung | andi fragt." modul="Positionierung">
+    <Modulseite titel="Markenpositionierung aus dem Unternehmen | andi fragt." modul="Positionierung">
       {/* Einstieg: typografisch, mit rundem Foto */}
       <section className={`${BREITE} pt-20 pb-[72px] flex flex-wrap items-center gap-x-14 gap-y-12`}>
         <div className="flex-[3_1_620px] min-w-0">

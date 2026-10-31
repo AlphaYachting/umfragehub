@@ -71,7 +71,7 @@ export default function KundenCockpit() {
 
   useEffect(() => {
     const vorher = document.title;
-    document.title = "andi fragt. | Dein Befragungs-Cockpit";
+    document.title = "andi fragt. | Dein Interview-Cockpit";
     return () => { document.title = vorher; };
   }, []);
 
