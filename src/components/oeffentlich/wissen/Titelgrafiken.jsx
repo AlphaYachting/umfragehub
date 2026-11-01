@@ -515,7 +515,7 @@ function NachfolgeGesellschafter() {
   );
   const schmal = (
     <>
-      <Kopftext schmal oben="GESELLSCHAFTER" z1="Drei Gesellschafter." z1b={{ text: "Drei Meinungen." }} z3="Mit Fakten zu" z4="einer Linie." />
+      <Kopftext schmal oben="GESELLSCHAFTER" z1="Drei Gesellschafter." z1b={{ text: "Drei Meinungen." }} z3="Und am Ende" z4="eine Linie." />
       {[["Tradition", 482], ["Aufbruch", 622], ["Preis", 762]].map(([t, y]) => <text key={t} x="48" y={y} fill="#ffffff" fontSize="30" fontWeight="800">{t}</text>)}
       <path d="M48 500 C 250 500, 350 600, 470 640" fill="none" stroke="#8a8a8a" strokeWidth="6" />
       <path d="M48 640 L 470 640" fill="none" stroke="#b3b3b3" strokeWidth="6" />
