@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import {
   Archive, Banknote, CirclePause, Clock, Copy, Equal, EyeOff, FileQuestion, Gauge, Handshake, Layers,
   MessageSquareX, PhoneOff, RefreshCw, Scale, ShieldAlert, Target, TrendingUp, TriangleAlert, UserX, Users, X, Zap,
+  Star, Globe, MessageCircle, User, Heart, Wrench, FileText, TrendingDown,
 } from "lucide-react";
 import { F } from "@/components/oeffentlich/Oeffentlich";
 import { Text } from "@/components/oeffentlich/wissen/Bausteine";
@@ -21,6 +22,8 @@ export const SYMBOLE = {
   waage: Scale, telefon: PhoneOff, warnung: TriangleAlert, schnell: Zap, wechsel: RefreshCw, unsichtbar: EyeOff,
   pause: CirclePause, gruppe: Users, uhr: Clock, varianten: Layers, kopie: Copy, schild: ShieldAlert,
   gleich: Equal, frage: FileQuestion, archiv: Archive, ziel: Target, handschlag: Handshake,
+  stern: Star, globus: Globe, sprechblase: MessageCircle, person: User, herz: Heart, werkzeug: Wrench,
+  dokument: FileText, abwaerts: TrendingDown,
 };
 
 const FARBEN = { akzent: PINK, hell: PINK_HELL, dunkel: F.dunkel, grau: "#b3b3b3", mittel: "#8a8a8a", leer: "#dcd8d4", gruen: "#e3f4ea" };
@@ -625,6 +628,114 @@ function Spiegel({ b }) {
   );
 }
 
+// Ab hier: Grafik-Bausteine der Nachfolge-Beiträge (Zielgruppe 2), nach den Prototypen "Nachfolge N1 bis N5 visuell"
+
+// Zwei überlappende Kreise mit Schnittmenge
+function Schnittmenge({ b }) {
+  return (
+    <Grafik b={b}>
+      <svg viewBox="0 0 520 230" width="100%" role="img" aria-label={b.beschreibung} className="block mt-4 mx-auto max-w-[520px]" style={{ fontFamily: SCHRIFT }}>
+        <circle cx="195" cy="115" r="100" fill="#8a8a8a" fillOpacity="0.35" />
+        <circle cx="325" cy="115" r="100" fill={PINK} fillOpacity="0.35" />
+        {b.links.map((t, i) => (
+          <text key={`l${i}`} x="135" y={112 + i * 20} fill={F.text} fontSize="16" fontWeight="700" textAnchor="middle">{t}</text>
+        ))}
+        {b.rechts.map((t, i) => (
+          <text key={`r${i}`} x="385" y={112 + i * 20} fill={F.text} fontSize="16" fontWeight="700" textAnchor="middle">{t}</text>
+        ))}
+        <text x="260" y="122" fill={F.text} fontSize="18" fontWeight="900" textAnchor="middle">{b.mitte}</text>
+      </svg>
+    </Grafik>
+  );
+}
+
+// Gestufte Balken: je wichtiger, desto schmaler und persönlicher
+function Stufen({ b }) {
+  return (
+    <Grafik b={b}>
+      <div className="mt-5 flex flex-col gap-2.5">
+        {b.stufen.map((s) => (
+          <div
+            key={s.titel}
+            className="mx-auto px-[18px] py-3.5 rounded-[14px] text-center"
+            style={{ width: `max(${s.breite}%, 220px)`, maxWidth: "100%", ...(s.akzent ? { background: PINK, color: "#ffffff" } : { background: "#ffffff", border: "1px solid #d6d3d0", color: F.text }) }}
+          >
+            <span className="block text-[17px] font-extrabold">{s.titel}</span>
+            <span className="block text-[15px] leading-normal">{s.text}</span>
+          </div>
+        ))}
+      </div>
+    </Grafik>
+  );
+}
+
+// Musterbrief als Blatt Papier
+function Brief({ b }) {
+  return (
+    <Grafik b={b}>
+      <div className="mt-[18px] px-5 sm:px-[30px] py-6 sm:py-7 rounded-[10px] bg-white" style={{ border: `1px solid ${F.linie}`, boxShadow: "0 18px 36px -28px rgba(45,45,45,0.5)" }}>
+        <div aria-hidden="true" className="flex justify-between items-center gap-3 pb-3.5" style={{ borderBottom: `1px solid ${F.linie}` }}>
+          <span className="w-[120px] h-3 rounded-md" style={{ background: "#d6d3d0" }} />
+          <span className="w-[70px] h-2.5 rounded-[5px]" style={{ background: "#e8e6e4" }} />
+        </div>
+        <p className="mt-[18px] text-[17px] sm:text-lg leading-[1.7]" style={{ color: F.text }}>{b.anrede}</p>
+        <p className="mt-2.5 text-[17px] sm:text-lg leading-[1.7]" style={{ color: F.text }}><Text>{b.text}</Text></p>
+        <div aria-hidden="true" className="mt-[18px] flex flex-col gap-2">
+          <span className="h-2.5 rounded-[5px]" style={{ width: "92%", background: "#f0eeec" }} />
+          <span className="h-2.5 rounded-[5px]" style={{ width: "78%", background: "#f0eeec" }} />
+        </div>
+      </div>
+    </Grafik>
+  );
+}
+
+// Übergangsphase: zwei Zeilen über mehrere Monate, Stärke 0 bis 4
+const UEBERGANG = {
+  dunkel: ["#e8e6e4", "#d6d3d0", "#8a8a8a", "#6a6a6a", F.dunkel],
+  akzent: ["#fbe3ea", "#f3c6d1", "#ff8fa8", "#ff8fa8", PINK],
+};
+function Uebergang({ b }) {
+  const sp = `repeat(${b.spalten.length}, minmax(0, 1fr))`;
+  return (
+    <Grafik b={b}>
+      <div role="img" aria-label={b.beschreibung} className="mt-5 grid grid-cols-[84px_minmax(0,1fr)] sm:grid-cols-[110px_minmax(0,1fr)] gap-x-3.5 gap-y-3 items-center">
+        <span />
+        <span className="grid gap-1 text-xs sm:text-[13px] font-semibold text-center" style={{ gridTemplateColumns: sp, color: F.daempft }}>
+          {b.spalten.map((s) => <span key={s}>{s}</span>)}
+        </span>
+        {b.reihen.map((r) => (
+          <React.Fragment key={r.name}>
+            <span className="text-sm sm:text-[15px] font-bold" style={{ color: F.text }}>{r.name}</span>
+            <span aria-hidden="true" className="grid gap-1" style={{ gridTemplateColumns: sp }}>
+              {r.werte.map((w, i) => <span key={i} className="h-[26px] rounded-md" style={{ background: (UEBERGANG[r.farbe] || UEBERGANG.dunkel)[w] }} />)}
+            </span>
+          </React.Fragment>
+        ))}
+      </div>
+      {b.legende && <p className="mt-3 text-sm" style={{ color: F.text }}>{b.legende}</p>}
+    </Grafik>
+  );
+}
+
+// Vierfeld: zwei Achsen, ein Feld hervorgehoben
+function Vierfeld({ b }) {
+  return (
+    <Grafik b={b}>
+      <div className="mt-5 grid grid-cols-[22px_minmax(0,1fr)_minmax(0,1fr)] gap-2 sm:gap-2.5">
+        <span className="row-span-2 text-center text-xs sm:text-[13px] font-bold" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)", color: F.daempft }}>{b.achseLinks}</span>
+        {b.felder.map((f) => (
+          <div key={f.kopf} className="flex flex-col gap-1.5 p-3.5 sm:p-[18px] rounded-[14px] min-h-[110px]" style={f.akzent ? { background: PINK } : { background: "#ffffff", border: `1px solid ${F.linie}` }}>
+            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.1em]" style={{ color: f.akzent ? "#ffffff" : F.daempft }}>{f.kopf}</span>
+            <span className="text-[15px] sm:text-[17px] font-extrabold leading-[1.35]" style={{ color: f.akzent ? "#ffffff" : F.text }}>{f.text}</span>
+          </div>
+        ))}
+        <span />
+        <span className="col-span-2 text-center text-xs sm:text-[13px] font-bold" style={{ color: F.daempft }}>{b.achseUnten}</span>
+      </div>
+    </Grafik>
+  );
+}
+
 export const GRAFIK_ARTEN = {
   karten: Karten,
   balken: Balken,
@@ -644,6 +755,11 @@ export const GRAFIK_ARTEN = {
   kundenliste: Kundenliste,
   weg: Weg,
   spiegel: Spiegel,
+  schnittmenge: Schnittmenge,
+  stufen: Stufen,
+  brief: Brief,
+  uebergang: Uebergang,
+  vierfeld: Vierfeld,
 };
 
 // Diese Typen sind Abbildungen und bekommen eine Nummer
