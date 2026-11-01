@@ -4,6 +4,7 @@ import { ArrowRight, Check, ChevronDown, ChevronRight, Clock, Linkedin, Mail, Pl
 import { BREITE, F, Hauptknopf, Modulseite } from "@/components/oeffentlich/Oeffentlich";
 import Baustein, { Text, nummerieren } from "@/components/oeffentlich/wissen/Bausteine";
 import { Kennzahlen } from "@/components/oeffentlich/wissen/Grafiken";
+import Titelgrafik, { TITELGRAFIKEN } from "@/components/oeffentlich/wissen/Titelgrafiken";
 import {
   MODUL_NAMEN, SITE, beitragNachSlug, datumLang, istSichtbar, istVorschau, lesezeit, nurText, sichtbareBeitraege,
 } from "@/inhalte/wissen";
@@ -299,7 +300,15 @@ export default function BeitragSeite({ beitrag }) {
           </div>
         </div>
 
-        {b.titelbild?.src && (
+        {TITELGRAFIKEN[b.slug] && (
+          <figure className="mt-8 sm:mt-10">
+            <div className="rounded-2xl sm:rounded-3xl overflow-hidden" style={{ background: F.dunkel }}>
+              <Titelgrafik slug={b.slug} />
+            </div>
+            {b.titelbild?.unterschrift && <figcaption className="mt-2.5 text-sm" style={{ color: F.daempft }}><Text>{b.titelbild.unterschrift}</Text></figcaption>}
+          </figure>
+        )}
+        {!TITELGRAFIKEN[b.slug] && b.titelbild?.src && (
           <figure className="mt-10">
             <div className="relative rounded-3xl overflow-hidden min-h-[240px]" style={{ aspectRatio: "16 / 7", background: F.dunkel }}>
               <img src={b.titelbild.src} alt={b.titelbild.alt} className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: "50% 40%" }} />
