@@ -6,7 +6,7 @@ import Baustein, { Text, nummerieren } from "@/components/oeffentlich/wissen/Bau
 import { Kennzahlen } from "@/components/oeffentlich/wissen/Grafiken";
 import Titelgrafik, { TITELGRAFIKEN } from "@/components/oeffentlich/wissen/Titelgrafiken";
 import {
-  MODUL_NAMEN, SITE, beitragNachSlug, datumLang, istSichtbar, istVorschau, lesezeit, nurText, sichtbareBeitraege,
+  MODUL_NAMEN, SITE, bereichName, beitragNachSlug, datumLang, istSichtbar, istVorschau, lesezeit, nurText, sichtbareBeitraege,
 } from "@/inhalte/wissen";
 
 // Gemeinsames Layout aller Beiträge im Wissensbereich (Vorlage: Prototyp
@@ -172,7 +172,7 @@ export function BeitragKarte({ b, hell = true }) {
       className="flex flex-col gap-3 p-[26px] rounded-[20px] transition-transform hover:-translate-y-0.5 motion-reduce:transition-none"
       style={{ background: hell ? "#ffffff" : F.grau, color: F.text, textDecoration: "none", border: hell ? "none" : `1px solid ${F.linie}` }}
     >
-      <span className="text-xs font-bold uppercase tracking-[0.14em]" style={{ color: F.link }}>{b.leitartikel ? "Leitartikel" : MODUL_NAMEN[b.modul]}</span>
+      <span className="text-xs font-bold uppercase tracking-[0.14em]" style={{ color: F.link }}>{b.leitartikel ? "Leitartikel" : bereichName(b)}</span>
       <span className="text-[21px] font-bold leading-[1.3]">{b.titel} {b.titelAkzent}</span>
       <span className="mt-auto text-sm" style={{ color: F.daempft }}>{lesezeit(b)} Minuten Lesezeit</span>
     </Link>
