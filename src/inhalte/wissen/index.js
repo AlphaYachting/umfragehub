@@ -13,6 +13,12 @@ import warumKuendigenGuteMitarbeiter from "./warumKuendigenGuteMitarbeiter";
 import alleinstellungsmerkmalFinden from "./alleinstellungsmerkmalFinden";
 import warumKaufenKundenBeiDerKonkurrenz from "./warumKaufenKundenBeiDerKonkurrenz";
 import abschlussquoteErhoehen from "./abschlussquoteErhoehen";
+// Zielgruppe 2: Unternehmensnachfolge (etikett "Nachfolge")
+import unternehmensnachfolgeMarketing from "./unternehmensnachfolgeMarketing";
+import generationenwechselFamilienunternehmenMarke from "./generationenwechselFamilienunternehmenMarke";
+import betriebsuebergabeKundenInformieren from "./betriebsuebergabeKundenInformieren";
+import mitarbeiterNachBetriebsuebernahme from "./mitarbeiterNachBetriebsuebernahme";
+import betriebsuebernahmeErste100Tage from "./betriebsuebernahmeErste100Tage";
 
 export const BEITRAEGE = [
   mitarbeiterbefragungErgebnisse,
@@ -20,12 +26,26 @@ export const BEITRAEGE = [
   alleinstellungsmerkmalFinden,
   warumKaufenKundenBeiDerKonkurrenz,
   abschlussquoteErhoehen,
+  unternehmensnachfolgeMarketing,
+  generationenwechselFamilienunternehmenMarke,
+  betriebsuebergabeKundenInformieren,
+  mitarbeiterNachBetriebsuebernahme,
+  betriebsuebernahmeErste100Tage,
 ];
 
 export const MODUL_NAMEN = { team: "Team", positionierung: "Positionierung", kunden: "Kunden", vertrieb: "Vertrieb" };
 export const MODUL_PFAD = { team: "/team", positionierung: "/positionierung", kunden: "/kunden", vertrieb: "/vertrieb" };
 
 export const SITE = "https://andifragt.at";
+
+// Etikett auf Karten: Nachfolge-Beiträge zeigen "Nachfolge", alle anderen ihr Modul
+export const NACHFOLGE = "Nachfolge";
+export function istNachfolge(b) {
+  return b.etikett === NACHFOLGE;
+}
+export function bereichName(b) {
+  return istNachfolge(b) ? NACHFOLGE : MODUL_NAMEN[b.modul];
+}
 
 // Vorschau = Base44-Vorschau oder lokale Entwicklung, nie die veröffentlichte Seite
 export function istVorschau() {
