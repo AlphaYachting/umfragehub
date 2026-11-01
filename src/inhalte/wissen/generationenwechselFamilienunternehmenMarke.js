@@ -282,7 +282,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "Wie die Positionierung mit andi fragt. abläuft, steht auf der Seite [Positionierung aus dem Unternehmen heraus](/positionierung). Warum der Unterschied meist schon im Betrieb steckt, beschreibt der Beitrag [Alleinstellungsmerkmal finden](/wissen/alleinstellungsmerkmal-finden)."
+          "text": "Wie die Positionierung mit andi fragt. abläuft, steht auf der Seite [Positionierung aus dem Unternehmen heraus](/positionierung). Warum der Unterschied meist schon im Betrieb steckt, beschreibt der Beitrag [Alleinstellungsmerkmal finden](/wissen/alleinstellungsmerkmal-finden). Sind sich nicht zwei Generationen, sondern mehrere Gesellschafter uneinig, hilft der Beitrag [Gesellschafter uneinig im Marketing](/wissen/gesellschafter-uneinig-marketing)."
         }
       ]
     }
