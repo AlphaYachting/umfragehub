@@ -277,7 +277,195 @@ function Leitartikel() {
   return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Ein Bericht mit Balkendiagramm steckt in einer halb offenen Schublade. Drei pinke Pfeile führen aus der Schublade zu Positionierung, Arbeitgebermarke und Verkaufsargumenten." />;
 }
 
+// Nachfolge N1: Eisberg, sichtbares Marketing über der Wasserlinie, der Ruf darunter
+function NachfolgeMarketing() {
+  const kopf = { oben: "UNTERNEHMENSNACHFOLGE", z1: "Du übernimmst mehr", z3: "als ein Logo.", z4: "Du übernimmst einen Ruf." };
+  const breit = (
+    <>
+      <Kopftext {...kopf} unter="Prüf, was trägt, bevor du etwas änderst." />
+      <text x="880" y="250" fill="#b3b3b3" fontSize="17" fontWeight="600">Was jeder sieht</text>
+      <text x="880" y="278" fill="#ffffff" fontSize="20" fontWeight="700">Logo, Website, Prospekt</text>
+      <polygon points="1110,330 1150,262 1186,226 1226,256 1272,330" fill="#d4d4d4" />
+      <line x1="850" y1="330" x2="1510" y2="330" stroke="#8a8a8a" strokeWidth="2" strokeDasharray="10 8" />
+      <polygon points="1272,330 1110,330 1000,400 940,500 1010,600 1180,632 1360,592 1440,482 1382,382" fill={PINK} />
+      {["Ruf", "Beziehungen", "Sprache im Verkauf"].map((t, i) => (
+        <text key={t} x="1190" y={438 + i * 40} fill="#ffffff" fontSize="26" fontWeight="900" textAnchor="middle">{t}</text>
+      ))}
+      <text x="1190" y="562" fill="#ffe3ea" fontSize="17" fontWeight="600" textAnchor="middle">Was du wirklich übernimmst</text>
+    </>
+  );
+  const schmal = (
+    <>
+      <Kopftext schmal {...kopf} />
+      <text x="48" y="462" fill="#b3b3b3" fontSize="24" fontWeight="600">Was jeder sieht</text>
+      <text x="48" y="498" fill="#ffffff" fontSize="28" fontWeight="700">Logo, Website, Prospekt</text>
+      <polygon points="460,600 500,530 536,494 576,524 622,600" fill="#d4d4d4" />
+      <line x1="40" y1="600" x2="760" y2="600" stroke="#8a8a8a" strokeWidth="2" strokeDasharray="10 8" />
+      <polygon points="622,600 460,600 340,660 270,750 350,840 540,870 720,835 760,740 700,650" fill={PINK} />
+      {["Ruf", "Beziehungen", "Sprache im Verkauf"].map((t, i) => (
+        <text key={t} x="515" y={700 + i * 42} fill="#ffffff" fontSize="30" fontWeight="900" textAnchor="middle">{t}</text>
+      ))}
+      <text x="515" y="826" fill="#ffe3ea" fontSize="22" fontWeight="600" textAnchor="middle">Was du wirklich übernimmst</text>
+    </>
+  );
+  return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Ein Eisberg. Über der Wasserlinie sind Logo, Website und Prospekt zu sehen. Darunter, viel größer, liegen Ruf, Beziehungen und die Sprache im Verkauf." />;
+}
+
+// Nachfolge N2: drei Kreise, in der Mitte der Kern der Marke
+function NachfolgeMarke() {
+  const kopf = { oben: "GENERATIONENWECHSEL", z1: "Die Marke gehört", z3: "nicht der alten und nicht", z4: "der neuen Generation." };
+  const kreise = (k, r, fs, kern) => (
+    <>
+      <circle cx={k[0][0]} cy={k[0][1]} r={r} fill="#8a8a8a" fillOpacity="0.5" />
+      <circle cx={k[1][0]} cy={k[1][1]} r={r} fill="#ffb3c4" fillOpacity="0.45" />
+      <circle cx={k[2][0]} cy={k[2][1]} r={r} fill={PINK} fillOpacity="0.55" />
+      <text x={k[3][0]} y={k[3][1]} fill="#ffffff" fontSize={fs} fontWeight="800" textAnchor="middle">Übergeber</text>
+      <text x={k[4][0]} y={k[4][1]} fill="#ffffff" fontSize={fs} fontWeight="800" textAnchor="middle">Nachfolge</text>
+      <text x={k[5][0]} y={k[5][1]} fill="#ffffff" fontSize={fs} fontWeight="800" textAnchor="middle">Kunden</text>
+      <text x={k[6][0]} y={k[6][1]} fill="#ffffff" fontSize={kern} fontWeight="900" textAnchor="middle">Kern der</text>
+      <text x={k[6][0]} y={k[6][1] + kern * 1.25} fill="#ffffff" fontSize={kern} fontWeight="900" textAnchor="middle">Marke</text>
+    </>
+  );
+  const breit = (
+    <>
+      <Kopftext {...kopf} unter="Sie gehört den Kunden, die sie im Kopf haben." />
+      {kreise([[1060, 320], [1300, 320], [1180, 480], [990, 290], [1370, 290], [1180, 580], [1180, 396]], 150, 22, 19)}
+    </>
+  );
+  const schmal = (
+    <>
+      <Kopftext schmal {...kopf} />
+      {kreise([[290, 570], [510, 570], [400, 740], [222, 545], [578, 545], [400, 838], [400, 628]], 140, 28, 24)}
+    </>
+  );
+  return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Drei überlappende Kreise für Übergeber, Nachfolge und Kunden. Wo sich alle drei überschneiden, liegt der Kern der Marke." />;
+}
+
+// Nachfolge N3: Zeitleiste in vier Schritten
+function NachfolgeKunden() {
+  const kopf = { oben: "BETRIEBSÜBERGABE", z1: "Kunden erfahren es", z3: "am besten von euch.", z4: "Nicht von Dritten." };
+  const schritte = [["1 Rahmen", "steht fest"], ["2 Team", "weiß es"], ["3 Wichtige", "Kunden, persönlich"], ["4 Alle", "anderen"]];
+  const breit = (
+    <>
+      <Kopftext {...kopf} unter="Persönlich, gemeinsam, sobald der Rahmen steht." />
+      <line x1="900" y1="400" x2="1470" y2="400" stroke="#6a6a6a" strokeWidth="4" />
+      {schritte.map(([a, b], i) => {
+        const x = [900, 1090, 1280, 1460][i];
+        const pink = i === 2;
+        const oben = i % 2 === 0;
+        return (
+          <g key={a}>
+            <circle cx={x} cy="400" r={pink ? 18 : 12} fill={pink ? PINK : "#d4d4d4"} />
+            <text x={x} y={oben ? 330 : 450} fill={pink ? "#ff8fa8" : "#ffffff"} fontSize="20" fontWeight="800" textAnchor="middle">{a}</text>
+            <text x={x} y={oben ? 356 : 476} fill="#b3b3b3" fontSize="17" fontWeight="600" textAnchor="middle">{b}</text>
+          </g>
+        );
+      })}
+    </>
+  );
+  const schmal = (
+    <>
+      <Kopftext schmal {...kopf} />
+      <line x1="110" y1="470" x2="110" y2="830" stroke="#6a6a6a" strokeWidth="4" />
+      {schritte.map(([a, b], i) => {
+        const y = 470 + i * 120;
+        const pink = i === 2;
+        return (
+          <g key={a}>
+            <circle cx="110" cy={y} r={pink ? 22 : 14} fill={pink ? PINK : "#d4d4d4"} />
+            <text x="160" y={y - 4} fill={pink ? "#ff8fa8" : "#ffffff"} fontSize="30" fontWeight="800">{a}</text>
+            <text x="160" y={y + 30} fill="#b3b3b3" fontSize="24" fontWeight="600">{b}</text>
+          </g>
+        );
+      })}
+    </>
+  );
+  return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Eine Zeitleiste in vier Schritten. Zuerst steht der Rahmen, dann erfährt es das Team, dann die wichtigsten Kunden persönlich, kurz danach alle anderen." />;
+}
+
+// Nachfolge N4: fünf Mitarbeitende, vier sagen nichts, eine sagt: Passt schon.
+function Figur({ x, y, s = 1, blase }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <circle cx="0" cy="110" r="24" fill="#8a8a8a" />
+      <path d="M-36 226 v-32 a36 36 0 0 1 72 0 v32 z" fill="#6a6a6a" />
+      {blase === "punkte" ? (
+        <>
+          <rect x="-46" y="6" width="92" height="48" rx="16" fill="#4a4a4a" />
+          {[-18, 0, 18].map((d) => <circle key={d} cx={d} cy="30" r="5" fill="#b3b3b3" />)}
+        </>
+      ) : (
+        <>
+          <rect x="-82" y="0" width="164" height="56" rx="18" fill={PINK} />
+          <text x="0" y="35" fill="#ffffff" fontSize="20" fontWeight="800" textAnchor="middle">{blase}</text>
+        </>
+      )}
+    </g>
+  );
+}
+function NachfolgeTeam() {
+  const kopf = { oben: "BETRIEBSÜBERNAHME", z1: "Das Team schaut", z3: "genau hin.", z4: "Und sagt wenig." };
+  const blasen = ["punkte", "punkte", "Passt schon.", "punkte", "punkte"];
+  const breit = (
+    <>
+      <Kopftext {...kopf} unter="Was du hörst, hängt davon ab, wie du fragst." />
+      {blasen.map((bl, i) => <Figur key={i} x={920 + i * 140} y={330} blase={bl} />)}
+      <text x="1200" y="610" fill="#b3b3b3" fontSize="17" fontWeight="600" textAnchor="middle">Was die neue Führung in den ersten Wochen hört</text>
+    </>
+  );
+  const schmal = (
+    <>
+      <Kopftext schmal {...kopf} />
+      {blasen.map((bl, i) => <Figur key={i} x={100 + i * 150} y={450} s={1.2} blase={bl} />)}
+      <text x="400" y="770" fill="#b3b3b3" fontSize="24" fontWeight="600" textAnchor="middle">Was die neue Führung</text>
+      <text x="400" y="804" fill="#b3b3b3" fontSize="24" fontWeight="600" textAnchor="middle">in den ersten Wochen hört</text>
+    </>
+  );
+  return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Fünf Mitarbeitende mit Sprechblasen. Vier Sprechblasen zeigen nur drei Punkte, eine sagt: Passt schon." />;
+}
+
+// Nachfolge N5: Zeitbalken über 100 Tage in drei Phasen
+function NachfolgeHundertTage() {
+  const kopf = { oben: "BETRIEBSÜBERNAHME", z1: "100 Tage.", z3: "Erst zuhören,", z4: "dann umbauen." };
+  const balken = (x, w, y, h, fsTag, fsText, tagY) =>
+    [["Tag 1 bis 30", "Zuhören", "#4a4a4a"], ["Tag 31 bis 60", "Bild holen", "#6a6a6a"], ["Tag 61 bis 100", "Prioritäten", PINK]].map(([tag, text, f], i) => (
+      <g key={tag}>
+        <text x={x[i]} y={tagY} fill="#b3b3b3" fontSize={fsTag} fontWeight="600">{tag}</text>
+        <rect x={x[i]} y={y} width={w[i]} height={h} rx="8" fill={f} />
+        <text x={x[i] + w[i] / 2} y={y + h / 2 + fsText * 0.35} fill="#ffffff" fontSize={fsText} fontWeight="800" textAnchor="middle">{text}</text>
+      </g>
+    ));
+  const breit = (
+    <>
+      <Kopftext {...kopf} unter="Ein Plan in drei Phasen für Kunden, Team und Marke." />
+      {balken([880, 1060, 1240], [176, 176, 240], 372, 60, 16, 20, 356)}
+      <line x1="1360" y1="300" x2="1360" y2="364" stroke="#ff8fa8" strokeWidth="2" />
+      <text x="1360" y="270" fill="#ff8fa8" fontSize="18" fontWeight="800" textAnchor="middle">Erst hier: Marke,</text>
+      <text x="1360" y="292" fill="#ff8fa8" fontSize="18" fontWeight="800" textAnchor="middle">Website, Vertrieb</text>
+      <text x="880" y="470" fill="#8a8a8a" fontSize="16" fontWeight="600">Tag 0</text>
+      <text x="1480" y="470" fill="#8a8a8a" fontSize="16" fontWeight="600" textAnchor="end">Tag 100</text>
+    </>
+  );
+  const schmal = (
+    <>
+      <Kopftext schmal {...kopf} />
+      {balken([40, 254, 468], [210, 210, 292], 600, 76, 21, 25, 584)}
+      <line x1="614" y1="520" x2="614" y2="570" stroke="#ff8fa8" strokeWidth="2" />
+      <text x="614" y="472" fill="#ff8fa8" fontSize="25" fontWeight="800" textAnchor="middle">Erst hier: Marke,</text>
+      <text x="614" y="504" fill="#ff8fa8" fontSize="25" fontWeight="800" textAnchor="middle">Website, Vertrieb</text>
+      <text x="40" y="720" fill="#8a8a8a" fontSize="21" fontWeight="600">Tag 0</text>
+      <text x="760" y="720" fill="#8a8a8a" fontSize="21" fontWeight="600" textAnchor="end">Tag 100</text>
+    </>
+  );
+  return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Ein Zeitbalken über 100 Tage in drei Phasen: zuhören, ein ehrliches Bild holen, Prioritäten setzen. Erst in der dritten Phase fallen Entscheidungen über Marke, Website und Vertrieb." />;
+}
+
 export const TITELGRAFIKEN = {
+  "unternehmensnachfolge-marketing": NachfolgeMarketing,
+  "generationenwechsel-familienunternehmen-marke": NachfolgeMarke,
+  "betriebsuebergabe-kunden-informieren": NachfolgeKunden,
+  "mitarbeiter-nach-betriebsuebernahme": NachfolgeTeam,
+  "betriebsuebernahme-erste-100-tage": NachfolgeHundertTage,
   "warum-kuendigen-gute-mitarbeiter": Kuendigung,
   "alleinstellungsmerkmal-finden": Usp,
   "warum-kaufen-kunden-bei-der-konkurrenz": Konkurrenz,
