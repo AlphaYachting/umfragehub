@@ -19,6 +19,8 @@ import generationenwechselFamilienunternehmenMarke from "./generationenwechselFa
 import betriebsuebergabeKundenInformieren from "./betriebsuebergabeKundenInformieren";
 import mitarbeiterNachBetriebsuebernahme from "./mitarbeiterNachBetriebsuebernahme";
 import betriebsuebernahmeErste100Tage from "./betriebsuebernahmeErste100Tage";
+import betriebsuebergabeVorbereiten from "./betriebsuebergabeVorbereiten";
+import gesellschafterUneinigMarketing from "./gesellschafterUneinigMarketing";
 
 export const BEITRAEGE = [
   mitarbeiterbefragungErgebnisse,
@@ -31,6 +33,8 @@ export const BEITRAEGE = [
   betriebsuebergabeKundenInformieren,
   mitarbeiterNachBetriebsuebernahme,
   betriebsuebernahmeErste100Tage,
+  betriebsuebergabeVorbereiten,
+  gesellschafterUneinigMarketing,
 ];
 
 export const MODUL_NAMEN = { team: "Team", positionierung: "Positionierung", kunden: "Kunden", vertrieb: "Vertrieb" };

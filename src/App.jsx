@@ -45,6 +45,8 @@ const WissenGenerationenwechselFamilienunternehmenMarke = lazy(() => import('@/p
 const WissenBetriebsuebergabeKundenInformieren = lazy(() => import('@/pages/wissen/beitrag/WissenBetriebsuebergabeKundenInformieren'));
 const WissenMitarbeiterNachBetriebsuebernahme = lazy(() => import('@/pages/wissen/beitrag/WissenMitarbeiterNachBetriebsuebernahme'));
 const WissenBetriebsuebernahmeErste100Tage = lazy(() => import('@/pages/wissen/beitrag/WissenBetriebsuebernahmeErste100Tage'));
+const WissenBetriebsuebergabeVorbereiten = lazy(() => import('@/pages/wissen/beitrag/WissenBetriebsuebergabeVorbereiten'));
+const WissenGesellschafterUneinigMarketing = lazy(() => import('@/pages/wissen/beitrag/WissenGesellschafterUneinigMarketing'));
 
 const Laden = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -102,6 +104,8 @@ const AuthenticatedApp = () => {
       <Route path="/wissen/betriebsuebergabe-kunden-informieren" element={<WissenBetriebsuebergabeKundenInformieren />} />
       <Route path="/wissen/mitarbeiter-nach-betriebsuebernahme" element={<WissenMitarbeiterNachBetriebsuebernahme />} />
       <Route path="/wissen/betriebsuebernahme-erste-100-tage" element={<WissenBetriebsuebernahmeErste100Tage />} />
+      <Route path="/wissen/betriebsuebergabe-vorbereiten" element={<WissenBetriebsuebergabeVorbereiten />} />
+      <Route path="/wissen/gesellschafter-uneinig-marketing" element={<WissenGesellschafterUneinigMarketing />} />
       <Route path="/wissen/*" element={<Navigate to="/wissen" replace />} />
       <Route path="/i/:linkToken" element={<Interview />} />
       {/* Öffentlich mit Passwort: Kunden-Cockpit des Auftraggebers */}
