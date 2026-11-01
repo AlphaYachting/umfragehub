@@ -12,8 +12,8 @@ import Zaehler from "@/components/oeffentlich/Zaehler";
 // Öffentliche Seite „Über uns“ von andifragt.at, neu aufgebaut am 01.11.2026 (Prototyp UeberUnsNeu).
 //
 // Zweck: Wer noch zögert, soll schnell sehen, wer hinter andi fragt. steht, wie gearbeitet wird
-// und was mit den Antworten passiert. Deshalb: kurze Antworten zuerst, das Team mit Gesicht,
-// der Ablauf in Schritten, der Schutz der Antworten zum Ausprobieren, Zusagen als Karten.
+// und was mit den Antworten passiert. Reihenfolge (01.11.2026): kurze Antworten, Team mit Gesicht,
+// Schutz der Antworten zum Ausprobieren, Ablauf, Agentur mit Kundenlogos, Zusagen, Für wen, FAQ.
 // Das Tool selbst wird nicht gezeigt oder beschrieben.
 //
 // Typografie: Gilroy hat keine Gedankenstriche, typografischen Anführungszeichen oder Mittelpunkte.
@@ -23,10 +23,10 @@ import Zaehler from "@/components/oeffentlich/Zaehler";
 const TEL_LINK = `tel:${KONTAKT_TEL.replace(/\s/g, "")}`;
 
 const SPRUNG = [
-  { ziel: "#wer", text: "Wer dahinter steht" },
   { ziel: "#team", text: "Das Team" },
-  { ziel: "#ablauf", text: "So arbeiten wir" },
   { ziel: "#schutz", text: "Was mit Antworten passiert" },
+  { ziel: "#ablauf", text: "So arbeiten wir" },
+  { ziel: "#wer", text: "Wer dahinter steht" },
   { ziel: "#zusagen", text: "Unsere Zusagen" },
   { ziel: "#fragen", text: "Fragen" },
 ];
@@ -57,12 +57,6 @@ const KURZ = [
     mehr: "Unsere Zusagen",
     ziel: "#zusagen",
   },
-];
-
-const FAKTEN = [
-  { zahl: "über 20 Jahre", text: "Rittler & Co, Werbeagentur in Graz" },
-  { zahl: "über 500", text: "Markenprojekte als Grundlage der Methode" },
-  { zahl: "3 Menschen", text: "hinter andi fragt., mit Namen und Gesicht" },
 ];
 
 const SCHRITTE = [
@@ -96,7 +90,6 @@ const ZUSAGEN = [
 ];
 
 const ANLAESSE = ["Neuer Auftritt", "Gute Leute halten und gewinnen", "Vertrieb neu ausrichten", "Übergabe an die nächste Generation"];
-const AM_TISCH = ["Geschäftsführung und Inhaberschaft", "Personalverantwortliche", "Marketingverantwortliche", "Vertriebsleitung"];
 
 const MODULKURZ = [
   { name: "Positionierung", pfad: "/positionierung", text: "Warum Kunden wirklich kaufen." },
@@ -174,53 +167,8 @@ export default function UeberUns() {
         </div>
       </section>
 
-      {/* Wer dahinter steht */}
-      <section id="wer" className={`${BREITE} pt-24 pb-14 scroll-mt-4 flex flex-wrap items-start gap-x-20 gap-y-12`}>
-        <div className="flex-[1_1_560px] min-w-0 max-w-[680px]">
-          <Etikett>Wer dahinter steht</Etikett>
-          <h2 className="mt-3" style={H2_STIL}>
-            Eine Werbeagentur, <span style={{ color: F.akzent }}>die zuerst zuhört.</span>
-          </h2>
-
-          <h3 className={H3}>Rittler &amp; Co aus Graz</h3>
-          <p className="mt-3" style={ABSATZ}>
-            Hinter andi fragt. steht die Rittler &amp; Co GmbH, eine Werbeagentur in der Peter-Rosegger-Straße 27 in
-            Graz. Seit über 20 Jahren begleiten wir Unternehmen bei Marke, Positionierung und Auftritt.
-          </p>
-
-          <h3 className={H3}>Warum eine Werbeagentur Interviews führt</h3>
-          <p className="mt-3" style={ABSATZ}>
-            In über 500 Markenprojekten haben wir immer wieder dasselbe erlebt: Die besten Antworten stecken schon im
-            Unternehmen. Im Kopf der Geschäftsführung, im Alltag des Teams, im Gespräch des Vertriebs und in der Sicht
-            der Kunden. Ausgesprochen werden sie selten, weil niemand die richtigen Fragen stellt.
-          </p>
-          <p className="mt-3" style={ABSATZ}>
-            Ein Marktforschungsinstitut beantwortet die Fragen, die man ihm stellt. Wir setzen einen Schritt früher an
-            und klären mit dir, welche Fragen dein Unternehmen weiterbringen. Und weil wir seit Jahren Marken bauen,
-            setzen wir auf Wunsch gleich um, was aus den Antworten folgt: die Botschaft, die Stellenanzeige, das
-            Verkaufsargument.
-          </p>
-
-          <h3 className={H3}>Menschen lesen, keine Software</h3>
-          <p className="mt-3" style={ABSATZ}>
-            Technik hilft beim Sammeln und Ordnen. Gelesen und eingeordnet wird jede Antwort von Menschen. Eine Software
-            zählt, wie oft etwas gesagt wird. Wir suchen den einen Satz, der eine Entscheidung trägt, auch wenn er nur
-            dreimal vorkommt.
-          </p>
-        </div>
-
-        <dl className="flex-[1_1_320px] min-w-0 p-7 rounded-3xl flex flex-col gap-[22px]" style={{ background: F.grau }}>
-          {FAKTEN.map(({ zahl, text }) => (
-            <div key={zahl}>
-              <dt className="text-[clamp(26px,2.6vw,34px)] font-black leading-tight" style={{ color: F.akzent }}>{zahl}</dt>
-              <dd className="mt-1 text-[15px] leading-snug" style={{ color: F.daempft }}>{text}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-
       {/* Das Team hinter andi fragt. */}
-      <section id="team" className={`${BREITE} pt-10 pb-[72px] scroll-mt-4`}>
+      <section id="team" className={`${BREITE} pt-24 pb-24 scroll-mt-4`}>
         <Etikett>Das Team hinter andi fragt.</Etikett>
         <h2 className="mt-3 max-w-[900px]" style={H2_STIL}>
           Drei Menschen. <span style={{ color: F.akzent }}>Mit Namen und Gesicht.</span>
@@ -248,8 +196,30 @@ export default function UeberUns() {
         </ul>
       </section>
 
-      {/* Kunden der Agentur */}
-      <KundenSlider titel="Unternehmen, für die Rittler & Co gearbeitet hat" hintergrund="#ffffff" />
+      {/* Schutz der Antworten, Zähler wie auf der Teamseite */}
+      <section id="schutz" className="scroll-mt-4" style={{ background: F.dunkel, color: "#ffffff" }}>
+        <div className={`${BREITE} py-24 flex flex-wrap items-center gap-x-[72px] gap-y-12`}>
+          <div className="flex-[1_1_420px] min-w-0">
+            <Etikett dunkel>Ehrlichkeit braucht Schutz</Etikett>
+            <h2 className="mt-3" style={H2_STIL}>
+              Du siehst Gruppen. <span style={{ color: F.akzent }}>Nie einzelne Antworten.</span>
+            </h2>
+            <p className="mt-5" style={{ ...TEXT_STIL, lineHeight: 1.7, color: F.hellAufDunkel }}>
+              Ehrlich antwortet nur, wer sich nicht beobachtet fühlt. Darum gelten bei jedem Interview dieselben Regeln.
+              Genau so sagen wir es auch den Menschen, die wir fragen.
+            </p>
+            <ul className="mt-6 flex flex-col gap-3.5">
+              {REGELN.map((r) => (
+                <li key={r} className="grid grid-cols-[28px_minmax(0,1fr)] gap-3 text-[17px] leading-[1.55]">
+                  <Check size={22} strokeWidth={2.6} aria-hidden="true" className="mt-0.5" style={{ color: "#45d085" }} />
+                  <span>{r}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <Zaehler titel="Das siehst du als Auftraggeber" />
+        </div>
+      </section>
 
       {/* So arbeiten wir */}
       <section id="ablauf" className="scroll-mt-4" style={{ background: F.grau }}>
@@ -315,30 +285,45 @@ export default function UeberUns() {
         </div>
       </section>
 
-      {/* Schutz der Antworten, Zähler wie auf der Teamseite */}
-      <section id="schutz" className="scroll-mt-4" style={{ background: F.dunkel, color: "#ffffff" }}>
-        <div className={`${BREITE} py-24 flex flex-wrap items-center gap-x-[72px] gap-y-12`}>
-          <div className="flex-[1_1_420px] min-w-0">
-            <Etikett dunkel>Ehrlichkeit braucht Schutz</Etikett>
-            <h2 className="mt-3" style={H2_STIL}>
-              Du siehst Gruppen. <span style={{ color: F.akzent }}>Nie einzelne Antworten.</span>
-            </h2>
-            <p className="mt-5" style={{ ...TEXT_STIL, lineHeight: 1.7, color: F.hellAufDunkel }}>
-              Ehrlich antwortet nur, wer sich nicht beobachtet fühlt. Darum gelten bei jedem Interview dieselben Regeln.
-              Genau so sagen wir es auch den Menschen, die wir fragen.
-            </p>
-            <ul className="mt-6 flex flex-col gap-3.5">
-              {REGELN.map((r) => (
-                <li key={r} className="grid grid-cols-[28px_minmax(0,1fr)] gap-3 text-[17px] leading-[1.55]">
-                  <Check size={22} strokeWidth={2.6} aria-hidden="true" className="mt-0.5" style={{ color: "#45d085" }} />
-                  <span>{r}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <Zaehler titel="Das siehst du als Auftraggeber" />
+      {/* Wer dahinter steht */}
+      <section id="wer" className={`${BREITE} py-24 scroll-mt-4`}>
+        <div className="max-w-[720px]">
+          <Etikett>Wer dahinter steht</Etikett>
+          <h2 className="mt-3" style={H2_STIL}>
+            Eine Werbeagentur, <span style={{ color: F.akzent }}>die zuerst zuhört.</span>
+          </h2>
+
+          <h3 className={H3}>Rittler &amp; Co aus Graz</h3>
+          <p className="mt-3" style={ABSATZ}>
+            Hinter andi fragt. steht die Rittler &amp; Co GmbH, eine Werbeagentur in der Peter-Rosegger-Straße 27 in
+            Graz. Seit über 20 Jahren begleiten wir Unternehmen bei Marke, Positionierung und Auftritt.
+          </p>
+
+          <h3 className={H3}>Warum eine Werbeagentur Interviews führt</h3>
+          <p className="mt-3" style={ABSATZ}>
+            In über 500 Markenprojekten haben wir immer wieder dasselbe erlebt: Die besten Antworten stecken schon im
+            Unternehmen. Im Kopf der Geschäftsführung, im Alltag des Teams, im Gespräch des Vertriebs und in der Sicht
+            der Kunden. Ausgesprochen werden sie selten, weil niemand die richtigen Fragen stellt.
+          </p>
+          <p className="mt-3" style={ABSATZ}>
+            Ein Marktforschungsinstitut beantwortet die Fragen, die man ihm stellt. Wir setzen einen Schritt früher an
+            und klären mit dir, welche Fragen dein Unternehmen weiterbringen. Und weil wir seit Jahren Marken bauen,
+            setzen wir auf Wunsch gleich um, was aus den Antworten folgt: die Botschaft, die Stellenanzeige, das
+            Verkaufsargument.
+          </p>
+
+          <h3 className={H3}>Menschen lesen, keine Software</h3>
+          <p className="mt-3" style={ABSATZ}>
+            Technik hilft beim Sammeln und Ordnen. Gelesen und eingeordnet wird jede Antwort von Menschen. Eine Software
+            zählt, wie oft etwas gesagt wird. Wir suchen den einen Satz, der eine Entscheidung trägt, auch wenn er nur
+            dreimal vorkommt.
+          </p>
         </div>
+
       </section>
+
+      {/* Kunden der Agentur */}
+      <KundenSlider titel="Unternehmen, für die Rittler & Co gearbeitet hat" />
 
       {/* Zusagen */}
       <section id="zusagen" className={`${BREITE} py-24 scroll-mt-4`}>
@@ -359,28 +344,20 @@ export default function UeberUns() {
 
       {/* Für wen */}
       <section style={{ background: F.hauch }}>
-        <div className={`${BREITE} py-[88px]`}>
+        <div className={`${BREITE} py-20`}>
           <Etikett>Für wen wir fragen</Etikett>
           <h2 className="mt-3 max-w-[860px]" style={H2_STIL}>
             Für Unternehmen <span style={{ color: F.akzent }}>vor einer Entscheidung.</span>
           </h2>
           <p className="mt-3 max-w-[720px]" style={ABSATZ}>
-            Für alle, die eine wichtige Entscheidung nicht auf Bauchgefühl bauen wollen. Drei Sichtweisen kommen
-            zusammen: Führung, Belegschaft und Markt. Jede bekommt ihr eigenes Interview, ausgewertet wird gemeinsam.
-            Denn die wertvollsten Erkenntnisse liegen dort, wo die Sichtweisen auseinandergehen.
+            Für alle, die eine wichtige Entscheidung nicht auf Bauchgefühl bauen wollen. Führung, Belegschaft und Markt
+            bekommen je ein eigenes Interview, ausgewertet wird gemeinsam.
           </p>
-          <div className="mt-9 grid gap-4 grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))]">
-            {[["Typische Anlässe", ANLAESSE], ["Mit uns am Tisch", AM_TISCH]].map(([titel, liste]) => (
-              <div key={titel} className="p-7 rounded-[20px] bg-white">
-                <h3 className="text-[19px] font-bold">{titel}</h3>
-                <ul className="mt-3.5 flex flex-wrap gap-2">
-                  {liste.map((x) => (
-                    <li key={x} className={CHIP} style={{ background: F.grau }}>{x}</li>
-                  ))}
-                </ul>
-              </div>
+          <ul aria-label="Typische Anlässe" className="mt-7 flex flex-wrap gap-2">
+            {ANLAESSE.map((x) => (
+              <li key={x} className={CHIP} style={{ background: "#ffffff" }}>{x}</li>
             ))}
-          </div>
+          </ul>
           <p className="mt-10 text-[15px] font-semibold" style={{ color: F.daempft }}>Die vier Interviews</p>
           <div className="mt-3 grid gap-3 grid-cols-[repeat(auto-fit,minmax(min(100%,230px),1fr))]">
             {MODULKURZ.map(({ name, pfad, text }) => (
