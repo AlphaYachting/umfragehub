@@ -394,9 +394,7 @@ export default function UeberUns() {
       </section>
 
       {/* Häufige Fragen */}
-      <div id="fragen" className="scroll-mt-4">
-        <Faq seite="ueberUns" look="weiss" />
-      </div>
+      <Faq seite="ueberUns" look="weiss" />
 
       {/* Abschluss */}
       <section style={{ background: F.dunkel, color: "#ffffff" }}>
