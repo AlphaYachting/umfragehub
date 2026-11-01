@@ -347,7 +347,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "Den genauen Ablauf zeigt die Seite zum [Kunden-Interview](/kunden). Warum auch zufriedene Kunden gehen, beschreibt der Beitrag [Warum kaufen Kunden bei der Konkurrenz?](/wissen/warum-kaufen-kunden-bei-der-konkurrenz)"
+          "text": "Den genauen Ablauf zeigt die Seite zum [Kunden-Interview](/kunden). Warum auch zufriedene Kunden gehen, beschreibt der Beitrag [Warum kaufen Kunden bei der Konkurrenz?](/wissen/warum-kaufen-kunden-bei-der-konkurrenz) Wie du als Übergeber die Übergabe vorbereitest, steht im Beitrag [Betriebsübergabe vorbereiten](/wissen/betriebsuebergabe-vorbereiten)."
         }
       ]
     }
