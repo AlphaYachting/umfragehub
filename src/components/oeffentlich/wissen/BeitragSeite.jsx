@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { ArrowRight, Check, ChevronDown, ChevronRight, Clock, Linkedin, Mail, Plus } from "lucide-react";
-import { BREITE, F, Hauptknopf, Modulseite } from "@/components/oeffentlich/Oeffentlich";
+import { BREITE, F, Hauptknopf, Modulseite, Portraet } from "@/components/oeffentlich/Oeffentlich";
 import Baustein, { Text, nummerieren } from "@/components/oeffentlich/wissen/Bausteine";
 import { Kennzahlen } from "@/components/oeffentlich/wissen/Grafiken";
 import Titelgrafik, { TITELGRAFIKEN } from "@/components/oeffentlich/wissen/Titelgrafiken";
@@ -285,7 +285,7 @@ export default function BeitragSeite({ beitrag }) {
           </h1>
           <div className="mt-7 flex flex-wrap items-center gap-x-7 gap-y-3">
             <div className="flex items-center gap-3">
-              <span aria-hidden="true" className="shrink-0 w-12 h-12 rounded-full inline-flex items-center justify-center text-white font-black" style={{ background: F.dunkel }}>AR</span>
+              <Portraet className="w-12 h-12" />
               <span className="text-[15px] leading-[1.4]">
                 <strong className="font-bold">{AUTOR.name}</strong>
                 <br />
@@ -422,8 +422,7 @@ export default function BeitragSeite({ beitrag }) {
 
           {/* Autor */}
           <section aria-label="Über den Autor" className="mt-12 p-7 rounded-3xl flex flex-wrap items-center gap-x-6 gap-y-5" style={{ background: F.grau }}>
-            <span aria-hidden="true" className="shrink-0 w-[88px] h-[88px] rounded-full inline-flex items-center justify-center text-[26px] font-black text-white"
-              style={{ background: F.dunkel, boxShadow: `0 0 0 5px ${F.grau}, 0 0 0 7px ${F.hauchRand}` }}>AR</span>
+            <Portraet className="w-[88px] h-[88px]" gross style={{ boxShadow: `0 0 0 5px ${F.grau}, 0 0 0 7px ${F.hauchRand}` }} />
             <div className="flex-[1_1_320px] min-w-0">
               <p className="text-xs font-semibold uppercase tracking-[0.16em]" style={{ color: F.daempft }}>Geschrieben von</p>
               <p className="mt-1 text-xl font-black">{AUTOR.name}</p>

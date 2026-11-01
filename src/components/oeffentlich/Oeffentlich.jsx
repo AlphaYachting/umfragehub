@@ -158,6 +158,52 @@ export function FuerDich({ rollen, dunkel = false, mitte = false, className = "m
   );
 }
 
+// Das Team hinter andi fragt. Fotos in public/team (480 und 160 px, quadratisch zugeschnitten).
+// Einwilligung von Sebastian und Mathias für Foto und Name liegt schriftlich vor (01.11.2026).
+export const TEAM = [
+  {
+    id: "alfons",
+    name: "Alfons Rittler",
+    rolle: "Creative Director und Consultant",
+    aufgabe: "Dein Ansprechpartner, schon ab dem Erstgespräch.",
+    foto: "/team/alfons-rittler-480.jpg",
+    fotoKlein: "/team/alfons-rittler-160.jpg",
+    telefon: true,
+  },
+  {
+    id: "sebastian",
+    name: "Sebastian Haslinger",
+    rolle: "Interviewkonzeption und Kampagne",
+    aufgabe: "Macht aus dem Zielgespräch ein Interview für jede Gruppe und sorgt dafür, dass die Einladung ankommt und beantwortet wird.",
+    foto: "/team/sebastian-haslinger-480.jpg",
+    fotoKlein: "/team/sebastian-haslinger-160.jpg",
+  },
+  {
+    id: "mathias",
+    name: "Mathias Galler",
+    rolle: "Senior Data Analyst",
+    aufgabe: "Wertet die Antworten aus und findet in den Zahlen die Muster und Abweichungen, über die wir mit dir sprechen.",
+    foto: "/team/mathias-galler-480.jpg",
+    fotoKlein: "/team/mathias-galler-160.jpg",
+  },
+];
+
+// Porträt im Kreis. Name steht immer daneben, deshalb ist das Bild dekorativ (alt leer).
+export function Portraet({ person = TEAM[0], className = "w-16 h-16", gross = false, style }) {
+  return (
+    <span aria-hidden="true" className={`shrink-0 inline-block rounded-full overflow-hidden ${className}`} style={{ background: F.dunkel, ...style }}>
+      <img
+        src={gross ? person.foto : person.fotoKlein}
+        alt=""
+        width={gross ? 480 : 160}
+        height={gross ? 480 : 160}
+        loading="lazy"
+        className="block w-full h-full object-cover"
+      />
+    </span>
+  );
+}
+
 // Rundes Foto mit Ring. ringe: [{ abstand, farbe, gestrichelt }]
 export function RundesFoto({ src, alt, groesse = 320, ringe = [], rand, className = "" }) {
   return (

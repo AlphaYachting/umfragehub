@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Check, Clock, Phone, Video } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import { BREITE, Etikett, F, H2_STIL, KONTAKT_TEL } from "@/components/oeffentlich/Oeffentlich";
+import { BREITE, Etikett, F, H2_STIL, KONTAKT_TEL, Portraet } from "@/components/oeffentlich/Oeffentlich";
 
 // Anfrageformular für ein Erstgespräch (Kontaktseite, Anker #anfrage).
 // Aufbau wie im Prototyp „Erstgespräch anfragen“: links was passiert und wer sich
@@ -172,13 +172,7 @@ export default function Erstgespraech() {
           </ol>
 
           <div className="mt-10 p-6 rounded-[20px] bg-white flex items-center gap-[18px]">
-            <span
-              aria-hidden="true"
-              className="shrink-0 w-16 h-16 rounded-full flex items-center justify-center text-xl font-black text-white"
-              style={{ background: F.dunkel, boxShadow: `0 0 0 4px #ffffff, 0 0 0 6px ${F.hauchRand}` }}
-            >
-              AR
-            </span>
+            <Portraet className="w-16 h-16" style={{ boxShadow: `0 0 0 4px #ffffff, 0 0 0 6px ${F.hauchRand}` }} />
             <div className="min-w-0">
               <p className="text-[13px]" style={{ color: F.daempft }}>Dein Ansprechpartner</p>
               <p className="mt-0.5 text-[17px] font-bold">Alfons Rittler</p>
