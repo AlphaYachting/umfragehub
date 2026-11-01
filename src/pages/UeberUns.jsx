@@ -35,6 +35,8 @@ const STECKBRIEF = [
   { titel: "Anbieter", wert: "Rittler & Co GmbH, Werbeagentur" },
   { titel: "Sitz", wert: "Peter-Rosegger-Straße 27, 8053 Graz" },
   { titel: "Erfahrung", wert: "über 20 Jahre, über 500 Markenprojekte" },
+  { titel: "Für", wert: "Unternehmen im deutschsprachigen Raum" },
+  { titel: "Interviews auf", wert: "Deutsch, Englisch, Italienisch, Kroatisch" },
   { titel: "Ansprechpartner", wert: "Alfons Rittler" },
 ];
 

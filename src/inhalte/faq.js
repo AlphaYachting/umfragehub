@@ -293,7 +293,7 @@ export const FAQ = {
       {
         q: "Arbeitet ihr nur in Graz und der Steiermark?",
         kopf: "Nein.",
-        text: "Unser Sitz ist Graz, die Interviews laufen online. Wo dein Unternehmen sitzt, spielt dafür keine Rolle. Zielgespräch und Präsentation führen wir persönlich.",
+        text: "Unser Sitz ist Graz, die Interviews laufen online. Wir arbeiten mit Unternehmen im ganzen deutschsprachigen Raum, und die Interviews gibt es auf Deutsch, Englisch, Italienisch und Kroatisch. Zielgespräch und Präsentation führen wir persönlich.",
       },
     ],
   },
