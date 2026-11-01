@@ -39,6 +39,12 @@ const WissenWarumKuendigenGuteMitarbeiter = lazy(() => import('@/pages/wissen/be
 const WissenAlleinstellungsmerkmalFinden = lazy(() => import('@/pages/wissen/beitrag/WissenAlleinstellungsmerkmalFinden'));
 const WissenWarumKaufenKundenBeiDerKonkurrenz = lazy(() => import('@/pages/wissen/beitrag/WissenWarumKaufenKundenBeiDerKonkurrenz'));
 const WissenAbschlussquoteErhoehen = lazy(() => import('@/pages/wissen/beitrag/WissenAbschlussquoteErhoehen'));
+// Zielgruppe 2: Unternehmensnachfolge
+const WissenUnternehmensnachfolgeMarketing = lazy(() => import('@/pages/wissen/beitrag/WissenUnternehmensnachfolgeMarketing'));
+const WissenGenerationenwechselFamilienunternehmenMarke = lazy(() => import('@/pages/wissen/beitrag/WissenGenerationenwechselFamilienunternehmenMarke'));
+const WissenBetriebsuebergabeKundenInformieren = lazy(() => import('@/pages/wissen/beitrag/WissenBetriebsuebergabeKundenInformieren'));
+const WissenMitarbeiterNachBetriebsuebernahme = lazy(() => import('@/pages/wissen/beitrag/WissenMitarbeiterNachBetriebsuebernahme'));
+const WissenBetriebsuebernahmeErste100Tage = lazy(() => import('@/pages/wissen/beitrag/WissenBetriebsuebernahmeErste100Tage'));
 
 const Laden = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -91,6 +97,11 @@ const AuthenticatedApp = () => {
       <Route path="/wissen/alleinstellungsmerkmal-finden" element={<WissenAlleinstellungsmerkmalFinden />} />
       <Route path="/wissen/warum-kaufen-kunden-bei-der-konkurrenz" element={<WissenWarumKaufenKundenBeiDerKonkurrenz />} />
       <Route path="/wissen/abschlussquote-erhoehen" element={<WissenAbschlussquoteErhoehen />} />
+      <Route path="/wissen/unternehmensnachfolge-marketing" element={<WissenUnternehmensnachfolgeMarketing />} />
+      <Route path="/wissen/generationenwechsel-familienunternehmen-marke" element={<WissenGenerationenwechselFamilienunternehmenMarke />} />
+      <Route path="/wissen/betriebsuebergabe-kunden-informieren" element={<WissenBetriebsuebergabeKundenInformieren />} />
+      <Route path="/wissen/mitarbeiter-nach-betriebsuebernahme" element={<WissenMitarbeiterNachBetriebsuebernahme />} />
+      <Route path="/wissen/betriebsuebernahme-erste-100-tage" element={<WissenBetriebsuebernahmeErste100Tage />} />
       <Route path="/wissen/*" element={<Navigate to="/wissen" replace />} />
       <Route path="/i/:linkToken" element={<Interview />} />
       {/* Öffentlich mit Passwort: Kunden-Cockpit des Auftraggebers */}
