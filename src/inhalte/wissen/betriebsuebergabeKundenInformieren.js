@@ -394,6 +394,16 @@ const beitrag = {
       "titel": "Unternehmensübergaben und -nachfolgen in Österreich (2021)",
       "url": "https://www.bmwet.gv.at/dam/jcr:b6f115a1-e107-4a1c-b284-0b0fe3a4b8f1/Nachfolge2021_Endbericht_final.pdf",
       "herkunft": "KMU Forschung Austria"
+    },
+    {
+      "titel": "Betriebsübernahmen im Trend (Oktober 2026)",
+      "url": "https://www.wko.at/stmk/news/betriebsuebernahmen-im-trend",
+      "herkunft": "WKO Steiermark"
+    },
+    {
+      "titel": "Examining Family Firm Succession From a Social Exchange Perspective (2016)",
+      "url": "https://www.socialsciencespace.com/2016/01/reviewing-family-firm-succession-literature-with-a-social-exchange-perspective/",
+      "herkunft": "Daspit, Holt, Chrisman und Long, Family Business Review"
     }
   ],
   "seitenleisteFrage": "Was erwarten deine Kunden vom Wechsel?",
