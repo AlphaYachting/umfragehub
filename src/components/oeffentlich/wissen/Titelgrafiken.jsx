@@ -296,7 +296,7 @@ function NachfolgeMarketing() {
   );
   const schmal = (
     <>
-      <Kopftext schmal {...kopf} />
+      <Kopftext schmal oben={kopf.oben} z1="Du übernimmst" z1b={{ text: "mehr als ein Logo." }} z3="Du übernimmst" z4="einen Ruf." />
       <text x="48" y="462" fill="#b3b3b3" fontSize="24" fontWeight="600">Was jeder sieht</text>
       <text x="48" y="498" fill="#ffffff" fontSize="28" fontWeight="700">Logo, Website, Prospekt</text>
       <polygon points="460,600 500,530 536,494 576,524 622,600" fill="#d4d4d4" />
@@ -334,7 +334,7 @@ function NachfolgeMarke() {
   );
   const schmal = (
     <>
-      <Kopftext schmal {...kopf} />
+      <Kopftext schmal oben={kopf.oben} z1="Die Marke gehört" z1b={{ text: "nicht der alten" }} z3="und nicht der" z4="neuen Generation." />
       {kreise([[290, 570], [510, 570], [400, 740], [222, 545], [578, 545], [400, 838], [400, 628]], 140, 28, 24)}
     </>
   );
@@ -365,7 +365,7 @@ function NachfolgeKunden() {
   );
   const schmal = (
     <>
-      <Kopftext schmal {...kopf} />
+      <Kopftext schmal oben={kopf.oben} z1="Kunden erfahren" z1b={{ text: "es am besten" }} z3="von euch." z4="Nicht von Dritten." />
       <line x1="110" y1="470" x2="110" y2="830" stroke="#6a6a6a" strokeWidth="4" />
       {schritte.map(([a, b], i) => {
         const y = 470 + i * 120;
@@ -415,7 +415,7 @@ function NachfolgeTeam() {
   );
   const schmal = (
     <>
-      <Kopftext schmal {...kopf} />
+      <Kopftext schmal oben={kopf.oben} z1="Das Team schaut" z1b={{ text: "genau hin." }} z3="Und sagt" z4="wenig." />
       {blasen.map((bl, i) => <Figur key={i} x={100 + i * 150} y={450} s={1.2} blase={bl} />)}
       <text x="400" y="770" fill="#b3b3b3" fontSize="24" fontWeight="600" textAnchor="middle">Was die neue Führung</text>
       <text x="400" y="804" fill="#b3b3b3" fontSize="24" fontWeight="600" textAnchor="middle">in den ersten Wochen hört</text>
@@ -449,12 +449,12 @@ function NachfolgeHundertTage() {
   const schmal = (
     <>
       <Kopftext schmal {...kopf} />
-      {balken([40, 254, 468], [210, 210, 292], 600, 76, 21, 25, 584)}
-      <line x1="614" y1="520" x2="614" y2="570" stroke="#ff8fa8" strokeWidth="2" />
+      {balken([40, 254, 468], [210, 210, 292], 610, 84, 25, 29, 592)}
+      <line x1="614" y1="520" x2="614" y2="562" stroke="#ff8fa8" strokeWidth="2" />
       <text x="614" y="472" fill="#ff8fa8" fontSize="25" fontWeight="800" textAnchor="middle">Erst hier: Marke,</text>
       <text x="614" y="504" fill="#ff8fa8" fontSize="25" fontWeight="800" textAnchor="middle">Website, Vertrieb</text>
-      <text x="40" y="720" fill="#8a8a8a" fontSize="21" fontWeight="600">Tag 0</text>
-      <text x="760" y="720" fill="#8a8a8a" fontSize="21" fontWeight="600" textAnchor="end">Tag 100</text>
+      <text x="40" y="740" fill="#8a8a8a" fontSize="25" fontWeight="600">Tag 0</text>
+      <text x="760" y="740" fill="#8a8a8a" fontSize="25" fontWeight="600" textAnchor="end">Tag 100</text>
     </>
   );
   return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Ein Zeitbalken über 100 Tage in drei Phasen: zuhören, ein ehrliches Bild holen, Prioritäten setzen. Erst in der dritten Phase fallen Entscheidungen über Marke, Website und Vertrieb." />;
