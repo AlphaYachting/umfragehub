@@ -699,7 +699,7 @@ function Uebergang({ b }) {
   return (
     <Grafik b={b}>
       <div role="img" aria-label={b.beschreibung} className="mt-5 grid grid-cols-[84px_minmax(0,1fr)] sm:grid-cols-[110px_minmax(0,1fr)] gap-x-3.5 gap-y-3 items-center">
-        <span />
+        <span className="text-xs sm:text-[13px] font-semibold" style={{ color: F.daempft }}>{b.kopf}</span>
         <span className="grid gap-1 text-xs sm:text-[13px] font-semibold text-center" style={{ gridTemplateColumns: sp, color: F.daempft }}>
           {b.spalten.map((s) => <span key={s}>{s}</span>)}
         </span>
