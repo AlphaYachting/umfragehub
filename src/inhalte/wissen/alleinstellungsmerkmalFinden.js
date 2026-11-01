@@ -5,9 +5,9 @@
 const beitrag = {
   "slug": "alleinstellungsmerkmal-finden",
   "nr": 7,
-  "status": "entwurf",
+  "status": "freigegeben",
   "geprueft": "2026-10-31",
-  "erschienen": null,
+  "erschienen": "2026-11-01",
   "aktualisiert": null,
   "leitartikel": false,
   "modul": "positionierung",
