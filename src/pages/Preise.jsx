@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { ArrowDown, ArrowRight, Check, Lock, LockOpen, Plus, ShieldCheck } from "lucide-react";
+import { ArrowDown, ArrowRight, Lock, LockOpen, Plus, ShieldCheck } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import {
   BREITE, Etikett, F, H1_STIL, H2_STIL, Hauptknopf, KONTAKT_TEL, LEAD_STIL, Modulseite, TEXT_STIL,
