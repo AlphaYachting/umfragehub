@@ -273,12 +273,12 @@ export const FAQ = {
       {
         q: "Wer steht hinter andi fragt.?",
         kopf: "Die Rittler & Co GmbH, Werbeagentur in der Peter-Rosegger-Straße 27, 8053 Graz.",
-        text: "In [über 20 Jahren] und mehr als 500 Markenprojekten haben wir immer wieder erlebt, dass die besten Antworten schon im Unternehmen stecken und nur niemand die richtigen Fragen stellt. andi fragt. macht aus dieser Erfahrung ein Verfahren.",
+        text: "In über 20 Jahren und mehr als 500 Markenprojekten haben wir immer wieder erlebt, dass die besten Antworten schon im Unternehmen stecken und nur niemand die richtigen Fragen stellt. andi fragt. macht aus dieser Erfahrung ein Verfahren.",
       },
       {
         q: "Was ist die ANDI-Methode?",
         kopf: "Das Vorgehen, mit dem Rittler & Co aus Antworten Entscheidungen macht.",
-        text: "Es beginnt vor dem ersten Interview, mit der Einschätzung der Lage und der Annahmen, die geprüft werden müssen. Ausgewertet wird jede Antwort in vier Schritten [optional: Aufmerksamkeit, Nutzen, Differenzierung, Identität]. Gesucht wird nicht der Durchschnitt, sondern die Abweichung, weil sie zeigt, wo eine Entscheidung anders ausfallen muss.",
+        text: "Es beginnt vor dem ersten Interview, mit der Einschätzung der Lage und der Annahmen, die geprüft werden müssen. Ausgewertet wird jede Antwort in vier Schritten. Gesucht wird nicht der Durchschnitt, sondern die Abweichung, weil sie zeigt, wo eine Entscheidung anders ausfallen muss.",
       },
       {
         q: "Wertet eine Software oder eine KI die Antworten aus?",
@@ -293,7 +293,7 @@ export const FAQ = {
       {
         q: "Arbeitet ihr nur in Graz und der Steiermark?",
         kopf: "Nein.",
-        text: "Unser Sitz ist Graz, die Interviews laufen online, daher arbeiten wir mit Unternehmen in ganz [Österreich und im deutschsprachigen Raum]. Zielgespräch und Präsentation führen wir persönlich, [vor Ort oder online].",
+        text: "Unser Sitz ist Graz, die Interviews laufen online. Wo dein Unternehmen sitzt, spielt dafür keine Rolle. Zielgespräch und Präsentation führen wir persönlich.",
       },
     ],
   },
