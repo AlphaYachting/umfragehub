@@ -460,7 +460,80 @@ function NachfolgeHundertTage() {
   return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Ein Zeitbalken über 100 Tage in drei Phasen: zuhören, ein ehrliches Bild holen, Prioritäten setzen. Erst in der dritten Phase fallen Entscheidungen über Marke, Website und Vertrieb." />;
 }
 
+// Nachfolge N6: Was nur du weißt, festgehalten für die Nachfolge
+function NachfolgeUebergeber() {
+  const inhalt = ["Warum Kunden kaufen", "Wer wen kennt", "Was ihr versprecht"];
+  const breit = (
+    <>
+      <Kopftext oben="BETRIEBSÜBERGABE" z1="Was nur du weißt," z3="geht sonst" z4="mit dir." unter="Halte fest, was deinen Betrieb ausmacht." />
+      <circle cx="1030" cy="400" r="165" fill={PINK} />
+      <text x="1030" y="318" fill="#ffe3ea" fontSize="17" fontWeight="700" textAnchor="middle">Was nur du weißt</text>
+      {inhalt.map((t, i) => <text key={t} x="1030" y={370 + i * 40} fill="#ffffff" fontSize="24" fontWeight="900" textAnchor="middle">{t}</text>)}
+      <line x1="1205" y1="400" x2="1262" y2="400" stroke="#ff8fa8" strokeWidth="4" />
+      <polygon points="1262,388 1282,400 1262,412" fill="#ff8fa8" />
+      <rect x="1296" y="290" width="190" height="230" rx="12" fill="#f6f5f4" />
+      <rect x="1320" y="320" width="110" height="12" rx="6" fill="#b3b3b3" />
+      {[142, 128, 142, 100].map((w, i) => <rect key={i} x="1320" y={356 + i * 24} width={w} height="9" rx="4" fill="#d6d3d0" />)}
+      <text x="1391" y="490" fill="#2d2d2d" fontSize="18" fontWeight="800" textAnchor="middle">Festgehalten</text>
+      <text x="1391" y="560" fill="#b3b3b3" fontSize="16" fontWeight="600" textAnchor="middle">für die Nachfolge</text>
+    </>
+  );
+  const schmal = (
+    <>
+      <Kopftext schmal oben="BETRIEBSÜBERGABE" z1="Was nur du" z1b={{ text: "weißt," }} z3="geht sonst" z4="mit dir." />
+      <circle cx="250" cy="660" r="200" fill={PINK} />
+      <text x="250" y="566" fill="#ffe3ea" fontSize="24" fontWeight="700" textAnchor="middle">Was nur du weißt</text>
+      {inhalt.map((t, i) => <text key={t} x="250" y={628 + i * 50} fill="#ffffff" fontSize="31" fontWeight="900" textAnchor="middle">{t}</text>)}
+      <line x1="458" y1="660" x2="500" y2="660" stroke="#ff8fa8" strokeWidth="5" />
+      <polygon points="500,646 522,660 500,674" fill="#ff8fa8" />
+      <rect x="536" y="520" width="224" height="280" rx="14" fill="#f6f5f4" />
+      <rect x="562" y="556" width="130" height="14" rx="7" fill="#b3b3b3" />
+      {[170, 150, 170, 120].map((w, i) => <rect key={i} x="562" y={598 + i * 30} width={w} height="11" rx="5" fill="#d6d3d0" />)}
+      <text x="648" y="768" fill="#2d2d2d" fontSize="25" fontWeight="800" textAnchor="middle">Festgehalten</text>
+      <text x="648" y="846" fill="#b3b3b3" fontSize="23" fontWeight="600" textAnchor="middle">für die Nachfolge</text>
+    </>
+  );
+  return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Ein pinker Kreis mit der Aufschrift Was nur du weißt: warum Kunden kaufen, wer wen kennt, was ihr versprecht. Ein Pfeil führt zu einem Blatt Papier: festgehalten für die Nachfolge." />;
+}
+
+// Nachfolge N7: drei Richtungen laufen in der Sicht von Kunden und Team zusammen
+function NachfolgeGesellschafter() {
+  const breit = (
+    <>
+      <Kopftext oben="GESELLSCHAFTER" z1="Drei Gesellschafter." z3="Drei Meinungen." z4="Eine Linie." unter="Mit einer Grundlage, die keinem allein gehört." />
+      {[["Tradition", 246], ["Aufbruch", 396], ["Preis", 546]].map(([t, y]) => <text key={t} x="880" y={y} fill="#ffffff" fontSize="22" fontWeight="800">{t}</text>)}
+      <path d="M880 262 C 1020 262, 1120 360, 1240 400" fill="none" stroke="#8a8a8a" strokeWidth="5" />
+      <path d="M880 412 L 1240 400" fill="none" stroke="#b3b3b3" strokeWidth="5" />
+      <path d="M880 562 C 1020 562, 1120 440, 1240 400" fill="none" stroke="#6a6a6a" strokeWidth="5" />
+      <circle cx="1250" cy="400" r="22" fill={PINK} />
+      <line x1="1272" y1="400" x2="1490" y2="400" stroke={PINK} strokeWidth="8" />
+      <polygon points="1490,384 1516,400 1490,416" fill={PINK} />
+      <text x="1250" y="350" fill="#ff8fa8" fontSize="18" fontWeight="800" textAnchor="middle">Sicht von Kunden</text>
+      <text x="1250" y="372" fill="#ff8fa8" fontSize="18" fontWeight="800" textAnchor="middle">und Team</text>
+      <text x="1390" y="446" fill="#ffffff" fontSize="22" fontWeight="900" textAnchor="middle">Eine Linie</text>
+    </>
+  );
+  const schmal = (
+    <>
+      <Kopftext schmal oben="GESELLSCHAFTER" z1="Drei Gesellschafter." z1b={{ text: "Drei Meinungen." }} z3="Mit Fakten zu" z4="einer Linie." />
+      {[["Tradition", 482], ["Aufbruch", 622], ["Preis", 762]].map(([t, y]) => <text key={t} x="48" y={y} fill="#ffffff" fontSize="30" fontWeight="800">{t}</text>)}
+      <path d="M48 500 C 250 500, 350 600, 470 640" fill="none" stroke="#8a8a8a" strokeWidth="6" />
+      <path d="M48 640 L 470 640" fill="none" stroke="#b3b3b3" strokeWidth="6" />
+      <path d="M48 780 C 250 780, 350 680, 470 640" fill="none" stroke="#6a6a6a" strokeWidth="6" />
+      <circle cx="484" cy="640" r="28" fill={PINK} />
+      <line x1="512" y1="640" x2="728" y2="640" stroke={PINK} strokeWidth="10" />
+      <polygon points="728,620 760,640 728,660" fill={PINK} />
+      <text x="560" y="560" fill="#ff8fa8" fontSize="25" fontWeight="800" textAnchor="middle">Sicht von Kunden</text>
+      <text x="560" y="592" fill="#ff8fa8" fontSize="25" fontWeight="800" textAnchor="middle">und Team</text>
+      <text x="630" y="706" fill="#ffffff" fontSize="30" fontWeight="900" textAnchor="middle">Eine Linie</text>
+    </>
+  );
+  return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Drei Linien mit den Beschriftungen Tradition, Aufbruch und Preis laufen in einem pinken Punkt zusammen, der Sicht von Kunden und Team. Von dort führt eine gemeinsame Linie weiter." />;
+}
+
 export const TITELGRAFIKEN = {
+  "betriebsuebergabe-vorbereiten": NachfolgeUebergeber,
+  "gesellschafter-uneinig-marketing": NachfolgeGesellschafter,
   "unternehmensnachfolge-marketing": NachfolgeMarketing,
   "generationenwechsel-familienunternehmen-marke": NachfolgeMarke,
   "betriebsuebergabe-kunden-informieren": NachfolgeKunden,
