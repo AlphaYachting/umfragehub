@@ -204,8 +204,9 @@ const beitrag = {
         {
           "typ": "uebergang",
           "titel": "Die Übergangsphase bei einem wichtigen Kunden",
+          "kopf": "Monat",
           "spalten": [
-            "Monat 1",
+            "1",
             "2",
             "3",
             "4",
