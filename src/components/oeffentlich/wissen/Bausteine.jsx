@@ -45,7 +45,7 @@ export function Text({ children }) {
             return <Link key={i} to={ziel} className="font-semibold underline underline-offset-2 hover:no-underline" style={{ color: F.link }}>{text}</Link>;
           }
           return (
-            <a key={i} href={ziel} target="_blank" rel="noopener noreferrer" className="font-semibold underline underline-offset-2 hover:no-underline" style={{ color: F.link }}>
+            <a key={i} href={ziel} target="_blank" rel="nofollow noopener noreferrer" className="font-semibold underline underline-offset-2 hover:no-underline" style={{ color: F.link }}>
               {text}
             </a>
           );

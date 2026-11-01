@@ -353,7 +353,7 @@ export default function BeitragSeite({ beitrag }) {
           </div>
           <div className="mt-5 pl-2.5 flex items-center gap-2.5 text-sm" style={{ color: F.daempft }}>
             <span>Teilen:</span>
-            <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${teilenUrl}`} target="_blank" rel="noopener noreferrer" aria-label="Auf LinkedIn teilen"
+            <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${teilenUrl}`} target="_blank" rel="nofollow noopener noreferrer" aria-label="Auf LinkedIn teilen"
               className="inline-flex items-center justify-center w-10 h-10 rounded-full" style={{ border: "1px solid #d6d3d0", color: F.text }}>
               <Linkedin size={18} strokeWidth={1.8} aria-hidden="true" />
             </a>
@@ -412,7 +412,7 @@ export default function BeitragSeite({ beitrag }) {
               <ul className="mt-3 pl-[18px] list-disc text-[15px] leading-[1.7]" style={{ color: F.daempft }}>
                 {b.quellen.map((q) => (
                   <li key={q.url}>
-                    <a href={q.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:no-underline" style={{ color: F.link }}>{q.titel}</a>
+                    <a href={q.url} target="_blank" rel="nofollow noopener noreferrer" className="underline underline-offset-2 hover:no-underline" style={{ color: F.link }}>{q.titel}</a>
                     {q.herkunft ? `, ${q.herkunft}` : ""}
                   </li>
                 ))}

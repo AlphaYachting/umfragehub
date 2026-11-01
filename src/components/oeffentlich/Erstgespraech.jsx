@@ -299,7 +299,7 @@ export default function Erstgespraech() {
                 </button>
                 <p className="text-[13px] leading-[1.55]" style={{ color: F.daempft }}>
                   Wir verwenden deine Angaben nur, um uns bei dir zu melden. Mehr dazu im{" "}
-                  <a href="https://www.werbe-agentur-graz.at/datenschutz" target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline" style={{ color: F.link }}>
+                  <a href="https://www.werbe-agentur-graz.at/datenschutz" target="_blank" rel="nofollow noopener noreferrer" className="font-semibold hover:underline" style={{ color: F.link }}>
                     Datenschutz
                   </a>
                   .

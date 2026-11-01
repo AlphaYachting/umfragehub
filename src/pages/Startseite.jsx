@@ -776,8 +776,8 @@ export default function Startseite() {
           <div className="flex gap-5">
             <Link to="/ueber-uns" className="hover:underline">Über uns</Link>
             <Link to="/kontakt" className="hover:underline">Kontakt</Link>
-            <a href={IMPRESSUM} target="_blank" rel="noopener noreferrer" className="hover:underline">Impressum</a>
-            <a href={DATENSCHUTZ} target="_blank" rel="noopener noreferrer" className="hover:underline">Datenschutz</a>
+            <a href={IMPRESSUM} target="_blank" rel="nofollow noopener noreferrer" className="hover:underline">Impressum</a>
+            <a href={DATENSCHUTZ} target="_blank" rel="nofollow noopener noreferrer" className="hover:underline">Datenschutz</a>
             {/* Bewusst kein Link zur Verwaltung: Zugang nur über andifragt.at/verwaltung (Wunsch 22.10.2026) */}
           </div>
         </div>

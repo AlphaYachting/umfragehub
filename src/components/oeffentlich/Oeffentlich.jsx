@@ -300,8 +300,8 @@ export function Fuss({ dunkel = false, hintergrund }) {
           {wissenImMenue() && <Link to="/wissen" className="hover:underline" style={{ color: farbe }}>Wissen</Link>}
           <Link to="/ueber-uns" className="hover:underline" style={{ color: farbe }}>Über uns</Link>
           <Link to="/kontakt" className="hover:underline" style={{ color: farbe }}>Kontakt</Link>
-          <a href={IMPRESSUM} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: farbe }}>Impressum</a>
-          <a href={DATENSCHUTZ} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: farbe }}>Datenschutz</a>
+          <a href={IMPRESSUM} target="_blank" rel="nofollow noopener noreferrer" className="hover:underline" style={{ color: farbe }}>Impressum</a>
+          <a href={DATENSCHUTZ} target="_blank" rel="nofollow noopener noreferrer" className="hover:underline" style={{ color: farbe }}>Datenschutz</a>
           {/* Bewusst kein Link zur Verwaltung */}
         </div>
       </div>
