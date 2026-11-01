@@ -62,7 +62,8 @@ function texteDesBlocks(b) {
   ["text", "unterschrift", "vorher", "nachher", "annahme", "gezeigt", "ergebnis"].forEach((k) => add(b[k]));
   (b.punkte || []).forEach((p) => (typeof p === "string" ? add(p) : (add(p.fett), add(p.text))));
   (b.schritte || []).forEach((s) => add(s.text));
-  (b.zeilen || []).forEach((z) => z.forEach(add));
+  (b.zeilen || []).forEach((z) => (Array.isArray(z) ? z.forEach(add) : add(z.label)));
+  (b.karten || []).forEach((k) => (add(k.titel), add(k.text)));
   return t;
 }
 
