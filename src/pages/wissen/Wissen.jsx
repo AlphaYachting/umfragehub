@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { BREITE, Etikett, F, Hauptknopf, Modulseite } from "@/components/oeffentlich/Oeffentlich";
 import { Brotkrumen, StrukturierteDaten, useKopfdaten } from "@/components/oeffentlich/wissen/BeitragSeite";
-import { MODUL_NAMEN, MODUL_PFAD, SITE, istVorschau, lesezeit, sichtbareBeitraege } from "@/inhalte/wissen";
+import { MODUL_NAMEN, MODUL_PFAD, NACHFOLGE, SITE, bereichName, istNachfolge, istVorschau, lesezeit, sichtbareBeitraege } from "@/inhalte/wissen";
 
 // Übersicht des Wissensbereichs /wissen (Vorlage: Prototyp "Wissen: Übersicht /wissen").
 // Liest alle Beiträge aus src/inhalte/wissen selbst ein. Live erscheinen nur freigegebene
@@ -33,9 +33,11 @@ export default function Wissen() {
   const alle = useMemo(() => sichtbareBeitraege(), []);
   const [thema, setThema] = useState("alle");
   const leit = alle.find((b) => b.leitartikel);
-  const liste = alle.filter((b) => b !== leit && (thema === "alle" || b.modul === thema));
-  const zeigeLeit = leit && (thema === "alle" || leit.modul === thema);
-  const zaehle = (id) => alle.filter((b) => id === "alle" || b.modul === id).length;
+  // Filter "nachfolge" zeigt die Beiträge der Zielgruppe Nachfolge; die Modul-Filter zeigen sie zusätzlich unter ihrem Modul
+  const passt = (b, id) => id === "alle" || (id === "nachfolge" ? istNachfolge(b) : b.modul === id);
+  const liste = alle.filter((b) => b !== leit && passt(b, thema));
+  const zeigeLeit = leit && passt(leit, thema);
+  const zaehle = (id) => alle.filter((b) => passt(b, id)).length;
   const hatFreigegebene = alle.some((b) => b.status === "freigegeben");
 
   useKopfdaten({ titel: TITEL, beschreibung: BESCHREIBUNG, pfad: "/wissen", typ: "website", robots: hatFreigegebene ? "index, follow" : "noindex, nofollow" });
@@ -105,6 +107,7 @@ export default function Wissen() {
           <div role="group" aria-label="Beiträge nach Thema filtern" className="mt-10 flex flex-wrap gap-2">
             {chip("alle", "Alle Themen")}
             {Object.entries(MODUL_NAMEN).map(([id, name]) => chip(id, name))}
+            {zaehle("nachfolge") > 0 && chip("nachfolge", NACHFOLGE)}
           </div>
         )}
       </section>
@@ -146,7 +149,7 @@ export default function Wissen() {
       {liste.length > 0 && (
         <section aria-labelledby="h-beitraege" className={`${BREITE} pt-14`}>
           <h2 id="h-beitraege" className="text-sm font-semibold uppercase tracking-[0.16em]" style={{ color: F.daempft }}>
-            {thema === "alle" ? "Alle Beiträge" : `Beiträge zum Thema ${MODUL_NAMEN[thema]}`}
+            {thema === "alle" ? "Alle Beiträge" : `Beiträge zum Thema ${thema === "nachfolge" ? NACHFOLGE : MODUL_NAMEN[thema]}`}
           </h2>
           <ul className="mt-5 grid gap-5 grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))]">
             {liste.map((b) => (
@@ -159,7 +162,7 @@ export default function Wissen() {
                   <span className="flex items-center justify-between gap-3">
                     <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em]" style={{ color: F.link }}>
                       <span aria-hidden="true" className="w-2 h-2 rounded-full" style={{ background: F.akzent }} />
-                      {MODUL_NAMEN[b.modul]}
+                      {bereichName(b)}
                     </span>
                     <EntwurfsMarke b={b} />
                   </span>
