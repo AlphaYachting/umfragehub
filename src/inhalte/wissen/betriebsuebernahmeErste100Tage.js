@@ -4,9 +4,9 @@
 const beitrag = {
   "slug": "betriebsuebernahme-erste-100-tage",
   "nr": "N5",
-  "status": "entwurf",
+  "status": "freigegeben",
   "geprueft": "2026-11-01",
-  "erschienen": null,
+  "erschienen": "2026-11-01",
   "aktualisiert": null,
   "leitartikel": false,
   "modul": "team",

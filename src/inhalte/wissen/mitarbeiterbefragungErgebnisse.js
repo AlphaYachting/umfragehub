@@ -5,9 +5,9 @@
 const beitrag = {
   "slug": "mitarbeiterbefragung-ergebnisse",
   "nr": 0,
-  "status": "entwurf",
-  "geprueft": null,
-  "erschienen": null,
+  "status": "freigegeben",
+  "geprueft": "2026-11-01",
+  "erschienen": "2026-11-01",
   "aktualisiert": null,
   "leitartikel": true,
   "modul": "team",
@@ -333,10 +333,6 @@ const beitrag = {
               "text": "Die Sätze, bei denen Kunden nicken, statt Floskeln aus dem Prospekt."
             }
           ]
-        },
-        {
-          "typ": "absatz",
-          "text": "Wie daraus Kampagnen, Karriereseiten und Verkaufsunterlagen werden, zeigen wir auf der Seite unserer Agentur: [Wie aus Mitarbeiterstimmen eine Marke wird](https://www.werbe-agentur-graz.at) [[Zwillingsbeitrag, Link folgt]]."
         }
       ]
     },
@@ -378,31 +374,9 @@ const beitrag = {
     },
     {
       "id": "praxis",
-      "toc": "Ein Beispiel aus der Praxis",
-      "frage": "Wie sieht das in der Praxis aus?",
+      "toc": "Ein Beispiel",
+      "frage": "Wie kann sich eine Werbebotschaft verändern?",
       "bloecke": [
-        {
-          "typ": "fall",
-          "etikett": "Aus einem Projekt",
-          "bild": {
-            "src": "/bilder/positionierung.webp",
-            "alt": "Berater im Gespräch mit einem Unternehmer in dessen Werkstatt",
-            "unterschrift": "[[Platzhalter Projektfoto, nur mit Freigabe]]"
-          },
-          "fakten": [
-            {
-              "name": "Branche",
-              "wert": "[[Branche]]"
-            },
-            {
-              "name": "Größe",
-              "wert": "[[Mitarbeitende]]"
-            }
-          ],
-          "annahme": "[[was die Geschäftsführung vorher glaubte]]",
-          "gezeigt": "[[was Team und Kunden tatsächlich sagten]]",
-          "ergebnis": "[[Maßnahme und neue Botschaft]]"
-        },
         {
           "typ": "vorherNachher",
           "vorherTitel": "Werbebotschaft vorher",

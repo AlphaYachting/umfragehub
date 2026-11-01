@@ -4,9 +4,9 @@
 const beitrag = {
   "slug": "betriebsuebergabe-kunden-informieren",
   "nr": "N3",
-  "status": "entwurf",
+  "status": "freigegeben",
   "geprueft": "2026-11-01",
-  "erschienen": null,
+  "erschienen": "2026-11-01",
   "aktualisiert": null,
   "leitartikel": false,
   "modul": "kunden",
