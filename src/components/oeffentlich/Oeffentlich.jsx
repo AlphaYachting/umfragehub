@@ -294,7 +294,7 @@ export function Fuss({ dunkel = false, hintergrund }) {
           <a href={`tel:${KONTAKT_TEL.replace(/\s/g, "")}`} className="hover:underline" style={{ color: farbe }}>{KONTAKT_TEL}</a>
           <a href={`mailto:${KONTAKT_MAIL}`} className="hover:underline" style={{ color: farbe }}>{KONTAKT_MAIL}</a>
         </div>
-        <div className="flex gap-5">
+        <div className="flex flex-wrap gap-x-5 gap-y-2">
           <Link to="/" className="hover:underline" style={{ color: farbe }}>Zur Startseite</Link>
           <Link to="/preise" className="hover:underline" style={{ color: farbe }}>Preise</Link>
           {wissenImMenue() && <Link to="/wissen" className="hover:underline" style={{ color: farbe }}>Wissen</Link>}
