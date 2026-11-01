@@ -51,6 +51,26 @@ const beitrag = {
       "akzent": true
     }
   ],
+  "kennzahlen": [
+    {
+      "wert": "42",
+      "einheit": " %",
+      "text": "der freiwillig Gegangenen sagen: Mein Abgang wäre vermeidbar gewesen.",
+      "quelle": "Gallup 2024, USA"
+    },
+    {
+      "wert": "45",
+      "einheit": " %",
+      "text": "wurden in den 3 Monaten davor von keiner Führungskraft auf Zufriedenheit oder Zukunft angesprochen.",
+      "quelle": "Gallup 2024, USA"
+    },
+    {
+      "wert": "9",
+      "einheit": " %",
+      "text": "der Beschäftigten in Österreich sind emotional an ihren Betrieb gebunden.",
+      "quelle": "Gallup 2025, Österreich"
+    }
+  ],
   "abschnitte": [
     {
       "id": "gruende",
@@ -62,27 +82,32 @@ const beitrag = {
           "text": "Den einen Grund gibt es selten. Diese fünf begegnen uns in Betrieben immer wieder, meist in Kombination:"
         },
         {
-          "typ": "liste",
-          "stil": "rand",
-          "punkte": [
+          "typ": "karten",
+          "karten": [
             {
-              "fett": "Keine Perspektive.",
+              "symbol": "perspektive",
+              "titel": "Keine Perspektive",
               "text": "Wer gut ist, will sich entwickeln. Sieht er keinen nächsten Schritt, sucht er ihn woanders."
             },
             {
-              "fett": "Dauerdruck.",
+              "symbol": "druck",
+              "titel": "Dauerdruck",
               "text": "Wenn Stellen unbesetzt bleiben, tragen die Guten die Last. Laut WKO-Fachkräfteradar 2026 berichten rund 82 % der Betriebe mit Fachkräftemangel von höherer Arbeitsintensität."
             },
             {
-              "fett": "Nicht gefragt werden.",
+              "symbol": "stumm",
+              "titel": "Nicht gefragt werden",
               "text": "Wer bei Entscheidungen über die eigene Arbeit nicht mitreden darf, löst sich innerlich."
             },
             {
-              "fett": "Eine Führung, die nicht nachfragt.",
+              "symbol": "fuehrung",
+              "titel": "Eine Führung, die nicht nachfragt",
               "text": "Nicht böser Wille, sondern fehlende Gespräche: Probleme bleiben liegen, bis jemand geht."
             },
             {
-              "fett": "Geld als Anlass.",
+              "symbol": "geld",
+              "titel": "Geld",
+              "anlass": "Oft nur der Anlass",
               "text": "Ein besseres Angebot gibt oft den letzten Ausschlag. Der eigentliche Grund liegt häufig früher."
             }
           ]
@@ -111,8 +136,50 @@ const beitrag = {
           "text": "Weil Ansprechen riskant wirkt. In einer kleinen Studie von Frances Milliken und Kolleginnen (2003) hatten 34 von 40 Befragten ein wichtiges Thema gegenüber ihrer Führung mindestens einmal verschwiegen, vor allem aus Angst, als negativ zu gelten, oder aus Sorge um die Beziehung."
         },
         {
+          "typ": "figuren",
+          "titel": "34 von 40 Befragten haben ein wichtiges Thema gegenüber ihrer Führung verschwiegen",
+          "gesamt": 40,
+          "markiert": 34,
+          "spalten": 10,
+          "beschreibung": "40 Figuren, davon 34 in Pink: 34 von 40 Befragten haben mindestens einmal geschwiegen, 6 nicht.",
+          "legende": [
+            {
+              "farbe": "akzent",
+              "text": "hat mindestens einmal geschwiegen"
+            },
+            {
+              "farbe": "#c9c6c3",
+              "text": "hat alles angesprochen"
+            }
+          ],
+          "unterschrift": "Kleine Interviewstudie mit 40 Beschäftigten. Quelle: Milliken, Morrison und Hewlin, 2003."
+        },
+        {
           "typ": "absatz",
           "text": "Und wenn jemand geht, wird es nicht ehrlicher. In einer Studie, die David Allen 2008 für die SHRM Foundation zitiert, nannten Ausscheidende im Austrittsgespräch zu 38 % das Gehalt und nur zu 4 % die Führung. Eineinhalb Jahre später, mit Abstand befragt, waren es 12 % und 24 %. Wer geht, will ein gutes Zeugnis und keine Brücken abbrechen."
+        },
+        {
+          "typ": "verlauf",
+          "stil": "rahmen",
+          "titel": "Was Ausscheidende als Grund nennen, je nachdem wann man fragt",
+          "links": "Im Austrittsgespräch",
+          "rechts": "Eineinhalb Jahre später",
+          "max": 40,
+          "linien": [
+            {
+              "name": "Gehalt",
+              "von": 38,
+              "bis": 12
+            },
+            {
+              "name": "Führung",
+              "von": 4,
+              "bis": 24,
+              "akzent": true
+            }
+          ],
+          "beschreibung": "Im Austrittsgespräch nennen 38 Prozent das Gehalt und 4 Prozent die Führung. Eineinhalb Jahre später sind es 12 Prozent für das Gehalt und 24 Prozent für die Führung.",
+          "unterschrift": "Genannter Hauptgrund für die Kündigung. Mit Abstand rückt die Führung nach vorne, das Gehalt nach hinten. Quelle: zitiert bei David G. Allen, Retaining Talent, SHRM Foundation 2008."
         }
       ]
     },
@@ -124,6 +191,53 @@ const beitrag = {
         {
           "typ": "absatz",
           "text": "Mehr, als die meisten rechnen. Gallup schätzt die Kosten einer Nachbesetzung vorsichtig auf das halbe bis doppelte Jahresgehalt (2019). Je nach Rolle sind es bei Führungskräften rund 200 %, bei technischen Fachkräften rund 80 % und in Positionen mit direktem Kundenkontakt rund 40 % des Jahresgehalts (2024). Die Zahlen stammen aus den USA, für Österreich sind uns keine vergleichbaren Erhebungen bekannt."
+        },
+        {
+          "typ": "balken",
+          "titel": "Was eine Nachbesetzung kostet, in Prozent des Jahresgehalts",
+          "zeilen": [
+            {
+              "label": "Führungskräfte",
+              "wert": "rund 200 %",
+              "anteil": 100,
+              "akzent": true
+            },
+            {
+              "label": "Technische Fachkräfte",
+              "wert": "rund 80 %",
+              "anteil": 40
+            },
+            {
+              "label": "Direkter Kundenkontakt",
+              "wert": "rund 40 %",
+              "anteil": 20
+            }
+          ],
+          "rechner": {
+            "label": "Rechne mit einem Jahresgehalt aus deinem Betrieb",
+            "einheit": "Euro",
+            "zusatz": "brutto im Jahr",
+            "min": 25000,
+            "max": 120000,
+            "step": 1000,
+            "start": 50000,
+            "ergebnisse": [
+              {
+                "name": "Kundenkontakt",
+                "faktor": 0.4
+              },
+              {
+                "name": "Technische Fachkraft",
+                "faktor": 0.8
+              },
+              {
+                "name": "Führungskraft",
+                "faktor": 2,
+                "dunkel": true
+              }
+            ]
+          },
+          "unterschrift": "Grobe Schätzung mit den Faktoren von Gallup (2024), Werte aus den USA. Was es in deinem Betrieb wirklich kostet, hängt von Suche, Einarbeitung und Ausfallzeit ab."
         },
         {
           "typ": "absatz",
@@ -142,7 +256,52 @@ const beitrag = {
       "bloecke": [
         {
           "typ": "absatz",
-          "text": "Vieles liegt in deiner Hand, und es beginnt mit Fragen, nicht mit Benefits."
+          "text": "Vieles liegt in deiner Hand, und es beginnt mit Fragen, nicht mit Benefits. Entscheidend ist der Zeitpunkt."
+        },
+        {
+          "typ": "zeitstrahl",
+          "stil": "rahmen",
+          "titel": "Wie aus Unzufriedenheit eine Kündigung wird",
+          "legende": [
+            {
+              "farbe": "akzent",
+              "form": "balken",
+              "text": "Hier wirken Bleibegespräch und Team-Interview"
+            },
+            {
+              "farbe": "dunkel",
+              "form": "balken",
+              "text": "Hier kommt das Austrittsgespräch"
+            }
+          ],
+          "stufen": [
+            {
+              "titel": "Ärger bleibt unausgesprochen",
+              "text": "Ansprechen wirkt riskant, also schweigt man.",
+              "phase": "handeln"
+            },
+            {
+              "titel": "Leise Signale",
+              "text": "Weniger Vorschläge, kein Widerspruch, Rückzug.",
+              "phase": "handeln"
+            },
+            {
+              "titel": "Innere Kündigung",
+              "text": "Nur noch das Nötigste, die Entscheidung reift.",
+              "phase": "handeln"
+            },
+            {
+              "titel": "Jobsuche",
+              "text": "Ein besseres Angebot gibt den Ausschlag.",
+              "phase": "spaet"
+            },
+            {
+              "titel": "Kündigung",
+              "text": "Genannt wird oft das Gehalt.",
+              "phase": "ende"
+            }
+          ],
+          "unterschrift": "Schematische Darstellung, vereinfacht. Nicht jede Kündigung folgt diesem Verlauf."
         },
         {
           "typ": "schritte",
@@ -250,6 +409,54 @@ const beitrag = {
         {
           "typ": "absatz",
           "text": "Im Zielgespräch zum Projektstart halten wir zuerst deine Einschätzung fest: Was glaubst du, warum Leute bleiben oder gehen? Danach fragen wir dein Team und legen beide Bilder nebeneinander. Wo sie am weitesten auseinanderliegen, liegt meist der wichtigste Hebel."
+        },
+        {
+          "typ": "hantel",
+          "titel": "So zeigen wir dir, wo deine Sicht und die deines Teams auseinandergehen",
+          "legende": [
+            {
+              "farbe": "dunkel",
+              "text": "Deine Einschätzung im Zielgespräch"
+            },
+            {
+              "farbe": "akzent",
+              "text": "Antworten deines Teams"
+            }
+          ],
+          "skala": [
+            "wenig zufrieden",
+            "sehr zufrieden"
+          ],
+          "hebelText": "größter Hebel",
+          "zeilen": [
+            {
+              "label": "Perspektive",
+              "a": 76,
+              "b": 32,
+              "hebel": true
+            },
+            {
+              "label": "Arbeitslast",
+              "a": 62,
+              "b": 44
+            },
+            {
+              "label": "Mitsprache",
+              "a": 70,
+              "b": 48
+            },
+            {
+              "label": "Führung",
+              "a": 78,
+              "b": 64
+            },
+            {
+              "label": "Gehalt",
+              "a": 56,
+              "b": 52
+            }
+          ],
+          "unterschrift": "Beispiel zur Veranschaulichung, keine echten Daten. In diesem Beispiel schätzt die Geschäftsführung die Perspektive im Betrieb deutlich besser ein als das Team: Dort setzt du zuerst an."
         },
         {
           "typ": "absatz",
@@ -362,7 +569,8 @@ const beitrag = {
     "alleinstellungsmerkmal-finden",
     "mitarbeiterbefragung-ergebnisse",
     "warum-kaufen-kunden-bei-der-konkurrenz"
-  ]
+  ],
+  "titelgrafik": true
 };
 
 export default beitrag;

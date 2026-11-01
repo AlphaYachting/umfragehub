@@ -51,6 +51,26 @@ const beitrag = {
       "akzent": true
     }
   ],
+  "kennzahlen": [
+    {
+      "wert": "80",
+      "einheit": " %",
+      "text": "der befragten Firmen hielten ihr Kundenerlebnis für überlegen.",
+      "quelle": "Bain & Company 2005"
+    },
+    {
+      "wert": "8",
+      "einheit": " %",
+      "text": "der Unternehmen bestätigten das die Daten ihrer Kunden.",
+      "quelle": "Bain & Company 2005"
+    },
+    {
+      "wert": "17",
+      "einheit": " %",
+      "text": "der Nutzer halten ihre Marke im Schnitt für anders oder einzigartig.",
+      "quelle": "Romaniuk, Sharp, Ehrenberg 2007"
+    }
+  ],
   "abschnitte": [
     {
       "id": "was",
@@ -66,23 +86,50 @@ const beitrag = {
           "text": "Der Begriff stammt vom amerikanischen Werber Rosser Reeves, der ihn 1961 in seinem Buch Reality in Advertising beschrieben hat. Für dich zählt sein Kern: ein klarer Nutzen, den der Mitbewerb nicht bietet, und der stark genug ist, dass Kunden deshalb kaufen."
         },
         {
+          "typ": "venn",
+          "titel": "Ein Alleinstellungsmerkmal liegt dort, wo sich drei Dinge treffen",
+          "kreise": [
+            [
+              "Wichtig",
+              "für Kunden"
+            ],
+            [
+              "Beweisbar und",
+              "verlässlich",
+              "geleistet"
+            ],
+            [
+              "Sagt der Mitbewerb",
+              "so nicht"
+            ]
+          ],
+          "mitte": [
+            "Dein",
+            "USP"
+          ],
+          "beschreibung": "Drei überlappende Kreise: wichtig für Kunden, beweisbar und verlässlich geleistet, vom Mitbewerb so nicht gesagt. In der Mitte, wo alle drei sich überschneiden, liegt dein Alleinstellungsmerkmal.",
+          "unterschrift": "Fehlt einer der drei Kreise, bleibt es eine Behauptung, ein Merkmal ohne Wirkung oder ein Satz, den alle sagen."
+        },
+        {
           "typ": "absatz",
           "text": "Kein Alleinstellungsmerkmal ist dagegen:"
         },
         {
-          "typ": "liste",
-          "stil": "rand",
-          "punkte": [
+          "typ": "karten",
+          "karten": [
             {
-              "fett": "Qualität, Service, Erfahrung.",
+              "symbol": "nein",
+              "titel": "Qualität, Service, Erfahrung",
               "text": "Das sagt fast jeder. Wenn ein Satz mit dem Logo des Mitbewerbs genauso stimmt, unterscheidet er dich nicht."
             },
             {
-              "fett": "Ein Merkmal, das niemanden interessiert.",
+              "symbol": "nein",
+              "titel": "Ein Merkmal, das niemanden interessiert",
               "text": "Die modernste Maschine der Region ist nur dann ein USP, wenn Kunden davon etwas merken."
             },
             {
-              "fett": "Ein Slogan.",
+              "symbol": "nein",
+              "titel": "Ein Slogan",
               "text": "Ein guter Slogan bringt den USP auf den Punkt. Er ersetzt ihn nicht."
             }
           ]
@@ -128,6 +175,51 @@ const beitrag = {
           "text": "Ein Beispiel zur Veranschaulichung, kein echter Fall: Ein Installateur wirbt seit Jahren mit Qualität in dritter Generation. Seine Stammkunden erzählen etwas anderes, nämlich dass er als Einziger aufräumt, bevor er geht. Das ist konkret, beweisbar und leicht weiterzuerzählen. Genau so ein Satz trägt eine Positionierung."
         },
         {
+          "typ": "test",
+          "stil": "rahmen",
+          "titel": "Der Drei-Fragen-Test: Wähle einen Kandidaten",
+          "fragen": [
+            "Ist es für Kunden wichtig?",
+            "Könnt ihr es beweisen?",
+            "Sagt es der Mitbewerb so nicht?"
+          ],
+          "kandidaten": [
+            {
+              "name": "Qualität und Service",
+              "antworten": [
+                "ja",
+                "kaum",
+                "nein"
+              ],
+              "usp": false,
+              "erklaerung": "Wichtig ja, aber das sagt fast jeder. Mit dem Logo des Mitbewerbs stimmt der Satz genauso."
+            },
+            {
+              "name": "Die modernste Maschine der Region",
+              "antworten": [
+                "nein",
+                "ja",
+                "ja"
+              ],
+              "usp": false,
+              "erklaerung": "Selten und beweisbar, aber Kunden merken davon nichts. Ein Merkmal ohne Wirkung."
+            },
+            {
+              "name": "Räumt als Einziger auf, bevor er geht",
+              "antworten": [
+                "ja",
+                "ja",
+                "ja"
+              ],
+              "usp": true,
+              "erklaerung": "Konkret, von Stammkunden bestätigt und leicht weiterzuerzählen. Das trägt eine Positionierung."
+            }
+          ],
+          "jaText": "Alleinstellungsmerkmal",
+          "neinText": "Kein Alleinstellungsmerkmal",
+          "unterschrift": "Beispiele zur Veranschaulichung, angelehnt an den Installateur oben."
+        },
+        {
           "typ": "tipp",
           "text": "Lies die Startseiten deiner drei stärksten Mitbewerber und setz deinen Firmennamen ein. Passt der Text dann immer noch, beschreibt er kein Alleinstellungsmerkmal."
         }
@@ -141,6 +233,22 @@ const beitrag = {
         {
           "typ": "absatz",
           "text": "Weil man das eigene Unternehmen von innen kennt. Was Kunden schätzen, ist für dich oft selbstverständlich, und was dir wichtig ist, merken Kunden manchmal gar nicht. Die Unternehmensberatung Bain & Company hat diese Lücke 2005 sichtbar gemacht: 80 % von 362 befragten Firmen glaubten, ihren Kunden ein überlegenes Erlebnis zu bieten. Nach Kundendaten aus einem anderen Datensatz traf das nur auf 8 % der Unternehmen zu."
+        },
+        {
+          "typ": "waffel",
+          "titel": "Selbstbild und Kundenbild: von 100 Firmen",
+          "felder": [
+            {
+              "zahl": 80,
+              "text": "halten ihr Kundenerlebnis für überlegen"
+            },
+            {
+              "zahl": 8,
+              "akzent": true,
+              "text": "bestätigen das die Daten ihrer Kunden"
+            }
+          ],
+          "unterschrift": "362 befragte Firmen. Quelle: Bain & Company, Closing the delivery gap, 2005."
         },
         {
           "typ": "absatz",
@@ -226,6 +334,32 @@ const beitrag = {
           "text": "Wir beginnen mit deinen Annahmen. Im Zielgespräch zum Projektstart halten wir fest, was du über deine Kunden und deinen Unterschied glaubst. Daraus entstehen die Fragen, die genau diese Annahmen prüfen, für Team und Stammkunden jeweils eigene."
         },
         {
+          "typ": "weg",
+          "stil": "rahmen",
+          "titel": "Vom Selbstbild zum Versprechen",
+          "schritte": [
+            {
+              "etikett": "Was der Betrieb sagt",
+              "text": "Qualität in dritter Generation",
+              "notiz": "Stimmt, sagt aber jeder.",
+              "art": "alt"
+            },
+            {
+              "etikett": "Was Stammkunden erzählen",
+              "text": "Er räumt als Einziger auf, bevor er geht.",
+              "notiz": "In ihren eigenen Worten, aus dem Interview.",
+              "art": "hauch"
+            },
+            {
+              "etikett": "Das Versprechen",
+              "text": "Wir räumen auf, bevor wir gehen.",
+              "notiz": "Konkret, beweisbar, leicht weiterzuerzählen.",
+              "art": "dunkel"
+            }
+          ],
+          "unterschrift": "Beispiel zur Veranschaulichung, kein echter Fall."
+        },
+        {
           "typ": "zitat",
           "text": "Dein Alleinstellungsmerkmal ist nicht das, was du über dich sagst. Es ist das, was deine Kunden über dich erzählen."
         },
@@ -307,7 +441,8 @@ const beitrag = {
     "warum-kaufen-kunden-bei-der-konkurrenz",
     "abschlussquote-erhoehen",
     "mitarbeiterbefragung-ergebnisse"
-  ]
+  ],
+  "titelgrafik": true
 };
 
 export default beitrag;

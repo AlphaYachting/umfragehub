@@ -51,6 +51,26 @@ const beitrag = {
       "akzent": true
     }
   ],
+  "kennzahlen": [
+    {
+      "wert": "40 bis 60",
+      "einheit": " %",
+      "text": "der Aufträge gehen verloren, weil Kunden sich nicht entscheiden.",
+      "quelle": "Dixon und McKenna 2022"
+    },
+    {
+      "wert": "17",
+      "einheit": " %",
+      "text": "ihrer Kaufzeit verbringen Käufer mit allen Anbietern zusammen.",
+      "quelle": "Gartner, B2B Buying Journey"
+    },
+    {
+      "wert": "fast 7",
+      "einheit": "x",
+      "text": "so oft im Gespräch mit dem Entscheider, wer binnen einer Stunde reagiert.",
+      "quelle": "Oldroyd, McElheran, Elkington 2011"
+    }
+  ],
   "abschnitte": [
     {
       "id": "gruende",
@@ -66,27 +86,31 @@ const beitrag = {
           "text": "Ein Angebot scheitert selten an einer einzigen Stelle. Diese fünf Gründe sind typisch:"
         },
         {
-          "typ": "liste",
-          "stil": "rand",
-          "punkte": [
+          "typ": "karten",
+          "karten": [
             {
-              "fett": "Der Nutzen bleibt unklar.",
+              "symbol": "unsichtbar",
+              "titel": "Der Nutzen bleibt unklar",
               "text": "Das Angebot beschreibt Leistungen, aber nicht, was der Kunde davon hat. Dann bleibt nur der Preis zum Vergleichen."
             },
             {
-              "fett": "Der Kunde kann sich nicht entscheiden.",
+              "symbol": "pause",
+              "titel": "Der Kunde kann sich nicht entscheiden",
               "text": "Er will eigentlich kaufen, fürchtet aber, einen Fehler zu machen, und verschiebt die Entscheidung."
             },
             {
-              "fett": "Mehrere Entscheider, mehrere Gründe.",
+              "symbol": "gruppe",
+              "titel": "Mehrere Entscheider, mehrere Gründe",
               "text": "Bei komplexeren Käufen sind laut Gartner typischerweise 6 bis 10 Personen beteiligt. Wer nur den Einkauf überzeugt, verliert an der Technik."
             },
             {
-              "fett": "Die Reaktion kommt zu spät.",
+              "symbol": "uhr",
+              "titel": "Die Reaktion kommt zu spät",
               "text": "Wer erst nach Tagen antwortet oder nachfasst, trifft auf einen Kunden, der weitergezogen ist."
             },
             {
-              "fett": "Das Angebot ist schwer zu vergleichen.",
+              "symbol": "varianten",
+              "titel": "Das Angebot ist schwer zu vergleichen",
               "text": "Unklare Preisstruktur, viele Varianten, kein klarer Vorschlag: Was Mühe macht, wird vertagt."
             }
           ]
@@ -128,6 +152,85 @@ const beitrag = {
           ]
         },
         {
+          "typ": "balken",
+          "dick": true,
+          "titel": "Hebel 4 in Zahlen: Wie oft es zum Gespräch mit dem Entscheider kommt",
+          "zeilen": [
+            {
+              "label": "Antwort binnen einer Stunde",
+              "wert": "fast 7x",
+              "anteil": 100,
+              "akzent": true
+            },
+            {
+              "label": "Antwort eine Stunde später",
+              "wert": "1x",
+              "anteil": 14.5,
+              "grau": true
+            }
+          ],
+          "unterschrift": "Reaktion auf Online-Anfragen. Quelle: Oldroyd, McElheran und Elkington, The Short Life of Online Sales Leads, Harvard Business Review 2011."
+        },
+        {
+          "typ": "aufbau",
+          "stil": "rahmen",
+          "titel": "Hebel 3: Ein Angebot, das auch ohne dich überzeugt",
+          "spalten": [
+            {
+              "titel": "So sieht es oft aus",
+              "teile": [
+                {
+                  "text": "Leistungsbeschreibung",
+                  "art": "grau"
+                },
+                {
+                  "text": "Technische Details",
+                  "art": "grau"
+                },
+                {
+                  "text": "Fünf Varianten",
+                  "art": "grau"
+                },
+                {
+                  "text": "Preis",
+                  "art": "dunkel"
+                },
+                {
+                  "text": "Nutzen für den Kunden: fehlt",
+                  "art": "fehlt"
+                }
+              ]
+            },
+            {
+              "titel": "So überzeugt es intern",
+              "akzent": true,
+              "teile": [
+                {
+                  "text": "1 Nutzen für den Kunden",
+                  "art": "akzent"
+                },
+                {
+                  "text": "2 Leistung",
+                  "art": "hauch"
+                },
+                {
+                  "text": "3 Eine klare Empfehlung",
+                  "art": "hauch"
+                },
+                {
+                  "text": "4 Preis",
+                  "art": "dunkel"
+                },
+                {
+                  "text": "5 Nächster Termin",
+                  "art": "hell"
+                }
+              ]
+            }
+          ],
+          "unterschrift": "Schematische Darstellung. Ein Angebot wird intern weitergereicht und muss ohne dich verständlich sein."
+        },
+        {
           "typ": "tipp",
           "text": "Vorsicht bei Faustregeln wie: 80 % der Abschlüsse kommen erst nach dem fünften Kontakt. Für diese oft zitierte Zahl haben wir keine Primärquelle gefunden. Fass nach, wenn du einen echten Grund hast, nicht nach Kalender."
         }
@@ -147,12 +250,79 @@ const beitrag = {
           "text": "Matthew Dixon und Ted McKenna werteten über 2,5 Millionen aufgezeichnete Verkaufsgespräche aus. Ihr Ergebnis in der Harvard Business Review 2022: 40 bis 60 % der Aufträge gehen nicht an die Konkurrenz verloren, sondern an Kunden, die kaufen wollen, sich aber nicht entscheiden. Ein Rabatt hilft da wenig, eine klare Empfehlung oft mehr."
         },
         {
+          "typ": "spanne",
+          "titel": "Verloren an niemanden: Anteil der Aufträge, die an Unentschlossenheit scheitern",
+          "segmente": [
+            {
+              "von": 0,
+              "bis": 40,
+              "farbe": "akzent"
+            },
+            {
+              "von": 40,
+              "bis": 60,
+              "farbe": "hell"
+            }
+          ],
+          "marken": [
+            0,
+            40,
+            60,
+            100
+          ],
+          "legende": [
+            {
+              "farbe": "akzent",
+              "text": "mindestens 40 %"
+            },
+            {
+              "farbe": "hell",
+              "text": "Spannbreite bis 60 %"
+            }
+          ],
+          "beschreibung": "Ein Balken von 0 bis 100 Prozent. 40 Prozent sind kräftig pink, von 40 bis 60 Prozent heller pink als Spannbreite.",
+          "unterschrift": "Auswertung von über 2,5 Millionen Verkaufsgesprächen. Quelle: Dixon und McKenna, Harvard Business Review 2022."
+        },
+        {
           "typ": "zitat",
           "text": "Zu teuer heißt oft: Ich sehe den Unterschied nicht."
         },
         {
           "typ": "absatz",
           "text": "Dazu kommt: Laut Gartner verbringen Käufer im Geschäft mit Firmenkunden nur rund 17 % ihrer Kaufzeit mit allen möglichen Anbietern zusammen. Vergleichen sie mehrere, bleiben für einen einzelnen 5 bis 6 %. Wie groß die befragten Unternehmen waren, nennt Gartner nicht. Für dich heißt es: Dein Angebot muss auch dann überzeugen, wenn du nicht im Raum bist."
+        },
+        {
+          "typ": "spanne",
+          "stil": "rahmen",
+          "titel": "Wie viel Kaufzeit dir bleibt, wenn der Kunde vergleicht",
+          "segmente": [
+            {
+              "von": 0,
+              "bis": 17,
+              "farbe": "hell"
+            },
+            {
+              "von": 0,
+              "bis": 5.5,
+              "farbe": "akzent"
+            }
+          ],
+          "legende": [
+            {
+              "farbe": "akzent",
+              "text": "**5 bis 6 %** für dich, wenn der Kunde mehrere Anbieter vergleicht"
+            },
+            {
+              "farbe": "hell",
+              "text": "**17 %** mit allen möglichen Anbietern zusammen"
+            },
+            {
+              "farbe": "#e0dcd8",
+              "text": "übrige Kaufzeit, ohne Anbieter"
+            }
+          ],
+          "beschreibung": "Ein Balken für die gesamte Kaufzeit. 17 Prozent davon sind pink: Zeit mit allen Anbietern zusammen. Davon etwa 5 bis 6 Prozent kräftig pink: Zeit für einen einzelnen Anbieter.",
+          "unterschrift": "Geschäft mit Firmenkunden. Quelle: Gartner, The B2B Buying Journey."
         }
       ]
     },
@@ -186,6 +356,37 @@ const beitrag = {
         {
           "typ": "absatz",
           "text": "Für dich als Vertriebsleitung heißt das: Mit beiden Sichten bekommst du Belege dafür, woran es wirklich liegt, statt die Preisfrage intern ständig zu verteidigen."
+        },
+        {
+          "typ": "spiegel",
+          "titel": "So legen wir die Sicht des Vertriebs neben die der Kunden",
+          "links": "Vertrieb nennt",
+          "rechts": "Kunden nennen",
+          "zeilen": [
+            {
+              "label": "Preis",
+              "l": 85,
+              "r": 35
+            },
+            {
+              "label": "Nutzen unklar",
+              "l": 25,
+              "r": 70
+            },
+            {
+              "label": "Entscheidung vertagt",
+              "l": 30,
+              "r": 55
+            },
+            {
+              "label": "Reaktion zu langsam",
+              "l": 10,
+              "r": 40
+            }
+          ],
+          "beschreibung": "Gespiegelte Balken je Grund: Der Vertrieb nennt vor allem den Preis, die Kunden vor allem einen unklaren Nutzen.",
+          "fazit": "Wo die Balken am weitesten auseinanderliegen, liegt der Hebel. In diesem Beispiel: nicht der Preis, sondern der Nutzen.",
+          "unterschrift": "Beispiel zur Veranschaulichung, keine echten Daten."
         },
         {
           "typ": "tabelle",
@@ -315,7 +516,8 @@ const beitrag = {
     "warum-kaufen-kunden-bei-der-konkurrenz",
     "alleinstellungsmerkmal-finden",
     "warum-kuendigen-gute-mitarbeiter"
-  ]
+  ],
+  "titelgrafik": true
 };
 
 export default beitrag;

@@ -68,30 +68,64 @@ const beitrag = {
           "text": "Eine Mitarbeiterbefragung ist eine meist anonyme, strukturierte Erhebung, mit der ein Unternehmen Meinungen, Zufriedenheit und Ideen seiner Mitarbeitenden einholt."
         },
         {
-          "typ": "liste",
-          "stil": "rand",
-          "punkte": [
+          "typ": "karten",
+          "karten": [
             {
-              "fett": "Die Fragen kommen von der Stange.",
+              "symbol": "kopie",
+              "titel": "Die Fragen kommen von der Stange",
               "text": "Ein Standardkatalog fragt nach allem ein bisschen und nach nichts genau. Was dein Unternehmen wirklich bremst, kommt darin oft gar nicht vor."
             },
             {
-              "fett": "Niemand traut der Anonymität.",
+              "symbol": "schild",
+              "titel": "Niemand traut der Anonymität",
               "text": "Wenn die eigene Firma fragt, antworten Mitarbeitende vorsichtig. Das Ergebnis ist freundlich, aber wenig ehrlich."
             },
             {
-              "fett": "Der Durchschnitt glättet alles.",
+              "symbol": "gleich",
+              "titel": "Der Durchschnitt glättet alles",
               "text": "Eine 3,8 von 5 sagt dir nicht, was zu tun ist. Spannend wird es dort, wo Gruppen deutlich voneinander abweichen."
             },
             {
-              "fett": "Der Bericht hat keinen Besitzer.",
+              "symbol": "frage",
+              "titel": "Der Bericht hat keinen Besitzer",
               "text": "Die Ergebnisse landen in der Personalabteilung, die Entscheidungen fallen woanders."
             },
             {
-              "fett": "Die Antworten bleiben intern.",
+              "symbol": "archiv",
+              "titel": "Die Antworten bleiben intern",
               "text": "Dass in den Aussagen deines Teams die Gründe stecken, warum Kunden bei dir kaufen, sieht kaum jemand."
             }
           ]
+        },
+        {
+          "typ": "streuung",
+          "titel": "Der Durchschnitt versteckt das Wichtigste",
+          "wert": "3,8",
+          "wertText": "von 5, Gesamtwert im Bericht",
+          "schnitt": 70,
+          "schnittText": "Schnitt 3,8",
+          "skala": [
+            "1",
+            "5"
+          ],
+          "hebelText": "hier liegt es",
+          "zeilen": [
+            {
+              "label": "Büro",
+              "pos": 85
+            },
+            {
+              "label": "Außendienst",
+              "pos": 77.5
+            },
+            {
+              "label": "Werkstatt",
+              "pos": 47.5,
+              "hebel": true
+            }
+          ],
+          "fazit": "Im Gesamtwert sieht alles ordentlich aus. Der Handlungsbedarf in der Werkstatt verschwindet im Mittel.",
+          "unterschrift": "Beispiel zur Veranschaulichung, keine echten Daten. Bereiche mit 2,9, 4,1 und 4,4 ergeben im Mittel 3,8."
         }
       ]
     },
@@ -128,6 +162,25 @@ const beitrag = {
               "text": "Drei umgesetzte Maßnahmen wirken stärker als dreißig Erkenntnisse."
             }
           ]
+        },
+        {
+          "typ": "kreislauf",
+          "stil": "rahmen",
+          "titel": "Eine Befragung wirkt, wenn der Kreis sich schließt",
+          "schritte": [
+            "Entscheidung festlegen",
+            "Kurz halten",
+            "Platz für eigene Worte",
+            "Ergebnisse vorstellen",
+            "Handeln"
+          ],
+          "mitte": [
+            "Erst wenn sich",
+            "etwas tut, lohnt",
+            "die nächste Runde"
+          ],
+          "beschreibung": "Ein Kreislauf mit fünf Stationen: Entscheidung festlegen, kurz halten, Platz für eigene Worte, Ergebnisse vorstellen, handeln. Danach beginnt die nächste Runde.",
+          "unterschrift": "Die fünf Schritte von oben als Kreislauf. Schritt 5 schließt den Kreis: Ohne sichtbare Maßnahme antwortet beim nächsten Mal kaum jemand ehrlich."
         },
         {
           "typ": "tipp",
@@ -261,20 +314,23 @@ const beitrag = {
           "text": "Konkret entstehen aus denselben Antworten drei Dinge, die sonst getrennt und teuer erarbeitet werden:"
         },
         {
-          "typ": "liste",
-          "stil": "punkte",
-          "punkte": [
+          "typ": "karten",
+          "stil": "dunkel",
+          "karten": [
             {
-              "fett": "Positionierung:",
-              "text": "der Grund, warum Kunden bei dir kaufen, in Worten, die sie wiedererkennen."
+              "symbol": "ziel",
+              "titel": "Positionierung",
+              "text": "Der Grund, warum Kunden bei dir kaufen, in Worten, die sie wiedererkennen."
             },
             {
-              "fett": "Arbeitgebermarke:",
+              "symbol": "gruppe",
+              "titel": "Arbeitgebermarke",
               "text": "Recruiting-Botschaften, die stimmen, weil sie aus deinem Team kommen."
             },
             {
-              "fett": "Verkaufsargumente:",
-              "text": "die Sätze, bei denen Kunden nicken, statt Floskeln aus dem Prospekt."
+              "symbol": "handschlag",
+              "titel": "Verkaufsargumente",
+              "text": "Die Sätze, bei denen Kunden nicken, statt Floskeln aus dem Prospekt."
             }
           ]
         },
@@ -399,7 +455,8 @@ const beitrag = {
     "warum-kuendigen-gute-mitarbeiter",
     "alleinstellungsmerkmal-finden",
     "warum-kaufen-kunden-bei-der-konkurrenz"
-  ]
+  ],
+  "titelgrafik": true
 };
 
 export default beitrag;

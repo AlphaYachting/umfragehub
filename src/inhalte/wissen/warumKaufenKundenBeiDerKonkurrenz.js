@@ -51,6 +51,26 @@ const beitrag = {
       "akzent": true
     }
   ],
+  "kennzahlen": [
+    {
+      "wert": "6",
+      "einheit": "x",
+      "text": "so wahrscheinlich kauften vollständig zufriedene Kunden bei Xerox wieder wie bloß zufriedene.",
+      "quelle": "Jones und Sasser 1995"
+    },
+    {
+      "wert": "25 bis 85",
+      "einheit": " %",
+      "text": "mehr Gewinn bei fünf Prozent weniger Abwanderung, je nach Branche.",
+      "quelle": "Reichheld und Sasser 1990, USA"
+    },
+    {
+      "wert": "5 bis 16",
+      "einheit": "",
+      "text": "Personen entscheiden im B2B über einen Einkauf mit.",
+      "quelle": "Gartner-Umfrage 2024"
+    }
+  ],
   "abschnitte": [
     {
       "id": "gruende",
@@ -62,27 +82,31 @@ const beitrag = {
           "text": "Das gilt für Firmenkunden wie für Private: Wer bei dir angefragt und woanders gekauft hat, kennt den Grund. Du kennst ihn meist nicht. Viele Unternehmen vermuten zuerst den Preis. Manchmal stimmt das, häufig macht der Preis aber nur etwas anderes sichtbar. Typische Gründe sind:"
         },
         {
-          "typ": "liste",
-          "stil": "rand",
-          "punkte": [
+          "typ": "karten",
+          "karten": [
             {
-              "fett": "Der Nutzen ist nicht mehr klar.",
+              "symbol": "waage",
+              "titel": "Der Nutzen ist nicht mehr klar",
               "text": "Der Kunde sieht nicht, was er bei dir mehr bekommt. Dann wird verglichen, und zwar am Preis."
             },
             {
-              "fett": "Der Kontakt ist eingeschlafen.",
+              "symbol": "telefon",
+              "titel": "Der Kontakt ist eingeschlafen",
               "text": "Ansprechpartner haben gewechselt, niemand meldet sich, und der Mitbewerb war im richtigen Moment da."
             },
             {
-              "fett": "Ein Ärgernis blieb unausgesprochen.",
+              "symbol": "warnung",
+              "titel": "Ein Ärgernis blieb unausgesprochen",
               "text": "Eine verspätete Lieferung, eine fehlerhafte Rechnung, ein Rückruf, der nie kam. Kunden reklamieren selten, sie ziehen leise Konsequenzen."
             },
             {
-              "fett": "Der Mitbewerb macht es bequemer.",
+              "symbol": "schnell",
+              "titel": "Der Mitbewerb macht es bequemer",
               "text": "Einfachere Bestellung, schnellere Angebote, ein fixer Ansprechpartner: Kleinigkeiten, die im Alltag den Ausschlag geben."
             },
             {
-              "fett": "Der Bedarf hat sich verändert.",
+              "symbol": "wechsel",
+              "titel": "Der Bedarf hat sich verändert",
               "text": "Der Kunde braucht heute etwas anderes, und du weißt es nicht, weil niemand gefragt hat."
             }
           ]
@@ -107,12 +131,56 @@ const beitrag = {
           "text": "Thomas Jones und Earl Sasser haben 1995 in der Harvard Business Review gezeigt, dass zwischen zufrieden und vollständig zufrieden ein großer Unterschied liegt. Wer nur zufrieden ist, hat meist einen kleinen Vorbehalt und wechselt eher, sobald sich eine gute Gelegenheit bietet. Beim Kopiererhersteller Xerox kauften vollständig zufriedene Kunden sechsmal so wahrscheinlich wieder wie bloß zufriedene."
         },
         {
+          "typ": "balken",
+          "dick": true,
+          "titel": "Zufrieden ist nicht treu: Wahrscheinlichkeit, wieder zu kaufen",
+          "zeilen": [
+            {
+              "label": "Bloß zufrieden",
+              "wert": "1x",
+              "anteil": 16.7,
+              "grau": true
+            },
+            {
+              "label": "Vollständig zufrieden",
+              "wert": "6x",
+              "anteil": 100,
+              "akzent": true
+            }
+          ],
+          "fazit": "Der kleine Vorbehalt der bloß Zufriedenen ist der Grund, den du kennen musst.",
+          "unterschrift": "Kundendaten des Kopiererherstellers Xerox. Quelle: Jones und Sasser, Why Satisfied Customers Defect, Harvard Business Review 1995."
+        },
+        {
           "typ": "absatz",
           "text": "Das ist teuer. Frederick Reichheld und Earl Sasser zeigten 1990 an amerikanischen Dienstleistern, dass fünf Prozent weniger Abwanderung den Gewinn je nach Branche um 25 bis 85 % steigern konnten. Rechne für deinen Betrieb nach, was ein Stammkunde über die Jahre bringt, dann siehst du, was jeder verlorene kostet."
         },
         {
           "typ": "absatz",
           "text": "Im B2B entscheidet selten eine Person allein. Laut einer Gartner-Umfrage unter 632 Firmenkunden aus dem Jahr 2024 bestehen Einkaufsgremien aus 5 bis 16 Personen aus bis zu vier Bereichen. Im Mittelstand sind es weniger, das Prinzip bleibt: Der Einkäufer kann zufrieden sein, während die Technik längst einen anderen Lieferanten bevorzugt."
+        },
+        {
+          "typ": "figuren",
+          "stil": "rahmen",
+          "titel": "Wer im B2B über einen Einkauf mitentscheidet",
+          "gesamt": 16,
+          "markiert": 5,
+          "spalten": 8,
+          "farbeMarkiert": "dunkel",
+          "farbeRest": "hell",
+          "beschreibung": "16 Figuren, davon 5 dunkel gefüllt: Mindestens 5 und bis zu 16 Personen entscheiden mit.",
+          "legende": [
+            {
+              "farbe": "dunkel",
+              "text": "mindestens 5 Personen"
+            },
+            {
+              "farbe": "hell",
+              "text": "bis zu 16, aus bis zu vier Bereichen"
+            }
+          ],
+          "fazit": "Wer nur den Einkäufer fragt, kennt eine von vielen Stimmen.",
+          "unterschrift": "Umfrage unter 632 Firmenkunden. Quelle: Gartner, veröffentlicht Mai 2025. Im Mittelstand sind die Gremien meist kleiner."
         }
       ]
     },
@@ -123,7 +191,57 @@ const beitrag = {
       "bloecke": [
         {
           "typ": "absatz",
-          "text": "Du musst nicht mit einem großen Projekt beginnen. Diese fünf Schritte bringen schon viel Klarheit."
+          "text": "Du musst nicht mit einem großen Projekt beginnen. Diese fünf Schritte bringen schon viel Klarheit. Der erste ist ein Blick in deine Zahlen, und zwar Kunde für Kunde."
+        },
+        {
+          "typ": "kundenliste",
+          "titel": "Die stillen Abgänge findest du im Vergleich zum Vorjahr",
+          "legende": [
+            {
+              "farbe": "grau",
+              "form": "quadrat",
+              "text": "Vorjahr"
+            },
+            {
+              "farbe": "dunkel",
+              "form": "quadrat",
+              "text": "Dieses Jahr"
+            }
+          ],
+          "zeilen": [
+            {
+              "name": "Kunde A",
+              "vorher": 70,
+              "jetzt": 74,
+              "status": "stabil"
+            },
+            {
+              "name": "Kunde B",
+              "vorher": 90,
+              "jetzt": 52,
+              "status": "weniger"
+            },
+            {
+              "name": "Kunde C",
+              "vorher": 45,
+              "jetzt": 50,
+              "status": "stabil"
+            },
+            {
+              "name": "Kunde D",
+              "vorher": 60,
+              "jetzt": 2,
+              "status": "weg"
+            },
+            {
+              "name": "Kunde E",
+              "vorher": 80,
+              "jetzt": 41,
+              "status": "weniger"
+            }
+          ],
+          "fazit": "Kunde D fällt jedem auf. Kunde B und E fallen niemandem auf, und genau die solltest du zuerst anrufen.",
+          "unterschrift": "Beispiel zur Veranschaulichung, keine echten Daten."
         },
         {
           "typ": "schritte",
@@ -164,6 +282,27 @@ const beitrag = {
         {
           "typ": "absatz",
           "text": "Wer selbst fragt, stößt schnell an Grenzen. Nicht weil Kunden unehrlich sind, sondern weil die Situation es ihnen schwer macht."
+        },
+        {
+          "typ": "dialog",
+          "stil": "rahmen",
+          "titel": "Dieselbe Frage, zwei Antworten: Es kommt darauf an, wer fragt",
+          "seiten": [
+            {
+              "etikett": "Der Lieferant ruft an",
+              "frage": "Wie zufrieden sind Sie mit uns?",
+              "antwort": "Passt eh alles.",
+              "fazit": "Höflich, aber ungenau. Der Kunde rechnet mit einem Angebot."
+            },
+            {
+              "etikett": "Eine neutrale Stelle fragt",
+              "akzent": true,
+              "frage": "Was hat beim letzten Auftrag den Ausschlag gegeben?",
+              "antwort": "Das Angebot kam erst nach einer Woche. Der andere war am selben Tag da.",
+              "fazit": "Ein Grund, mit dem du arbeiten kannst."
+            }
+          ],
+          "unterschrift": "Beispiel zur Veranschaulichung, keine echten Antworten."
         },
         {
           "typ": "liste",
@@ -223,6 +362,31 @@ const beitrag = {
         {
           "typ": "absatz",
           "text": "Wir klären zuerst, welche Entscheidung ansteht und welche Kunden wir dafür fragen: für Abwanderung die ehemaligen, für Wachstum jene, die heute nur einen Teil bei dir kaufen, zum Vergleich die Stammkunden. Die Gruppen werten wir getrennt aus. Bei Firmenkunden fragen wir auf Wunsch mehrere Personen beim selben Kunden."
+        },
+        {
+          "typ": "gruppen",
+          "titel": "Drei Kundengruppen, getrennt ausgewertet, dann verglichen",
+          "gruppen": [
+            {
+              "name": "Ehemalige Kunden",
+              "zweck": "Für Abwanderung",
+              "frage": "Warum sind sie gegangen, und was hätte sie gehalten?",
+              "farbe": "dunkel"
+            },
+            {
+              "name": "Kunden mit Teilbedarf",
+              "zweck": "Für Wachstum",
+              "frage": "Sie kaufen nur einen Teil bei dir. Was fehlt für den Rest?",
+              "farbe": "akzent"
+            },
+            {
+              "name": "Stammkunden",
+              "zweck": "Zum Vergleich",
+              "frage": "Warum bleiben sie? Das sind deine stärksten Argumente.",
+              "farbe": "grau"
+            }
+          ],
+          "fazit": "Der Unterschied zwischen den Gruppen zeigt, was den Ausschlag gibt. Daraus werden Argumente für Website, Angebot und Verkaufsgespräch."
         },
         {
           "typ": "absatz",
@@ -324,7 +488,8 @@ const beitrag = {
     "abschlussquote-erhoehen",
     "alleinstellungsmerkmal-finden",
     "warum-kuendigen-gute-mitarbeiter"
-  ]
+  ],
+  "titelgrafik": true
 };
 
 export default beitrag;
