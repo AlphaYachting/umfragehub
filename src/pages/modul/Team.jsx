@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ArrowDown, Minus, Plus } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
   F, BREITE, H1_STIL, H2_STIL, LEAD_STIL, TEXT_STIL, mailAn,
@@ -14,7 +14,6 @@ import Zaehler from "@/components/oeffentlich/Zaehler";
 // Zeitleiste und Anonymitäts-Zähler. Alle Zahlen sind als Beispiel gekennzeichnet.
 
 const BETREFF = "andi fragt. Team-Interview";
-const MINDESTZAHL = 6;
 
 // Sprechblasen rund um das Teamfoto (ab md frei positioniert, darunter gestapelt)
 const BLASEN = [
@@ -470,9 +469,6 @@ function Landkarte() {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Anonymität zum Ausprobieren
-// ---------------------------------------------------------------------------
 export default function Team() {
   return (
     <Modulseite

@@ -12,7 +12,7 @@ export default function Zaehler({ titel = "Das siehst du", bereich = "Werkstatt"
   let sichtbar;
   if (n === 0) sichtbar = "Noch nichts. Hier wartet niemand auf einzelne Antworten.";
   else if (!offen) sichtbar = `Nur, dass ${n} von ${MINDESTZAHL} nötigen Interviews da sind. Keine Antworten, keine Tendenz.`;
-  else sichtbar = `Ab jetzt das gemeinsame Bild: ${bereich}. Nie eine einzelne Antwort, nie ein Name.`;
+  else sichtbar = `Ab jetzt das gemeinsame Bild der ${bereich}. Nie eine einzelne Antwort, nie ein Name.`;
 
   return (
     <div className="flex-[1_1_440px] min-w-0 rounded-[28px] p-8" style={{ background: F.dunkelKarte }}>
