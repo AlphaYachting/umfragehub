@@ -185,7 +185,7 @@ export function RundesFoto({ src, alt, groesse = 320, ringe = [], rand, classNam
 
 // Wissensbereich im Menü: live erst, wenn der erste Beitrag freigegeben ist (dann auf true setzen).
 // In der Base44-Vorschau ist der Menüpunkt immer sichtbar, damit die Entwürfe prüfbar sind.
-export const WISSEN_IM_MENUE = false;
+export const WISSEN_IM_MENUE = true;
 export function wissenImMenue() {
   if (WISSEN_IM_MENUE) return true;
   try {
