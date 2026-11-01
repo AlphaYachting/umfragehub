@@ -376,7 +376,7 @@ const beitrag = {
   "passend": [
     "betriebsuebergabe-kunden-informieren",
     "generationenwechsel-familienunternehmen-marke",
-    "unternehmensnachfolge-marketing"
+    "gesellschafter-uneinig-marketing"
   ]
 };
 
