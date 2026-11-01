@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowDown, BookOpen, Lightbulb } from "lucide-react";
 import { F } from "@/components/oeffentlich/Oeffentlich";
+import { GRAFIK_ARTEN, NUMMERIERTE_GRAFIKEN } from "@/components/oeffentlich/wissen/Grafiken";
 
 // Bausteine der Beitragsseiten im Wissensbereich. Jeder Baustein im Inhalt hat ein Feld
 // "typ"; Baustein() wählt die passende Darstellung. Aussehen wie im Prototyp
@@ -367,14 +368,14 @@ export function nummerieren(abschnitte) {
     ...a,
     bloecke: a.bloecke.map((b) => {
       if (b.typ === "tabelle") return { ...b, _nr: ++tab };
-      if (["schaubild", "vorherNachher", "bild"].includes(b.typ) || (b.typ === "fall" && b.bild)) return { ...b, _nr: ++abb };
+      if (["schaubild", "vorherNachher", "bild", ...NUMMERIERTE_GRAFIKEN].includes(b.typ) || (b.typ === "fall" && b.bild)) return { ...b, _nr: ++abb };
       return b;
     }),
   }));
 }
 
 export default function Baustein({ b }) {
-  const Art = ARTEN[b.typ];
+  const Art = ARTEN[b.typ] || GRAFIK_ARTEN[b.typ];
   if (!Art) return null;
   return <Art b={b} />;
 }
