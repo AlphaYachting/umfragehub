@@ -356,7 +356,7 @@ const beitrag = {
     },
     {
       "q": "Was kostet das mit andi fragt.?",
-      "a": "Das Erstgespräch ist kostenlos. Der Einstieg mit Zielgespräch und zehn Fragen an dich kostet 950 Euro netto und wird voll angerechnet, wenn du innerhalb von 8 Wochen ein Interview startest. Die Interview-Module haben Fixpreise nach Gruppengröße, ab 2.900 Euro netto."
+      "a": "Das Erstgespräch ist kostenlos. Ein Interview-Modul hat einen Fixpreis nach der Zahl der Personen, die wir fragen, von 2.900 Euro netto für Kleinbetriebe bis 7.400 Euro netto für 51 bis 100 Personen. Jedes weitere Modul kostet deutlich weniger. Alle Stufen stehen auf der [Preisseite](/preise)."
     }
   ],
   "quellen": [
