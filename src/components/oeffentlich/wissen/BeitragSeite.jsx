@@ -280,7 +280,7 @@ export default function BeitragSeite({ beitrag }) {
             </span>
             {b.themen?.length > 0 && <span className="text-sm" style={{ color: F.daempft }}>{b.themen.join(", ")}</span>}
           </div>
-          <h1 className="mt-5 text-[clamp(36px,4.6vw,60px)] font-black leading-[1.04]" style={{ letterSpacing: "-0.01em" }}>
+          <h1 className="mt-5 text-[clamp(36px,4.6vw,60px)] font-black leading-[1.04] hyphens-auto [overflow-wrap:break-word]" style={{ letterSpacing: "-0.01em" }}>
             {b.titel} <span style={{ color: F.akzent }}>{b.titelAkzent}</span>
           </h1>
           <div className="mt-7 flex flex-wrap items-center gap-x-7 gap-y-3">
