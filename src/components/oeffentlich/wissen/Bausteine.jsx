@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowDown, BookOpen, Lightbulb } from "lucide-react";
 import { F } from "@/components/oeffentlich/Oeffentlich";
 import { GRAFIK_ARTEN, NUMMERIERTE_GRAFIKEN } from "@/components/oeffentlich/wissen/Grafiken";
+import { beitragNachSlug, istSichtbar } from "@/inhalte/wissen";
 
 // Bausteine der Beitragsseiten im Wissensbereich. Jeder Baustein im Inhalt hat ein Feld
 // "typ"; Baustein() wählt die passende Darstellung. Aussehen wie im Prototyp
@@ -37,6 +38,9 @@ export function Text({ children }) {
         const m = /^\[([^\]]+)\]\(([^)\s]+)\)$/.exec(t);
         if (m) {
           const [, text, ziel] = m;
+          // Link auf einen Beitrag, der hier noch nicht sichtbar ist (Entwurf live): nur Text zeigen
+          const zielBeitrag = ziel.startsWith("/wissen/") ? beitragNachSlug(ziel.slice(8)) : null;
+          if (zielBeitrag && !istSichtbar(zielBeitrag)) return <React.Fragment key={i}>{text}</React.Fragment>;
           if (ziel.startsWith("/")) {
             return <Link key={i} to={ziel} className="font-semibold underline underline-offset-2 hover:no-underline" style={{ color: F.link }}>{text}</Link>;
           }
