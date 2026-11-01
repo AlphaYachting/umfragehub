@@ -6,7 +6,7 @@ import Baustein, { Text, nummerieren } from "@/components/oeffentlich/wissen/Bau
 import { Kennzahlen } from "@/components/oeffentlich/wissen/Grafiken";
 import Titelgrafik, { TITELGRAFIKEN } from "@/components/oeffentlich/wissen/Titelgrafiken";
 import {
-  MODUL_NAMEN, SITE, bereichName, beitragNachSlug, datumLang, istSichtbar, istVorschau, lesezeit, nurText, sichtbareBeitraege,
+  SITE, bereichName, beitragNachSlug, datumLang, istSichtbar, istVorschau, lesezeit, nurText, sichtbareBeitraege,
 } from "@/inhalte/wissen";
 
 // Gemeinsames Layout aller Beiträge im Wissensbereich (Vorlage: Prototyp
