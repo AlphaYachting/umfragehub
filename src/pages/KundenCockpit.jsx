@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { ArrowRight, Lock, Check, TrendingUp, Sparkles, CalendarDays, RefreshCw } from "lucide-react";
+import { ArrowRight, Lock, Check, TrendingUp, Sparkles, CalendarDays, RefreshCw, Info } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
 // Kunden-Cockpit unter /k/:code: der Auftraggeber sieht mit Passwort, wie weit
@@ -911,11 +911,12 @@ function Workshop({ d, nr }) {
 }
 
 // ---------------------------------------------------------------------------
-function Verborgen() {
+// Statt Fragetext: Nummer und der Teil des Interviews, aus dem das Thema stammt.
+function ThemaName({ nr, bereich, zeile = false }) {
   return (
-    <span aria-hidden="true" className="flex items-center gap-2 text-[13px]" style={{ color: F.grauMid }}>
-      <Lock size={12} strokeWidth={2.4} />
-      <span className="whitespace-nowrap" style={{ filter: "blur(4px)" }}>Verborgenes Thema</span>
+    <span className={`min-w-0 ${zeile ? "flex flex-wrap items-baseline gap-x-2" : "flex flex-col"} text-[13px] leading-tight`}>
+      <span className="font-bold" style={{ color: F.text }}>Thema {nr}</span>
+      {bereich && <span className="truncate" style={{ color: F.daempft }}>aus {bereich}</span>}
     </span>
   );
 }
@@ -952,6 +953,11 @@ function Signale({ s, nr }) {
           <div className="flex-[1_1_300px] min-w-0">
             <Pille zielgruppe={s.einigkeit.zielgruppe} />
             <h3 className="mt-4 text-[26px] leading-tight font-extrabold">Wo {s.einigkeit.zielgruppe === "mitarbeiter" ? "sich dein Team" : `sich die Gruppe ${zg(s.einigkeit.zielgruppe).lang}`} einig ist</h3>
+            {s.einigkeit.interviews > 0 && (
+              <p className="mt-2 text-sm" style={{ color: F.daempft }}>
+                Grundlage: {s.einigkeit.interviews} Interviews, {s.einigkeit.gesamt} Einschätzungen auf einer Skala
+              </p>
+            )}
             <div className="mt-6 flex flex-wrap gap-8">
               <GrosseZahl wert={s.einigkeit.einig} text="Einschätzungen mit auffallend klarer Meinung" />
               <GrosseZahl wert={s.einigkeit.auseinander} text="Einschätzungen, bei denen die Meinungen weit auseinandergehen" akzent />
@@ -963,8 +969,8 @@ function Signale({ s, nr }) {
           {s.einigkeit.reihen.length > 0 && (
             <div className="flex-[1_1_420px] min-w-0 flex flex-col gap-3.5" role="img" aria-label="Themen als Punktreihen: eng beieinander heißt einig, weit verstreut heißt uneinig. Die Themen bleiben bis zum Workshop verborgen.">
               {s.einigkeit.reihen.map((r, i) => (
-                <div key={i} className="grid items-center gap-4" style={{ gridTemplateColumns: "130px minmax(0,1fr)" }}>
-                  <Verborgen />
+                <div key={i} className="grid items-center gap-4" style={{ gridTemplateColumns: "150px minmax(0,1fr)" }}>
+                  <ThemaName nr={i + 1} bereich={r.bereich} />
                   <div className="relative h-7 rounded-full" style={{ background: F.grau }}>
                     {r.punkte.map((x, j) => (
                       <span key={j} className="absolute top-2 w-3 h-3 -ml-1.5 rounded-full" style={{ left: `${Math.max(2, Math.min(98, x))}%`, background: r.weit ? F.akzent : zg(s.einigkeit.zielgruppe).punkt, opacity: 0.55 }} />
@@ -972,12 +978,12 @@ function Signale({ s, nr }) {
                   </div>
                 </div>
               ))}
-              <div className="grid gap-4 text-xs" style={{ gridTemplateColumns: "130px minmax(0,1fr)", color: F.grauMid }}>
+              <div className="grid gap-4 text-xs" style={{ gridTemplateColumns: "150px minmax(0,1fr)", color: F.grauMid }}>
                 <span />
                 <span className="flex justify-between"><span>niedrig</span><span>hoch</span></span>
               </div>
               <p className="text-xs leading-relaxed" style={{ color: F.daempft }}>
-                Gezeigt {s.einigkeit.reihen.length === 1 ? "wird eine Auswahl" : `werden ${s.einigkeit.reihen.length} Beispiele`} aus {s.einigkeit.einig + s.einigkeit.auseinander} Einschätzungen. Jede Reihe zeigt, wie sich alle Antworten verteilen: eng beieinander heißt einig, weit verstreut heißt uneinig. Ein Punkt ist keine Person.
+                Gezeigt {s.einigkeit.reihen.length === 1 ? "wird eine Auswahl" : `werden ${s.einigkeit.reihen.length} Beispiele`} aus {s.einigkeit.einig + s.einigkeit.auseinander} Einschätzungen. Jede Reihe zeigt, wie sich alle Antworten zu einem Thema verteilen: eng beieinander heißt einig, weit über die Skala verstreut heißt uneinig. Ein Punkt ist keine Person.
               </p>
             </div>
           )}
@@ -991,6 +997,11 @@ function Signale({ s, nr }) {
               {[...new Set(s.abweichungen.paare.flatMap((p) => [p.a, p.b]))].map((k) => <Pille key={k} zielgruppe={k} />)}
             </div>
             <h3 className="mt-4 text-[26px] leading-tight font-extrabold">{nurIntern ? "Wo Führung und Team es anders sehen" : "Selbstbild und Fremdbild"}</h3>
+            {s.abweichungen.paare.some((p) => p.na) && (
+              <p className="mt-2 text-sm" style={{ color: F.daempft }}>
+                Grundlage: {s.abweichungen.paare.map((p) => `${p.na} Interviews ${zg(p.a).lang}, ${p.nb} ${zg(p.b).lang}, ${p.verglichen} gemeinsame Einschätzungen`).join("; ")}
+              </p>
+            )}
             <div className="mt-6 flex flex-wrap gap-8">
               {s.abweichungen.paare.map((p, i) => (
                 <GrosseZahl key={i} wert={p.anzahl} text={`deutliche Abweichungen zwischen ${paarText(p)}`} akzent={i === 0} />
@@ -1012,7 +1023,7 @@ function Signale({ s, nr }) {
               {s.abweichungen.beispiele.map((b, i) => (
                 <div key={i}>
                   <div className="flex items-center justify-between gap-3 text-[13px]">
-                    <Verborgen />
+                    <ThemaName nr={i + 1} bereich={b.bereich} zeile />
                     {mehrerePaare && <span className="font-semibold">{paarText(b)}</span>}
                   </div>
                   <div aria-hidden="true" className="mt-2 relative h-6">
@@ -1025,7 +1036,7 @@ function Signale({ s, nr }) {
               ))}
               <div className="flex justify-between text-xs" style={{ color: F.grauMid }}><span>niedrig</span><span>hoch</span></div>
               <p className="text-xs leading-relaxed" style={{ color: F.daempft }}>
-                Jeder Punkt ist der Durchschnitt einer Gruppe. Gezeigt {s.abweichungen.beispiele.length === 1 ? "wird die deutlichste Abweichung" : `werden die ${s.abweichungen.beispiele.length} deutlichsten Abweichungen`}.
+                Jeder Punkt ist der Durchschnitt einer Gruppe. Als deutlich zählt ein Abstand von mindestens einem Viertel der Skala. Gezeigt {s.abweichungen.beispiele.length === 1 ? "wird die deutlichste Abweichung" : `werden die ${s.abweichungen.beispiele.length} deutlichsten Abweichungen`}.
               </p>
             </div>
           )}
@@ -1073,8 +1084,8 @@ function Signale({ s, nr }) {
 
       {s && (
         <p className="mt-6 flex items-start gap-2.5 max-w-[760px] text-sm leading-relaxed" style={{ color: F.daempft }}>
-          <Lock size={18} className="shrink-0 mt-0.5" color={F.text} aria-hidden="true" />
-          Signale entstehen erst nach Abschluss aller Gruppen und nur aus Fragen mit Skala und aus der Textmenge. Keine Antwort und keine Person ist daraus erkennbar.
+          <Info size={18} className="shrink-0 mt-0.5" color={F.text} aria-hidden="true" />
+          Signale entstehen erst nach Abschluss aller Gruppen, nur aus Fragen mit Skala und aus der Textmenge. Welche Fragen hinter den Themen stehen und wie sie zu lesen sind, besprechen wir gemeinsam im Workshop. Keine Antwort und keine Person ist daraus erkennbar.
         </p>
       )}
     </section>
