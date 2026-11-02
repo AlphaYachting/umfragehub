@@ -185,7 +185,7 @@ const SCHRITTE = [
   {
     verb: "fragt",
     titel: "Digitale Interviews",
-    text: "Führung, Team, Vertrieb und auf Wunsch deine Kunden beantworten die Interviews online: anonym, am Handy oder am Computer, wann es passt. Dein eigener Aufwand: rund 60 Minuten.",
+    text: "Führung, Team, Vertrieb und auf Wunsch deine Kunden beantworten die Interviews online: anonym, am Handy oder am Computer, wann es passt. Dein eigener Aufwand: rund zwei Stunden.",
   },
   {
     verb: "weiß",
