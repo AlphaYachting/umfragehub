@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BREITE, Etikett, F, H1_STIL, Modulseite } from "@/components/oeffentlich/Oeffentlich";
 
 // Gemeinsamer Rahmen für Impressum und Datenschutzerklärung (02.11.2026).
@@ -62,6 +62,14 @@ export function Angaben({ zeilen }) {
 }
 
 export default function Rechtstext({ titel, seitentitel, etikett, einleitung, stand, inhalt, children }) {
+  // Sprungmarken wie /datenschutz#anfrage: nach dem Laden zum Abschnitt springen
+  // (Modulseite scrollt beim Öffnen sonst nach oben).
+  useEffect(() => {
+    const id = window.location.hash.slice(1);
+    if (!id) return;
+    const t = setTimeout(() => document.getElementById(id)?.scrollIntoView({ block: "start" }), 80);
+    return () => clearTimeout(t);
+  }, []);
   return (
     <Modulseite titel={seitentitel} modul={etikett}>
       <article className={`${BREITE} pt-12 pb-24`}>
