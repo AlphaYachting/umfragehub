@@ -946,11 +946,11 @@ function Band({ punkte, farbe }) {
   );
 }
 
-function GrosseZahl({ wert, text, akzent = false, leise = false }) {
+function GrosseZahl({ wert, text, akzent = false, leise = false, schmal = false }) {
   return (
     <div>
       <p className="text-[64px] leading-none font-extrabold" style={akzent ? { color: F.akzent } : leise ? { color: F.grauMid } : undefined}>{wert}</p>
-      <p className="mt-2 max-w-[130px] text-sm leading-snug" style={{ color: F.daempft }}>{text}</p>
+      <p className={`mt-2 ${schmal ? "max-w-[110px]" : "max-w-[180px]"} text-sm leading-snug`} style={{ color: F.daempft }}>{text}</p>
     </div>
   );
 }
@@ -984,13 +984,13 @@ function Signale({ s, nr }) {
             <h3 className="mt-4 text-[26px] leading-tight font-extrabold">Wie einig ist sich {e.zielgruppe === "mitarbeiter" ? "dein Team" : `die Gruppe ${zg(e.zielgruppe).lang}`}?</h3>
             {e.interviews > 0 && (
               <p className="mt-2 text-sm" style={{ color: F.daempft }}>
-                Grundlage: {e.interviews} Interviews, {e.gesamt} Einschätzungen auf einer Skala
+                Grundlage: {e.interviews} Interviews, {e.gesamt} Einschätzungen auf einer Skala. So verteilen sie sich:
               </p>
             )}
             <div className="mt-6 flex flex-wrap gap-x-6 gap-y-6">
-              <GrosseZahl wert={e.einig} text="Einschätzungen, bei denen sich fast alle einig sind" />
-              <GrosseZahl wert={e.auseinander} text="Einschätzungen, bei denen die Meinungen weit auseinandergehen" akzent />
-              {dazwischen !== null && <GrosseZahl wert={dazwischen} text="Einschätzungen dazwischen" leise />}
+              <GrosseZahl wert={e.einig} text="fast alle einig" schmal />
+              <GrosseZahl wert={e.auseinander} text="Meinungen weit auseinander" akzent schmal />
+              {dazwischen !== null && <GrosseZahl wert={dazwischen} text="dazwischen" leise schmal />}
             </div>
             <p className="mt-6 text-[15px] leading-relaxed" style={{ color: F.daempft }}>
               Wo alle gleich denken, gibt es eine klare Haltung. Ob das eine Stärke ist oder ein gemeinsamer blinder Fleck, zeigt erst die Einordnung. Wo die Meinungen auseinandergehen, liegt Gesprächsbedarf.
