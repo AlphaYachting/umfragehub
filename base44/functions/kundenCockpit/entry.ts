@@ -401,6 +401,7 @@ async function signaleBerechnen(db, jeWelle, antworten) {
     const mindest = Number(w.mindestTeilnehmer ?? 6);
     // Werte je Item (Frage oder Matrixzeile), auf 0 bis 4 umgerechnet
     const werte: Record<string, number[]> = {};
+    const bereich: Record<string, string> = {};   // Kapitel des Interviews je Item, ohne Fragetext
     for (const s of fertig) {
       for (const a of antwortenJeSession[s.id] || []) {
         const f = fragen[a.frageId];
@@ -411,17 +412,19 @@ async function signaleBerechnen(db, jeWelle, antworten) {
         const norm = (v) => ((Number(v) - min) / (max - min)) * 4;
         const basis = f.schluessel || f.id;
         if (f.typ === 'matrix') {
+          for (const k of Object.keys(a.matrixWerte || {})) bereich[`${basis}:${k}`] ||= f.kapitel || '';
           // Schlüssel der Matrixzeile: stabile Zeilen-ID, sonst der Zeilenindex
           for (const [k, v] of Object.entries(a.matrixWerte || {})) {
             if (typeof v !== 'number') continue;
             (werte[`${basis}:${k}`] ||= []).push(norm(v));
           }
         } else if (typeof a.zahl === 'number') {
+          bereich[basis] ||= f.kapitel || '';
           (werte[basis] ||= []).push(norm(a.zahl));
         }
       }
     }
-    return { w, mindest, fertig: fertig.length, fragen, werte };
+    return { w, mindest, fertig: fertig.length, fragen, werte, bereich };
   }, 3);
 
   const auswertbar = proWelle.filter((x) => x.fertig >= x.mindest);
@@ -430,9 +433,9 @@ async function signaleBerechnen(db, jeWelle, antworten) {
   // 1) Einigkeit: bevorzugt das Team, sonst die größte Welle
   const basis = [...auswertbar].sort((a, b) =>
     (a.w.zielgruppe === 'mitarbeiter' ? -1 : 0) - (b.w.zielgruppe === 'mitarbeiter' ? -1 : 0) || b.fertig - a.fertig)[0];
-  const items = (Object.values(basis.werte) as number[][])
-    .filter((v) => v.length >= basis.mindest)
-    .map((v) => ({ sd: standardabweichung(v), v }));
+  const items = (Object.entries(basis.werte) as [string, number[]][])
+    .filter(([, v]) => v.length >= basis.mindest)
+    .map(([k, v]) => ({ sd: standardabweichung(v), v, bereich: basis.bereich[k] || '' }));
   const einig = items.filter((i) => i.sd <= EINIG_BIS).sort((a, b) => a.sd - b.sd);
   const auseinander = items.filter((i) => i.sd >= AUSEINANDER_AB).sort((a, b) => b.sd - a.sd);
   const punkte = (v) => dezile(v).map((x) => Math.round((x / 4) * 100));
@@ -440,9 +443,11 @@ async function signaleBerechnen(db, jeWelle, antworten) {
     zielgruppe: basis.w.zielgruppe,
     einig: einig.length,
     auseinander: auseinander.length,
+    interviews: basis.fertig,
+    gesamt: items.length,
     reihen: [
-      ...einig.slice(0, 4).map((i) => ({ weit: false, punkte: punkte(i.v) })),
-      ...auseinander.slice(0, 2).map((i) => ({ weit: true, punkte: punkte(i.v) })),
+      ...einig.slice(0, 4).map((i) => ({ weit: false, punkte: punkte(i.v), bereich: i.bereich })),
+      ...auseinander.slice(0, 2).map((i) => ({ weit: true, punkte: punkte(i.v), bereich: i.bereich })),
     ],
   };
 
@@ -468,10 +473,10 @@ async function signaleBerechnen(db, jeWelle, antworten) {
       const mb = mittel(vb);
       if (Math.abs(ma - mb) >= ABWEICHUNG_AB) {
         anzahl++;
-        beispiele.push({ a, b, xa: Math.round((ma / 4) * 100), xb: Math.round((mb / 4) * 100), abstand: Math.abs(ma - mb) });
+        beispiele.push({ a, b, xa: Math.round((ma / 4) * 100), xb: Math.round((mb / 4) * 100), abstand: Math.abs(ma - mb), bereich: A.bereich[k] || B.bereich[k] || '' });
       }
     }
-    if (verglichen > 0) paare.push({ a, b, anzahl, verglichen });
+    if (verglichen > 0) paare.push({ a, b, anzahl, verglichen, na: A.fertig, nb: B.fertig });
   }
   beispiele.sort((x, y) => y.abstand - x.abstand);
 
@@ -512,7 +517,7 @@ async function signaleBerechnen(db, jeWelle, antworten) {
   return {
     anzahl,
     einigkeit: items.length ? einigkeit : null,
-    abweichungen: paare.length ? { paare, beispiele: beispiele.slice(0, 5).map(({ a, b, xa, xb }) => ({ a, b, xa, xb })) } : null,
+    abweichungen: paare.length ? { paare, beispiele: beispiele.slice(0, 5).map(({ a, b, xa, xb, bereich }) => ({ a, b, xa, xb, bereich })) } : null,
     intensitaet: kapitel.length >= 2 ? { kapitel, spitze } : null,
   };
 }
