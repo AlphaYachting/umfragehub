@@ -158,7 +158,7 @@ export default function Datenschutz() {
           <p>
             Lädt das Unternehmen per E-Mail ein, bekommen wir dafür die E-Mail-Adressen, nach Gruppen geordnet.
             Wir verschicken damit die Einladung und höchstens die angekündigten Erinnerungen über den Versanddienst
-            Brevo. Ob du eine Mail öffnest oder einen Link anklickst, wird nicht je Adresse gemessen. Zu deiner
+            Brevo. Ob du eine Mail öffnest oder einen Link anklickst, wird nicht je Adresse gemessen. <Offen>Gilt erst, wenn im Brevo-Konto die anonyme Erfassung für transaktionale Mails aktiv ist: prüfen</Offen>. Zu deiner
             Adresse merken wir uns nur, ob du das Interview begonnen hast, damit wir dich nicht unnötig erinnern.
           </p>
         </Unter>
@@ -171,8 +171,7 @@ export default function Datenschutz() {
           </p>
           <p>
             In offenen Antworten schreibst du in eigenen Worten. Bitte nenne dort keine Namen und keine
-            Gesundheits- oder anderen besonders sensiblen Angaben über dich oder andere. Erkennen wir in einer
-            Antwort Hinweise auf eine Person, geben wir sie nicht im Wortlaut weiter.
+            Gesundheits- oder anderen besonders sensiblen Angaben über dich oder andere. <Offen>Bestätigen: Zitate aus offenen Antworten geben wir nur ohne Hinweise auf Personen weiter</Offen>.
           </p>
           <p>
             Die Auswertung machen Menschen in unserem Team. <Offen>Angeben, ob und mit welchem Dienst KI zur Auswertung eingesetzt wird</Offen>.
