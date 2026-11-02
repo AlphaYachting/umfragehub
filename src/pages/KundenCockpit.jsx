@@ -911,12 +911,12 @@ function Workshop({ d, nr }) {
 }
 
 // ---------------------------------------------------------------------------
-// Statt Fragetext: Nummer und der Teil des Interviews, aus dem das Thema stammt.
+// Statt Fragetext: Kennung und das Kapitel des Interviews, aus dem das Thema stammt.
 function ThemaName({ nr, bereich, zeile = false }) {
   return (
     <span className={`min-w-0 ${zeile ? "flex flex-wrap items-baseline gap-x-2" : "flex flex-col"} text-[13px] leading-tight`}>
       <span className="font-bold" style={{ color: F.text }}>Thema {nr}</span>
-      {bereich && <span className="truncate" style={{ color: F.daempft }}>aus {bereich}</span>}
+      {bereich && <span style={{ color: F.daempft }}>{bereich}</span>}
     </span>
   );
 }
@@ -1023,7 +1023,7 @@ function Signale({ s, nr }) {
               {s.abweichungen.beispiele.map((b, i) => (
                 <div key={i}>
                   <div className="flex items-center justify-between gap-3 text-[13px]">
-                    <ThemaName nr={i + 1} bereich={b.bereich} zeile />
+                    <ThemaName nr={String.fromCharCode(65 + i)} bereich={b.bereich} zeile />
                     {mehrerePaare && <span className="font-semibold">{paarText(b)}</span>}
                   </div>
                   <div aria-hidden="true" className="mt-2 relative h-6">
