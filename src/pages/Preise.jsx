@@ -273,7 +273,7 @@ function Rechner() {
               </button>
               <p className="text-xs leading-[1.5]" style={{ color: F.hellAufDunkel }}>
                 Wir melden uns innerhalb von 24 Stunden und verwenden deine Angaben nur dafür.{" "}
-                <a href="https://www.werbe-agentur-graz.at/datenschutz" target="_blank" rel="nofollow noopener noreferrer" className="underline" style={{ color: F.hellAufDunkel }}>
+                <a href="/datenschutz#anfrage" target="_blank" rel="noopener" className="underline" style={{ color: F.hellAufDunkel }}>
                   Datenschutz
                 </a>
                 . Netto, zuzüglich 20&nbsp;% USt.
