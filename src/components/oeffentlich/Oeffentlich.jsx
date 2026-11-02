@@ -12,8 +12,9 @@ import { ArrowRight } from "lucide-react";
 
 export const KONTAKT_MAIL = "office@rittler.co";
 export const KONTAKT_TEL = "+43 316 570 117";
-export const IMPRESSUM = "https://www.werbe-agentur-graz.at/impressum";
-export const DATENSCHUTZ = "https://www.werbe-agentur-graz.at/datenschutz";
+// Eigene Rechtstexte auf andifragt.at seit 02.11.2026 (vorher werbe-agentur-graz.at)
+export const IMPRESSUM = "/impressum";
+export const DATENSCHUTZ = "/datenschutz";
 export const MARKENPRUEFSTAND = "https://www.werbe-agentur-graz.at/positionierung-agentur";
 
 export const F = {
@@ -346,8 +347,8 @@ export function Fuss({ dunkel = false, hintergrund }) {
           {wissenImMenue() && <Link to="/wissen" className="hover:underline" style={{ color: farbe }}>Wissen</Link>}
           <Link to="/ueber-uns" className="hover:underline" style={{ color: farbe }}>Über uns</Link>
           <Link to="/kontakt" className="hover:underline" style={{ color: farbe }}>Kontakt</Link>
-          <a href={IMPRESSUM} target="_blank" rel="nofollow noopener noreferrer" className="hover:underline" style={{ color: farbe }}>Impressum</a>
-          <a href={DATENSCHUTZ} target="_blank" rel="nofollow noopener noreferrer" className="hover:underline" style={{ color: farbe }}>Datenschutz</a>
+          <Link to={IMPRESSUM} className="hover:underline" style={{ color: farbe }}>Impressum</Link>
+          <Link to={DATENSCHUTZ} className="hover:underline" style={{ color: farbe }}>Datenschutz</Link>
           {/* Bewusst kein Link zur Verwaltung */}
         </div>
       </div>
