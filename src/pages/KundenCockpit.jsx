@@ -969,7 +969,7 @@ function Signale({ s, nr }) {
           {s.einigkeit.reihen.length > 0 && (
             <div className="flex-[1_1_420px] min-w-0 flex flex-col gap-3.5" role="img" aria-label="Themen als Punktreihen: eng beieinander heißt einig, weit verstreut heißt uneinig. Die Themen bleiben bis zum Workshop verborgen.">
               {s.einigkeit.reihen.map((r, i) => (
-                <div key={i} className="grid items-center gap-4" style={{ gridTemplateColumns: "150px minmax(0,1fr)" }}>
+                <div key={i} className="grid items-center gap-x-4 gap-y-1.5 grid-cols-1 sm:grid-cols-[150px_minmax(0,1fr)]">
                   <ThemaName nr={i + 1} bereich={r.bereich} />
                   <div className="relative h-7 rounded-full" style={{ background: F.grau }}>
                     {r.punkte.map((x, j) => (
@@ -978,8 +978,8 @@ function Signale({ s, nr }) {
                   </div>
                 </div>
               ))}
-              <div className="grid gap-4 text-xs" style={{ gridTemplateColumns: "150px minmax(0,1fr)", color: F.grauMid }}>
-                <span />
+              <div className="grid gap-4 text-xs grid-cols-1 sm:grid-cols-[150px_minmax(0,1fr)]" style={{ color: F.grauMid }}>
+                <span className="hidden sm:block" />
                 <span className="flex justify-between"><span>niedrig</span><span>hoch</span></span>
               </div>
               <p className="text-xs leading-relaxed" style={{ color: F.daempft }}>
