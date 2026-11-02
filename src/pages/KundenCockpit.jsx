@@ -911,21 +911,46 @@ function Workshop({ d, nr }) {
 }
 
 // ---------------------------------------------------------------------------
-// Statt Fragetext: Kennung und das Kapitel des Interviews, aus dem das Thema stammt.
-function ThemaName({ nr, bereich, zeile = false }) {
+// Beschreibung einer Einschätzung: die Frage (nie die Antwort), welcher Aspekt, die Pole der Skala.
+function Kennung({ r, reserve }) {
+  const teil = r.nr && r.von > 1 ? `Aspekt ${r.nr} von ${r.von}` : "";
   return (
-    <span className={`min-w-0 ${zeile ? "flex flex-wrap items-baseline gap-x-2" : "flex flex-col"} text-[13px] leading-tight`}>
-      <span className="font-bold" style={{ color: F.text }}>Thema {nr}</span>
-      {bereich && <span style={{ color: F.daempft }}>{bereich}</span>}
+    <span className="min-w-0 flex flex-wrap items-baseline gap-x-2 text-[13px] leading-snug">
+      <span className="font-semibold" style={{ color: F.text }}>{r.frage || reserve}</span>
+      {teil && <span style={{ color: F.daempft }}>{teil}</span>}
     </span>
   );
 }
 
-function GrosseZahl({ wert, text, akzent = false }) {
+function Pole({ links, rechts }) {
+  return (
+    <div aria-hidden="true" className="mt-1 flex justify-between gap-3 text-[11px]" style={{ color: F.grauMid }}>
+      <span>{links || "niedrig"}</span>
+      <span>{rechts || "hoch"}</span>
+    </div>
+  );
+}
+
+// Band von den niedrigsten bis zu den höchsten Antworten, Strich in der Mitte. Keine Einzelwerte.
+function Band({ punkte, farbe }) {
+  const p = (punkte || []).map((x) => Math.max(0, Math.min(100, Number(x) || 0)));
+  if (!p.length) return null;
+  const lo = Math.min(...p);
+  const hi = Math.max(...p);
+  const mitte = p.length >= 6 ? (p[4] + p[5]) / 2 : (lo + hi) / 2;
+  return (
+    <div aria-hidden="true" className="relative h-7 rounded-full" style={{ background: F.grau }}>
+      <span className="absolute top-2 h-3 rounded-full" style={{ left: `${Math.min(lo, 98.5)}%`, width: `${Math.max(hi - lo, 1.5)}%`, background: farbe, opacity: 0.8 }} />
+      <span className="absolute top-1 h-5 w-[3px] -ml-[1.5px] rounded" style={{ left: `${mitte}%`, background: F.text }} />
+    </div>
+  );
+}
+
+function GrosseZahl({ wert, text, akzent = false, leise = false }) {
   return (
     <div>
-      <p className="text-[64px] leading-none font-extrabold" style={akzent ? { color: F.akzent } : undefined}>{wert}</p>
-      <p className="mt-2 max-w-[180px] text-sm leading-snug" style={{ color: F.daempft }}>{text}</p>
+      <p className="text-[64px] leading-none font-extrabold" style={akzent ? { color: F.akzent } : leise ? { color: F.grauMid } : undefined}>{wert}</p>
+      <p className="mt-2 max-w-[160px] text-sm leading-snug" style={{ color: F.daempft }}>{text}</p>
     </div>
   );
 }
@@ -936,54 +961,57 @@ function Signale({ s, nr }) {
   const intern = new Set(["geschaeftsfuehrung", "mitarbeiter"]);
   const nurIntern = !!s?.abweichungen && s.abweichungen.paare.every((p) => intern.has(p.a) && intern.has(p.b));
   const mehrerePaare = !!s?.abweichungen && new Set(s.abweichungen.beispiele.map((b) => `${b.a}-${b.b}`)).size > 1;
+  const e = s?.einigkeit;
+  const dazwischen = e && e.gesamt ? Math.max(0, e.gesamt - e.einig - e.auseinander) : null;
+  const gezeigtEinig = e ? e.reihen.filter((r) => !r.weit).length : 0;
+  const gezeigtWeit = e ? e.reihen.filter((r) => r.weit).length : 0;
   return (
     <section id="signale" className="max-w-[1160px] mx-auto px-6 pt-24 scroll-mt-4">
       <Etikett>{nr} Erste Signale</Etikett>
       <h2 className={`mt-3 ${H2}`}>Da steckt <span style={{ color: F.akzent }}>etwas drin.</span></h2>
       <p className="mt-4 max-w-[700px] text-[17px] leading-relaxed" style={{ color: F.daempft }}>
-        Hier siehst du noch keine Ergebnisse, nur wo es spannend wird. Was genau dahintersteckt, öffnen wir gemeinsam im Workshop. Erst mit der Einordnung wird aus einer Zahl eine Erkenntnis.
+        Hier siehst du, zu welchen Fragen es spannend wird, aber noch nicht, was geantwortet wurde. Was genau dahintersteckt, öffnen wir gemeinsam im Workshop. Erst mit der Einordnung wird aus einer Zahl eine Erkenntnis.
       </p>
 
       {!s && (
         <p className="mt-10 text-base" style={{ color: F.daempft }}>Für Signale braucht es in mindestens einer Gruppe die Mindestzahl an Interviews. Die Auswertung besprechen wir direkt im Workshop.</p>
       )}
 
-      {s?.einigkeit && (
+      {e && (
         <article className="mt-10 rounded-2xl p-6 sm:p-8 flex flex-wrap gap-x-14 gap-y-8" style={{ border: `1px solid ${F.linie}` }}>
           <div className="flex-[1_1_300px] min-w-0">
-            <Pille zielgruppe={s.einigkeit.zielgruppe} />
-            <h3 className="mt-4 text-[26px] leading-tight font-extrabold">Wo {s.einigkeit.zielgruppe === "mitarbeiter" ? "sich dein Team" : `sich die Gruppe ${zg(s.einigkeit.zielgruppe).lang}`} einig ist</h3>
-            {s.einigkeit.interviews > 0 && (
+            <Pille zielgruppe={e.zielgruppe} />
+            <h3 className="mt-4 text-[26px] leading-tight font-extrabold">Wie einig ist sich {e.zielgruppe === "mitarbeiter" ? "dein Team" : `die Gruppe ${zg(e.zielgruppe).lang}`}?</h3>
+            {e.interviews > 0 && (
               <p className="mt-2 text-sm" style={{ color: F.daempft }}>
-                Grundlage: {s.einigkeit.interviews} Interviews, {s.einigkeit.gesamt} Einschätzungen auf einer Skala
+                Grundlage: {e.interviews} Interviews, {e.gesamt} Einschätzungen auf einer Skala
               </p>
             )}
-            <div className="mt-6 flex flex-wrap gap-8">
-              <GrosseZahl wert={s.einigkeit.einig} text="Einschätzungen mit auffallend klarer Meinung" />
-              <GrosseZahl wert={s.einigkeit.auseinander} text="Einschätzungen, bei denen die Meinungen weit auseinandergehen" akzent />
+            <div className="mt-6 flex flex-wrap gap-x-8 gap-y-6">
+              <GrosseZahl wert={e.einig} text="Einschätzungen, bei denen sich fast alle einig sind" />
+              <GrosseZahl wert={e.auseinander} text="Einschätzungen, bei denen die Meinungen weit auseinandergehen" akzent />
+              {dazwischen !== null && <GrosseZahl wert={dazwischen} text="Einschätzungen dazwischen" leise />}
             </div>
             <p className="mt-6 text-[15px] leading-relaxed" style={{ color: F.daempft }}>
-              Wo alle gleich denken, gibt es eine klare Haltung: oft eine Stärke, die ihr nach außen noch nicht zeigt, manchmal ein gemeinsamer blinder Fleck. Wo die Meinungen auseinandergehen, liegt Gesprächsbedarf.
+              Wo alle gleich denken, gibt es eine klare Haltung. Ob das eine Stärke ist oder ein gemeinsamer blinder Fleck, zeigt erst die Einordnung. Wo die Meinungen auseinandergehen, liegt Gesprächsbedarf.
             </p>
           </div>
-          {s.einigkeit.reihen.length > 0 && (
-            <div className="flex-[1_1_420px] min-w-0 flex flex-col gap-3.5" role="img" aria-label="Themen als Punktreihen: eng beieinander heißt einig, weit verstreut heißt uneinig. Die Themen bleiben bis zum Workshop verborgen.">
-              {s.einigkeit.reihen.map((r, i) => (
-                <div key={i} className="grid items-center gap-x-4 gap-y-1.5 grid-cols-1 sm:grid-cols-[150px_minmax(0,1fr)]">
-                  <ThemaName nr={i + 1} bereich={r.bereich} />
-                  <div className="relative h-7 rounded-full" style={{ background: F.grau }}>
-                    {r.punkte.map((x, j) => (
-                      <span key={j} className="absolute top-2 w-3 h-3 -ml-1.5 rounded-full" style={{ left: `${Math.max(2, Math.min(98, x))}%`, background: r.weit ? F.akzent : zg(s.einigkeit.zielgruppe).punkt, opacity: 0.55 }} />
-                    ))}
+          {e.reihen.length > 0 && (
+            <div className="flex-[1_1_420px] min-w-0 flex flex-col gap-5" role="img" aria-label="Einschätzungen als Bänder: ein schmales Band heißt einig, ein breites Band heißt uneinig. Gezeigt wird die Frage, nicht die Antwort.">
+              {e.reihen.map((r, i) => (
+                <div key={i}>
+                  <div className="flex items-start justify-between gap-3">
+                    <Kennung r={r} reserve={`Einschätzung ${i + 1}`} />
+                    <span className="shrink-0 inline-flex items-center min-h-[22px] px-2 rounded-full text-[11px] font-semibold" style={r.weit ? { background: F.hauch, color: F.akzentTief } : { background: zg(e.zielgruppe).bg, color: zg(e.zielgruppe).text }}>
+                      {r.weit ? "auseinander" : "einig"}
+                    </span>
                   </div>
+                  <div className="mt-2"><Band punkte={r.punkte} farbe={r.weit ? F.akzent : zg(e.zielgruppe).punkt} /></div>
+                  <Pole links={r.links} rechts={r.rechts} />
                 </div>
               ))}
-              <div className="grid gap-4 text-xs grid-cols-1 sm:grid-cols-[150px_minmax(0,1fr)]" style={{ color: F.grauMid }}>
-                <span className="hidden sm:block" />
-                <span className="flex justify-between"><span>niedrig</span><span>hoch</span></span>
-              </div>
               <p className="text-xs leading-relaxed" style={{ color: F.daempft }}>
-                Gezeigt {s.einigkeit.reihen.length === 1 ? "wird eine Auswahl" : `werden ${s.einigkeit.reihen.length} Beispiele`} aus {s.einigkeit.einig + s.einigkeit.auseinander} Einschätzungen. Jede Reihe zeigt, wie sich alle Antworten zu einem Thema verteilen: eng beieinander heißt einig, weit über die Skala verstreut heißt uneinig. Ein Punkt ist keine Person.
+                Gezeigt {gezeigtEinig === 1 ? "wird die klarste" : `werden die ${gezeigtEinig} klarsten`} von {e.einig} einigen Einschätzungen{gezeigtWeit > 0 ? ` und ${gezeigtWeit === 1 ? "die" : `die ${gezeigtWeit}`} am weitesten gestreute${gezeigtWeit === 1 ? "" : "n"}` : ""}. Das Band reicht von den niedrigsten bis zu den höchsten Antworten, der Strich zeigt die Mitte. Welcher Aspekt es genau ist, besprechen wir im Workshop.
               </p>
             </div>
           )}
@@ -996,25 +1024,38 @@ function Signale({ s, nr }) {
             <div className="flex flex-wrap gap-2">
               {[...new Set(s.abweichungen.paare.flatMap((p) => [p.a, p.b]))].map((k) => <Pille key={k} zielgruppe={k} />)}
             </div>
-            <h3 className="mt-4 text-[26px] leading-tight font-extrabold">{nurIntern ? "Wo Führung und Team es anders sehen" : "Selbstbild und Fremdbild"}</h3>
+            <h3 className="mt-4 text-[26px] leading-tight font-extrabold">{nurIntern ? "Wie Führung und Team das Unternehmen sehen" : "Selbstbild und Fremdbild"}</h3>
             {s.abweichungen.paare.some((p) => p.na) && (
               <p className="mt-2 text-sm" style={{ color: F.daempft }}>
-                Grundlage: {s.abweichungen.paare.map((p) => `${p.na} Interviews ${zg(p.a).lang}, ${p.nb} ${zg(p.b).lang}, ${p.verglichen} gemeinsame Einschätzungen`).join("; ")}
+                Grundlage: {s.abweichungen.paare.map((p) => `${p.na} Interviews ${zg(p.a).lang}, ${p.nb} ${zg(p.b).lang}. Beiden wurden dieselben ${p.verglichen} Einschätzungen gestellt.`).join(" ")}
               </p>
             )}
             <div className="mt-6 flex flex-wrap gap-8">
               {s.abweichungen.paare.map((p, i) => (
-                <GrosseZahl key={i} wert={p.anzahl} text={`deutliche Abweichungen zwischen ${paarText(p)}`} akzent={i === 0} />
+                <GrosseZahl key={i} wert={p.anzahl} text={`deutliche Unterschiede zwischen ${paarText(p)}`} akzent={i === 0} />
               ))}
             </div>
+            {s.abweichungen.paare.some((p) => (p.jeFrage || []).length) && (
+              <ul className="mt-6 flex flex-col gap-3">
+                {s.abweichungen.paare.flatMap((p) => [...(p.jeFrage || [])].sort((x, y) => y.anzahl - x.anzahl).map((f) => ({ ...f, paar: p }))).map((f, i) => (
+                  <li key={i} className="rounded-xl bg-white px-4 py-3">
+                    <p className="text-sm font-semibold leading-snug">{f.frage}</p>
+                    <p className="mt-1 text-[13px]" style={{ color: f.anzahl ? F.akzentTief : F.daempft }}>
+                      {f.anzahl ? `In ${f.anzahl} von ${f.verglichen} Aspekten deutlich anders gesehen` : `In allen ${f.verglichen} Aspekten ähnlich gesehen`}
+                      {mehrerePaare ? `, ${paarText(f.paar)}` : ""}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
             <p className="mt-6 text-[15px] leading-relaxed" style={{ color: F.daempft }}>
               {nurIntern
-                ? "Genau hier setzt die ANDI-Methode an: Nicht der Durchschnitt ist spannend, sondern wo Führung und Team dasselbe Unternehmen unterschiedlich einschätzen."
+                ? "Genau hier setzt die ANDI-Methode an: Nicht der Durchschnitt ist spannend, sondern wo Führung und Team dasselbe unterschiedlich sehen, das eigene Unternehmen genauso wie den Markt."
                 : "Genau hier setzt die ANDI-Methode an: Nicht der Durchschnitt ist spannend, sondern wo das Bild von innen und das Bild von außen auseinanderfallen."}
             </p>
           </div>
           {s.abweichungen.beispiele.length > 0 && (
-            <div className="flex-[1_1_420px] min-w-0 flex flex-col gap-5" role="img" aria-label="Verborgene Themen mit den Positionen zweier Gruppen auf einer Skala und dem Abstand dazwischen.">
+            <div className="flex-[1_1_420px] min-w-0 flex flex-col gap-5" role="img" aria-label="Fragen mit den Durchschnitten zweier Gruppen auf einer Skala und dem Abstand dazwischen. Gezeigt wird die Frage, nicht der Aspekt.">
               <div className="flex flex-wrap gap-x-5 gap-y-2 text-[13px] font-semibold">
                 {[...new Set(s.abweichungen.beispiele.flatMap((b) => [b.a, b.b]))].map((k) => (
                   <span key={k} className="inline-flex items-center gap-1.5"><span aria-hidden="true" className="w-3.5 h-3.5 rounded-full" style={{ background: zg(k).punkt }} />{zg(k).lang}</span>
@@ -1022,9 +1063,9 @@ function Signale({ s, nr }) {
               </div>
               {s.abweichungen.beispiele.map((b, i) => (
                 <div key={i}>
-                  <div className="flex items-center justify-between gap-3 text-[13px]">
-                    <ThemaName nr={String.fromCharCode(65 + i)} bereich={b.bereich} zeile />
-                    {mehrerePaare && <span className="font-semibold">{paarText(b)}</span>}
+                  <div className="flex items-start justify-between gap-3">
+                    <Kennung r={b} reserve={`Unterschied ${i + 1}`} />
+                    {mehrerePaare && <span className="shrink-0 text-[13px] font-semibold">{paarText(b)}</span>}
                   </div>
                   <div aria-hidden="true" className="mt-2 relative h-6">
                     <div className="absolute inset-x-0 top-[11px] h-0.5" style={{ background: "#d6d3d0" }} />
@@ -1032,11 +1073,11 @@ function Signale({ s, nr }) {
                     <span className="absolute top-0.5 w-5 h-5 -ml-2.5 rounded-full border-[3px] border-white box-border" style={{ left: `${b.xa}%`, background: zg(b.a).punkt }} />
                     <span className="absolute top-0.5 w-5 h-5 -ml-2.5 rounded-full border-[3px] border-white box-border" style={{ left: `${b.xb}%`, background: zg(b.b).punkt }} />
                   </div>
+                  <Pole links={b.links} rechts={b.rechts} />
                 </div>
               ))}
-              <div className="flex justify-between text-xs" style={{ color: F.grauMid }}><span>niedrig</span><span>hoch</span></div>
               <p className="text-xs leading-relaxed" style={{ color: F.daempft }}>
-                Jeder Punkt ist der Durchschnitt einer Gruppe. Als deutlich zählt ein Abstand von mindestens einem Viertel der Skala. Gezeigt {s.abweichungen.beispiele.length === 1 ? "wird die deutlichste Abweichung" : `werden die ${s.abweichungen.beispiele.length} deutlichsten Abweichungen`}.
+                Jeder Punkt ist der Durchschnitt einer Gruppe. Deutlich heißt: mindestens ein Viertel der Skala auseinander. Gezeigt {s.abweichungen.beispiele.length === 1 ? "wird der deutlichste Unterschied" : `werden die ${s.abweichungen.beispiele.length} deutlichsten Unterschiede`}.
               </p>
             </div>
           )}
