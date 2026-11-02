@@ -950,7 +950,7 @@ function GrosseZahl({ wert, text, akzent = false, leise = false }) {
   return (
     <div>
       <p className="text-[64px] leading-none font-extrabold" style={akzent ? { color: F.akzent } : leise ? { color: F.grauMid } : undefined}>{wert}</p>
-      <p className="mt-2 max-w-[160px] text-sm leading-snug" style={{ color: F.daempft }}>{text}</p>
+      <p className="mt-2 max-w-[130px] text-sm leading-snug" style={{ color: F.daempft }}>{text}</p>
     </div>
   );
 }
@@ -987,7 +987,7 @@ function Signale({ s, nr }) {
                 Grundlage: {e.interviews} Interviews, {e.gesamt} Einschätzungen auf einer Skala
               </p>
             )}
-            <div className="mt-6 flex flex-wrap gap-x-8 gap-y-6">
+            <div className="mt-6 flex flex-wrap gap-x-6 gap-y-6">
               <GrosseZahl wert={e.einig} text="Einschätzungen, bei denen sich fast alle einig sind" />
               <GrosseZahl wert={e.auseinander} text="Einschätzungen, bei denen die Meinungen weit auseinandergehen" akzent />
               {dazwischen !== null && <GrosseZahl wert={dazwischen} text="Einschätzungen dazwischen" leise />}
@@ -1126,7 +1126,7 @@ function Signale({ s, nr }) {
       {s && (
         <p className="mt-6 flex items-start gap-2.5 max-w-[760px] text-sm leading-relaxed" style={{ color: F.daempft }}>
           <Info size={18} className="shrink-0 mt-0.5" color={F.text} aria-hidden="true" />
-          Signale entstehen erst nach Abschluss aller Gruppen, nur aus Fragen mit Skala und aus der Textmenge. Welche Fragen hinter den Themen stehen und wie sie zu lesen sind, besprechen wir gemeinsam im Workshop. Keine Antwort und keine Person ist daraus erkennbar.
+          Signale entstehen erst nach Abschluss aller Gruppen, nur aus Fragen mit Skala und aus der Textmenge. Welcher Aspekt einer Frage genau dahintersteht und wie er zu lesen ist, besprechen wir gemeinsam im Workshop. Keine Antwort und keine Person ist daraus erkennbar.
         </p>
       )}
     </section>
