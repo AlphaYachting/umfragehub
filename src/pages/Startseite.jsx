@@ -32,8 +32,8 @@ import KundenSlider from "@/components/oeffentlich/KundenSlider";
 
 const KONTAKT_MAIL = "office@rittler.co";
 const KONTAKT_TEL = "+43 316 570 117";
-const IMPRESSUM = "https://www.werbe-agentur-graz.at/impressum";
-const DATENSCHUTZ = "https://www.werbe-agentur-graz.at/datenschutz";
+const IMPRESSUM = "/impressum";
+const DATENSCHUTZ = "/datenschutz";
 const MARKENPRUEFSTAND = "https://www.werbe-agentur-graz.at/positionierung-agentur";
 
 // Farben wie im Prototyp. Kleine pinke Beschriftungen etwas dunkler als der Akzent,
@@ -642,8 +642,8 @@ export default function Startseite() {
           <div className="flex gap-5">
             <Link to="/ueber-uns" className="hover:underline">Über uns</Link>
             <Link to="/kontakt" className="hover:underline">Kontakt</Link>
-            <a href={IMPRESSUM} target="_blank" rel="nofollow noopener noreferrer" className="hover:underline">Impressum</a>
-            <a href={DATENSCHUTZ} target="_blank" rel="nofollow noopener noreferrer" className="hover:underline">Datenschutz</a>
+            <Link to={IMPRESSUM} className="hover:underline">Impressum</Link>
+            <Link to={DATENSCHUTZ} className="hover:underline">Datenschutz</Link>
             {/* Bewusst kein Link zur Verwaltung: Zugang nur über andifragt.at/verwaltung (Wunsch 22.10.2026) */}
           </div>
         </div>
