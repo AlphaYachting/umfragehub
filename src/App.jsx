@@ -32,6 +32,9 @@ const ModulVertrieb = lazy(() => import('@/pages/modul/Vertrieb'));
 const UeberUns = lazy(() => import('@/pages/UeberUns'));
 const Kontakt = lazy(() => import('@/pages/Kontakt'));
 const Preise = lazy(() => import('@/pages/Preise'));
+// Rechtstexte (02.11.2026): nur über den Fuß verlinkt
+const Impressum = lazy(() => import('@/pages/Impressum'));
+const Datenschutz = lazy(() => import('@/pages/Datenschutz'));
 // Wissensbereich: Übersicht und je Beitrag eine eigene dünne Seite (Titel und Beschreibung je Seite in Base44)
 const Wissen = lazy(() => import('@/pages/wissen/Wissen'));
 const WissenMitarbeiterbefragungErgebnisse = lazy(() => import('@/pages/wissen/beitrag/WissenMitarbeiterbefragungErgebnisse'));
@@ -93,6 +96,9 @@ const AuthenticatedApp = () => {
       <Route path="/kontakt" element={<Kontakt />} />
       {/* Öffentlich: Preise mit Rechner */}
       <Route path="/preise" element={<Preise />} />
+      {/* Öffentlich: Rechtstexte, nur im Fuß verlinkt */}
+      <Route path="/impressum" element={<Impressum />} />
+      <Route path="/datenschutz" element={<Datenschutz />} />
       <Route path="/wissen" element={<Wissen />} />
       <Route path="/wissen/mitarbeiterbefragung-ergebnisse" element={<WissenMitarbeiterbefragungErgebnisse />} />
       <Route path="/wissen/warum-kuendigen-gute-mitarbeiter" element={<WissenWarumKuendigenGuteMitarbeiter />} />
