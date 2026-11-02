@@ -65,8 +65,7 @@ export default function Impressum() {
         </p>
         <p>
           Texte, Grafiken und Fotos dieser Website sind urheberrechtlich geschützt. Eine Verwendung außerhalb der
-          gesetzlich erlaubten Fälle braucht unsere Zustimmung. Die Logos unserer Kunden zeigen wir mit deren
-          Einverständnis als Referenz.
+          gesetzlich erlaubten Fälle braucht unsere Zustimmung.
         </p>
       </Abschnitt>
 
