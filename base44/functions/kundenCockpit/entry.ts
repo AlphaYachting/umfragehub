@@ -190,7 +190,7 @@ async function laden(db, body) {
     const antworten = await holeAntworten(db, fertige.map((s) => s.id));
     tiefe = tiefeBerechnen(antworten);
     if (phase === 'abgeschlossen' && anzeigen.signale) {
-      signale = await signaleBerechnen(db, jeWelle, antworten);
+      signale = await signaleBerechnen(db, jeWelle, antworten, projekt);
     }
   }
 
@@ -385,7 +385,7 @@ const EINIG_BIS = 0.6;          // Standardabweichung auf einer 0-4-Skala
 const AUSEINANDER_AB = 1.2;
 const ABWEICHUNG_AB = 1.0;      // Mittelwertabstand: ein Punkt auf einer 5er-Skala
 
-async function signaleBerechnen(db, jeWelle, antworten) {
+async function signaleBerechnen(db, jeWelle, antworten, projekt = null) {
   const antwortenJeSession = {};
   for (const a of antworten) (antwortenJeSession[a.sessionId] ||= []).push(a);
 
@@ -402,6 +402,7 @@ async function signaleBerechnen(db, jeWelle, antworten) {
     // Werte je Item (Frage oder Matrixzeile), auf 0 bis 4 umgerechnet
     const werte: Record<string, number[]> = {};
     const bereich: Record<string, string> = {};   // Kapitel des Interviews je Item, ohne Fragetext
+    const meta: Record<string, Record<string, unknown>> = {};   // Frage, Pole und Position je Item
     for (const s of fertig) {
       for (const a of antwortenJeSession[s.id] || []) {
         const f = fragen[a.frageId];
@@ -412,7 +413,10 @@ async function signaleBerechnen(db, jeWelle, antworten) {
         const norm = (v) => ((Number(v) - min) / (max - min)) * 4;
         const basis = f.schluessel || f.id;
         if (f.typ === 'matrix') {
-          for (const k of Object.keys(a.matrixWerte || {})) bereich[`${basis}:${k}`] ||= f.kapitel || '';
+          for (const k of Object.keys(a.matrixWerte || {})) {
+            bereich[`${basis}:${k}`] ||= f.kapitel || '';
+            meta[`${basis}:${k}`] ||= itemMeta(f, k, projekt);
+          }
           // Schlüssel der Matrixzeile: stabile Zeilen-ID, sonst der Zeilenindex
           for (const [k, v] of Object.entries(a.matrixWerte || {})) {
             if (typeof v !== 'number') continue;
@@ -420,11 +424,12 @@ async function signaleBerechnen(db, jeWelle, antworten) {
           }
         } else if (typeof a.zahl === 'number') {
           bereich[basis] ||= f.kapitel || '';
+          meta[basis] ||= itemMeta(f, null, projekt);
           (werte[basis] ||= []).push(norm(a.zahl));
         }
       }
     }
-    return { w, mindest, fertig: fertig.length, fragen, werte, bereich };
+    return { w, mindest, fertig: fertig.length, fragen, werte, bereich, meta };
   }, 3);
 
   const auswertbar = proWelle.filter((x) => x.fertig >= x.mindest);
@@ -435,7 +440,7 @@ async function signaleBerechnen(db, jeWelle, antworten) {
     (a.w.zielgruppe === 'mitarbeiter' ? -1 : 0) - (b.w.zielgruppe === 'mitarbeiter' ? -1 : 0) || b.fertig - a.fertig)[0];
   const items = (Object.entries(basis.werte) as [string, number[]][])
     .filter(([, v]) => v.length >= basis.mindest)
-    .map(([k, v]) => ({ sd: standardabweichung(v), v, bereich: basis.bereich[k] || '' }));
+    .map(([k, v]) => ({ sd: standardabweichung(v), v, bereich: basis.bereich[k] || '', meta: basis.meta[k] || {} }));
   const einig = items.filter((i) => i.sd <= EINIG_BIS).sort((a, b) => a.sd - b.sd);
   const auseinander = items.filter((i) => i.sd >= AUSEINANDER_AB).sort((a, b) => b.sd - a.sd);
   const punkte = (v) => dezile(v).map((x) => Math.round((x / 4) * 100));
@@ -446,8 +451,8 @@ async function signaleBerechnen(db, jeWelle, antworten) {
     interviews: basis.fertig,
     gesamt: items.length,
     reihen: [
-      ...einig.slice(0, 4).map((i) => ({ weit: false, punkte: punkte(i.v), bereich: i.bereich })),
-      ...auseinander.slice(0, 2).map((i) => ({ weit: true, punkte: punkte(i.v), bereich: i.bereich })),
+      ...einig.slice(0, 4).map((i) => ({ weit: false, punkte: punkte(i.v), bereich: i.bereich, ...i.meta })),
+      ...auseinander.slice(0, 2).map((i) => ({ weit: true, punkte: punkte(i.v), bereich: i.bereich, ...i.meta })),
     ],
   };
 
@@ -465,18 +470,25 @@ async function signaleBerechnen(db, jeWelle, antworten) {
     if (!A || !B) continue;
     let anzahl = 0;
     let verglichen = 0;
+    const jeFrage = new Map();
     for (const [k, va] of Object.entries(A.werte) as [string, number[]][]) {
       const vb: number[] | undefined = B.werte[k];
       if (!vb || va.length < A.mindest || vb.length < B.mindest) continue;
       verglichen++;
+      const m = A.meta[k] || B.meta[k] || {};
+      const fk = String(m.frage || k.split(':')[0]);
+      const zf = jeFrage.get(fk) || { frage: m.frage || '', anzahl: 0, verglichen: 0 };
+      zf.verglichen++;
+      jeFrage.set(fk, zf);
       const ma = mittel(va);
       const mb = mittel(vb);
       if (Math.abs(ma - mb) >= ABWEICHUNG_AB) {
         anzahl++;
-        beispiele.push({ a, b, xa: Math.round((ma / 4) * 100), xb: Math.round((mb / 4) * 100), abstand: Math.abs(ma - mb), bereich: A.bereich[k] || B.bereich[k] || '' });
+        zf.anzahl++;
+        beispiele.push({ a, b, xa: Math.round((ma / 4) * 100), xb: Math.round((mb / 4) * 100), abstand: Math.abs(ma - mb), bereich: A.bereich[k] || B.bereich[k] || '', ...m });
       }
     }
-    if (verglichen > 0) paare.push({ a, b, anzahl, verglichen, na: A.fertig, nb: B.fertig });
+    if (verglichen > 0) paare.push({ a, b, anzahl, verglichen, na: A.fertig, nb: B.fertig, jeFrage: [...jeFrage.values()].filter((z) => z.frage) });
   }
   beispiele.sort((x, y) => y.abstand - x.abstand);
 
@@ -517,7 +529,7 @@ async function signaleBerechnen(db, jeWelle, antworten) {
   return {
     anzahl,
     einigkeit: items.length ? einigkeit : null,
-    abweichungen: paare.length ? { paare, beispiele: beispiele.slice(0, 5).map(({ a, b, xa, xb, bereich }) => ({ a, b, xa, xb, bereich })) } : null,
+    abweichungen: paare.length ? { paare, beispiele: beispiele.slice(0, 5).map(({ a, b, xa, xb, bereich, frage, nr, von, links, rechts }) => ({ a, b, xa, xb, bereich, frage, nr, von, links, rechts })) } : null,
     intensitaet: kapitel.length >= 2 ? { kapitel, spitze } : null,
   };
 }
@@ -842,6 +854,41 @@ function dezile(v) {
 
 function woerterZaehlen(t) {
   return String(t).split(/\s+/).filter(Boolean).length;
+}
+
+// Kurzer, lesbarer Fragetext für das Cockpit. Zeigt nur die Frage, nie eine Antwort.
+const SIE_FORM = { du: 'Sie', dir: 'Ihnen', dich: 'sich', dein: 'Ihr', deine: 'Ihre', deinen: 'Ihren', deinem: 'Ihrem', deiner: 'Ihrer', deines: 'Ihres' };
+function frageKurz(text, projekt) {
+  const sie = projekt?.ansprache === 'sie';
+  let t = String(text || '')
+    .replace(/\{\{\s*firma\s*\}\}/gi, projekt?.kundenname || 'dein Unternehmen')
+    .replace(/\{\{([^}|]+)\|([^}]+)\}\}/g, (_, du, s2) => (sie ? s2 : du))
+    .replace(/\{\{\s*(\w+)\s*\}\}/g, (_, w) => (sie ? (SIE_FORM[w.toLowerCase()] || w) : w))
+    .replace(/\*/g, '')
+    .replace(/\s*\u2026\s*/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const frage = t.indexOf('?');
+  if (frage > 0) t = t.slice(0, frage + 1);
+  if (t.length > 70 && t.includes(',')) t = t.slice(0, t.indexOf(',')).trim() + (t.endsWith('?') ? '?' : '');
+  t = t.replace(/^Und\s+/i, '');
+  return t.charAt(0).toUpperCase() + t.slice(1);
+}
+
+function itemMeta(f, zeile, projekt) {
+  const meta: Record<string, unknown> = {
+    frage: frageKurz(f.text, projekt),
+    links: f.skalaLabelLinks || '',
+    rechts: f.skalaLabelRechts || '',
+  };
+  if (zeile !== null && zeile !== undefined) {
+    const ids = Array.isArray(f.matrixZeilenIds) ? f.matrixZeilenIds : [];
+    let i = ids.indexOf(zeile);
+    if (i < 0 && /^\d+$/.test(String(zeile))) i = Number(zeile);
+    meta.nr = i >= 0 ? i + 1 : null;
+    meta.von = Array.isArray(f.matrixZeilen) ? f.matrixZeilen.length : null;
+  }
+  return meta;
 }
 
 function kapitelTitel(titel) {
