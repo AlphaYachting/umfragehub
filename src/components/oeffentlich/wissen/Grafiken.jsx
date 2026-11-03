@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import {
   Archive, Banknote, CirclePause, Clock, Copy, Equal, EyeOff, FileQuestion, Gauge, Handshake, Layers,
   MessageSquareX, PhoneOff, RefreshCw, Scale, ShieldAlert, Target, TrendingUp, TriangleAlert, UserX, Users, X, Zap,
-  Star, Globe, MessageCircle, User, Heart, Wrench, FileText, TrendingDown,
+  Star, Globe, MessageCircle, User, Heart, Wrench, FileText, TrendingDown, Check,
 } from "lucide-react";
 import { F } from "@/components/oeffentlich/Oeffentlich";
 import { Text } from "@/components/oeffentlich/wissen/Bausteine";
@@ -79,24 +79,32 @@ export function Kennzahlen({ liste }) {
 }
 
 // Karten mit Symbol, ersetzen Listen mit Randstrich
+// stil "ergebnis": für Karten, die zeigen, was der Kunde bekommt. Grün mit Haken statt Pink, damit es positiv wirkt.
+const GRUEN = { flaeche: "#f2fbf6", rand: "#cdeedb", symbol: "#1f7a4a", haken: "#45d085" };
 function Karten({ b }) {
   const dunkel = b.stil === "dunkel";
+  const ergebnis = b.stil === "ergebnis";
   return (
     <ul className="mb-[26px] grid gap-3.5 grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))]">
       {b.karten.map((k, i) => {
         const Symbol = SYMBOLE[k.symbol] || X;
         const anlass = !!k.anlass;
-        const kreis = dunkel ? PINK : anlass ? "#ffffff" : k.symbol === "nein" ? F.grau : F.hauch;
-        const strich = dunkel ? F.dunkel : anlass || k.symbol === "nein" ? F.daempft : F.link;
+        const kreis = ergebnis ? "#ffffff" : dunkel ? PINK : anlass ? "#ffffff" : k.symbol === "nein" ? F.grau : F.hauch;
+        const strich = ergebnis ? GRUEN.symbol : dunkel ? F.dunkel : anlass || k.symbol === "nein" ? F.daempft : F.link;
         return (
           <li
             key={i}
             className="flex flex-col gap-3 p-[22px] rounded-[18px]"
-            style={dunkel ? { background: F.dunkel } : anlass ? { background: F.grau, border: "1.5px dashed #b3b3b3" } : { border: `1px solid ${F.linie}` }}
+            style={ergebnis ? { background: GRUEN.flaeche, border: `1px solid ${GRUEN.rand}` } : dunkel ? { background: F.dunkel } : anlass ? { background: F.grau, border: "1.5px dashed #b3b3b3" } : { border: `1px solid ${F.linie}` }}
           >
             <span className="flex items-center justify-between gap-2.5">
-              <span aria-hidden="true" className="inline-flex items-center justify-center w-12 h-12 rounded-full" style={{ background: kreis }}>
+              <span aria-hidden="true" className="relative inline-flex items-center justify-center w-12 h-12 rounded-full" style={{ background: kreis }}>
                 <Symbol size={k.symbol === "nein" ? 22 : 24} strokeWidth={k.symbol === "nein" ? 2.4 : 2} color={strich} />
+                {ergebnis && (
+                  <span className="absolute -right-1 -bottom-1 inline-flex items-center justify-center w-5 h-5 rounded-full" style={{ background: GRUEN.haken, boxShadow: `0 0 0 2px ${GRUEN.flaeche}` }}>
+                    <Check size={12} strokeWidth={3.2} color="#ffffff" />
+                  </span>
+                )}
               </span>
               {anlass && <span className="text-xs font-bold uppercase tracking-[0.12em]" style={{ color: F.daempft }}>{k.anlass}</span>}
             </span>
