@@ -315,7 +315,7 @@ const beitrag = {
         },
         {
           "typ": "karten",
-          "stil": "dunkel",
+          "stil": "ergebnis",
           "karten": [
             {
               "symbol": "ziel",
