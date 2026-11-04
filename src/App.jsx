@@ -117,7 +117,7 @@ const AuthenticatedApp = () => {
       <Route path="/wissen/gesellschafter-uneinig-marketing" element={<WissenGesellschafterUneinigMarketing />} />
       <Route path="/wissen/mitarbeiterbefragung-iso-9001" element={<WissenMitarbeiterbefragungIso9001 />} />
       <Route path="/wissen/mitarbeiterbefragung-iso-45001" element={<WissenMitarbeiterbefragungIso45001 />} />
-      <Route path="/wissen/*" element={<Navigate to="/wissen" replace />} />
+      <Route path="/wissen/*" element={<NichtGefunden />} />
       <Route path="/i/:linkToken" element={<Interview />} />
       {/* Öffentlich mit Passwort: Kunden-Cockpit des Auftraggebers */}
       <Route path="/k/:code" element={<KundenCockpit />} />
