@@ -361,8 +361,8 @@ const beitrag = {
       "herkunft": "Wirtschaftskammer Niederösterreich"
     },
     {
-      "titel": "Einfach Nachfolgen. Die Roadmap zum Erfolg",
-      "url": "https://www.wko.at/stmk/betriebsuebergabe/roadmapnachfolge.pdf",
+      "titel": "Einfach Nachfolgen. Leitfaden zur Betriebsnachfolge (12. Auflage, 2026)",
+      "url": "https://www.wko.at/stmk/betriebsuebergabe/2026-roadmap-nachfolge-ansichtspdf.pdf",
       "herkunft": "Follow me Steiermark"
     },
     {

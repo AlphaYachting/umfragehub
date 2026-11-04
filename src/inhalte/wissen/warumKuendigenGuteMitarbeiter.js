@@ -548,8 +548,8 @@ const beitrag = {
       "herkunft": "APA, vienna.at"
     },
     {
-      "titel": "Retaining Talent (2008)",
-      "url": "https://wisp.gensler.com/wp-content/uploads/2020/03/Retaining-Talent.pdf",
+      "titel": "Retaining Talent (2008), archivierte Fassung",
+      "url": "https://web.archive.org/web/20240706110519/https://wisp.gensler.com/wp-content/uploads/2020/03/Retaining-Talent.pdf",
       "herkunft": "David G. Allen, SHRM Foundation"
     },
     {

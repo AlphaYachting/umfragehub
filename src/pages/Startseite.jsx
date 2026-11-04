@@ -177,7 +177,7 @@ const EINSTIEGSFRAGEN = [
 const FAKTEN = [
   { zahl: "über 500", text: "Markenprojekte als Grundlage der Methode" },
   { zahl: "über 20 Jahre", text: "Rittler & Co, Werbeagentur in Graz" },
-  { zahl: "rund 60 Min.", text: "dein eigener Aufwand" },
+  { zahl: "rund 2 Std.", text: "dein eigener Aufwand" },
   { zahl: "100 % anonym", text: "für alle, die wir interviewen" },
 ];
 
