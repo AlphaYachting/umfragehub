@@ -4,9 +4,9 @@
 const beitrag = {
   "slug": "mitarbeiterbefragung-iso-45001",
   "nr": 18,
-  "status": "entwurf",
+  "status": "freigegeben",
   "geprueft": "2026-11-04",
-  "erschienen": null,
+  "erschienen": "2026-11-04",
   "aktualisiert": null,
   "leitartikel": false,
   "modul": "team",
