@@ -1,6 +1,6 @@
 // Beitrag Nr. 17 im Wissensbereich: /wissen/mitarbeiterbefragung-iso-9001
 // Inhalte aus dem Prototyp WissenIso9001.dc.html und der visuellen Fassung (Arbeitsfläche andi fragt. Produktseite), umgewandelt am 04.11.2026.
-// Belege: belege_iso.md im Prüfprotokoll. status "entwurf" bis zur Freigabe durch Alfons.
+// Belege: analyse/belege-iso-mitarbeiterbefragung.md im Projekt. Freigegeben von Alfons am 04.11.2026.
 const beitrag = {
   "slug": "mitarbeiterbefragung-iso-9001",
   "nr": 17,
