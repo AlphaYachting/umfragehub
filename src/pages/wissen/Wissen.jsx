@@ -128,7 +128,7 @@ export default function Wissen() {
             style={{ background: F.dunkel, textDecoration: "none" }}
           >
             <div className="relative flex-[1_1_440px] min-h-[300px]">
-              {leit.titelbild?.src && <img src={leit.titelbild.src} alt="" className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: "50% 40%" }} />}
+              {leit.titelbild?.src && <img src={leit.titelbild.src} alt={leit.titelbild.alt || leit.titel || ""} className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: "50% 40%" }} />}
             </div>
             <div className="flex-[1_1_440px] min-w-0 p-[clamp(28px,4vw,52px)] flex flex-col gap-[18px]">
               <span className="self-start flex flex-wrap gap-2">

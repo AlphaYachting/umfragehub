@@ -189,13 +189,14 @@ export const TEAM = [
   },
 ];
 
-// Porträt im Kreis. Name steht immer daneben, deshalb ist das Bild dekorativ (alt leer).
+// Porträt im Kreis. Name steht immer daneben; für Screenreader ausgeblendet,
+// der Alt-Text nennt die Person trotzdem (Bildersuche, SEO-Prüfungen).
 export function Portraet({ person = TEAM[0], className = "w-16 h-16", gross = false, style }) {
   return (
     <span aria-hidden="true" className={`shrink-0 inline-block rounded-full overflow-hidden ${className}`} style={{ background: F.dunkel, ...style }}>
       <img
         src={gross ? person.foto : person.fotoKlein}
-        alt=""
+        alt={`Porträt ${person.name}, Rittler & Co Graz`}
         width={gross ? 480 : 160}
         height={gross ? 480 : 160}
         loading="lazy"

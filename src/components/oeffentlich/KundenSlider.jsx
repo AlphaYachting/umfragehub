@@ -53,7 +53,7 @@ function SliderLogo({ name, datei, kopie }) {
     <li className="kundenslider-logo">
       <img
         src={LOGO_BASIS + datei}
-        alt={kopie ? "" : name}
+        alt={`Logo ${name}`}
         title={kopie ? undefined : name}
         decoding="async"
         onLoad={vermessen}
