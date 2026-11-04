@@ -642,7 +642,7 @@ function Spiegel({ b }) {
 function Schnittmenge({ b }) {
   return (
     <Grafik b={b}>
-      <svg viewBox="0 0 520 230" width="100%" role="img" aria-label={b.beschreibung} className="block mt-4 mx-auto max-w-[520px]" style={{ fontFamily: SCHRIFT }}>
+      <svg viewBox="0 0 520 230" width="100%" role="img" aria-label={b.beschreibung} className="hidden sm:block mt-4 mx-auto max-w-[520px]" style={{ fontFamily: SCHRIFT }}>
         <circle cx="195" cy="115" r="100" fill="#8a8a8a" fillOpacity="0.35" />
         <circle cx="325" cy="115" r="100" fill={PINK} fillOpacity="0.35" />
         {b.links.map((t, i) => (
@@ -652,6 +652,17 @@ function Schnittmenge({ b }) {
           <text key={`r${i}`} x="385" y={112 + i * 20} fill={F.text} fontSize="16" fontWeight="700" textAnchor="middle">{t}</text>
         ))}
         <text x="260" y="122" fill={F.text} fontSize="18" fontWeight="900" textAnchor="middle">{b.mitte}</text>
+      </svg>
+      <svg viewBox="0 0 300 370" width="100%" role="img" aria-label={b.beschreibung} className="block sm:hidden mt-4 mx-auto max-w-[300px]" style={{ fontFamily: SCHRIFT }}>
+        <circle cx="150" cy="120" r="108" fill="#8a8a8a" fillOpacity="0.35" />
+        <circle cx="150" cy="250" r="108" fill={PINK} fillOpacity="0.35" />
+        {b.links.map((t, i) => (
+          <text key={`l${i}`} x="150" y={66 + i * 24} fill={F.text} fontSize="20" fontWeight="700" textAnchor="middle">{t}</text>
+        ))}
+        {b.rechts.map((t, i) => (
+          <text key={`r${i}`} x="150" y={292 + i * 24} fill={F.text} fontSize="20" fontWeight="700" textAnchor="middle">{t}</text>
+        ))}
+        <text x="150" y="192" fill={F.text} fontSize="22" fontWeight="900" textAnchor="middle">{b.mitte}</text>
       </svg>
     </Grafik>
   );

@@ -21,6 +21,9 @@ import mitarbeiterNachBetriebsuebernahme from "./mitarbeiterNachBetriebsuebernah
 import betriebsuebernahmeErste100Tage from "./betriebsuebernahmeErste100Tage";
 import betriebsuebergabeVorbereiten from "./betriebsuebergabeVorbereiten";
 import gesellschafterUneinigMarketing from "./gesellschafterUneinigMarketing";
+// ISO-Zertifizierung (Modul Team)
+import mitarbeiterbefragungIso9001 from "./mitarbeiterbefragungIso9001";
+import mitarbeiterbefragungIso45001 from "./mitarbeiterbefragungIso45001";
 
 export const BEITRAEGE = [
   mitarbeiterbefragungErgebnisse,
@@ -35,6 +38,8 @@ export const BEITRAEGE = [
   betriebsuebernahmeErste100Tage,
   betriebsuebergabeVorbereiten,
   gesellschafterUneinigMarketing,
+  mitarbeiterbefragungIso9001,
+  mitarbeiterbefragungIso45001,
 ];
 
 export const MODUL_NAMEN = { team: "Team", positionierung: "Positionierung", kunden: "Kunden", vertrieb: "Vertrieb" };

@@ -531,7 +531,87 @@ function NachfolgeGesellschafter() {
   return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Drei Linien mit den Beschriftungen Tradition, Aufbruch und Preis laufen in einem pinken Punkt zusammen, der Sicht von Kunden und Team. Von dort führt eine gemeinsame Linie weiter." />;
 }
 
+// Nr. 17: ISO 9001, vier Punkte im Audit, Qualitätskultur neu seit 2026
+function Iso9001() {
+  const punkte = ["Kompetenz", "Bewusstsein", "Kommunikation"];
+  const haken = (cx, cy, s, farbe) => <path d={`M${cx - 10 * s} ${cy} l${7 * s} ${7 * s} l${13 * s} ${-14 * s}`} fill="none" stroke={farbe} strokeWidth={4 * s} strokeLinecap="round" strokeLinejoin="round" />;
+  const breit = (
+    <>
+      <Kopftext oben="ISO 9001" z1="Die Norm fragt:" z3="Kommt Qualität" z4="im Alltag an?" unter="Was der Auditor bei deinem Team sehen will." />
+      <rect x="900" y="170" width="580" height="440" rx="22" fill="#ffffff" />
+      <text x="944" y="230" fill="#5a5a5a" fontSize="18" fontWeight="700" letterSpacing="3">IM AUDIT</text>
+      {punkte.map((t, i) => (
+        <g key={t}>
+          <circle cx="962" cy={290 + i * 80} r="20" fill="#e8e6e4" />
+          {haken(962, 290 + i * 80, 1, "#2d2d2d")}
+          <text x="1000" y={300 + i * 80} fill="#2d2d2d" fontSize="28" fontWeight="800">{t}</text>
+        </g>
+      ))}
+      <rect x="930" y="500" width="520" height="80" rx="16" fill="#fff0f3" />
+      <circle cx="962" cy="540" r="20" fill={PINK} />
+      {haken(962, 540, 1, "#ffffff")}
+      <text x="1000" y="550" fill="#2d2d2d" fontSize="28" fontWeight="900">Qualitätskultur</text>
+      <rect x="1290" y="522" width="140" height="36" rx="18" fill={PINK} />
+      <text x="1360" y="547" fill="#ffffff" fontSize="17" fontWeight="800" textAnchor="middle">NEU 2026</text>
+    </>
+  );
+  const schmal = (
+    <>
+      <Kopftext schmal oben="ISO 9001" z1="Die Norm fragt:" z3="Kommt Qualität" z4="im Alltag an?" />
+      <rect x="48" y="440" width="704" height="420" rx="24" fill="#ffffff" />
+      <text x="92" y="500" fill="#5a5a5a" fontSize="22" fontWeight="700" letterSpacing="3">IM AUDIT</text>
+      {punkte.map((t, i) => (
+        <g key={t}>
+          <circle cx="116" cy={560 + i * 78} r="24" fill="#e8e6e4" />
+          {haken(116, 560 + i * 78, 1.2, "#2d2d2d")}
+          <text x="162" y={572 + i * 78} fill="#2d2d2d" fontSize="34" fontWeight="800">{t}</text>
+        </g>
+      ))}
+      <rect x="76" y="756" width="648" height="84" rx="18" fill="#fff0f3" />
+      <circle cx="116" cy="798" r="24" fill={PINK} />
+      {haken(116, 798, 1.2, "#ffffff")}
+      <text x="162" y="810" fill="#2d2d2d" fontSize="34" fontWeight="900">Qualitätskultur</text>
+      <rect x="548" y="776" width="160" height="42" rx="21" fill={PINK} />
+      <text x="628" y="805" fill="#ffffff" fontSize="20" fontWeight="800" textAnchor="middle">NEU 2026</text>
+    </>
+  );
+  return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Eine Karte mit der Überschrift Im Audit und vier abgehakten Punkten: Kompetenz, Bewusstsein, Kommunikation und, pink hervorgehoben und als neu 2026 markiert, Qualitätskultur." />;
+}
+
+// Nr. 18: ISO 45001, Konsultation, Beteiligung und die Evaluierung nach dem Gesetz
+function Iso45001() {
+  const felder = [
+    { oben: "KONSULTATION", text: "Meinungen einholen", art: "grau" },
+    { oben: "BETEILIGUNG", text: "Mitentscheiden", art: "pink" },
+    { oben: "GESETZ", text: "Evaluierung psychischer Belastungen", art: "rand" },
+  ];
+  const feld = (f, x, y, w, h, gross) => (
+    <g key={f.oben}>
+      {f.art === "rand"
+        ? <rect x={x + 2} y={y + 2} width={w - 4} height={h - 4} rx="18" fill="none" stroke="#ffffff" strokeWidth="3" />
+        : <rect x={x} y={y} width={w} height={h} rx="18" fill={f.art === "pink" ? PINK : "#4a4a4a"} />}
+      <text x={x + 40} y={y + 42 * gross} fill={f.art === "pink" ? "#ffe3ea" : "#b3b3b3"} fontSize={17 * gross} fontWeight="700" letterSpacing="3">{f.oben}</text>
+      <text x={x + 40} y={y + 86 * gross} fill="#ffffff" fontSize={(f.art === "rand" ? 26 : 30) * gross} fontWeight={f.art === "pink" ? 900 : 800}>{f.text}</text>
+    </g>
+  );
+  const breit = (
+    <>
+      <Kopftext oben="ISO 45001" z1="Fragen ist gut." z3="Mitentscheiden" z4="ist Pflicht." unter="Und die Evaluierung hat eigene Regeln." />
+      {felder.map((f, i) => feld(f, 900, 190 + i * 140, 580, 110, 1))}
+    </>
+  );
+  const schmal = (
+    <>
+      <Kopftext schmal oben="ISO 45001" z1="Fragen ist gut." z3="Mitentscheiden" z4="ist Pflicht." />
+      {felder.map((f, i) => feld({ ...f, text: f.art === "rand" ? "Evaluierung psychischer Belastung" : f.text }, 48, 440 + i * 144, 704, 124, 1.25))}
+    </>
+  );
+  return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Drei Felder untereinander. Konsultation: Meinungen einholen. Beteiligung, pink hervorgehoben: mitentscheiden. Gesetz: Evaluierung psychischer Belastungen." />;
+}
+
 export const TITELGRAFIKEN = {
+  "mitarbeiterbefragung-iso-9001": Iso9001,
+  "mitarbeiterbefragung-iso-45001": Iso45001,
   "betriebsuebergabe-vorbereiten": NachfolgeUebergeber,
   "gesellschafter-uneinig-marketing": NachfolgeGesellschafter,
   "unternehmensnachfolge-marketing": NachfolgeMarketing,
