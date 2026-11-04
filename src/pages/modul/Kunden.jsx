@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {
+import { Dachzeile,
   F, BREITE, H1_STIL, H2_STIL, LEAD_STIL, TEXT_STIL, mailAn,
   Etikett, Hauptknopf, FuerDich, RundesFoto, Modulseite,
 } from "@/components/oeffentlich/Oeffentlich";
@@ -116,9 +116,11 @@ export default function Kunden() {
       {/* Einstieg mit Foto und Fragezeichen */}
       <section className={`${BREITE} pt-20 pb-[88px] flex flex-wrap items-center gap-x-[72px] gap-y-12`}>
         <div className="flex-[3_1_560px] min-w-0">
-          <Etikett>Modul 03 Kunden</Etikett>
-          <h1 className="mt-[18px]" style={H1_STIL}>
-            Deine Kunden <span style={{ color: F.akzent }}>wissen,</span> warum sie bleiben.
+          <h1 style={H1_STIL}>
+            <Dachzeile>Modul 03 Kunden: Kundenzufriedenheit</Dachzeile>
+            <span className="block mt-[18px]">
+              Deine Kunden <span style={{ color: F.akzent }}>wissen,</span> warum sie bleiben.
+            </span>
           </h1>
           <p className="mt-6" style={{ ...LEAD_STIL, color: F.daempft }}>
             Und warum andere gegangen sind. Sie sagen es dir nur nicht von selbst. Einem neutralen Interview erzählen sie

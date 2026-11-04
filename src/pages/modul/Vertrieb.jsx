@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Check, Minus, Plus } from "lucide-react";
-import {
+import { Dachzeile,
   F, BREITE, H1_STIL, H2_STIL, LEAD_STIL, TEXT_STIL, mailAn,
   Etikett, Hauptknopf, FuerDich, RundesFoto, Modulseite, Beispielhinweis,
 } from "@/components/oeffentlich/Oeffentlich";
@@ -364,9 +364,11 @@ export default function Vertrieb() {
       {/* Einstieg mit Foto im gestrichelten Ring (live, unverändert) */}
       <section className={`${BREITE} pt-[88px] pb-24 flex flex-wrap items-center gap-x-16 gap-y-12`}>
         <div className="flex-[3_1_560px] min-w-0">
-          <Etikett dunkel>Modul 04 Vertrieb</Etikett>
-          <h1 className="mt-[18px]" style={H1_STIL}>
-            Wo deine Abschlüsse <span style={{ color: F.akzent }}>hängen bleiben.</span>
+          <h1 style={H1_STIL}>
+            <Dachzeile dunkel>Modul 04: Vertrieb verbessern</Dachzeile>
+            <span className="block mt-[18px]">
+              Wo deine Abschlüsse <span style={{ color: F.akzent }}>hängen bleiben.</span>
+            </span>
           </h1>
           <p className="mt-6" style={{ ...LEAD_STIL, color: F.hellAufDunkel }}>
             Außendienst, Innendienst und Kunden wissen genau, an welcher Stelle Aufträge verloren gehen. Wir holen dieses

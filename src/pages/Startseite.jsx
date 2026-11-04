@@ -477,7 +477,8 @@ export default function Startseite() {
           <p className="mt-6 max-w-[680px] text-xl leading-[1.6]" style={{ color: F.daempft }}>
             Wer täglich mit deinen Kunden arbeitet, weiß oft am besten, warum sie bei dir bleiben. Mit digitalen
             Interviews holt <strong className="font-semibold" style={{ color: F.text }}>andi fragt.</strong> dieses
-            Wissen anonym ab: bei Führung, Team, Vertrieb und Kunden. Klarheit statt Bauchgefühl.
+            Wissen anonym ab: bei Führung, Team, Vertrieb und Kunden. Für Mitarbeiterzufriedenheit, Kundenbindung,
+            Markenpositionierung und mehr Abschlüsse. Klarheit statt Bauchgefühl.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Hauptknopf href={mailAn("andi fragt. Termin vereinbaren")}>Termin vereinbaren</Hauptknopf>

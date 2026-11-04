@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ArrowDown } from "lucide-react";
 import { Link } from "react-router-dom";
-import {
+import { Dachzeile,
   F, BREITE, H1_STIL, H2_STIL, LEAD_STIL, TEXT_STIL, mailAn,
   Etikett, Hauptknopf, FuerDich, RundesFoto, Modulseite, Beispielhinweis,
 } from "@/components/oeffentlich/Oeffentlich";
@@ -97,9 +97,11 @@ function Einstieg() {
   return (
     <section className={`${BREITE} pt-10 pb-[88px] flex flex-wrap items-center gap-x-14 gap-y-12`}>
       <div className="flex-[1_1_460px] min-w-0">
-        <Etikett>Modul 02 Team</Etikett>
-        <h1 className="mt-[18px]" style={{ ...H1_STIL, fontSize: "clamp(44px, 6vw, 80px)", lineHeight: 0.96 }}>
-          Wie gut kennst du <span style={{ color: F.akzent }}>dein Team</span> wirklich?
+        <h1 style={{ ...H1_STIL, fontSize: "clamp(44px, 6vw, 80px)", lineHeight: 0.96 }}>
+          <Dachzeile>Modul 02 Team: Mitarbeiterzufriedenheit</Dachzeile>
+          <span className="block mt-[18px]">
+            Wie gut kennst du <span style={{ color: F.akzent }}>dein Team</span> wirklich?
+          </span>
         </h1>
         <p className="mt-[26px]" style={{ ...LEAD_STIL, maxWidth: 560, color: F.daempft }}>
           Du siehst, was im Alltag sichtbar ist. Dein Team weiß, was es hält, was es bremst und was es gehen ließe. Im

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {
+import { Dachzeile,
   F, BREITE, H1_STIL, H2_STIL, LEAD_STIL, TEXT_STIL, MARKENPRUEFSTAND, mailAn,
   Etikett, Hauptknopf, FuerDich, RundesFoto, Modulseite, Beispielhinweis,
 } from "@/components/oeffentlich/Oeffentlich";
@@ -68,11 +68,13 @@ export default function Positionierung() {
       {/* Einstieg: typografisch, mit rundem Foto */}
       <section className={`${BREITE} pt-20 pb-[72px] flex flex-wrap items-center gap-x-14 gap-y-12`}>
         <div className="flex-[3_1_620px] min-w-0">
-          <Etikett>Modul 01 Positionierung</Etikett>
-          <h1 className="mt-4" style={{ ...H1_STIL, letterSpacing: "-0.015em" }}>
-            Du bist besser
-            <br />
-            <span style={{ color: "transparent", WebkitTextStroke: `2px ${F.dunkel}` }}>als dein Auftritt.</span>
+          <h1 style={{ ...H1_STIL, letterSpacing: "-0.015em" }}>
+            <Dachzeile>Modul 01: Markenpositionierung</Dachzeile>
+            <span className="block mt-4">
+              Du bist besser
+              <br />
+              <span style={{ color: "transparent", WebkitTextStroke: `2px ${F.dunkel}` }}>als dein Auftritt.</span>
+            </span>
           </h1>
           <div className="mt-9 flex flex-wrap items-end gap-x-16 gap-y-8">
             <p className="flex-[1_1_480px]" style={{ ...LEAD_STIL, color: F.daempft }}>

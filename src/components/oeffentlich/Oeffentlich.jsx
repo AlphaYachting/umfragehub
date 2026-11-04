@@ -86,6 +86,19 @@ export function useSeitentitel(titel) {
 }
 
 // Kleine Bereichsbeschriftung: Medium, Versalien, weit gesperrt.
+// Dachzeile innerhalb der H1: sieht aus wie das Etikett, gehört aber zur Überschrift,
+// damit der Suchbegriff des Moduls in der H1 steht (SEO-Check 04.11.2026). Kein „Befragung“.
+export function Dachzeile({ children, dunkel = false }) {
+  return (
+    <span
+      className="block text-[13px] font-medium uppercase tracking-[0.2em] leading-[1.4]"
+      style={{ color: dunkel ? F.etikettDunkel : F.etikett, WebkitTextStroke: 0 }}
+    >
+      {children}
+    </span>
+  );
+}
+
 export function Etikett({ children, dunkel = false, className = "", style }) {
   return (
     <p
