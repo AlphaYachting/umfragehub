@@ -4,7 +4,7 @@ import {
   ArrowRight, ArrowUpRight, Search, Eye, Users, Heart, TrendingUp,
   Lock, Smartphone, MessageCircle, Pencil,
 } from "lucide-react";
-import { Wortmarke, anfrageLink, wissenImMenue } from "@/components/oeffentlich/Oeffentlich";
+import { Wortmarke, anfrageLink, Kopf } from "@/components/oeffentlich/Oeffentlich";
 import Faq from "@/components/oeffentlich/Faq";
 import KundenSlider from "@/components/oeffentlich/KundenSlider";
 
@@ -185,7 +185,7 @@ const SCHRITTE = [
   {
     verb: "fragt",
     titel: "Digitale Interviews",
-    text: "Führung, Team, Vertrieb und auf Wunsch deine Kunden beantworten die Interviews online: anonym, am Handy oder am Computer, wann es passt. Dein eigener Aufwand: rund 60 Minuten.",
+    text: "Führung, Team, Vertrieb und auf Wunsch deine Kunden beantworten die Interviews online: anonym, am Handy oder am Computer, wann es passt. Dein eigener Aufwand: rund zwei Stunden.",
   },
   {
     verb: "weiß",
@@ -452,24 +452,19 @@ export default function Startseite() {
   return (
     <div className="min-h-screen bg-white" style={{ color: F.text, fontFamily: "var(--schrift-marke)" }}>
       {/* Kopf */}
-      <header className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-        <a href="#top" className="leading-none" aria-label="andi fragt. Zur Startseite">
-          <Wortmarke />
-        </a>
-        <nav className="flex items-center gap-5 text-sm">
-          <a href="#eingeladen" className="hidden sm:inline font-medium hover:underline">Ich wurde eingeladen</a>
-          <Link to="/preise" className="hidden sm:inline font-medium hover:underline">Preise</Link>
-          {wissenImMenue() && <Link to="/wissen" className="hidden sm:inline font-medium hover:underline">Wissen</Link>}
-          <Link to="/ueber-uns" className="hidden sm:inline font-medium hover:underline">Über uns</Link>
-          <Link
-            to="/kontakt"
-            className="inline-flex items-center min-h-[44px] px-4 rounded font-semibold text-white"
-            style={{ background: F.text }}
+      {/* Gleicher Kopf wie auf allen Unterseiten (03.11.2026): Module ins Menü, Zugang für Eingeladene klein rechts. */}
+      <Kopf
+        randUnten={false}
+        extra={
+          <a
+            href="#eingeladen"
+            className="inline-flex items-center min-h-[44px] text-[13px] font-medium hover:underline"
+            style={{ color: F.daempft, textDecoration: "none" }}
           >
-            Kontakt
-          </Link>
-        </nav>
-      </header>
+            Eingeladen?
+          </a>
+        }
+      />
 
       <main id="top">
         {/* Einstieg */}

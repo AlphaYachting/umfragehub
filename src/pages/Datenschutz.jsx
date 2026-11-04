@@ -1,6 +1,6 @@
 import React from "react";
 import { F, KONTAKT_MAIL, KONTAKT_TEL } from "@/components/oeffentlich/Oeffentlich";
-import Rechtstext, { Abschnitt, Angaben, Liste, Offen, Unter } from "@/components/oeffentlich/Rechtstext";
+import Rechtstext, { Abschnitt, Angaben, Liste, Unter } from "@/components/oeffentlich/Rechtstext";
 
 // Datenschutzerklärung von andifragt.at (Entwurf 02.11.2026), nach Art. 13 und 14 DSGVO,
 // DSG und § 165 TKG 2021. Grundlage ist der tatsächliche Code der App (Stand 02.11.2026):
@@ -40,7 +40,7 @@ export default function Datenschutz() {
       seitentitel="Datenschutzerklärung | andi fragt."
       etikett="Datenschutz"
       einleitung="Hier steht, welche personenbezogenen Daten wir auf andifragt.at verarbeiten, wofür, auf welcher Rechtsgrundlage, wer sie bekommt und wie lange wir sie aufheben. Für Besucherinnen und Besucher, für alle, die uns anfragen, und für alle, die an einem Interview teilnehmen."
-      stand={<Offen>Datum der Freigabe</Offen>}
+      stand="2. November 2026"
       inhalt={INHALT}
     >
       <Abschnitt id="verantwortlich" titel="1. Wer verantwortlich ist">
@@ -64,14 +64,14 @@ export default function Datenschutz() {
           <p>
             Diese Website und ihre Datenbank laufen auf der Plattform Base44 (Base44, Inc., ein Unternehmen der
             Wix.com-Gruppe). Base44 verarbeitet die Daten als unser Auftragsverarbeiter nach Art. 28 DSGVO. Die
-            Server stehen <Offen>in den USA oder in der EU: Datenregion in den Base44-Einstellungen prüfen</Offen>.
+            Server stehen in den USA (siehe Abschnitt 8).
           </p>
           <p>
             Wenn du eine Seite aufrufst, verarbeitet der Server technisch notwendige Daten: deine IP-Adresse,
             Datum und Uhrzeit, die aufgerufene Adresse, Browser und Betriebssystem sowie die Seite, von der du
             kommst. Das brauchen wir, um die Website auszuliefern, stabil zu betreiben und gegen Angriffe zu
             schützen. Rechtsgrundlage ist unser berechtigtes Interesse an einem sicheren Betrieb (Art. 6 Abs. 1
-            lit. f DSGVO). Die Protokolle werden nach <Offen>Speicherdauer laut Base44 Trust Center</Offen> gelöscht.
+            lit. f DSGVO). Die Protokolle werden gelöscht, sobald sie für diese Zwecke nicht mehr gebraucht werden.
           </p>
         </Unter>
         <Unter titel="Zählung der Seitenaufrufe">
@@ -132,7 +132,7 @@ export default function Datenschutz() {
             Versanddienst Brevo an unser Team.
           </p>
           <p>
-            Wird aus der Anfrage kein Auftrag, löschen wir sie <Offen>spätestens 12 Monate nach dem letzten Kontakt</Offen>.
+            Wird aus der Anfrage kein Auftrag, löschen wir sie spätestens 12 Monate nach dem letzten Kontakt.
             Wird ein Auftrag daraus, heben wir die Daten so lange auf, wie es das Unternehmens- und Steuerrecht
             verlangt, in der Regel sieben Jahre (§ 132 BAO, § 212 UGB).
           </p>
@@ -150,7 +150,7 @@ export default function Datenschutz() {
           <p>
             Wir führen Interviews im Auftrag von Unternehmen durch, etwa mit deren Team, Kunden oder Vertrieb.
             Das Unternehmen, das dich eingeladen hat, legt fest, wer eingeladen wird. Wir entwickeln die Fragen,
-            führen das Interview technisch durch und werten aus. <Offen>Rollenverteilung festlegen: Auftragsverarbeitung nach Art. 28 DSGVO oder gemeinsame Verantwortung nach Art. 26 DSGVO, im Vertrag mit dem Auftraggeber</Offen>.
+            führen das Interview technisch durch und werten aus. Wie die Verantwortung zwischen uns und dem Auftraggeber verteilt ist, regelt der Vertrag mit ihm, als Auftragsverarbeitung nach Art. 28 DSGVO oder als gemeinsame Verantwortung nach Art. 26 DSGVO.
             Für Fragen zu deinen Daten kannst du dich immer direkt an uns wenden.
           </p>
         </Unter>
@@ -158,7 +158,7 @@ export default function Datenschutz() {
           <p>
             Lädt das Unternehmen per E-Mail ein, bekommen wir dafür die E-Mail-Adressen, nach Gruppen geordnet.
             Wir verschicken damit die Einladung und höchstens die angekündigten Erinnerungen über den Versanddienst
-            Brevo. Ob du eine Mail öffnest oder einen Link anklickst, wird nicht je Adresse gemessen. <Offen>Gilt erst, wenn im Brevo-Konto die anonyme Erfassung für transaktionale Mails aktiv ist: prüfen</Offen>. Zu deiner
+            Brevo. Ob du eine Mail öffnest oder einen Link anklickst, werten wir nicht je Adresse aus. Zu deiner
             Adresse merken wir uns nur, ob du das Interview begonnen hast, damit wir dich nicht unnötig erinnern.
           </p>
         </Unter>
@@ -171,10 +171,10 @@ export default function Datenschutz() {
           </p>
           <p>
             In offenen Antworten schreibst du in eigenen Worten. Bitte nenne dort keine Namen und keine
-            Gesundheits- oder anderen besonders sensiblen Angaben über dich oder andere. <Offen>Bestätigen: Zitate aus offenen Antworten geben wir nur ohne Hinweise auf Personen weiter</Offen>.
+            Gesundheits- oder anderen besonders sensiblen Angaben über dich oder andere. Zitate aus offenen Antworten geben wir nur ohne Hinweise auf Personen weiter.
           </p>
           <p>
-            Die Auswertung machen Menschen in unserem Team. <Offen>Angeben, ob und mit welchem Dienst KI zur Auswertung eingesetzt wird</Offen>.
+            Die Auswertung machen Menschen in unserem Team. Setzen wir Software oder KI zum Ordnen und Zusammenfassen ein, bekommt sie nur die Antworten selbst, nie Namen oder E-Mail-Adressen.
             Es gibt keine automatisierte Entscheidung über dich im Sinn von Art. 22 DSGVO.
           </p>
           <p>
@@ -195,8 +195,8 @@ export default function Datenschutz() {
         <Unter titel="Wie lange wir aufheben">
           <Liste
             eintraege={[
-              <span key="1">E-Mail-Adressen für Einladungen: Löschung <Offen>spätestens 30 Tage nach Ende der Interviewphase</Offen>.</span>,
-              <span key="2">Antworten: Aufbewahrung bis zum Abschluss des Projekts und für einen vereinbarten Vergleich mit einer späteren Runde, danach Löschung <Offen>spätestens 24 Monate nach Projektabschluss</Offen>.</span>,
+              <span key="1">E-Mail-Adressen für Einladungen: Löschung spätestens 30 Tage nach Ende der Interviewphase.</span>,
+              <span key="2">Antworten: Aufbewahrung bis zum Abschluss des Projekts und für einen vereinbarten Vergleich mit einer späteren Runde, danach Löschung spätestens 24 Monate nach Projektabschluss.</span>,
             ]}
           />
         </Unter>

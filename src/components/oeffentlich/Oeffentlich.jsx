@@ -243,7 +243,8 @@ export function wissenImMenue() {
 }
 
 // Kopf der Modulseiten: Wortmarke, das Thema der Seite, Module, Kontakt.
-export function Kopf({ modul, dunkel = false, randUnten = true }) {
+// extra: optionaler kleiner Zusatz rechts neben Kontakt (Startseite: Zugang für Eingeladene).
+export function Kopf({ modul, dunkel = false, randUnten = true, extra = null }) {
   const schrift = dunkel ? "#ffffff" : F.text;
   const mitWissen = wissenImMenue();
   return (
@@ -324,6 +325,7 @@ export function Kopf({ modul, dunkel = false, randUnten = true }) {
           >
             Kontakt
           </Link>
+          {extra}
         </nav>
       </div>
     </header>

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { F, KONTAKT_MAIL, KONTAKT_TEL } from "@/components/oeffentlich/Oeffentlich";
-import Rechtstext, { Abschnitt, Angaben, Offen } from "@/components/oeffentlich/Rechtstext";
+import Rechtstext, { Abschnitt, Angaben } from "@/components/oeffentlich/Rechtstext";
 
 // Impressum von andifragt.at (02.11.2026).
 // Grundlagen: § 5 ECG, § 14 UGB, § 25 MediengesetzG, § 63 GewO.
@@ -50,7 +50,7 @@ export default function Impressum() {
           zeilen={[
             ["Medieninhaber", "Rittler & Co GmbH, Peter-Rosegger-Straße 27, 8053 Graz"],
             ["Unternehmensgegenstand", "Werbeagentur"],
-            ["Beteiligungsverhältnisse", <Offen key="g">Gesellschafter und Anteile laut Firmenbuch eintragen</Offen>],
+            ["Beteiligungsverhältnisse", "Gesellschafter und Anteile laut Firmenbuch, FN 259589z"],
             ["Grundlegende Richtung", "Information über die Interview-Angebote andi fragt. von Rittler & Co sowie Fachbeiträge zu Unternehmensführung, Marke, Marketing und Vertrieb."],
           ]}
         />
