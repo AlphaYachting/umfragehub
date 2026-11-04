@@ -248,7 +248,7 @@ export default function Faq({ seite, look: lookName = "weiss" }) {
                     {f.beispiel && (
                       <figure className="mt-5 px-5 py-[18px] rounded-[18px] flex flex-col gap-2" style={{ background: look.beispiel.background }}>
                         <span className="flex flex-wrap items-center gap-2">
-                          <span className="text-xs font-medium uppercase tracking-[0.2em]" style={{ color: look.etikett }}>Ein Beispiel</span>
+                          <span className="text-xs font-medium uppercase tracking-[0.2em]" style={{ color: look.etikett }}>Aus der Praxis</span>
                           {hatPlatzhalter(f.beispiel) && (
                             <span
                               className="inline-flex items-center h-[22px] px-2 rounded-full text-[11px] font-bold"

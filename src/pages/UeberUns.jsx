@@ -281,7 +281,7 @@ export default function UeberUns() {
             </div>
             <div className="p-7 rounded-[20px] bg-white">
               <p className="text-[19px] font-bold">Dein eigener Aufwand</p>
-              <p className="mt-2.5 leading-[1.6]" style={{ color: F.daempft }}>Rund zwei Stunden für Zielgespräch, Freigabe und Präsentation. Die Interviews selbst entwickeln und auswerten wir.</p>
+              <p className="mt-2.5 leading-[1.6]" style={{ color: F.daempft }}>Rund 60 Minuten. Die Interviews selbst entwickeln und auswerten wir.</p>
             </div>
           </aside>
         </div>

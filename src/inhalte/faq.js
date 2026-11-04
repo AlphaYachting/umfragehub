@@ -51,26 +51,26 @@ export const FAQ = {
       {
         g: "auftrag",
         q: "Wie viel Zeit muss ich selbst investieren?",
-        kopf: "Rund zwei Stunden, verteilt über vier bis sechs Wochen.",
-        text: "Das Zielgespräch, die Freigabe des Interviews und die Präsentation. Alles dazwischen, vom Entwickeln der Fragen bis zur Auswertung, erledigen wir. Für jede teilnehmende Person dauert ein Interview 15 bis 30 Minuten, ohne Termin und ohne Anreise.",
+        kopf: "Rund [drei Stunden, verteilt über vier bis sechs Wochen].",
+        text: "Das Zielgespräch, die Freigabe des Interviews und die Präsentation. Alles dazwischen, vom Entwickeln der Fragen bis zur Auswertung, erledigen wir. Für jede teilnehmende Person dauert ein Interview [10 bis 20 Minuten], ohne Termin und ohne Anreise.",
       },
       {
         g: "auftrag",
         q: "Was kostet ein Projekt mit andi fragt.?",
         kopf: "Weniger als eine einzige Fehlbesetzung oder ein Website-Relaunch in die falsche Richtung.",
-        text: "Jedes Modul hat einen Fixpreis nach Gruppengröße: ab 2.900 Euro netto für Kleinbetriebe bis 6 Mitarbeitende, 5.400 Euro netto für 21 bis 50 Personen. Alle Stufen stehen auf der Preisseite. Enthalten sind Zielgespräch, Entwicklung des Interviews, Auswertung durch unsere Strategen und Präsentation bei dir. Mehr Gruppen, Kunden als zusätzliche Gruppe oder mehrere Standorte erhöhen den Aufwand. Den Fixpreis bekommst du nach dem Erstgespräch.",
+        text: "Ein Team-Interview für einen Betrieb bis [50] Mitarbeitende beginnt bei [X Euro]. Enthalten sind Zielgespräch, Entwicklung des Interviews, Auswertung durch unsere Strategen und Präsentation bei dir. Mehr Gruppen, Kunden als zusätzliche Gruppe oder mehrere Standorte erhöhen den Aufwand. Den Fixpreis bekommst du nach dem Erstgespräch.",
       },
       {
         g: "auftrag",
         q: "Lohnt sich das auch für einen Betrieb mit 30 Leuten?",
         kopf: "Gerade dort.",
-        text: "In kleinen Betrieben glaubt der Chef, alles zu wissen, weil er jeden kennt, und genau deshalb sagt ihm niemand alles. Damit jede Antwort anonym bleibt, braucht eine Gruppe mindestens 6 Interviews, 30 Leute werten wir also in wenigen Gruppen oder als Ganzes aus. Nach oben gibt es keine Grenze: Meist interviewen wir 5 bis 100 Personen, auf Wunsch bis zu deinen Kunden.",
+        text: "In kleinen Betrieben glaubt der Chef, alles zu wissen, weil er jeden kennt, und genau deshalb sagt ihm niemand alles. Damit jede Antwort anonym bleibt, braucht eine Gruppe mindestens [6] Interviews, 30 Leute werten wir also in wenigen Gruppen oder als Ganzes aus. Nach oben gibt es keine Grenze: Meist interviewen wir 5 bis 100 Personen, auf Wunsch bis zu deinen Kunden.",
       },
       {
         g: "auftrag",
         q: "Wer liest die Antworten, und wo liegen sie?",
         kopf: "Gelesen werden die Antworten nur vom Projektteam bei Rittler & Co in Graz.",
-        text: "Du als Auftraggeber bekommst sie ausschließlich gebündelt. Gespeichert werden sie ohne Namen und ohne E-Mail-Adresse. Wo sie liegen und wann wir sie löschen, steht in unserer Datenschutzerklärung.",
+        text: "Du als Auftraggeber bekommst sie ausschließlich gebündelt. [Speicherort, Löschfrist und Rechtsgrundlage prüfen und ergänzen.]",
       },
       {
         g: "eingeladen",
@@ -82,7 +82,7 @@ export const FAQ = {
         g: "eingeladen",
         q: "Ich habe eine Einladung bekommen. Ist das seriös?",
         kopf: "Ja.",
-        text: "Ein Unternehmen, für das du arbeitest oder dessen Kunde du bist, hat Rittler & Co, Werbeagentur in Graz, beauftragt, deine ehrliche Einschätzung einzuholen. Die Teilnahme ist freiwillig und kostenlos, dauert 15 bis 30 Minuten und geht am Handy oder am Computer, unterbrechen inklusive. Öffne den Link aus deiner Einladung oder gib deinen Code gleich hier unten ein. Funktioniert er nicht, ruf uns an.",
+        text: "Ein Unternehmen, für das du arbeitest oder dessen Kunde du bist, hat Rittler & Co, Werbeagentur in Graz, beauftragt, deine ehrliche Einschätzung einzuholen. Die Teilnahme ist freiwillig und kostenlos, dauert [10 bis 20 Minuten] und geht am Handy oder am Computer, unterbrechen inklusive. Öffne den Link aus deiner Einladung oder gib deinen Code gleich hier unten ein. Funktioniert er nicht, ruf uns an.",
       },
     ],
   },
@@ -98,7 +98,7 @@ export const FAQ = {
         q: "Wie finden wir heraus, wofür uns Kunden wirklich bezahlen?",
         kopf: "Indem man die fragt, die es wissen, und zwar mit den richtigen Fragen.",
         text: "Für die Markenpositionierung mit andi fragt. prüfen wir im Zielgespräch zuerst dein Bild vom Unternehmen und entwickeln daraus Interviews für Geschäftsführung, Team und Stammkunden. Wo die drei Sichten auseinandergehen, liegt meist der Unterschied, den du heute verschenkst.",
-        beispiel: "Ein Fensterbauer wirbt seit Jahren mit Qualität. Im Interview nennen seine Kunden fast alle etwas anderes: dass die Montage auf die Minute pünktlich ist.",
+        beispiel: "[Beispiel, zu ersetzen: Ein Fensterbauer warb seit Jahren mit Qualität. Im Interview nannten seine Kunden fast alle dasselbe: dass die Montage auf die Minute pünktlich war.]",
       },
       {
         q: "Reicht nicht ein Workshop mit der Geschäftsführung?",
@@ -140,7 +140,7 @@ export const FAQ = {
         q: "Warum ein Team-Interview statt eines Zufriedenheitsfragebogens?",
         kopf: "Weil Zufriedenheit nicht erklärt, warum gute Leute gehen.",
         text: "Ein Fragebogen misst Stimmung, mit denselben Fragen für jeden Betrieb. Das Team-Interview setzt dort an, wo sich Chefs erfahrungsgemäß verschätzen: was Leute wirklich hält, was sie bremst und wofür Geld ausgegeben wird, das niemand vermisst. Dazu legen wir deine Einschätzung neben die deines Teams.",
-        beispiel: "Ein Geschäftsführer schätzt, dass sich 80 % seines Teams gut informiert fühlen. Im Interview sind es 48 %.",
+        beispiel: "[Beispiel, zu ersetzen: Ein Geschäftsführer schätzte, dass sich 80 % gut informiert fühlen. Im Team waren es 48 %.]",
       },
       {
         q: "Was, wenn mein Team Dinge sagt, die ich nicht hören will?",
@@ -154,18 +154,18 @@ export const FAQ = {
       },
       {
         q: "Ab wie vielen Mitarbeitenden bleibt das Team-Interview anonym?",
-        kopf: "Eine Gruppe wird erst gezeigt, wenn mindestens 6 Interviews da sind.",
+        kopf: "Eine Gruppe wird erst gezeigt, wenn mindestens [6] Interviews da sind.",
         text: "Kleinere Bereiche fassen wir zusammen, ein Team mit acht Leuten werten wir also als eine Gruppe aus. Vorher siehst du nur, wie viele schon teilgenommen haben, keine Antworten und keine Tendenz.",
       },
       {
         q: "Wie bekomme ich mein Team dazu, mitzumachen?",
         kopf: "Am meisten wirkt, wenn du vorab selbst sagst, warum du fragst und dass du die Ergebnisse teilst.",
-        text: "Den Rest übernehmen wir: eine Einladung, die den Zweck erklärt, eine klare Zusage zur Anonymität und mindestens eine Erinnerung. Die Fragen sind ohne Fachsprache formuliert und funktionieren vom Lehrling bis zur Geschäftsführung, auch am Handy in der Pause.",
+        text: "Den Rest übernehmen wir: eine Einladung, die den Zweck erklärt, eine klare Zusage zur Anonymität und [eine Erinnerung]. Die Fragen sind ohne Fachsprache formuliert und funktionieren vom Lehrling bis zur Geschäftsführung, auch am Handy in der Pause.",
       },
       {
         q: "Muss der Betriebsrat zustimmen?",
         kopf: "Gibt es bei euch einen Betriebsrat, binden wir ihn vor dem Start ein und zeigen ihm Fragen und Ablauf.",
-        text: "Ob eine Zustimmung nötig ist, hängt davon ab, welche Fragen gestellt werden und ob Antworten einzelnen Personen zugeordnet werden können. Weil das Team-Interview anonym und gebündelt ausgewertet wird, ist der Betriebsrat meist ein Verbündeter statt eine Hürde.",
+        text: "Ob eine Zustimmung nötig ist, hängt davon ab, welche Fragen gestellt werden und ob Antworten einzelnen Personen zugeordnet werden können. Weil das Team-Interview anonym und gebündelt ausgewertet wird, ist der Betriebsrat meist ein Verbündeter statt eine Hürde. [Rechtlich prüfen lassen.]",
       },
       {
         q: "Hilft uns das, gute Leute zu finden?",
@@ -175,7 +175,7 @@ export const FAQ = {
       {
         q: "Was bekomme ich nach dem Team-Interview?",
         kopf: "Keine Stimmungskurve, sondern Prioritäten.",
-        text: "Wo du und dein Team am weitesten auseinanderliegen, wo du Leute verlierst und wo du Geld ausgibst, das nichts bewirkt. Dazu konkrete Maßnahmen und Sätze für deine Arbeitgebermarke. Alles persönlich bei dir präsentiert, nach sechs Monaten folgt ein kurzer Puls, danach reicht für die meisten Betriebe ein Interview pro Jahr.",
+        text: "Wo du und dein Team am weitesten auseinanderliegen, wo du Leute verlierst und wo du Geld ausgibst, das nichts bewirkt. Dazu konkrete Maßnahmen und Sätze für deine Arbeitgebermarke. Alles persönlich bei dir präsentiert, nach sechs Monaten folgt ein kurzer Puls, danach reicht für die meisten Betriebe [ein Interview pro Jahr].",
       },
     ],
   },
@@ -192,16 +192,17 @@ export const FAQ = {
         q: "Was erfahre ich im Kunden-Interview, was mir keine Zufriedenheitsnote sagt?",
         kopf: "Das Warum.",
         text: "Eine Note zeigt, wie zufrieden Kunden sind, aber nicht, warum sie bei dir kaufen, warum sie gehen und was sie woanders kaufen, obwohl sie es lieber bei dir hätten. Welche dieser Fragen für dich gerade zählt, legen wir im Zielgespräch fest. Unsere Strategen lesen jede Antwort und machen daraus Argumente und Maßnahmen.",
+        beispiel: "[Praxisbeispiel einsetzen: was ein Auftraggeber über seine Kunden vermutete und was das Interview zeigte.]",
       },
       {
         q: "Nerven wir unsere Kunden damit nicht?",
         kopf: "In der Regel nicht, denn gefragt zu werden empfinden Kunden als Wertschätzung.",
-        text: "Die Einladung kommt mit deinem Namen, das Interview führen wir als neutrale Stelle, und es dauert 15 bis 30 Minuten. Ein Kunde, der einmal sagen durfte, was ihn stört, bleibt eher als einer, den niemand gefragt hat.",
+        text: "Die Einladung kommt mit deinem Namen, das Interview führen wir als neutrale Stelle, und es dauert [10 bis 15 Minuten]. Ein Kunde, der einmal sagen durfte, was ihn stört, bleibt eher als einer, den niemand gefragt hat.",
       },
       {
         q: "Welche Kunden sollen wir fragen?",
         kopf: "Das hängt von der Entscheidung ab, die ansteht, und genau das klären wir vorab.",
-        text: "Für Kaufgründe fragen wir Stammkunden und neue Kunden, für Abwanderung ehemalige, für Wachstum jene, die heute nur einen Teil bei dir kaufen. Diese Gruppen werten wir getrennt aus. Je Gruppe brauchen wir mindestens 6 Antworten, aussagekräftig wird es ab 10 bis 15.",
+        text: "Für Kaufgründe fragen wir Stammkunden und neue Kunden, für Abwanderung ehemalige, für Wachstum jene, die heute nur einen Teil bei dir kaufen. Diese Gruppen werten wir getrennt aus. Je Gruppe brauchen wir mindestens [6] Antworten, aussagekräftig wird es ab [10 bis 15].",
       },
       {
         q: "Funktioniert das auch, wenn wir nur Firmenkunden haben?",
@@ -232,6 +233,7 @@ export const FAQ = {
         q: "Warum gehen unsere Angebote wirklich verloren?",
         kopf: "Selten aus dem Grund, den der Vertrieb vermutet.",
         text: "Verkäufer nennen meistens den Preis, Kunden oft etwas anderes: einen unklaren Nutzen, zu spätes Nachfassen oder keinen fixen Ansprechpartner. Im Beispiel auf dieser Seite nennen 58 % des Vertriebs den Preis, aber nur 19 % der Kunden (Beispielwerte). Zu teuer heißt oft: Ich sehe den Unterschied nicht.",
+        beispiel: "[Praxisbeispiel einsetzen: ein Verkaufsargument, das sich in einem echten Projekt als wirkungslos herausgestellt hat.]",
       },
       {
         q: "Was zeigt das Vertriebs-Interview, was mein CRM nicht zeigt?",
@@ -321,13 +323,13 @@ export const FAQ = {
       },
       {
         q: "Wie schnell bekomme ich ein Angebot?",
-        kopf: "Nach dem Erstgespräch bekommst du dein Angebot innerhalb von drei Werktagen.",
+        kopf: "Nach dem Erstgespräch bekommst du dein Angebot [innerhalb von drei Werktagen].",
         text: "Es nennt die Fragestellung, die Gruppen, die Zahl der Personen, den Zeitplan und den Preis.",
       },
       {
         q: "Wie schnell können wir starten?",
         kopf: "Nach dem Zielgespräch entwickeln wir das Interview und legen es dir zur Freigabe vor.",
-        text: "Sobald du freigegeben hast, laden wir innerhalb einer Woche ein. Die Einladung formulieren wir mit dir, den Zeitraum richten wir nach deinem Kalender, etwa damit Interviews nicht in die Urlaubszeit fallen.",
+        text: "Sobald du freigegeben hast, laden wir [innerhalb einer Woche] ein. Die Einladung formulieren wir mit dir, den Zeitraum richten wir nach deinem Kalender, etwa damit Interviews nicht in die Urlaubszeit fallen.",
       },
       {
         q: "Mein Interview-Link funktioniert nicht. Was tun?",
@@ -366,7 +368,7 @@ export const FAQ = {
       {
         q: "Wie viel Zeit kostet das mich?",
         kopf: "Dich wenig: Zielgespräch, Freigabe und Präsentation.",
-        text: "Zusammen rund zwei Stunden. Dein Team 15 bis 30 Minuten pro Person, am Handy oder am Computer.",
+        text: "Zusammen [rund zwei Stunden]. Dein Team [rund 15 Minuten pro Person], am Handy oder am Computer.",
       },
     ],
   },
