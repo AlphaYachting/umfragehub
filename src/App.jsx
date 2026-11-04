@@ -12,6 +12,7 @@ import AdminLayout from '@/components/AdminLayout';
 // Seiten werden erst geladen, wenn sie gebraucht werden. Befragte laden so nur die
 // Interview-Seite, die Verwaltung nur die Seite, die gerade offen ist.
 const Login = lazy(() => import('@/pages/Login'));
+const NichtGefunden = lazy(() => import('@/pages/NichtGefunden'));
 const Register = lazy(() => import('@/pages/Register'));
 const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
@@ -135,8 +136,8 @@ const AuthenticatedApp = () => {
           <Route path="/bibliothek" element={<QuestionLibrary />} />
         </Route>
       </Route>
-      {/* Unbekannte Adressen landen auf der Startseite */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* Unbekannte Adressen: eigene Seite mit noindex statt Kopie der Startseite */}
+      <Route path="*" element={<NichtGefunden />} />
     </Routes>
     </Suspense>
   );

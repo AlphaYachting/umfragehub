@@ -32,9 +32,11 @@ const SCHRITTE = [
   { titel: "Im Gespräch klären wir Ziel, Gruppen und Aufwand.", text: "Danach bekommst du einen Fixpreis, schwarz auf weiß." },
 ];
 
+// Thema aus dem Anker (#anfrage-team) oder, für ältere Links, aus ?thema=team.
 function themaAusAdresse() {
   try {
-    const t = new URLSearchParams(window.location.search).get("thema");
+    const anker = window.location.hash.match(/^#anfrage-([a-z]+)$/);
+    const t = anker ? anker[1] : new URLSearchParams(window.location.search).get("thema");
     return THEMEN.some((x) => x.id === t) ? { [t]: true } : {};
   } catch {
     return {};
@@ -116,7 +118,11 @@ export default function Erstgespraech() {
   }
 
   return (
-    <section id="anfrage" aria-labelledby="anfrage-titel" className="scroll-mt-6" style={{ background: F.hauch }}>
+    <section id="anfrage" aria-labelledby="anfrage-titel" className="scroll-mt-6 relative" style={{ background: F.hauch }}>
+      {/* Sprungziele für Links mit Thema, z. B. /kontakt#anfrage-team */}
+      {THEMEN.map((t) => (
+        <span key={t.id} id={`anfrage-${t.id}`} aria-hidden="true" className="absolute top-0 left-0 scroll-mt-6" />
+      ))}
       <div className={`${BREITE} py-24 flex flex-wrap items-start gap-x-[72px] gap-y-14`}>
         {/* Links: was passiert, wer sich meldet */}
         <div className="flex-[1_1_380px] min-w-0">

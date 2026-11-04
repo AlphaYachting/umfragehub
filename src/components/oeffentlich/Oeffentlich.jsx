@@ -44,7 +44,7 @@ export function anfrageLink(betreff = "") {
         : /vertrieb/.test(b) ? "vertrieb"
           : /einstieg/.test(b) ? "einstieg"
             : "";
-  return thema ? `/kontakt?thema=${thema}#anfrage` : "/kontakt#anfrage";
+  return thema ? `/kontakt#anfrage-${thema}` : "/kontakt#anfrage";
 }
 export const mailAn = anfrageLink;
 

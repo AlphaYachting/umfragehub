@@ -263,7 +263,7 @@ export default function BeitragSeite({ beitrag }) {
   }
 
   const teilenUrl = encodeURIComponent(SITE + pfad);
-  const anfrage = `/kontakt?thema=${b.modul}#anfrage`;
+  const anfrage = b.modul ? `/kontakt#anfrage-${b.modul}` : "/kontakt#anfrage";
 
   return (
     <Modulseite titel={b.seitentitel} modul="Wissen">

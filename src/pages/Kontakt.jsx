@@ -50,7 +50,7 @@ export default function Kontakt() {
   // Anfrage-Knöpfe verlinken auf /kontakt#anfrage. Die Modulseite springt beim Öffnen
   // nach oben, deshalb kurz danach zum Formular scrollen.
   useEffect(() => {
-    if (window.location.hash !== "#anfrage") return undefined;
+    if (!window.location.hash.startsWith("#anfrage")) return undefined;
     const t = setTimeout(() => document.getElementById("anfrage")?.scrollIntoView({ block: "start" }), 60);
     return () => clearTimeout(t);
   }, []);
