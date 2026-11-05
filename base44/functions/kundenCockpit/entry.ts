@@ -435,9 +435,26 @@ async function signaleBerechnen(db, jeWelle, antworten, projekt = null) {
   const auswertbar = proWelle.filter((x) => x.fertig >= x.mindest);
   if (!auswertbar.length) return null;
 
-  // 1) Einigkeit: bevorzugt das Team, sonst die größte Welle
-  const basis = [...auswertbar].sort((a, b) =>
-    (a.w.zielgruppe === 'mitarbeiter' ? -1 : 0) - (b.w.zielgruppe === 'mitarbeiter' ? -1 : 0) || b.fertig - a.fertig)[0];
+  // Wellen derselben Zielgruppe zusammenlegen, z. B. Außendienst, Innendienst
+  // und Servicetechnik als ein Team. Jede Welle für sich hat die Mindestzahl erreicht.
+  const gruppenPool = {};
+  for (const x of auswertbar) {
+    const zg = x.w.zielgruppe || 'mitarbeiter';
+    const g = (gruppenPool[zg] ||= { zielgruppe: zg, wellen: [], fertig: 0, mindest: 0, werte: {}, bereich: {}, meta: {} });
+    g.wellen.push(x);
+    g.fertig += x.fertig;
+    g.mindest = Math.max(g.mindest, x.mindest);
+    for (const [k, v] of Object.entries(x.werte) as [string, number[]][]) (g.werte[k] ||= []).push(...v);
+    for (const [k, b] of Object.entries(x.bereich)) g.bereich[k] ||= b;
+    for (const [k, m] of Object.entries(x.meta)) g.meta[k] ||= m;
+  }
+  // deno-lint-ignore no-explicit-any
+  const pools = Object.values(gruppenPool) as any[];
+  const teamZuerst = (a, b) =>
+    (a.zielgruppe === 'mitarbeiter' ? -1 : 0) - (b.zielgruppe === 'mitarbeiter' ? -1 : 0) || b.fertig - a.fertig;
+
+  // 1) Einigkeit: bevorzugt das Team, sonst die größte Gruppe, jeweils über alle ihre Wellen
+  const basis = [...pools].sort(teamZuerst)[0];
   const items = (Object.entries(basis.werte) as [string, number[]][])
     .filter(([, v]) => v.length >= basis.mindest)
     .map(([k, v]) => ({ sd: standardabweichung(v), v, bereich: basis.bereich[k] || '', meta: basis.meta[k] || {} }));
@@ -445,7 +462,8 @@ async function signaleBerechnen(db, jeWelle, antworten, projekt = null) {
   const auseinander = items.filter((i) => i.sd >= AUSEINANDER_AB).sort((a, b) => b.sd - a.sd);
   const punkte = (v) => dezile(v).map((x) => Math.round((x / 4) * 100));
   const einigkeit = {
-    zielgruppe: basis.w.zielgruppe,
+    zielgruppe: basis.zielgruppe,
+    wellen: basis.wellen.length,
     einig: einig.length,
     auseinander: auseinander.length,
     interviews: basis.fertig,
@@ -457,10 +475,7 @@ async function signaleBerechnen(db, jeWelle, antworten, projekt = null) {
   };
 
   // 2) Selbstbild und Fremdbild: gleiche Fragenschlüssel in verschiedenen Gruppen
-  const nachGruppe = {};
-  for (const x of auswertbar) {
-    if (!nachGruppe[x.w.zielgruppe] || x.fertig > nachGruppe[x.w.zielgruppe].fertig) nachGruppe[x.w.zielgruppe] = x;
-  }
+  const nachGruppe = gruppenPool;
   const PAARE = [['geschaeftsfuehrung', 'mitarbeiter'], ['mitarbeiter', 'kunden'], ['geschaeftsfuehrung', 'kunden'], ['mitarbeiter', 'partner']];
   const paare = [];
   const beispiele = [];
@@ -491,6 +506,30 @@ async function signaleBerechnen(db, jeWelle, antworten, projekt = null) {
     if (verglichen > 0) paare.push({ a, b, anzahl, verglichen, na: A.fertig, nb: B.fertig, jeFrage: [...jeFrage.values()].filter((z) => z.frage) });
   }
   beispiele.sort((x, y) => y.abstand - x.abstand);
+
+  // 2b) Bereiche: mehrere Wellen derselben Zielgruppe nebeneinander.
+  // Nur Fragen, die alle diese Wellen bekommen haben, nur Durchschnitte je Welle.
+  let bereiche = null;
+  const mehrfach = pools.filter((g) => g.wellen.length >= 2).sort(teamZuerst)[0];
+  if (mehrfach) {
+    const wl = [...mehrfach.wellen].sort((a, b) => String(a.w.name || '').localeCompare(String(b.w.name || ''), 'de'));
+    const keys = Object.keys(wl[0].werte).filter((k) => wl.every((x) => (x.werte[k] || []).length >= x.mindest));
+    const fragen = keys.map((k) => {
+      const mw = wl.map((x) => mittel(x.werte[k]));
+      const spanne = Math.max(...mw) - Math.min(...mw);
+      const m = wl.map((x) => x.meta[k]).find(Boolean) || {};
+      return { ...m, bereich: mehrfach.bereich[k] || '', spanne, deutlich: spanne >= ABWEICHUNG_AB, werte: mw.map((v) => Math.round((v / 4) * 100)) };
+    }).sort((a, b) => b.spanne - a.spanne);
+    if (fragen.length) {
+      bereiche = {
+        zielgruppe: mehrfach.zielgruppe,
+        gruppen: wl.map((x) => ({ name: x.w.name || '', fertig: x.fertig })),
+        verglichen: fragen.length,
+        deutlich: fragen.filter((f) => f.deutlich).length,
+        fragen: fragen.slice(0, 5).map(({ spanne: _s, ...f }) => f),
+      };
+    }
+  }
 
   // 3) Textmenge je Kapitel: Wörter je offener Antwort im Verhältnis zum Schnitt
   const kap = new Map();
@@ -524,11 +563,13 @@ async function signaleBerechnen(db, jeWelle, antworten, projekt = null) {
   const anzahl =
     einigkeit.einig + einigkeit.auseinander +
     paare.reduce((s, p) => s + p.anzahl, 0) +
+    (bereiche ? bereiche.deutlich : 0) +
     (spitze && spitze.faktor >= 1.5 ? 1 : 0);
 
   return {
     anzahl,
     einigkeit: items.length ? einigkeit : null,
+    bereiche,
     abweichungen: paare.length ? { paare, beispiele: beispiele.slice(0, 5).map(({ a, b, xa, xb, bereich, frage, nr, von, links, rechts }) => ({ a, b, xa, xb, bereich, frage, nr, von, links, rechts })) } : null,
     intensitaet: kapitel.length >= 2 ? { kapitel, spitze } : null,
   };
