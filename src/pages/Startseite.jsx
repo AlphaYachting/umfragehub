@@ -472,13 +472,12 @@ export default function Startseite() {
           <Etikett>Die ANDI-Methode von Rittler &amp; Co</Etikett>
           <EinstiegsFrage />
           <h1 className="mt-4 max-w-[960px] text-[clamp(40px,6vw,76px)] font-black uppercase leading-[0.98]">
-            Die Antwort steckt <span style={{ color: F.akzent }}>im Unternehmen.</span>
+            Die Antwort steckt <span style={{ color: F.akzent }}>in deinem Unternehmen.</span>
           </h1>
           <p className="mt-6 max-w-[680px] text-xl leading-[1.6]" style={{ color: F.daempft }}>
-            Wer täglich mit deinen Kunden arbeitet, weiß oft am besten, warum sie bei dir bleiben. Mit digitalen
-            Interviews holt <strong className="font-semibold" style={{ color: F.text }}>andi fragt.</strong> dieses
-            Wissen anonym ab: bei Führung, Team, Vertrieb und Kunden. Für Mitarbeiterzufriedenheit, Kundenbindung,
-            Markenpositionierung und mehr Abschlüsse. Klarheit statt Bauchgefühl.
+            Dein Team und deine Kunden kennen sie längst. Offen ausgesprochen wird sie im eigenen Haus aber selten.
+            Gemeinsam mit dir entwickelt <strong className="font-semibold" style={{ color: F.text }}>andi fragt.</strong> die
+            richtigen Fragen und macht aus den Antworten Entscheidungen und Botschaften. Wissen statt Bauchgefühl.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Hauptknopf href={mailAn("andi fragt. Termin vereinbaren")}>Termin vereinbaren</Hauptknopf>
