@@ -29,7 +29,7 @@ const SICHTBAR = [
   ["signale", "Signale nach Abschluss"],
 ];
 const MODULNAMEN = {
-  team: "Teambefragung", vertrieb: "Vertriebsbefragung", kunden: "Kundenbefragung",
+  team: "Team-Interview", vertrieb: "Vertriebs-Interview", kunden: "Kunden-Interview",
   positionierung: "Positionierung", wiederholung: "Wiederholung in 12 Monaten",
 };
 
@@ -52,17 +52,17 @@ function standardMail(projekt) {
   const firma = projekt.kundenname ? ` für ${projekt.kundenname}` : "";
   if (projekt.ansprache === "sie") {
     return {
-      betreff: `Ihr Befragungs-Cockpit${firma}`,
+      betreff: `Ihr Interview-Cockpit${firma}`,
       text:
-        "Guten Tag,\n\nab sofort können Sie jederzeit mitverfolgen, wie Ihre Befragung läuft: wie viele aus jeder Gruppe schon geantwortet haben, wie sich der Rücklauf entwickelt und wie es danach weitergeht.\n\n" +
+        "Guten Tag,\n\nab sofort können Sie jederzeit mitverfolgen, wie Ihre Interviews laufen: wie viele aus jeder Gruppe schon geantwortet haben, wie sich der Rücklauf entwickelt und wie es danach weitergeht.\n\n" +
         "Wer was geantwortet hat, sieht dort niemand, auch wir nicht. Das Cockpit zeigt nur Zahlen.\n\n" +
         "Speichern Sie sich den Link am besten als Lesezeichen, er funktioniert am Handy genauso wie am Computer.\n\nMit freundlichen Grüßen\nRittler & Co",
     };
   }
   return {
-    betreff: `Dein Befragungs-Cockpit${firma}`,
+    betreff: `Dein Interview-Cockpit${firma}`,
     text:
-      "Hallo,\n\nab sofort kannst du jederzeit mitverfolgen, wie eure Befragung läuft: wie viele aus jeder Gruppe schon geantwortet haben, wie sich der Rücklauf entwickelt und wie es danach weitergeht.\n\n" +
+      "Hallo,\n\nab sofort kannst du jederzeit mitverfolgen, wie eure Interviews laufen: wie viele aus jeder Gruppe schon geantwortet haben, wie sich der Rücklauf entwickelt und wie es danach weitergeht.\n\n" +
       "Wer was geantwortet hat, sieht dort niemand, auch wir nicht. Das Cockpit zeigt nur Zahlen.\n\n" +
       "Speichere dir den Link am besten als Lesezeichen, er funktioniert am Handy genauso wie am Computer.\n\nViele Grüße\nRittler & Co",
   };
@@ -139,7 +139,7 @@ export default function KundenzugangBox({ projekt }) {
 
   function zugangsdatenText() {
     return [
-      `Dein Befragungs-Cockpit${projekt.kundenname ? ` für ${projekt.kundenname}` : ""}:`,
+      `Dein Interview-Cockpit${projekt.kundenname ? ` für ${projekt.kundenname}` : ""}:`,
       cockpitUrl(zugang.code),
       `Passwort: ${zugang.passwort}`,
       "",

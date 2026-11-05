@@ -18,9 +18,9 @@ const SPERRE_MINUTEN = 15;
 const MINDEST_GESAMT = 6;
 const SEITE = 200;
 const MODULE = {
-  team: 'Teambefragung',
-  vertrieb: 'Vertriebsbefragung',
-  kunden: 'Kundenbefragung',
+  team: 'Team-Interview',
+  vertrieb: 'Vertriebs-Interview',
+  kunden: 'Kunden-Interview',
   positionierung: 'Positionierung',
   wiederholung: 'Wiederholung in 12 Monaten',
 };
@@ -32,7 +32,7 @@ export default async function (req) {
     const db = base44.asServiceRole.entities;
     const body = await req.json();
     // Vorschau für eingeloggte Admins: ohne Passwort, optional mit Phase
-    // „abgeschlossen“, um die Signale schon während der Befragung zu sehen.
+    // „abgeschlossen“, um die Signale schon während der Interviews zu sehen.
     if (body.adminVorschau) {
       const user = await base44.auth.me().catch(() => null);
       body.adminVorschau = !!(user && user.role === 'admin');
@@ -633,7 +633,7 @@ async function zugangsmail(db, body, user) {
   const sie = projekt?.ansprache === 'sie';
   const link = `${OEFFENTLICHE_URL}/k/${z.code}`;
   const getrennt = !!body.getrennt;
-  const betreff = String(body.betreff || '').trim() || (sie ? 'Ihr Befragungs-Cockpit' : 'Dein Befragungs-Cockpit');
+  const betreff = String(body.betreff || '').trim() || (sie ? 'Ihr Interview-Cockpit' : 'Dein Interview-Cockpit');
   const text = String(body.text || '').trim();
 
   const [haupt, gruss] = grussAbtrennen(text);
@@ -643,10 +643,10 @@ async function zugangsmail(db, body, user) {
     textContent: `${text}\n\nLink: ${link}\n${getrennt ? (sie ? 'Das Passwort erhalten Sie in einer eigenen Mail.' : 'Das Passwort bekommst du in einer eigenen Mail.') : `Passwort: ${z.passwort}`}`,
   }];
   if (getrennt) {
-    const b2 = sie ? 'Passwort für Ihr Befragungs-Cockpit' : 'Passwort für dein Befragungs-Cockpit';
+    const b2 = sie ? 'Passwort für Ihr Interview-Cockpit' : 'Passwort für dein Interview-Cockpit';
     const t2 = sie
-      ? 'Guten Tag,\n\nhier ist wie angekündigt das Passwort für Ihr Befragungs-Cockpit. Den Link haben Sie in der vorigen Mail erhalten.'
-      : 'Hallo,\n\nhier ist wie angekündigt das Passwort für dein Befragungs-Cockpit. Den Link hast du in der vorigen Mail bekommen.';
+      ? 'Guten Tag,\n\nhier ist wie angekündigt das Passwort für Ihr Interview-Cockpit. Den Link haben Sie in der vorigen Mail erhalten.'
+      : 'Hallo,\n\nhier ist wie angekündigt das Passwort für dein Interview-Cockpit. Den Link hast du in der vorigen Mail bekommen.';
     mails.push({
       betreff: b2,
       html: mailRahmen(b2, absaetze(t2) + passwortblock(z.passwort) + absaetze(gruss)),

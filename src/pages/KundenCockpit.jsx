@@ -211,7 +211,7 @@ function Anmeldung({ passwort, setPasswort, onSubmit, fehler, laedt }) {
         <Kreise />
         <p className="relative text-[26px] font-black">andi fragt<span style={{ color: F.akzent }}>.</span></p>
         <div className="relative max-w-[520px]">
-          <p className="text-[13px] font-medium uppercase tracking-[0.2em]" style={{ color: F.etikettDunkel }}>Dein Befragungs-Cockpit</p>
+          <p className="text-[13px] font-medium uppercase tracking-[0.2em]" style={{ color: F.etikettDunkel }}>Dein Interview-Cockpit</p>
           <h1 className="mt-4 text-[38px] sm:text-[52px] leading-[1.05] font-black uppercase">
             Sieh, wie dein Unternehmen <span style={{ color: F.akzent }}>antwortet.</span>
           </h1>
@@ -356,9 +356,9 @@ function Cockpit({ d, onAbmelden, onInteresse, onAktualisieren, vorschau, vorsch
       <section className="max-w-[1160px] mx-auto px-6 pt-20 pb-12">
         <div className="rounded-[20px] text-white px-6 sm:px-9 py-10 flex flex-wrap items-center justify-between gap-7" style={{ background: F.dunkel }}>
           <div className="flex-[1_1_380px] min-w-0">
-            <h2 className="text-[26px] sm:text-[30px] leading-tight font-black uppercase">{abgeschlossen ? "Neugierig geworden?" : "Fragen zur Befragung?"}</h2>
+            <h2 className="text-[26px] sm:text-[30px] leading-tight font-black uppercase">{abgeschlossen ? "Neugierig geworden?" : "Fragen zu den Interviews?"}</h2>
             <p className="mt-3 text-base leading-relaxed" style={{ color: "#e2dfdc" }}>
-              Rittler &amp; Co begleitet deine Befragung von der ersten Frage bis zur fertigen Kommunikation.
+              Rittler &amp; Co begleitet deine Interviews von der ersten Frage bis zur fertigen Kommunikation.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -396,7 +396,7 @@ function Einstieg({ d, standText, onAktualisieren }) {
     kacheln.push({
       wert: String(k.ende.tage),
       einheit: k.ende.tage === 1 ? " Tag" : " Tage",
-      text: `bis die Befragung ${zg(k.ende.zielgruppe).lang === "Team" ? "im Team" : `bei ${zg(k.ende.zielgruppe).lang}`} am ${datumKurz(k.ende.datum)} endet`,
+      text: `bis die Interviews ${zg(k.ende.zielgruppe).lang === "Team" ? "im Team" : `bei ${zg(k.ende.zielgruppe).lang}`} am ${datumKurz(k.ende.datum)} enden`,
       akzent: true,
     });
   } else if (!abgeschlossen && k.begonnen > 0) {
@@ -427,7 +427,7 @@ function Einstieg({ d, standText, onAktualisieren }) {
           <h1 className="mt-3 text-[40px] sm:text-[56px] leading-[1.04] font-black uppercase">
             {abgeschlossen
               ? <>Dein Unternehmen <span style={{ color: F.akzent }}>hat gesprochen.</span></>
-              : <>Deine Befragung <span style={{ color: F.akzent }}>läuft.</span></>}
+              : <>Deine Interviews <span style={{ color: F.akzent }}>laufen.</span></>}
           </h1>
           <p className="mt-6 max-w-[540px] text-lg leading-relaxed" style={{ color: "#e2dfdc" }}>
             {abgeschlossen
@@ -480,7 +480,7 @@ function Gruppen({ d, nr, abgeschlossen }) {
       <Etikett>{nr} Gruppen</Etikett>
       <h2 className={`mt-3 ${H2}`}>{abgeschlossen ? "Wer geantwortet hat" : "Wer schon geantwortet hat"}</h2>
       <p className="mt-4 max-w-[680px] text-[17px] leading-relaxed" style={{ color: F.daempft }}>
-        Jede Gruppe beantwortet ihre eigene Befragung. Ausgewertet wird eine Gruppe erst, wenn genug Personen teilgenommen haben. So bleibt jede einzelne Antwort geschützt.
+        Jede Gruppe beantwortet ihr eigenes Interview. Ausgewertet wird eine Gruppe erst, wenn genug Personen teilgenommen haben. So bleibt jede einzelne Antwort geschützt.
       </p>
 
       {d.gruppen.length === 0 ? (
@@ -604,7 +604,7 @@ function Verlauf({ v, nr }) {
   return (
     <section id="verlauf" className="max-w-[1160px] mx-auto px-6 pt-28 scroll-mt-4">
       <Etikett>{nr} Verlauf</Etikett>
-      <h2 className={`mt-3 ${H2}`}>So hat sich die Befragung entwickelt</h2>
+      <h2 className={`mt-3 ${H2}`}>So haben sich die Interviews entwickelt</h2>
       <div className="mt-10 flex flex-wrap gap-5">
         <div className="flex-[3_1_560px] min-w-0 rounded-2xl p-5 sm:p-7" style={{ border: `1px solid ${F.linie}` }}>
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-[13px]" style={{ color: F.daempft }}>
@@ -664,7 +664,7 @@ function Verlauf({ v, nr }) {
             <p className="text-xs font-semibold uppercase tracking-[0.14em]" style={{ color: F.daempft }}>Dein Beitrag</p>
             <p className="mt-2.5 text-[22px] leading-snug font-extrabold">Ein kurzes Wort von dir wirkt.</p>
             <p className="mt-2 text-[15px] leading-relaxed" style={{ color: F.daempft }}>
-              Wenn du im Team erwähnst, dass dir die Befragung wichtig ist, machen mehr mit. Wer begonnen hat, kann jederzeit dort weitermachen, wo er aufgehört hat.
+              Wenn du im Team erwähnst, dass dir die Interviews wichtig sind, machen mehr mit. Wer begonnen hat, kann jederzeit dort weitermachen, wo er aufgehört hat.
             </p>
           </div>
         </aside>
@@ -1199,15 +1199,15 @@ function Signale({ s, nr }) {
 // ---------------------------------------------------------------------------
 const MODUL_TEXTE = {
   team: {
-    nr: "02", kurz: "Teambefragung", titel: "Damit die Guten bleiben.",
-    text: "Die anonyme Teambefragung zeigt, was dein Team hält, was es bremst und was es sich wünscht. Daraus entsteht eine Arbeitgebermarke, die stimmt.",
+    nr: "02", kurz: "Team-Interview", titel: "Damit die Guten bleiben.",
+    text: "Das anonyme Team-Interview zeigt, was dein Team hält, was es bremst und was es sich wünscht. Daraus entsteht eine Arbeitgebermarke, die stimmt.",
   },
   kunden: {
-    nr: "03", kurz: "Kundenbefragung", titel: "Mehr Erfolg, als du glaubst.",
+    nr: "03", kurz: "Kunden-Interview", titel: "Mehr Erfolg, als du glaubst.",
     text: "Kunden sagen selten von sich aus, warum sie bei dir kaufen oder was sie fast zur Konkurrenz getrieben hätte. Gefragt erzählen sie es gern.",
   },
   vertrieb: {
-    nr: "04", kurz: "Vertriebsbefragung", titel: "Frag die, die verkaufen.",
+    nr: "04", kurz: "Vertriebs-Interview", titel: "Frag die, die verkaufen.",
     text: "Außendienst, Innendienst und Kunden wissen am genauesten, wo Abschlüsse gelingen und wo sie hängen bleiben. Wir holen dieses Wissen ab, bevor du investierst.",
   },
   wiederholung: {
@@ -1263,7 +1263,7 @@ function Module({ d, nr, onInteresse }) {
       <div className="max-w-[1160px] mx-auto px-6 py-24">
         <Etikett>{nr} Mehr von andi</Etikett>
         <h2 className={`mt-3 ${H2}`}>Was andi noch für dich <span style={{ color: F.akzent }}>fragen kann.</span></h2>
-        <p className="mt-4 max-w-[680px] text-[17px] leading-relaxed" style={{ color: F.daempft }}>Dieselbe Methode, andere Fragen. Jede Befragung baut auf dem auf, was du schon weißt.</p>
+        <p className="mt-4 max-w-[680px] text-[17px] leading-relaxed" style={{ color: F.daempft }}>Dieselbe Methode, andere Fragen. Jedes Interview baut auf dem auf, was du schon weißt.</p>
         {fehler && <p role="alert" className="mt-6 text-sm font-medium" style={{ color: "#b00d36" }}>{fehler}</p>}
         <div className="mt-12 grid gap-5" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(290px, 1fr))" }}>
           {auswahl.map((m) => {
