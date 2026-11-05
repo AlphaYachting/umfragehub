@@ -911,7 +911,10 @@ function frageKurz(text, projekt) {
     .trim();
   const frage = t.indexOf('?');
   if (frage > 0) t = t.slice(0, frage + 1);
-  if (t.length > 70 && t.includes(',')) t = t.slice(0, t.indexOf(',')).trim() + (t.endsWith('?') ? '?' : '');
+  // Nur kürzen, wenn vor dem Komma noch eine verständliche Frage steht
+  // (sonst wird z. B. „Wie wahrscheinlich ist es?“ daraus)
+  const vorKomma = t.includes(',') ? t.slice(0, t.indexOf(',')).trim() : '';
+  if (t.length > 70 && vorKomma.length >= 35) t = vorKomma + (t.endsWith('?') ? '?' : '');
   t = t.replace(/^Und\s+/i, '');
   return t.charAt(0).toUpperCase() + t.slice(1);
 }
