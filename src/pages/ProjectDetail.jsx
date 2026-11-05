@@ -32,6 +32,7 @@ import Fortschritt from "@/components/verwaltung/Fortschritt";
 import LinkAktionen from "@/components/verwaltung/LinkAktionen";
 import VerlaufChart from "@/components/verwaltung/VerlaufChart";
 import KundenzugangBox from "@/components/verwaltung/KundenzugangBox";
+import AuswertungBox from "@/components/verwaltung/AuswertungBox";
 import {
   ladeProjekt,
   projektAusZwischenspeicher,
@@ -58,9 +59,10 @@ export default function ProjectDetail() {
   const [welleEingeladen, setWelleEingeladen] = useState("");
   const [welleEndetAm, setWelleEndetAm] = useState("");
   const [beschaeftigt, setBeschaeftigt] = useState(null);
-  const [reiter, setReiter] = useState(() =>
-    new URLSearchParams(window.location.search).get("reiter") === "kunde" ? "kunde" : "wellen"
-  ); // Wellen-ID, an der gerade gearbeitet wird
+  const [reiter, setReiter] = useState(() => {
+    const r = new URLSearchParams(window.location.search).get("reiter");
+    return r === "kunde" || r === "auswertung" ? r : "wellen";
+  }); // Wellen-ID, an der gerade gearbeitet wird
   const ungespeichertRef = useRef(false);
   ungespeichertRef.current = ungespeichert;
 
@@ -304,10 +306,15 @@ export default function ProjectDetail() {
             Einstellungen{ungespeichert ? " •" : ""}
           </TabsTrigger>
           <TabsTrigger value="kunde">Kundenzugang</TabsTrigger>
+          <TabsTrigger value="auswertung">Auswertung</TabsTrigger>
         </TabsList>
 
         <TabsContent value="kunde" className="mt-4">
           <KundenzugangBox projekt={projekt} />
+        </TabsContent>
+
+        <TabsContent value="auswertung" className="mt-4">
+          {reiter === "auswertung" && <AuswertungBox projekt={projekt} />}
         </TabsContent>
 
         {/* ------------------------------------------------------------------ */}
