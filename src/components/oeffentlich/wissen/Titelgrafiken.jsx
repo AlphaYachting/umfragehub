@@ -31,8 +31,9 @@ function Kopftext({ schmal, oben, z1, z2, z3, z4, unter, z1b }) {
         <text x="48" y="92" fill="#ff8fa8" fontSize="26" fontWeight="600" letterSpacing="4">{oben}</text>
         <text x="48" y="172" fill="#ffffff" fontSize="62" fontWeight="900">{z1}</text>
         {z1b && <text x="48" y="240" fill={z1b.pink ? PINK : "#ffffff"} fontSize="62" fontWeight="900">{z1b.text}</text>}
-        <text x="48" y="322" fill="#d4d4d4" fontSize="46" fontWeight="700">{z3}</text>
-        <text x="48" y="380" fill={PINK} fontSize="46" fontWeight="900">{z4}</text>
+        {/* Ohne z1b rücken z3 und z4 nach oben, sonst entsteht am Handy eine Lücke (05.11.2026). */}
+        <text x="48" y={z1b ? 322 : 262} fill="#d4d4d4" fontSize="46" fontWeight="700">{z3}</text>
+        <text x="48" y={z1b ? 380 : 320} fill={PINK} fontSize="46" fontWeight="900">{z4}</text>
       </>
     );
   }
@@ -609,7 +610,244 @@ function Iso45001() {
   return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Drei Felder untereinander. Konsultation: Meinungen einholen. Beteiligung, pink hervorgehoben: mitentscheiden. Gesetz: Evaluierung psychischer Belastungen." />;
 }
 
+// Nr. 19: KI im Betrieb einführen, 85 % erwarten negative Folgen für den Arbeitsmarkt, vier Fragen vor der Einführung
+function KiTeam() {
+  const fragen = [
+    { text: "Wer nutzt was?", pink: false },
+    { text: "Wovor Angst?", pink: true },
+    { text: "Welche Schulung?", pink: false },
+    { text: "Welche Ideen?", pink: false },
+  ];
+  const kachel = (f, i, x0, y0, w, h, abstandX, abstandY, gross) => {
+    const x = x0 + (i % 2) * (w + abstandX);
+    const y = y0 + Math.floor(i / 2) * (h + abstandY);
+    return (
+      <g key={f.text}>
+        <rect x={x} y={y} width={w} height={h} rx="16" fill={f.pink ? PINK : "#4a4a4a"} />
+        <text x={x + 28} y={y + h / 2 + 9 * gross} fill="#ffffff" fontSize={26 * gross} fontWeight={f.pink ? 900 : 800}>{f.text}</text>
+      </g>
+    );
+  };
+  const breit = (
+    <>
+      <Kopftext oben="KI IM BETRIEB" z1="KI kommt." z3="Was denkt" z4="dein Team?" unter="Wer nutzt schon was, und wovor hat es Angst?" />
+      <rect x="900" y="170" width="580" height="200" rx="22" fill="#ffffff" />
+      <text x="940" y="214" fill="#5a5a5a" fontSize="16" fontWeight="700" letterSpacing="3">ÖSTERREICH, ALLIANZ PULSE 2026</text>
+      <text x="940" y="316" fill={PINK} fontSize="84" fontWeight="900">85 %</text>
+      {["erwarten negative", "Folgen von KI für", "den Arbeitsmarkt."].map((z, i) => (
+        <text key={z} x="1160" y={272 + i * 32} fill="#2d2d2d" fontSize="24" fontWeight="800">{z}</text>
+      ))}
+      <text x="900" y="420" fill="#b3b3b3" fontSize="17" fontWeight="700" letterSpacing="3">VOR DER EINFÜHRUNG FRAGEN</text>
+      {fragen.map((f, i) => kachel(f, i, 900, 444, 285, 80, 10, 16, 1))}
+    </>
+  );
+  const schmal = (
+    <>
+      <Kopftext schmal oben="KI IM BETRIEB" z1="KI kommt." z3="Was denkt" z4="dein Team?" />
+      <rect x="48" y="440" width="704" height="200" rx="24" fill="#ffffff" />
+      <text x="88" y="484" fill="#5a5a5a" fontSize="24" fontWeight="700" letterSpacing="2">ÖSTERREICH, ALLIANZ PULSE 2026</text>
+      <text x="88" y="600" fill={PINK} fontSize="96" fontWeight="900">85 %</text>
+      {["erwarten negative", "Folgen von KI für", "den Arbeitsmarkt."].map((z, i) => (
+        <text key={z} x="340" y={548 + i * 34} fill="#2d2d2d" fontSize="28" fontWeight="800">{z}</text>
+      ))}
+      {fragen.map((f, i) => kachel(f, i, 48, 664, 344, 90, 16, 16, 1.15))}
+    </>
+  );
+  return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Eine Karte zeigt 85 Prozent, die in Österreich negative Folgen von KI für den Arbeitsmarkt erwarten. Darunter vier Fragen vor der Einführung: Wer nutzt was, wovor Angst, pink hervorgehoben, welche Schulung und welche Ideen." />;
+}
+
+// Nr. 20: Mitarbeiter halten, wenn die Lohnerhöhung klein ausfällt. Lohn gegen Preise, darunter was außerdem hält
+function MitarbeiterHalten() {
+  const felder = [
+    { text: "Tätigkeit", pink: true },
+    { text: "Entwicklung" },
+    { text: "Mitsprache" },
+    { text: "Führung" },
+  ];
+  const balken = [
+    { text: "Ist-Löhne Metaller", wert: "1,9 %", anteil: 1.9, farbe: "#ffffff" },
+    { text: "Rollierende Inflation", wert: "3,3 %", anteil: 3.3, farbe: PINK },
+  ];
+  const breit = (
+    <>
+      <Kopftext oben="LOHNRUNDE 2026" z1="Wenig Plus." z3="Was hält dein" z4="Team trotzdem?" unter="Was außer Geld bindet und wie du es erfährst." />
+      <rect x="900" y="170" width="580" height="206" rx="22" fill="#4a4a4a" />
+      <text x="940" y="214" fill="#b3b3b3" fontSize="17" fontWeight="700" letterSpacing="3">LOHN GEGEN PREISE</text>
+      {balken.map((b, i) => (
+        <g key={b.text}>
+          <text x="940" y={254 + i * 70} fill="#ffffff" fontSize="22" fontWeight="700">{b.text}</text>
+          <rect x="940" y={266 + i * 70} width={Math.round(b.anteil * 111.2)} height="22" rx="11" fill={b.farbe} />
+          <text x={956 + Math.round(b.anteil * 111.2)} y={285 + i * 70} fill="#ffffff" fontSize="24" fontWeight="900">{b.wert}</text>
+        </g>
+      ))}
+      <rect x="900" y="400" width="580" height="216" rx="22" fill="#ffffff" />
+      <text x="940" y="444" fill="#5a5a5a" fontSize="17" fontWeight="700" letterSpacing="3">WAS AUSSERDEM HÄLT</text>
+      {felder.map((f, i) => {
+        const x = 940 + (i % 2) * 260;
+        const y = 466 + Math.floor(i / 2) * 72;
+        return (
+          <g key={f.text}>
+            <rect x={x} y={y} width="240" height="56" rx="18" fill={f.pink ? PINK : "#e8e6e4"} />
+            <text x={x + 120} y={y + 36} fill={f.pink ? "#ffffff" : "#2d2d2d"} fontSize="24" fontWeight={f.pink ? 900 : 800} textAnchor="middle">{f.text}</text>
+          </g>
+        );
+      })}
+    </>
+  );
+  const schmal = (
+    <>
+      <Kopftext schmal oben="LOHNRUNDE 2026" z1="Wenig Plus." z3="Was hält dein" z4="Team trotzdem?" />
+      <rect x="48" y="440" width="704" height="200" rx="24" fill="#4a4a4a" />
+      <text x="88" y="484" fill="#b3b3b3" fontSize="24" fontWeight="700" letterSpacing="3">LOHN GEGEN PREISE</text>
+      {balken.map((b, i) => (
+        <g key={b.text}>
+          <text x="88" y={524 + i * 66} fill="#ffffff" fontSize="26" fontWeight="700">{b.text}</text>
+          <rect x="88" y={536 + i * 66} width={Math.round(b.anteil * 140)} height="22" rx="11" fill={b.farbe} />
+          <text x={104 + Math.round(b.anteil * 140)} y={556 + i * 66} fill="#ffffff" fontSize="28" fontWeight="900">{b.wert}</text>
+        </g>
+      ))}
+      <rect x="48" y="660" width="704" height="200" rx="24" fill="#ffffff" />
+      <text x="88" y="702" fill="#5a5a5a" fontSize="24" fontWeight="700" letterSpacing="3">WAS AUSSERDEM HÄLT</text>
+      {felder.map((f, i) => {
+        const x = 88 + (i % 2) * 320;
+        const y = 722 + Math.floor(i / 2) * 66;
+        return (
+          <g key={f.text}>
+            <rect x={x} y={y} width="304" height="54" rx="18" fill={f.pink ? PINK : "#e8e6e4"} />
+            <text x={x + 152} y={y + 36} fill={f.pink ? "#ffffff" : "#2d2d2d"} fontSize="28" fontWeight={f.pink ? 900 : 800} textAnchor="middle">{f.text}</text>
+          </g>
+        );
+      })}
+    </>
+  );
+  return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Oben ein Vergleich in Balken, Ist-Löhne der Metallindustrie plus 1,9 Prozent gegen rollierende Inflation 3,3 Prozent. Darunter eine Karte mit der Überschrift Was außerdem hält und vier Feldern: Tätigkeit, pink hervorgehoben, Entwicklung, Mitsprache und Führung." />;
+}
+
+// Nr. 21: Personalabbau, zwölf Personen, vier gegangen, zwei wackeln
+function Personalabbau() {
+  const weg = ["0-1", "1-3", "2-0", "2-2"];
+  const pink = ["0-3", "1-1"];
+  const person = (key, cx, cy, s) => {
+    const r = 22 * s, bw = 68 * s, bh = 44 * s, abstand = 30 * s;
+    if (weg.includes(key)) {
+      return (
+        <g key={key}>
+          <circle cx={cx} cy={cy} r={r} fill="none" stroke="#7a7a7a" strokeWidth={3 * s} strokeDasharray={`${6 * s} ${6 * s}`} />
+          <rect x={cx - bw / 2} y={cy + abstand} width={bw} height={bh} rx={bh / 2} fill="none" stroke="#7a7a7a" strokeWidth={3 * s} strokeDasharray={`${6 * s} ${6 * s}`} />
+        </g>
+      );
+    }
+    const farbe = pink.includes(key) ? PINK : "#ffffff";
+    return (
+      <g key={key}>
+        <circle cx={cx} cy={cy} r={r} fill={farbe} />
+        <rect x={cx - bw / 2} y={cy + abstand} width={bw} height={bh} rx={bh / 2} fill={farbe} />
+      </g>
+    );
+  };
+  const raster = (x0, y0, dx, dy, s) => {
+    const out = [];
+    for (let r = 0; r < 3; r++) {
+      for (let c = 0; c < 4; c++) out.push(person(`${r}-${c}`, x0 + c * dx, y0 + r * dy, s));
+    }
+    return out;
+  };
+  const breit = (
+    <>
+      <Kopftext oben="PERSONALABBAU" z1="Nach dem Abbau" z3="zählen die," z4="die bleiben." unter="Wie du sie hältst, wenn das Klima kippt." />
+      <text x="910" y="200" fill="#b3b3b3" fontSize="18" fontWeight="700" letterSpacing="3">NACH DEM ABBAU</text>
+      {raster(980, 260, 140, 110, 1)}
+      <circle cx="922" cy="596" r="10" fill={PINK} />
+      <text x="944" y="605" fill="#ffffff" fontSize="28" fontWeight="800">Wo wackelt es, und warum?</text>
+    </>
+  );
+  const schmal = (
+    <>
+      <Kopftext schmal oben="PERSONALABBAU" z1="Nach dem Abbau" z3="zählen die," z4="die bleiben." />
+      <text x="72" y="462" fill="#b3b3b3" fontSize="24" fontWeight="700" letterSpacing="3">NACH DEM ABBAU</text>
+      {raster(160, 512, 160, 116, 1.1)}
+      <circle cx="84" cy="848" r="12" fill={PINK} />
+      <text x="110" y="858" fill="#ffffff" fontSize="32" fontWeight="800">Wo wackelt es, und warum?</text>
+    </>
+  );
+  return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Zwölf Personensymbole in drei Reihen unter der Überschrift Nach dem Abbau. Vier sind nur gestrichelt umrandet, sie sind gegangen. Acht sind weiß, zwei davon pink hervorgehoben. Darunter die Frage: Wo wackelt es, und warum?" />;
+}
+
+// Nr. 22: Preiserhöhung Kunden mitteilen, Kosten, Wert und Argument
+function Preiserhoehung() {
+  const felder = [
+    { oben: "KOSTEN", text: "Energie plus 16,5 %", art: "grau" },
+    { oben: "WERT", text: "Wofür Kunden zahlen", art: "pink" },
+    { oben: "ARGUMENT", text: "Was sie bei dir hält", art: "rand" },
+  ];
+  const feld = (f, x, y, w, h, oben, gross, yo, yt) => (
+    <g key={f.oben}>
+      {f.art === "rand"
+        ? <rect x={x + 2} y={y + 2} width={w - 4} height={h - 4} rx="18" fill="none" stroke="#ffffff" strokeWidth="3" />
+        : <rect x={x} y={y} width={w} height={h} rx="18" fill={f.art === "pink" ? PINK : "#4a4a4a"} />}
+      <text x={x + 40} y={y + yo} fill={f.art === "pink" ? "#ffe3ea" : "#b3b3b3"} fontSize={oben} fontWeight="700" letterSpacing="3">{f.oben}</text>
+      <text x={x + 40} y={y + yt} fill="#ffffff" fontSize={gross} fontWeight={f.art === "pink" ? 900 : 800}>{f.text}</text>
+    </g>
+  );
+  const breit = (
+    <>
+      <Kopftext oben="PREISERHÖHUNG" z1="Preise erhöhen?" z3="Frag zuerst," z4="wofür sie zahlen" unter="Was Kunden hält, wenn der Preis steigt." />
+      {felder.map((f, i) => feld(f, 900, 190 + i * 140, 580, 110, 17, 30, 42, 86))}
+    </>
+  );
+  const schmal = (
+    <>
+      <Kopftext schmal oben="PREISERHÖHUNG" z1="Preise erhöhen?" z3="Frag zuerst," z4="wofür sie zahlen" />
+      {felder.map((f, i) => feld(f, 48, 440 + i * 144, 704, 124, 24, 38, 46, 100))}
+    </>
+  );
+  return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Drei Felder untereinander. Kosten: Energie plus 16,5 Prozent. Wert, pink hervorgehoben: Wofür Kunden zahlen. Argument: Was sie bei dir hält." />;
+}
+
+// Nr. 23: Vertrieb ankurbeln im Aufschwung, drei Kundengruppen und wer zuerst wieder kauft
+function VertriebAnkurbeln() {
+  const zeilen = [
+    { name: "Export und Investitionen", status: "kauft schon wieder", art: "pink" },
+    { name: "Lageraufbau", status: "kauft auf Vorrat", art: "grau" },
+    { name: "Bau und Konsum", status: "wartet noch", art: "rand" },
+  ];
+  const zeile = (z, x, y, w, h, s) => (
+    <g key={z.name}>
+      {z.art === "rand"
+        ? <rect x={x + 1} y={y + 1} width={w - 2} height={h - 2} rx="16" fill="none" stroke="#d6d3d0" strokeWidth="2" />
+        : <rect x={x} y={y} width={w} height={h} rx="16" fill={z.art === "pink" ? "#fff0f3" : "#f6f5f4"} />}
+      {z.art === "rand"
+        ? <circle cx={x + 42 * s} cy={y + h / 2} r={16 * s} fill="none" stroke="#8a8a8a" strokeWidth="3" />
+        : <circle cx={x + 42 * s} cy={y + h / 2} r={18 * s} fill={z.art === "pink" ? PINK : "#8a8a8a"} />}
+      <text x={x + 80 * s} y={y + h / 2 - 6 * s} fill="#2d2d2d" fontSize={26 * s} fontWeight={z.art === "pink" ? 900 : 800}>{z.name}</text>
+      <text x={x + 80 * s} y={y + h / 2 + 28 * s} fill={z.art === "pink" ? "#c4103f" : "#5a5a5a"} fontSize={20 * s} fontWeight="700">{z.status}</text>
+    </g>
+  );
+  const breit = (
+    <>
+      <Kopftext oben="VERTRIEB IM AUFSCHWUNG" z1="Es zieht an." z3="Aber wer kauft" z4="zuerst wieder?" unter="Und warum? Frag Verkäufer und Kunden." />
+      <rect x="900" y="170" width="580" height="440" rx="22" fill="#ffffff" />
+      <text x="944" y="226" fill="#5a5a5a" fontSize="18" fontWeight="700" letterSpacing="3">DEINE KUNDEN IM AUFSCHWUNG</text>
+      {zeilen.map((z, i) => zeile(z, 930, 262 + i * 112, 520, 96, 1))}
+    </>
+  );
+  const schmal = (
+    <>
+      <Kopftext schmal oben="VERTRIEB IM AUFSCHWUNG" z1="Es zieht an." z3="Aber wer kauft" z4="zuerst wieder?" />
+      <rect x="48" y="440" width="704" height="420" rx="24" fill="#ffffff" />
+      <text x="92" y="494" fill="#5a5a5a" fontSize="24" fontWeight="700" letterSpacing="3">DEINE KUNDEN</text>
+      {zeilen.map((z, i) => zeile(z, 76, 520 + i * 110, 648, 98, 1.2))}
+    </>
+  );
+  return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Eine Karte mit der Überschrift Deine Kunden im Aufschwung und drei Zeilen. Pink hervorgehoben: Export und Investitionen, kauft schon wieder. Grau: Lageraufbau, kauft auf Vorrat. Umrandet: Bau und Konsum, wartet noch." />;
+}
+
 export const TITELGRAFIKEN = {
+  "vertrieb-ankurbeln": VertriebAnkurbeln,
+  "preiserhoehung-kunden-mitteilen": Preiserhoehung,
+  "personalabbau-mitarbeiter-halten": Personalabbau,
+  "mitarbeiter-halten-ohne-gehaltserhoehung": MitarbeiterHalten,
+  "ki-einfuehren-mitarbeiter": KiTeam,
   "mitarbeiterbefragung-iso-9001": Iso9001,
   "mitarbeiterbefragung-iso-45001": Iso45001,
   "betriebsuebergabe-vorbereiten": NachfolgeUebergeber,

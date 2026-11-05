@@ -745,7 +745,7 @@ function Vierfeld({ b }) {
         {b.felder.map((f) => (
           <div key={f.kopf} className="flex flex-col gap-1.5 p-3.5 sm:p-[18px] rounded-[14px] min-h-[110px]" style={f.akzent ? { background: PINK } : { background: "#ffffff", border: `1px solid ${F.linie}` }}>
             <span className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.1em]" style={{ color: f.akzent ? "#ffffff" : F.daempft }}>{f.kopf}</span>
-            <span className="text-[15px] sm:text-[17px] font-extrabold leading-[1.35]" style={{ color: f.akzent ? "#ffffff" : F.text }}>{f.text}</span>
+            <span lang="de" className="text-[15px] sm:text-[17px] font-extrabold leading-[1.35] hyphens-auto [overflow-wrap:break-word]" style={{ color: f.akzent ? "#ffffff" : F.text }}>{f.text}</span>
           </div>
         ))}
         <span />

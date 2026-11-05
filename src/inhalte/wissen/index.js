@@ -25,6 +25,11 @@ import gesellschafterUneinigMarketing from "./gesellschafterUneinigMarketing";
 import mitarbeiterbefragungIso9001 from "./mitarbeiterbefragungIso9001";
 import mitarbeiterbefragungIso45001 from "./mitarbeiterbefragungIso45001";
 
+import mitarbeiterHaltenOhneGehaltserhoehung from "./mitarbeiterHaltenOhneGehaltserhoehung";
+import personalabbauMitarbeiterHalten from "./personalabbauMitarbeiterHalten";
+import vertriebAnkurbeln from "./vertriebAnkurbeln";
+import preiserhoehungKundenMitteilen from "./preiserhoehungKundenMitteilen";
+import kiEinfuehrenMitarbeiter from "./kiEinfuehrenMitarbeiter";
 export const BEITRAEGE = [
   mitarbeiterbefragungErgebnisse,
   warumKuendigenGuteMitarbeiter,
@@ -40,6 +45,11 @@ export const BEITRAEGE = [
   gesellschafterUneinigMarketing,
   mitarbeiterbefragungIso9001,
   mitarbeiterbefragungIso45001,
+  mitarbeiterHaltenOhneGehaltserhoehung,
+  personalabbauMitarbeiterHalten,
+  vertriebAnkurbeln,
+  preiserhoehungKundenMitteilen,
+  kiEinfuehrenMitarbeiter,
 ];
 
 export const MODUL_NAMEN = { team: "Team", positionierung: "Positionierung", kunden: "Kunden", vertrieb: "Vertrieb" };

@@ -51,6 +51,11 @@ const WissenMitarbeiterNachBetriebsuebernahme = lazy(() => import('@/pages/wisse
 const WissenBetriebsuebernahmeErste100Tage = lazy(() => import('@/pages/wissen/beitrag/WissenBetriebsuebernahmeErste100Tage'));
 const WissenBetriebsuebergabeVorbereiten = lazy(() => import('@/pages/wissen/beitrag/WissenBetriebsuebergabeVorbereiten'));
 const WissenGesellschafterUneinigMarketing = lazy(() => import('@/pages/wissen/beitrag/WissenGesellschafterUneinigMarketing'));
+const WissenKiEinfuehrenMitarbeiter = lazy(() => import('@/pages/wissen/beitrag/WissenKiEinfuehrenMitarbeiter'));
+const WissenPreiserhoehungKundenMitteilen = lazy(() => import('@/pages/wissen/beitrag/WissenPreiserhoehungKundenMitteilen'));
+const WissenVertriebAnkurbeln = lazy(() => import('@/pages/wissen/beitrag/WissenVertriebAnkurbeln'));
+const WissenPersonalabbauMitarbeiterHalten = lazy(() => import('@/pages/wissen/beitrag/WissenPersonalabbauMitarbeiterHalten'));
+const WissenMitarbeiterHaltenOhneGehaltserhoehung = lazy(() => import('@/pages/wissen/beitrag/WissenMitarbeiterHaltenOhneGehaltserhoehung'));
 const WissenMitarbeiterbefragungIso9001 = lazy(() => import('@/pages/wissen/beitrag/WissenMitarbeiterbefragungIso9001'));
 const WissenMitarbeiterbefragungIso45001 = lazy(() => import('@/pages/wissen/beitrag/WissenMitarbeiterbefragungIso45001'));
 
@@ -117,6 +122,11 @@ const AuthenticatedApp = () => {
       <Route path="/wissen/gesellschafter-uneinig-marketing" element={<WissenGesellschafterUneinigMarketing />} />
       <Route path="/wissen/mitarbeiterbefragung-iso-9001" element={<WissenMitarbeiterbefragungIso9001 />} />
       <Route path="/wissen/mitarbeiterbefragung-iso-45001" element={<WissenMitarbeiterbefragungIso45001 />} />
+      <Route path="/wissen/mitarbeiter-halten-ohne-gehaltserhoehung" element={<WissenMitarbeiterHaltenOhneGehaltserhoehung />} />
+      <Route path="/wissen/personalabbau-mitarbeiter-halten" element={<WissenPersonalabbauMitarbeiterHalten />} />
+      <Route path="/wissen/vertrieb-ankurbeln" element={<WissenVertriebAnkurbeln />} />
+      <Route path="/wissen/preiserhoehung-kunden-mitteilen" element={<WissenPreiserhoehungKundenMitteilen />} />
+      <Route path="/wissen/ki-einfuehren-mitarbeiter" element={<WissenKiEinfuehrenMitarbeiter />} />
       <Route path="/wissen/*" element={<NichtGefunden />} />
       <Route path="/i/:linkToken" element={<Interview />} />
       {/* Öffentlich mit Passwort: Kunden-Cockpit des Auftraggebers */}
