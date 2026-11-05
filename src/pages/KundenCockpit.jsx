@@ -977,7 +977,9 @@ function BereicheVergleich({ b }) {
           <GrosseZahl wert={aehnlich} text="ähnlich gesehen" leise schmal />
         </div>
         <p className="mt-6 text-[15px] leading-relaxed" style={{ color: F.daempft }}>
-          {namenText} erleben dein Unternehmen jeden Tag aus einem anderen Blickwinkel. Wo ihre Einschätzungen auseinanderliegen, steckt meist ein Thema, das im Alltag zwischen den Bereichen hängen bleibt. Genau das öffnen wir im Workshop.
+          {b.deutlich > 0
+            ? `${namenText} erleben dein Unternehmen jeden Tag aus einem anderen Blickwinkel. Wo ihre Einschätzungen auseinanderliegen, steckt meist ein Thema, das im Alltag zwischen den Bereichen hängen bleibt. Genau das öffnen wir im Workshop.`
+            : `${namenText} erleben dein Unternehmen jeden Tag aus einem anderen Blickwinkel und schätzen es bei diesen Fragen trotzdem ähnlich ein. Das ist ein gemeinsames Fundament. Was jeder Bereich mit eigenen Worten dazu sagt, öffnen wir im Workshop.`}
         </p>
       </div>
       <div className="flex-[1_1_420px] min-w-0 flex flex-col gap-5" role="img" aria-label={`Durchschnitt je Bereich auf einer Skala: ${namenText}. Gezeigt wird die Frage, nicht die Antworten.`}>
