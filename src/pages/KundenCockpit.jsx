@@ -955,6 +955,67 @@ function GrosseZahl({ wert, text, akzent = false, leise = false, schmal = false 
   );
 }
 
+// Mehrere Wellen derselben Zielgruppe (z. B. Außendienst, Innendienst, Technik) nebeneinander.
+// Je gemeinsamer Frage ein Punkt pro Bereich: der Durchschnitt, nie eine Einzelantwort.
+const BEREICH_FARBEN = ["#185FA5", "#ff3764", "#2d2d2d", "#0F6E56", "#854F0B"];
+
+function BereicheVergleich({ b }) {
+  const farbe = (i) => BEREICH_FARBEN[i % BEREICH_FARBEN.length];
+  const namen = b.gruppen.map((g) => g.name);
+  const namenText = namen.length > 1 ? `${namen.slice(0, -1).join(", ")} und ${namen[namen.length - 1]}` : namen[0];
+  const aehnlich = Math.max(0, b.verglichen - b.deutlich);
+  return (
+    <article className="mt-5 rounded-2xl p-6 sm:p-8 flex flex-wrap gap-x-14 gap-y-8" style={{ background: F.grau, border: `1px solid ${F.linie}` }}>
+      <div className="flex-[1_1_300px] min-w-0">
+        <Pille zielgruppe={b.zielgruppe} />
+        <h3 className="mt-4 text-[26px] leading-tight font-extrabold">Sehen alle Bereiche dasselbe Unternehmen?</h3>
+        <p className="mt-2 text-sm" style={{ color: F.daempft }}>
+          Grundlage: {b.gruppen.map((g) => `${g.fertig} Interviews ${g.name}`).join(", ")}. Allen wurden dieselben {b.verglichen === 1 ? "Einschätzung" : `${b.verglichen} Einschätzungen`} gestellt.
+        </p>
+        <div className="mt-6 flex flex-wrap gap-x-6 gap-y-6">
+          <GrosseZahl wert={b.deutlich} text="deutliche Unterschiede zwischen den Bereichen" akzent />
+          <GrosseZahl wert={aehnlich} text="ähnlich gesehen" leise schmal />
+        </div>
+        <p className="mt-6 text-[15px] leading-relaxed" style={{ color: F.daempft }}>
+          {namenText} erleben dein Unternehmen jeden Tag aus einem anderen Blickwinkel. Wo ihre Einschätzungen auseinanderliegen, steckt meist ein Thema, das im Alltag zwischen den Bereichen hängen bleibt. Genau das öffnen wir im Workshop.
+        </p>
+      </div>
+      <div className="flex-[1_1_420px] min-w-0 flex flex-col gap-5" role="img" aria-label={`Durchschnitt je Bereich auf einer Skala: ${namenText}. Gezeigt wird die Frage, nicht die Antworten.`}>
+        <div className="flex flex-wrap gap-x-5 gap-y-2 text-[13px] font-semibold">
+          {namen.map((n, i) => (
+            <span key={n + i} className="inline-flex items-center gap-1.5"><span aria-hidden="true" className="w-3.5 h-3.5 rounded-full" style={{ background: farbe(i) }} />{n}</span>
+          ))}
+        </div>
+        {b.fragen.map((f, i) => {
+          const lo = Math.min(...f.werte);
+          const hi = Math.max(...f.werte);
+          return (
+            <div key={i}>
+              <div className="flex items-start justify-between gap-3">
+                <Kennung r={f} reserve={`Einschätzung ${i + 1}`} />
+                <span className="shrink-0 inline-flex items-center min-h-[22px] px-2 rounded-full text-[11px] font-semibold" style={f.deutlich ? { background: F.hauch, color: F.akzentTief } : { background: "#fff", color: F.daempft }}>
+                  {f.deutlich ? "deutlich anders" : "ähnlich"}
+                </span>
+              </div>
+              <div aria-hidden="true" className="mt-2 relative h-6">
+                <div className="absolute inset-x-0 top-[11px] h-0.5" style={{ background: "#d6d3d0" }} />
+                <div className="absolute top-2 h-2 rounded-full" style={{ left: `${lo}%`, width: `${hi - lo}%`, background: F.akzent, opacity: 0.3 }} />
+                {f.werte.map((x, j) => (
+                  <span key={j} title={namen[j]} className="absolute top-0.5 w-5 h-5 -ml-2.5 rounded-full border-[3px] border-white box-border" style={{ left: `${x}%`, background: farbe(j) }} />
+                ))}
+              </div>
+              <Pole links={f.links} rechts={f.rechts} />
+            </div>
+          );
+        })}
+        <p className="text-xs leading-relaxed" style={{ color: F.daempft }}>
+          Jeder Punkt ist der Durchschnitt eines Bereichs. Deutlich heißt: mindestens ein Viertel der Skala auseinander. Verglichen werden nur Fragen, die allen Bereichen gestellt wurden.
+        </p>
+      </div>
+    </article>
+  );
+}
+
 function Signale({ s, nr }) {
   const paarText = (p) => `${zg(p.a).lang} und ${zg(p.b).lang}`;
   // Nur Führung und Team verglichen: dann ist es kein Bild von außen
@@ -984,7 +1045,7 @@ function Signale({ s, nr }) {
             <h3 className="mt-4 text-[26px] leading-tight font-extrabold">Wie einig ist sich {e.zielgruppe === "mitarbeiter" ? "dein Team" : `die Gruppe ${zg(e.zielgruppe).lang}`}?</h3>
             {e.interviews > 0 && (
               <p className="mt-2 text-sm" style={{ color: F.daempft }}>
-                Grundlage: {e.interviews} Interviews, {e.gesamt} Einschätzungen auf einer Skala. So verteilen sie sich:
+                Grundlage: {e.interviews} Interviews{e.wellen > 1 ? ` aus allen ${e.wellen} Bereichen` : ""}, {e.gesamt} Einschätzungen auf einer Skala. So verteilen sie sich:
               </p>
             )}
             <div className="mt-6 flex flex-wrap gap-x-6 gap-y-6">
@@ -1017,6 +1078,8 @@ function Signale({ s, nr }) {
           )}
         </article>
       )}
+
+      {s?.bereiche && <BereicheVergleich b={s.bereiche} />}
 
       {s?.abweichungen && (
         <article className="mt-5 rounded-2xl p-6 sm:p-8 flex flex-wrap gap-x-14 gap-y-8" style={{ background: F.grau, border: `1px solid ${F.linie}` }}>
