@@ -1,0 +1,163 @@
+{
+  "name": "Auswertung",
+  "description": "Ergebnisfassung eines Projekts f\u00fcr die Verwaltung: Kernaussagen und Themen aus offenen Antworten, mit Freigabe durch Rittler. Enth\u00e4lt nie Einzelantworten oder Zitate. Nur f\u00fcr Admins.",
+  "type": "object",
+  "properties": {
+    "projektId": {
+      "type": "string",
+      "title": "Projekt ID"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "entwurf",
+        "freigegeben"
+      ],
+      "default": "entwurf",
+      "title": "Status"
+    },
+    "vorschlagVon": {
+      "type": "string",
+      "title": "Vorschlag von",
+      "description": "Wer den ersten Vorschlag gemacht hat, z. B. Claude oder manuell"
+    },
+    "kernaussagen": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Kernaussagen"
+    },
+    "themenQuelle": {
+      "type": "string",
+      "title": "Themen: Quelle",
+      "description": "Aus welchen offenen Fragen die Themen stammen"
+    },
+    "themenBasis": {
+      "type": "object",
+      "title": "Themen: Basis je Welle",
+      "description": "Wellen-ID \u2192 Zahl der Personen, die mindestens eine der Quellfragen beantwortet haben",
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "themen": {
+      "type": "array",
+      "title": "Themen",
+      "items": {
+        "type": "object",
+        "properties": {
+          "titel": {
+            "type": "string"
+          },
+          "tonlage": {
+            "type": "string",
+            "enum": [
+              "kritisch",
+              "wunsch",
+              "konstruktiv",
+              "positiv",
+              "gemischt"
+            ]
+          },
+          "jeWelle": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "hinweis": {
+      "type": "string",
+      "title": "Hinweis zur Datenbasis"
+    },
+    "fassung": {
+      "type": "number",
+      "default": 0,
+      "title": "Freigegebene Fassung"
+    },
+    "freigegebenAm": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Freigegeben am"
+    },
+    "freigegebenVon": {
+      "type": "string",
+      "title": "Freigegeben von"
+    },
+    "kundenSichtbar": {
+      "type": "boolean",
+      "default": false,
+      "title": "F\u00fcr den Kunden sichtbar",
+      "description": "Eigener Schritt nach dem Workshop. Gilt nur f\u00fcr die freigegebene Fassung."
+    },
+    "kundenSichtbarAm": {
+      "type": "string",
+      "format": "date-time",
+      "title": "F\u00fcr den Kunden sichtbar seit"
+    },
+    "fassungen": {
+      "type": "array",
+      "title": "Fr\u00fchere Fassungen",
+      "items": {
+        "type": "object",
+        "properties": {
+          "fassung": {
+            "type": "number"
+          },
+          "am": {
+            "type": "string"
+          },
+          "von": {
+            "type": "string"
+          },
+          "kernaussagen": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "themen": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "title": "Beschreibung",
+      "description": "Kurze Beschreibung des Datensatzes f\u00fcr Suche und Vorschau, bis 1000 Zeichen."
+    }
+  },
+  "required": [
+    "projektId"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
