@@ -1,0 +1,86 @@
+{
+  "description": "Au\u00dfenblick-Modul: Antwort auf eine Portalfrage \u2014 vom Unternehmen selbst oder aus der Welle (Mitarbeitende, Kunden). Wird nur \u00fcber die Portal-Funktion mit g\u00fcltigem Code geschrieben; personenbezogen, L\u00f6schung nach 90 Tagen ohne Folgekontakt.",
+  "name": "Portalantwort",
+  "properties": {
+    "audioUrl": {
+      "title": "Sprachaufnahme",
+      "type": "string"
+    },
+    "beantwortetAm": {
+      "format": "date-time",
+      "title": "Beantwortet am",
+      "type": "string"
+    },
+    "description": {
+      "description": "Kurze Beschreibung des Datensatzes f\u00fcr Suche und Vorschau, bis 1000 Zeichen.",
+      "maxLength": 1000,
+      "title": "Beschreibung",
+      "type": "string"
+    },
+    "einladungId": {
+      "title": "Einladung (Code)",
+      "type": "string"
+    },
+    "loeschenAb": {
+      "format": "date",
+      "title": "L\u00f6schen ab",
+      "type": "string"
+    },
+    "nummer": {
+      "title": "Frage-Nr.",
+      "type": "number"
+    },
+    "portalfrageId": {
+      "title": "Frage",
+      "type": "string"
+    },
+    "rolle": {
+      "default": "unternehmen",
+      "enum": [
+        "unternehmen",
+        "mitarbeiter",
+        "kunde",
+        "unbekannt"
+      ],
+      "title": "Wer antwortet",
+      "type": "string"
+    },
+    "text": {
+      "format": "textarea",
+      "title": "Antwort",
+      "type": "string"
+    },
+    "zielId": {
+      "title": "Ziel",
+      "type": "string"
+    }
+  },
+  "required": [
+    "zielId",
+    "nummer",
+    "text"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  },
+  "type": "object"
+}

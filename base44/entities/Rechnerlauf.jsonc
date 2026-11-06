@@ -1,0 +1,86 @@
+{
+  "description": "Au\u00dfenblick-Modul: ein Durchlauf des Rechners im Portal mit den Zahlen des Unternehmens (Monatsbudget, Anfragen, Abschl\u00fcsse, Regler). Wer den Rechner ausf\u00fcllt, ist hei\u00df. Nur \u00fcber die Portal-Funktion geschrieben.",
+  "name": "Rechnerlauf",
+  "properties": {
+    "am": {
+      "format": "date-time",
+      "title": "Zeitpunkt",
+      "type": "string"
+    },
+    "anfragen": {
+      "title": "Anfragen je Monat",
+      "type": "number"
+    },
+    "auftraege": {
+      "title": "Auftr\u00e4ge je Monat",
+      "type": "number"
+    },
+    "budgetMonat": {
+      "title": "Monatsbudget (\u20ac)",
+      "type": "number"
+    },
+    "description": {
+      "description": "Kurze Beschreibung des Datensatzes f\u00fcr Suche und Vorschau, bis 1000 Zeichen.",
+      "maxLength": 1000,
+      "title": "Beschreibung",
+      "type": "string"
+    },
+    "einladungId": {
+      "title": "Einladung (Code)",
+      "type": "string"
+    },
+    "kostenJeAnfrage": {
+      "title": "Kosten je Anfrage",
+      "type": "number"
+    },
+    "kostenJeAuftrag": {
+      "title": "Kosten je Auftrag",
+      "type": "number"
+    },
+    "regler": {
+      "properties": {
+        "r1": {
+          "type": "number"
+        },
+        "r2": {
+          "type": "number"
+        },
+        "r3": {
+          "type": "number"
+        }
+      },
+      "title": "Regler (Prozent)",
+      "type": "object"
+    },
+    "zielId": {
+      "title": "Ziel",
+      "type": "string"
+    }
+  },
+  "required": [
+    "zielId"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  },
+  "type": "object"
+}

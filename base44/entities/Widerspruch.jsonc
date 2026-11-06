@@ -1,0 +1,185 @@
+{
+  "description": "Au\u00dfenblick-Modul: ein belegter Widerspruch zwischen zwei Kan\u00e4len eines Ziels (Beleg A, Beleg B, Spannung). Steuert, was im Portal offen, gesperrt oder nur intern gezeigt wird.",
+  "name": "Widerspruch",
+  "properties": {
+    "belegA": {
+      "properties": {
+        "datum": {
+          "type": "string"
+        },
+        "fundstelle": {
+          "type": "string"
+        },
+        "stufe": {
+          "enum": [
+            "gesehen",
+            "abgeleitet",
+            "vermutet",
+            "offen"
+          ],
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "title": "Beleg A",
+      "type": "object"
+    },
+    "belegB": {
+      "properties": {
+        "datum": {
+          "type": "string"
+        },
+        "fundstelle": {
+          "type": "string"
+        },
+        "stufe": {
+          "enum": [
+            "gesehen",
+            "abgeleitet",
+            "vermutet",
+            "offen"
+          ],
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "title": "Beleg B",
+      "type": "object"
+    },
+    "description": {
+      "description": "Kurze Beschreibung des Datensatzes f\u00fcr Suche und Vorschau, bis 1000 Zeichen.",
+      "maxLength": 1000,
+      "title": "Beschreibung",
+      "type": "string"
+    },
+    "nummer": {
+      "title": "Nr. im Befund",
+      "type": "number"
+    },
+    "portal": {
+      "default": "intern",
+      "description": "offen = sofort sichtbar \u00b7 gesperrt = erst nach zwei beantworteten Fragen \u00b7 intern = nie im Portal",
+      "enum": [
+        "offen",
+        "gesperrt",
+        "intern"
+      ],
+      "title": "Im Portal",
+      "type": "string"
+    },
+    "portalA": {
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "title": "Portal-Karte A (Fassung f\u00fcr das Unternehmen)",
+      "type": "object"
+    },
+    "portalB": {
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "title": "Portal-Karte B",
+      "type": "object"
+    },
+    "reihenfolgePortal": {
+      "title": "Reihenfolge im Portal",
+      "type": "number"
+    },
+    "spannung": {
+      "title": "Spannung in einem Satz (intern)",
+      "type": "string"
+    },
+    "staerke": {
+      "default": "mittel",
+      "enum": [
+        "stark",
+        "mittel",
+        "schwach"
+      ],
+      "title": "St\u00e4rke",
+      "type": "string"
+    },
+    "titel": {
+      "title": "Titel (intern)",
+      "type": "string"
+    },
+    "typ": {
+      "description": "1 Kanal gegen Kanal \u00b7 2 Zeit \u00b7 3 Zielgruppenstreuung \u00b7 4 Kundenwahrheit \u2260 Werbewahrheit \u00b7 5 Innen \u2260 au\u00dfen \u00b7 6 Marke \u00b7 7 Austauschbarkeit \u00b7 8 Inhalt gegen Ziel",
+      "enum": [
+        "kanal",
+        "zeit",
+        "zielgruppe",
+        "kundenwahrheit",
+        "innen_aussen",
+        "marke",
+        "austauschbarkeit",
+        "inhalt_ziel"
+      ],
+      "title": "Widerspruchstyp",
+      "type": "string"
+    },
+    "zeile": {
+      "description": "Benennt beide Belege ohne Wertung, z. B. \u201eWas Ihre Kunden loben \u2014 und womit Sie werben.\u201c",
+      "title": "Zeile im Portal",
+      "type": "string"
+    },
+    "zielId": {
+      "title": "Ziel",
+      "type": "string"
+    }
+  },
+  "required": [
+    "zielId",
+    "typ",
+    "spannung"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  },
+  "type": "object"
+}

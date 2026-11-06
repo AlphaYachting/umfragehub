@@ -1,0 +1,135 @@
+{
+  "description": "Au\u00dfenblick-Modul: Einladungscode zum Portal eines Ziels (andifragt.at/a/<code>). Der Code wird erst g\u00fcltig, wenn Alfons den Versand markiert \u2014 die Software verschickt nie selbst. Art unternehmen = Code aus dem Brief; welle = Code f\u00fcr Mitarbeitende und Kunden.",
+  "name": "Einladung",
+  "properties": {
+    "adresse": {
+      "format": "textarea",
+      "title": "Adresse",
+      "type": "string"
+    },
+    "art": {
+      "default": "unternehmen",
+      "enum": [
+        "unternehmen",
+        "welle"
+      ],
+      "title": "Art",
+      "type": "string"
+    },
+    "aufrufe": {
+      "default": 0,
+      "title": "Aufrufe",
+      "type": "number"
+    },
+    "code": {
+      "description": "z. B. PCF-7K3M; im Link andifragt.at/a/<code>",
+      "title": "Code",
+      "type": "string"
+    },
+    "description": {
+      "description": "Kurze Beschreibung des Datensatzes f\u00fcr Suche und Vorschau, bis 1000 Zeichen.",
+      "maxLength": 1000,
+      "title": "Beschreibung",
+      "type": "string"
+    },
+    "empfaengerName": {
+      "title": "Empf\u00e4nger",
+      "type": "string"
+    },
+    "empfaengerRolle": {
+      "title": "Rolle",
+      "type": "string"
+    },
+    "fehlversuche": {
+      "default": 0,
+      "title": "Fehlversuche",
+      "type": "number"
+    },
+    "freigegebenAm": {
+      "format": "date-time",
+      "title": "Freigegeben am",
+      "type": "string"
+    },
+    "gesperrtBis": {
+      "format": "date-time",
+      "title": "Gesperrt bis",
+      "type": "string"
+    },
+    "gueltigBis": {
+      "description": "Standard: 30 Tage nach Versand",
+      "format": "date",
+      "title": "G\u00fcltig bis",
+      "type": "string"
+    },
+    "nachgefasstAm": {
+      "format": "date-time",
+      "title": "Nachgefasst am (Anruf)",
+      "type": "string"
+    },
+    "status": {
+      "default": "entwurf",
+      "description": "Nur versendet \u00f6ffnet das Portal. Wird ausschlie\u00dflich von Hand gesetzt.",
+      "enum": [
+        "entwurf",
+        "freigegeben",
+        "versendet",
+        "abgelaufen",
+        "gesperrt"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "versandweg": {
+      "default": "post",
+      "enum": [
+        "post",
+        "persoenlich",
+        "mail",
+        "telefon"
+      ],
+      "title": "Versandweg",
+      "type": "string"
+    },
+    "versendetAm": {
+      "format": "date-time",
+      "title": "Versendet am (von Hand markiert)",
+      "type": "string"
+    },
+    "zielId": {
+      "title": "Ziel",
+      "type": "string"
+    },
+    "zuletztGeoeffnet": {
+      "format": "date-time",
+      "title": "Zuletzt ge\u00f6ffnet",
+      "type": "string"
+    }
+  },
+  "required": [
+    "zielId",
+    "code"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  },
+  "type": "object"
+}

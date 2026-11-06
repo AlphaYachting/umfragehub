@@ -1,0 +1,78 @@
+{
+  "description": "Au\u00dfenblick-Modul: eine der f\u00fcnf Fragen an das Unternehmen (und in der Welle an Mitarbeitende und Kunden). Zeigt auf eine L\u00fccke, nie auf eine L\u00f6sung.",
+  "name": "Portalfrage",
+  "properties": {
+    "description": {
+      "description": "Kurze Beschreibung des Datensatzes f\u00fcr Suche und Vorschau, bis 1000 Zeichen.",
+      "maxLength": 1000,
+      "title": "Beschreibung",
+      "type": "string"
+    },
+    "hilfetext": {
+      "default": "Ein Satz gen\u00fcgt.",
+      "title": "Hilfetext",
+      "type": "string"
+    },
+    "kategorie": {
+      "enum": [
+        "kunden",
+        "werbung",
+        "zielgruppe",
+        "marke",
+        "team",
+        "inhalt"
+      ],
+      "title": "Kategorie",
+      "type": "string"
+    },
+    "nummer": {
+      "title": "Nr. (1\u20135)",
+      "type": "number"
+    },
+    "text": {
+      "title": "Frage (Fassung Unternehmen)",
+      "type": "string"
+    },
+    "textWelle": {
+      "description": "Dieselbe Frage f\u00fcr Mitarbeitende und Kunden, falls sie anders formuliert sein muss",
+      "title": "Frage (Fassung Welle)",
+      "type": "string"
+    },
+    "widerspruchId": {
+      "title": "Bezug auf Widerspruch",
+      "type": "string"
+    },
+    "zielId": {
+      "title": "Ziel",
+      "type": "string"
+    }
+  },
+  "required": [
+    "zielId",
+    "nummer",
+    "text"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  },
+  "type": "object"
+}
