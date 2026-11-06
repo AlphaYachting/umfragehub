@@ -73,13 +73,33 @@
       "title": "Branche",
       "type": "string"
     },
+    "briefArt": {
+      "default": "post",
+      "description": "Post ist der Standard (Werbe-Mails ohne Einwilligung sind in \u00d6sterreich heikel). E-Mail nur bei warmem Draht.",
+      "enum": [
+        "post",
+        "mail"
+      ],
+      "title": "Kontakt: Brief oder E-Mail",
+      "type": "string"
+    },
     "briefAufhaenger": {
       "title": "Brief: Aufh\u00e4nger",
       "type": "string"
     },
+    "briefBetreff": {
+      "title": "Betreff",
+      "type": "string"
+    },
+    "briefSpiegelung": {
+      "description": "Wie liest das der Empf\u00e4nger, der gerade Geld in diese Anzeigen steckt? Kommt mit dem KI-Entwurf.",
+      "format": "textarea",
+      "title": "Spiegelung",
+      "type": "string"
+    },
     "briefText": {
       "format": "textarea",
-      "title": "Brief (Entwurf)",
+      "title": "Brief / E-Mail (Entwurf)",
       "type": "string"
     },
     "budgetklasse": {
