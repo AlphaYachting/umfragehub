@@ -1,4 +1,4 @@
-import { LayoutDashboard, Library } from "lucide-react";
+import { LayoutDashboard, Library, Telescope } from "lucide-react";
 
 // Die Navigationspunkte der Verwaltung stehen an genau einer Stelle.
 // regel: welche Rolle den Punkt sieht (fehlt sie, sehen ihn alle Angemeldeten).
@@ -27,6 +27,19 @@ export const NAVIGATION = [
         label: "Fragenbibliothek",
         icon: Library,
         aktivBei: (pfad) => pfad.startsWith("/bibliothek"),
+      },
+    ],
+  },
+  {
+    key: "akquise",
+    titel: "Akquise",
+    einklappbar: false,
+    items: [
+      {
+        path: "/aussenblick",
+        label: "Außenblick",
+        icon: Telescope,
+        aktivBei: (pfad) => pfad.startsWith("/aussenblick"),
       },
     ],
   },
