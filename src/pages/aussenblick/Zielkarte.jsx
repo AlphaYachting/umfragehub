@@ -112,6 +112,7 @@ export default function Zielkarte() {
   const [kiHinweis, setKiHinweis] = useState("");
   const [kiLaeuft, setKiLaeuft] = useState(false);
   const [sperrwoerter, setSperrwoerter] = useState([]);
+  const [codeFehlt, setCodeFehlt] = useState(false);
   const [notiz, setNotiz] = useState("");
   const [registerAnsicht, setRegisterAnsicht] = useState("befund");
   const [mehr, setMehr] = useState(false); // Befund-Reiter: Details unter den Widersprüchen aufklappen
@@ -224,6 +225,7 @@ export default function Zielkarte() {
   async function briefErzeugen() {
     setKiLaeuft(true);
     setSperrwoerter([]);
+    setCodeFehlt(false);
     try {
       const res = await base44.functions.invoke("aussenblickBrief", { zielId: ziel.id, art: brief.briefArt, hinweis: kiHinweis });
       const r = res?.data;
@@ -231,6 +233,7 @@ export default function Zielkarte() {
       setBrief({ ...brief, briefText: r.text, briefBetreff: r.betreff || brief.briefBetreff, briefSpiegelung: r.spiegelung || "" });
       setBriefGeaendert(true);
       setSperrwoerter(r.sperrwoerter || []);
+      setCodeFehlt(Boolean(r.codeFehlt));
       toast.success(brief.briefArt === "mail" ? "E-Mail-Entwurf da — lesen, ändern, speichern." : "Brief-Entwurf da — lesen, ändern, speichern.");
     } catch (e) {
       toast.error("Der Entwurf ist nicht gekommen. Noch einmal versuchen.");
@@ -696,6 +699,9 @@ export default function Zielkarte() {
                     <Label htmlFor="b-betreff">Betreff</Label>
                     <Input id="b-betreff" value={brief.briefBetreff} onChange={(e) => { setBrief({ ...brief, briefBetreff: e.target.value }); setBriefGeaendert(true); }} />
                   </div>
+                )}
+                {codeFehlt && (
+                  <p className={cn("text-meta", TON_TEXT.info)}>Noch kein Einladungscode — im Text steht der Platzhalter [CODE]. Er wird erst mit der Freigabe zum echten Code; vorher nicht versenden.</p>
                 )}
                 {sperrwoerter.length > 0 && (
                   <p className={cn("text-meta", TON_TEXT.attention)}>Im Entwurf stehen Sperrwörter: {sperrwoerter.join(", ")} — bitte vor dem Speichern streichen.</p>
