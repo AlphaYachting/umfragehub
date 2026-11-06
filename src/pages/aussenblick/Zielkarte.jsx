@@ -27,7 +27,7 @@ import {
   ZIEL_STATUS, STATUS_REIHENFOLGE, WIDERSPRUCH_TYP, STAERKE, PORTAL_STUFE, MODUL, HEBEL, BUDGETKLASSE,
   EINLADUNG_STATUS, EREIGNIS_ART, ROLLE,
   ladeZiel, zielAusZwischenspeicher, zielKennzahlen, ereignisZeit,
-  statusSetzen, notizSchreiben, einladungAnlegen, versendetMarkieren, zielLoeschen, portalUrl, portalVorschauUrl,
+  statusSetzen, notizSchreiben, einladungAnlegen, versendetMarkieren, zielLoeschen, portalUrl, portalVorschauUrl, sichtbarkeitZahl,
 } from "@/lib/aussenblick";
 
 const REITER = ["befund", "portal", "brief", "verlauf", "register"];
@@ -328,6 +328,24 @@ export default function Zielkarte() {
         kachel("Kundenstimmen", ziel.stimmen?.googleWert ? `${String(ziel.stimmen.googleWert).replace(".", ",")} · ${ziel.stimmen.googleAnzahl || 0}` : "—", "Google-Bewertung · Anzahl"),
         kachel("Portal", haupt ? EINLADUNG_STATUS[haupt.status]?.label : "kein Code", haupt ? (haupt.status === "versendet" ? `${haupt.aufrufe || 0} Aufrufe${haupt.zuletztGeoeffnet ? ` · zuletzt ${relativerTag(alsDatum(haupt.zuletztGeoeffnet))}` : ""}` : `Code ${haupt.code}`) : "kommt mit der Freigabe", haupt?.status === "versendet" ? "done" : undefined),
       ]} />
+
+      {/* Zweite Reihe: die Zahlen hinter dem Blick */}
+      {(() => {
+        const grad = ziel.blick?.divergenzGrad;
+        const sicht = sichtbarkeitZahl(ziel.blick?.sichtbarkeit);
+        const scanTage = ziel.scanAm ? Math.max(0, Math.round((Date.now() - alsDatum(ziel.scanAm).getTime()) / 86400000)) : null;
+        const sieger = w.siegerbotschaft || {};
+        return (
+          <Kennzahlleiste werte={[
+            kachel("Divergenz", grad ? grad : "—", grad === "hoch" ? "drei Richtungen oder eigenes Material" : grad === "mittel" ? "zwei Richtungen" : grad === "gering" ? "Nuancen" : "kommt mit dem Scan", grad === "hoch" ? "attention" : undefined),
+            kachel("Sichtbarkeit", sicht ? `${sicht.treffer} von ${sicht.von}` : "—", "Suchanfragen der Wunschzielgruppe", sicht && sicht.treffer === 0 ? "attention" : undefined),
+            kachel("Markennamen", ziel.markennamen?.length || "—", "in Umlauf", (ziel.markennamen?.length || 0) >= 3 ? "attention" : undefined),
+            kachel("Zielgruppen", ziel.zielgruppen?.length || "—", "Bezeichnungen in Umlauf", (ziel.zielgruppen?.length || 0) >= 4 ? "attention" : undefined),
+            kachel("Siegerbotschaft", sieger.monate ? `${sieger.monate} Mon.` : "—", sieger.varianten ? `${sieger.varianten} Varianten · ${sieger.zielgruppe || ""}` : "älteste aktive Anzeige"),
+            kachel("Scan", scanTage === null ? "—" : scanTage === 0 ? "heute" : `vor ${scanTage} T.`, ziel.scanAm ? datumKurz(alsDatum(ziel.scanAm), true) : "noch keiner", scanTage !== null && scanTage > 45 ? "attention" : undefined),
+          ]} />
+        );
+      })()}
 
       {/* Die Entscheidungsansicht — auf jedem Reiter sichtbar */}
       <AufEinenBlick ziel={ziel} />
