@@ -1,105 +1,283 @@
 {
-  "name": "Ziel",
-  "type": "object",
   "description": "Au\u00dfenblick-Modul: ein Unternehmen, das online wirbt und als Ziel f\u00fcr andi fragt. gepr\u00fcft wird. Tr\u00e4gt Stammdaten, Scan-Stand, Befund-Kurzfassung, Modul, Hebel und die Pipeline bis zum Erstgespr\u00e4ch. Nie f\u00fcr Befragte sichtbar.",
+  "name": "Ziel",
   "properties": {
-    "kuerzel": {
-      "type": "string",
-      "title": "K\u00fcrzel",
-      "description": "2\u20134 Buchstaben, z. B. pcf"
-    },
-    "unternehmen": {
-      "type": "string",
-      "title": "Unternehmen"
-    },
-    "website": {
-      "type": "string",
-      "title": "Website"
-    },
-    "branche": {
-      "type": "string",
-      "title": "Branche"
-    },
-    "region": {
-      "type": "string",
-      "title": "Region",
-      "description": "Bundesland / Raum, z. B. Steiermark"
-    },
-    "sitz": {
-      "type": "string",
-      "title": "Sitz (laut Impressum)"
-    },
-    "weitereStandorte": {
-      "type": "string",
-      "title": "Weitere Standorte"
-    },
-    "firmenbuch": {
-      "type": "string",
-      "title": "Firmenbuch"
-    },
-    "groesse": {
-      "type": "string",
-      "title": "Gr\u00f6\u00dfe",
-      "description": "Mitarbeitende laut Website / Verzeichnis"
-    },
     "ansprache": {
-      "type": "string",
+      "default": "sie",
+      "description": "So, wie das Unternehmen seine Kunden anspricht",
       "enum": [
         "du",
         "sie"
       ],
-      "default": "sie",
       "title": "Ansprache im Portal",
-      "description": "So, wie das Unternehmen seine Kunden anspricht"
+      "type": "string"
+    },
+    "ausloeser": {
+      "description": "Alfons' Eindruck oder das Jagdrevier \u2014 wird im Scan als vermutet gepr\u00fcft",
+      "format": "textarea",
+      "title": "Ausl\u00f6ser / Hypothese",
+      "type": "string"
+    },
+    "befundMarkdown": {
+      "description": "Markdown, bis rund 16 KB",
+      "format": "textarea",
+      "title": "Befund (Markdown)",
+      "type": "string"
+    },
+    "branche": {
+      "title": "Branche",
+      "type": "string"
+    },
+    "briefAufhaenger": {
+      "title": "Brief: Aufh\u00e4nger",
+      "type": "string"
+    },
+    "briefText": {
+      "format": "textarea",
+      "title": "Brief (Entwurf)",
+      "type": "string"
+    },
+    "budgetklasse": {
+      "description": "Indikatorbasiert aus Anzeigenzahl, Laufzeit, Kan\u00e4len \u2014 keine Euro-Sch\u00e4tzung",
+      "title": "Budgetklasse (1\u20134)",
+      "type": "number"
+    },
+    "budgetklasseBegruendung": {
+      "title": "Begr\u00fcndung Budgetklasse",
+      "type": "string"
+    },
+    "description": {
+      "description": "Kurze Beschreibung des Datensatzes f\u00fcr Suche und Vorschau, bis 1000 Zeichen.",
+      "maxLength": 1000,
+      "title": "Beschreibung",
+      "type": "string"
+    },
+    "empfehlung": {
+      "default": "offen",
+      "enum": [
+        "offen",
+        "go",
+        "no_go"
+      ],
+      "title": "Empfehlung aus dem Befund",
+      "type": "string"
     },
     "entscheider": {
-      "type": "array",
-      "title": "Entscheider",
       "items": {
-        "type": "object",
         "properties": {
           "name": {
             "type": "string"
           },
-          "rolle": {
-            "type": "string"
-          },
           "quelle": {
             "type": "string"
+          },
+          "rolle": {
+            "type": "string"
           }
-        }
-      }
+        },
+        "type": "object"
+      },
+      "title": "Entscheider",
+      "type": "array"
     },
-    "quelle": {
-      "type": "string",
-      "enum": [
-        "alfons",
-        "reviersuche",
-        "anfrage",
-        "empfehlung"
-      ],
-      "default": "alfons",
-      "title": "Woher kommt das Ziel"
+    "firmenbuch": {
+      "title": "Firmenbuch",
+      "type": "string"
     },
-    "ausloeser": {
-      "type": "string",
-      "format": "textarea",
-      "title": "Ausl\u00f6ser / Hypothese",
-      "description": "Alfons' Eindruck oder das Jagdrevier \u2014 wird im Scan als vermutet gepr\u00fcft"
+    "groesse": {
+      "description": "Mitarbeitende laut Website / Verzeichnis",
+      "title": "Gr\u00f6\u00dfe",
+      "type": "string"
+    },
+    "hebel": {
+      "items": {
+        "properties": {
+          "art": {
+            "enum": [
+              "lern",
+              "zielgruppen",
+              "bruch",
+              "substanz"
+            ],
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "title": "Hebel ohne Zahl",
+      "type": "array"
     },
     "hypotheseErgebnis": {
-      "type": "string",
+      "default": "offen",
       "enum": [
         "offen",
         "bestaetigt",
         "teils",
         "widerlegt"
       ],
-      "default": "offen",
-      "title": "Hypothese gepr\u00fcft"
+      "title": "Hypothese gepr\u00fcft",
+      "type": "string"
+    },
+    "kuerzel": {
+      "description": "2\u20134 Buchstaben, z. B. pcf",
+      "title": "K\u00fcrzel",
+      "type": "string"
+    },
+    "kurzeinschaetzung": {
+      "format": "textarea",
+      "title": "Kurzeinsch\u00e4tzung (5 S\u00e4tze)",
+      "type": "string"
+    },
+    "markennamen": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Markennamen in Umlauf",
+      "type": "array"
+    },
+    "modul": {
+      "enum": [
+        "kunden",
+        "positionierung",
+        "vertrieb",
+        "team"
+      ],
+      "title": "Einstiegsmodul",
+      "type": "string"
+    },
+    "modulBegruendung": {
+      "format": "textarea",
+      "title": "Begr\u00fcndung Modul",
+      "type": "string"
+    },
+    "modulZweiterSchritt": {
+      "enum": [
+        "kunden",
+        "positionierung",
+        "vertrieb",
+        "team"
+      ],
+      "title": "Zweiter Schritt",
+      "type": "string"
+    },
+    "naechsterSchritt": {
+      "title": "N\u00e4chster Schritt",
+      "type": "string"
+    },
+    "notizen": {
+      "format": "textarea",
+      "title": "Notizen",
+      "type": "string"
+    },
+    "offen": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Offen / zu pr\u00fcfen durch einen Menschen",
+      "type": "array"
+    },
+    "portalTexte": {
+      "properties": {
+        "einstiegFolgt": {
+          "type": "string"
+        },
+        "einstiegSatz": {
+          "type": "string"
+        },
+        "erstgespraechKontakt": {
+          "type": "string"
+        },
+        "erstgespraechText": {
+          "type": "string"
+        },
+        "rechnerHebel": {
+          "type": "string"
+        },
+        "welleText": {
+          "type": "string"
+        },
+        "welleWeiterleitung": {
+          "type": "string"
+        }
+      },
+      "title": "Portal: feste Texte",
+      "type": "object"
+    },
+    "postadresse": {
+      "format": "textarea",
+      "title": "Postadresse f\u00fcr den Brief",
+      "type": "string"
+    },
+    "projektId": {
+      "description": "Verkn\u00fcpfung zum andi fragt.-Projekt, sobald das Interview angelegt ist",
+      "title": "Projekt (nach Auftrag)",
+      "type": "string"
+    },
+    "quelle": {
+      "default": "alfons",
+      "enum": [
+        "alfons",
+        "reviersuche",
+        "anfrage",
+        "empfehlung"
+      ],
+      "title": "Woher kommt das Ziel",
+      "type": "string"
+    },
+    "region": {
+      "description": "Bundesland / Raum, z. B. Steiermark",
+      "title": "Region",
+      "type": "string"
+    },
+    "registerMarkdown": {
+      "description": "Markdown. Ein Feld fasst rund 16 KB \u2014 l\u00e4ngere Register in Teil 2 und 3 fortsetzen; die Zielkarte h\u00e4ngt die Teile aneinander.",
+      "format": "textarea",
+      "title": "Faktenregister (Teil 1)",
+      "type": "string"
+    },
+    "registerMarkdown2": {
+      "format": "textarea",
+      "title": "Faktenregister (Teil 2)",
+      "type": "string"
+    },
+    "registerMarkdown3": {
+      "format": "textarea",
+      "title": "Faktenregister (Teil 3)",
+      "type": "string"
+    },
+    "scanAm": {
+      "format": "date-time",
+      "title": "Scan am",
+      "type": "string"
+    },
+    "scanVon": {
+      "title": "Scan durch",
+      "type": "string"
+    },
+    "schwaechen": {
+      "items": {
+        "type": "string"
+      },
+      "title": "L\u00fccken (intern)",
+      "type": "array"
+    },
+    "sitz": {
+      "title": "Sitz (laut Impressum)",
+      "type": "string"
+    },
+    "staerken": {
+      "items": {
+        "type": "string"
+      },
+      "title": "St\u00e4rken (intern)",
+      "type": "array"
     },
     "status": {
-      "type": "string",
+      "default": "vorgemerkt",
+      "description": "Pipeline: vorgemerkt \u2192 scan_angefordert \u2192 scan_laeuft \u2192 befund (go/no-go) \u2192 go \u2192 freigabe (Portal+Brief liegen vor) \u2192 freigegeben \u2192 versendet (Code aktiv) \u2192 geoeffnet \u2192 antworten \u2192 erstgespraech \u2192 kunde. Daneben: beobachtung, abgelegt.",
       "enum": [
         "vorgemerkt",
         "scan_angefordert",
@@ -117,305 +295,138 @@
         "beobachtung",
         "abgelegt"
       ],
-      "default": "vorgemerkt",
       "title": "Status",
-      "description": "Pipeline: vorgemerkt \u2192 scan_angefordert \u2192 scan_laeuft \u2192 befund (go/no-go) \u2192 go \u2192 freigabe (Portal+Brief liegen vor) \u2192 freigegeben \u2192 versendet (Code aktiv) \u2192 geoeffnet \u2192 antworten \u2192 erstgespraech \u2192 kunde. Daneben: beobachtung, abgelegt."
+      "type": "string"
     },
-    "empfehlung": {
-      "type": "string",
-      "enum": [
-        "offen",
-        "go",
-        "no_go"
-      ],
-      "default": "offen",
-      "title": "Empfehlung aus dem Befund"
-    },
-    "modul": {
-      "type": "string",
-      "enum": [
-        "kunden",
-        "positionierung",
-        "vertrieb",
-        "team"
-      ],
-      "title": "Einstiegsmodul"
-    },
-    "modulZweiterSchritt": {
-      "type": "string",
-      "enum": [
-        "kunden",
-        "positionierung",
-        "vertrieb",
-        "team"
-      ],
-      "title": "Zweiter Schritt"
-    },
-    "modulBegruendung": {
-      "type": "string",
-      "format": "textarea",
-      "title": "Begr\u00fcndung Modul"
-    },
-    "budgetklasse": {
-      "type": "number",
-      "title": "Budgetklasse (1\u20134)",
-      "description": "Indikatorbasiert aus Anzeigenzahl, Laufzeit, Kan\u00e4len \u2014 keine Euro-Sch\u00e4tzung"
-    },
-    "budgetklasseBegruendung": {
-      "type": "string",
-      "title": "Begr\u00fcndung Budgetklasse"
-    },
-    "werbung": {
-      "type": "object",
-      "title": "Werbung (Stand Scan)",
+    "stimmen": {
       "properties": {
-        "meta": {
+        "googleAnzahl": {
           "type": "number"
         },
+        "googleWert": {
+          "type": "number"
+        },
+        "kritik": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "lob": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "title": "Stimmen",
+      "type": "object"
+    },
+    "unternehmen": {
+      "title": "Unternehmen",
+      "type": "string"
+    },
+    "warmerDraht": {
+      "description": "fr\u00fchere Anfrage, Messe, LinkedIn \u2014 zu pr\u00fcfen",
+      "title": "Warmer Draht",
+      "type": "string"
+    },
+    "website": {
+      "title": "Website",
+      "type": "string"
+    },
+    "weitereStandorte": {
+      "title": "Weitere Standorte",
+      "type": "string"
+    },
+    "werbung": {
+      "properties": {
         "google": {
           "type": "number"
+        },
+        "juengste": {
+          "properties": {
+            "format": {
+              "type": "string"
+            },
+            "hook": {
+              "type": "string"
+            },
+            "markenname": {
+              "type": "string"
+            },
+            "seit": {
+              "type": "string"
+            },
+            "varianten": {
+              "type": "number"
+            },
+            "zielgruppe": {
+              "type": "string"
+            }
+          },
+          "type": "object"
         },
         "linkedin": {
           "type": "number"
         },
-        "tiktok": {
+        "meta": {
           "type": "number"
         },
         "pixel": {
-          "type": "array",
           "items": {
             "type": "string"
-          }
+          },
+          "type": "array"
         },
         "siegerbotschaft": {
-          "type": "object",
           "properties": {
+            "format": {
+              "type": "string"
+            },
             "hook": {
               "type": "string"
             },
-            "seit": {
+            "markenname": {
               "type": "string"
             },
             "monate": {
               "type": "number"
             },
-            "varianten": {
-              "type": "number"
-            },
-            "format": {
-              "type": "string"
-            },
-            "zielgruppe": {
-              "type": "string"
-            },
-            "markenname": {
-              "type": "string"
-            }
-          }
-        },
-        "juengste": {
-          "type": "object",
-          "properties": {
-            "hook": {
-              "type": "string"
-            },
             "seit": {
               "type": "string"
             },
             "varianten": {
               "type": "number"
             },
-            "format": {
-              "type": "string"
-            },
             "zielgruppe": {
               "type": "string"
-            },
-            "markenname": {
-              "type": "string"
             }
-          }
-        }
-      }
-    },
-    "stimmen": {
-      "type": "object",
-      "title": "Stimmen",
-      "properties": {
-        "googleWert": {
-          "type": "number"
-        },
-        "googleAnzahl": {
-          "type": "number"
-        },
-        "lob": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "kritik": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "markennamen": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "title": "Markennamen in Umlauf"
-    },
-    "zielgruppen": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "title": "Zielgruppenbezeichnungen in Umlauf"
-    },
-    "wunschzielgruppe": {
-      "type": "string",
-      "title": "Wunschzielgruppe"
-    },
-    "staerken": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "title": "St\u00e4rken (intern)"
-    },
-    "schwaechen": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "title": "L\u00fccken (intern)"
-    },
-    "hebel": {
-      "type": "array",
-      "title": "Hebel ohne Zahl",
-      "items": {
-        "type": "object",
-        "properties": {
-          "art": {
-            "type": "string",
-            "enum": [
-              "lern",
-              "zielgruppen",
-              "bruch",
-              "substanz"
-            ]
           },
-          "text": {
-            "type": "string"
-          }
+          "type": "object"
+        },
+        "tiktok": {
+          "type": "number"
         }
-      }
-    },
-    "kurzeinschaetzung": {
-      "type": "string",
-      "format": "textarea",
-      "title": "Kurzeinsch\u00e4tzung (5 S\u00e4tze)"
-    },
-    "portalTexte": {
-      "type": "object",
-      "title": "Portal: feste Texte",
-      "properties": {
-        "einstiegSatz": {
-          "type": "string"
-        },
-        "einstiegFolgt": {
-          "type": "string"
-        },
-        "welleText": {
-          "type": "string"
-        },
-        "welleWeiterleitung": {
-          "type": "string"
-        },
-        "rechnerHebel": {
-          "type": "string"
-        },
-        "erstgespraechText": {
-          "type": "string"
-        },
-        "erstgespraechKontakt": {
-          "type": "string"
-        }
-      }
-    },
-    "briefText": {
-      "type": "string",
-      "format": "textarea",
-      "title": "Brief (Entwurf)"
-    },
-    "briefAufhaenger": {
-      "type": "string",
-      "title": "Brief: Aufh\u00e4nger"
-    },
-    "warmerDraht": {
-      "type": "string",
-      "title": "Warmer Draht",
-      "description": "fr\u00fchere Anfrage, Messe, LinkedIn \u2014 zu pr\u00fcfen"
-    },
-    "postadresse": {
-      "type": "string",
-      "format": "textarea",
-      "title": "Postadresse f\u00fcr den Brief"
-    },
-    "registerMarkdown": {
-      "type": "string",
-      "format": "textarea",
-      "title": "Faktenregister (Markdown)"
-    },
-    "befundMarkdown": {
-      "type": "string",
-      "format": "textarea",
-      "title": "Befund (Markdown)"
-    },
-    "offen": {
-      "type": "array",
-      "items": {
-        "type": "string"
       },
-      "title": "Offen / zu pr\u00fcfen durch einen Menschen"
-    },
-    "scanAm": {
-      "type": "string",
-      "format": "date-time",
-      "title": "Scan am"
-    },
-    "scanVon": {
-      "type": "string",
-      "title": "Scan durch"
-    },
-    "naechsterSchritt": {
-      "type": "string",
-      "title": "N\u00e4chster Schritt"
+      "title": "Werbung (Stand Scan)",
+      "type": "object"
     },
     "wiedervorlage": {
-      "type": "string",
       "format": "date",
-      "title": "Wiedervorlage"
+      "title": "Wiedervorlage",
+      "type": "string"
     },
-    "projektId": {
-      "type": "string",
-      "title": "Projekt (nach Auftrag)",
-      "description": "Verkn\u00fcpfung zum andi fragt.-Projekt, sobald das Interview angelegt ist"
+    "wunschzielgruppe": {
+      "title": "Wunschzielgruppe",
+      "type": "string"
     },
-    "notizen": {
-      "type": "string",
-      "format": "textarea",
-      "title": "Notizen"
-    },
-    "description": {
-      "type": "string",
-      "maxLength": 1000,
-      "title": "Beschreibung",
-      "description": "Kurze Beschreibung des Datensatzes f\u00fcr Suche und Vorschau, bis 1000 Zeichen."
+    "zielgruppen": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Zielgruppenbezeichnungen in Umlauf",
+      "type": "array"
     }
   },
   "required": [
@@ -424,6 +435,11 @@
   ],
   "rls": {
     "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
       "user_condition": {
         "role": "admin"
       }
@@ -437,11 +453,7 @@
       "user_condition": {
         "role": "admin"
       }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
     }
-  }
+  },
+  "type": "object"
 }
