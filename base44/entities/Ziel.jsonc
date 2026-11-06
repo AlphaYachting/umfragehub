@@ -24,6 +24,51 @@
       "title": "Befund (Markdown)",
       "type": "string"
     },
+    "blick": {
+      "description": "Die Entscheidungsansicht f\u00fcr Alfons: was sie verkaufen wollen (Anzeigen), wie sie auftreten (Website), was Kunden sagen, wen sie eigentlich wollen, wo die Divergenz liegt, wo wir zugreifen, wie sichtbar sie sind. Je ein bis zwei S\u00e4tze.",
+      "properties": {
+        "auftritt": {
+          "title": "So treten sie auf (Website, Namen)",
+          "type": "string"
+        },
+        "divergenz": {
+          "title": "Divergenz in einem Satz",
+          "type": "string"
+        },
+        "divergenzGrad": {
+          "enum": [
+            "hoch",
+            "mittel",
+            "gering",
+            "offen"
+          ],
+          "title": "Grad der Divergenz",
+          "type": "string"
+        },
+        "kunden": {
+          "title": "Das sagen Kunden",
+          "type": "string"
+        },
+        "sichtbarkeit": {
+          "title": "Sichtbarkeit (Suche, Snippet)",
+          "type": "string"
+        },
+        "verkaufen": {
+          "title": "Sie werben f\u00fcr (Anzeigen: was, an wen, mit welchem Argument)",
+          "type": "string"
+        },
+        "wunsch": {
+          "title": "Wen sie eigentlich wollen",
+          "type": "string"
+        },
+        "zugriff": {
+          "title": "Zugriff: wo wir ansetzen, Gespr\u00e4chs\u00f6ffner",
+          "type": "string"
+        }
+      },
+      "title": "Auf einen Blick",
+      "type": "object"
+    },
     "branche": {
       "title": "Branche",
       "type": "string"
