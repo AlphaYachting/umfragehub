@@ -668,7 +668,6 @@ export default function Zielkarte() {
               <BoxKopf
                 titel={brief.briefArt === "mail" ? "E-Mail" : "Brief"}
                 symbol={Pencil}
-                hinweis={brief.briefArt === "mail" ? "kurz, Sie-Form, nur bei warmem Draht" : "eine Seite, per Post, Sie-Form"}
                 aktion={
                   <>
                     <Select value={brief.briefArt} onValueChange={(v) => { setBrief({ ...brief, briefArt: v }); setBriefGeaendert(true); }}>
