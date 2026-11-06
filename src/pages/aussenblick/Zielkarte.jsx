@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ChevronDown, ChevronRight, Copy, ExternalLink, KeyRound, MoreHorizontal, RefreshCw, Save, Send, Trash2, Phone, Pencil, Info } from "lucide-react";
+import { ChevronDown, ChevronRight, Copy, ExternalLink, KeyRound, MoreHorizontal, RefreshCw, Save, Send, Trash2, Phone, Pencil, Info, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { base44 } from "@/api/base44Client";
@@ -107,8 +107,11 @@ export default function Zielkarte() {
   const [versand, setVersand] = useState(null); // Einladung, die als versendet markiert werden soll
   const [versandweg, setVersandweg] = useState("post");
   const [versandAm, setVersandAm] = useState(heuteTag);
-  const [brief, setBrief] = useState({ briefText: "", briefAufhaenger: "", warmerDraht: "", postadresse: "" });
+  const [brief, setBrief] = useState({ briefText: "", briefAufhaenger: "", warmerDraht: "", postadresse: "", briefArt: "post", briefBetreff: "", briefSpiegelung: "" });
   const [briefGeaendert, setBriefGeaendert] = useState(false);
+  const [kiHinweis, setKiHinweis] = useState("");
+  const [kiLaeuft, setKiLaeuft] = useState(false);
+  const [sperrwoerter, setSperrwoerter] = useState([]);
   const [notiz, setNotiz] = useState("");
   const [registerAnsicht, setRegisterAnsicht] = useState("befund");
   const [mehr, setMehr] = useState(false); // Befund-Reiter: Details unter den Widersprüchen aufklappen
@@ -118,7 +121,10 @@ export default function Zielkarte() {
   function anwenden(neu) {
     setD(neu);
     const z = neu.ziel || {};
-    setBrief({ briefText: z.briefText || "", briefAufhaenger: z.briefAufhaenger || "", warmerDraht: z.warmerDraht || "", postadresse: z.postadresse || "" });
+    setBrief({
+      briefText: z.briefText || "", briefAufhaenger: z.briefAufhaenger || "", warmerDraht: z.warmerDraht || "", postadresse: z.postadresse || "",
+      briefArt: z.briefArt || "post", briefBetreff: z.briefBetreff || "", briefSpiegelung: z.briefSpiegelung || "",
+    });
     setBriefGeaendert(false);
   }
 
@@ -211,6 +217,26 @@ export default function Zielkarte() {
     await tun(async () => {
       await base44.entities.Ziel.update(ziel.id, brief);
     }, "Brief gespeichert.");
+  }
+
+  // KI-Entwurf: die Funktion aussenblickBrief schreibt nichts und verschickt nichts —
+  // der Text landet hier im Feld, Alfons liest, ändert, speichert.
+  async function briefErzeugen() {
+    setKiLaeuft(true);
+    setSperrwoerter([]);
+    try {
+      const res = await base44.functions.invoke("aussenblickBrief", { zielId: ziel.id, art: brief.briefArt, hinweis: kiHinweis });
+      const r = res?.data;
+      if (!r || r.error || !r.text) throw new Error(r?.error || "leer");
+      setBrief({ ...brief, briefText: r.text, briefBetreff: r.betreff || brief.briefBetreff, briefSpiegelung: r.spiegelung || "" });
+      setBriefGeaendert(true);
+      setSperrwoerter(r.sperrwoerter || []);
+      toast.success(brief.briefArt === "mail" ? "E-Mail-Entwurf da — lesen, ändern, speichern." : "Brief-Entwurf da — lesen, ändern, speichern.");
+    } catch (e) {
+      toast.error("Der Entwurf ist nicht gekommen. Noch einmal versuchen.");
+    } finally {
+      setKiLaeuft(false);
+    }
   }
 
   async function notizSpeichern(art = "notiz") {
@@ -621,15 +647,55 @@ export default function Zielkarte() {
         <TabsContent value="brief" className="space-y-5 mt-4">
           <div className="grid lg:grid-cols-3 gap-5">
             <Box className="lg:col-span-2">
-              <BoxKopf titel="Brief" symbol={Pencil} hinweis="eine Seite, per Post, Sie-Form" aktion={<Button size="sm" onClick={briefSpeichern} disabled={!briefGeaendert || beschaeftigt}><Save /> Speichern</Button>} />
+              <BoxKopf
+                titel={brief.briefArt === "mail" ? "E-Mail" : "Brief"}
+                symbol={Pencil}
+                hinweis={brief.briefArt === "mail" ? "kurz, Sie-Form, nur bei warmem Draht" : "eine Seite, per Post, Sie-Form"}
+                aktion={
+                  <>
+                    <Select value={brief.briefArt} onValueChange={(v) => { setBrief({ ...brief, briefArt: v }); setBriefGeaendert(true); }}>
+                      <SelectTrigger className="h-8 w-[120px]"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="post">Brief (Post)</SelectItem>
+                        <SelectItem value="mail">E-Mail</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button size="sm" variant="outline" onClick={briefErzeugen} disabled={kiLaeuft || beschaeftigt}>
+                      <Sparkles className={cn(kiLaeuft && "animate-pulse")} /> {kiLaeuft ? "Schreibt …" : brief.briefText ? "Neu schreiben" : "Mit KI schreiben"}
+                    </Button>
+                    <Button size="sm" onClick={briefSpeichern} disabled={!briefGeaendert || beschaeftigt}><Save /> Speichern</Button>
+                  </>
+                }
+              />
               <BoxInhalt>
+                <div className="grid sm:grid-cols-[1fr_auto] gap-2 items-end">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="b-hinweis">Hinweis an die KI (optional)</Label>
+                    <Input id="b-hinweis" value={kiHinweis} onChange={(e) => setKiHinweis(e.target.value)} placeholder="z. B. kürzer, den steirischen Bezug nach vorn, Anfrage von damals erwähnen" />
+                  </div>
+                </div>
+                {brief.briefArt === "mail" && (
+                  <div className="space-y-1.5">
+                    <Label htmlFor="b-betreff">Betreff</Label>
+                    <Input id="b-betreff" value={brief.briefBetreff} onChange={(e) => { setBrief({ ...brief, briefBetreff: e.target.value }); setBriefGeaendert(true); }} />
+                  </div>
+                )}
+                {sperrwoerter.length > 0 && (
+                  <p className={cn("text-meta", TON_TEXT.attention)}>Im Entwurf stehen Sperrwörter: {sperrwoerter.join(", ")} — bitte vor dem Speichern streichen.</p>
+                )}
                 <Textarea
-                  rows={22}
+                  rows={brief.briefArt === "mail" ? 16 : 24}
                   value={brief.briefText}
                   onChange={(e) => { setBrief({ ...brief, briefText: e.target.value }); setBriefGeaendert(true); }}
-                  placeholder="Kommt mit Phase 5 — oder hier selbst schreiben: Aufhänger, „Ihre Anzeigen haben mich auf fünf Fragen gebracht“, die fünf Fragen, Link und Code, Name und Telefon."
+                  placeholder="„Mit KI schreiben“ holt den Entwurf aus Aufhänger, warmem Draht, den fünf Fragen und dem Code — oder hier selbst schreiben."
                   className="font-inter text-[14px] leading-relaxed"
                 />
+                {brief.briefSpiegelung && (
+                  <div className="rounded-lg border bg-muted/30 p-3 space-y-1">
+                    <p className="text-label uppercase text-muted-foreground">Spiegelung — so liest es der Empfänger</p>
+                    <p className="text-meta text-foreground whitespace-pre-wrap">{brief.briefSpiegelung}</p>
+                  </div>
+                )}
               </BoxInhalt>
             </Box>
             <div className="space-y-5">
