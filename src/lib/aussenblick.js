@@ -241,6 +241,42 @@ export function zielKennzahlen(ziel, widersprueche = [], einladungen = [], ereig
   return { stark, imPortal, anzeigen, haupt, welle, letztes, antworten, rechner, gesamt: widersprueche.length };
 }
 
+// Trichter über alle Ziele: wie viele sind mindestens bis zu welcher Stufe gekommen.
+// no_go, beobachtung und abgelegt zählen nur dort, wo sie fachlich dazugehören
+// (ein no_go hatte einen Befund).
+const STUFE = { befund: 3, go: 5, freigabe: 6, freigegeben: 7, versendet: 8, geoeffnet: 9, antworten: 10, erstgespraech: 11, kunde: 12 };
+const RANG = { vorgemerkt: 0, scan_angefordert: 1, scan_laeuft: 2, befund: 3, no_go: 3.5, go: 5, freigabe: 6, freigegeben: 7, versendet: 8, geoeffnet: 9, antworten: 10, erstgespraech: 11, kunde: 12, beobachtung: -1, abgelegt: -1 };
+export function trichter(ziele = []) {
+  const ab = (stufe) => ziele.filter((z) => (RANG[z.status] ?? -1) >= STUFE[stufe]).length;
+  const t = {
+    scans: ziele.filter((z) => ["scan_angefordert", "scan_laeuft"].includes(z.status)).length,
+    befunde: ab("befund"),
+    go: ab("go"),
+    noGo: ziele.filter((z) => z.status === "no_go").length,
+    versendet: ab("versendet"),
+    geoeffnet: ab("geoeffnet"),
+    antworten: ab("antworten"),
+    erstgespraeche: ab("erstgespraech"),
+    kunden: ziele.filter((z) => z.status === "kunde").length,
+    beobachtung: ziele.filter((z) => z.status === "beobachtung").length,
+  };
+  const q = (a, b) => (b ? `${Math.round((a / b) * 100)} %` : null);
+  return {
+    ...t,
+    goQuote: q(t.go, t.befunde),
+    oeffnungsQuote: q(t.geoeffnet, t.versendet),
+    antwortQuote: q(t.antworten, t.geoeffnet),
+    gespraechsQuote: q(t.erstgespraeche, t.antworten),
+    kundenQuote: q(t.kunden, t.erstgespraeche),
+  };
+}
+
+// Sichtbarkeit aus dem Blick-Text: „bei 0 von 5 Suchanfragen“ → { treffer: 0, von: 5 }
+export function sichtbarkeitZahl(text) {
+  const m = /(\d+)\s*von\s*(\d+)/.exec(String(text || ""));
+  return m ? { treffer: Number(m[1]), von: Number(m[2]) } : null;
+}
+
 // Wie viele Briefe in den letzten sieben Tagen als versendet markiert wurden
 export function versendetDieseWoche(einladungen = []) {
   const grenze = Date.now() - 7 * 86400000;

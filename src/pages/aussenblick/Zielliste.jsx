@@ -22,7 +22,7 @@ import { relativerTag, gruppiere } from "@/lib/verwaltung";
 import ModulPille from "@/components/aussenblick/ModulPille";
 import {
   ZIEL_STATUS, ZIEL_FILTER, STATUS_GRUPPE, BUDGETKLASSE, DOSIS_JE_WOCHE,
-  ladeZiele, gemerktAussenblick, zielKennzahlen, versendetDieseWoche, zielAnlegen, kuerzelVorschlag,
+  ladeZiele, gemerktAussenblick, zielKennzahlen, versendetDieseWoche, zielAnlegen, kuerzelVorschlag, trichter,
 } from "@/lib/aussenblick";
 
 // Zielliste des Außenblick-Moduls: welche Unternehmen gerade geprüft werden, wo eine
@@ -69,6 +69,7 @@ export default function Zielliste() {
   }, [zeilen, daten]);
 
   const entscheiden = useMemo(() => zeilen.filter((z) => STATUS_GRUPPE.entscheiden.includes(z.status)), [zeilen]);
+  const t = useMemo(() => trichter(daten.ziele), [daten]);
 
   const sichtbar = useMemo(() => {
     const q = suche.trim().toLowerCase();
@@ -142,6 +143,18 @@ export default function Zielliste() {
             kachel("Portale unterwegs", kennzahlen.unterwegs, "versendet, geöffnet, beantwortet"),
             kachel("Antworten in 7 Tagen", kennzahlen.antwortenWoche, "aus den Portalen"),
             kachel("Versendet in 7 Tagen", `${kennzahlen.versendet} / ${DOSIS_JE_WOCHE}`, kennzahlen.versendet >= DOSIS_JE_WOCHE ? "Wochendosis erreicht" : "höchstens fünf je Woche", kennzahlen.versendet >= DOSIS_JE_WOCHE ? "attention" : undefined),
+          ]} />
+
+          {/* Trichter über alle Ziele — jede Zelle: wie viele mindestens so weit sind, darunter die Quote zur Stufe davor */}
+          <Kennzahlleiste werte={[
+            kachel("Scans", t.scans, "angefordert oder laufend"),
+            kachel("Befunde", t.befunde, t.noGo ? `${t.noGo} no-go` : "go oder no-go offen"),
+            kachel("Go", t.go, t.goQuote ? `${t.goQuote} der Befunde` : "—"),
+            kachel("Versendet", t.versendet, "Briefe von Hand markiert"),
+            kachel("Geöffnet", t.geoeffnet, t.oeffnungsQuote ? `${t.oeffnungsQuote} der Versendeten` : "—"),
+            kachel("Antworten", t.antworten, t.antwortQuote ? `${t.antwortQuote} der Geöffneten` : "—"),
+            kachel("Erstgespräche", t.erstgespraeche, t.gespraechsQuote ? `${t.gespraechsQuote} der Antworten` : "—"),
+            kachel("Kunden", t.kunden, t.kundenQuote ? `${t.kundenQuote} der Erstgespräche` : "—", t.kunden ? "done" : undefined),
           ]} />
 
           {entscheiden.length > 0 && (
