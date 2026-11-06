@@ -155,7 +155,8 @@ export default function Zielliste() {
                       <button type="button" onClick={() => navigate(`/aussenblick/${ziel.id}`)} className="block text-object text-foreground truncate hover:underline text-left">
                         {ziel.unternehmen}
                       </button>
-                      <p className={cn("text-meta", TON_TEXT.attention)}>{ZIEL_STATUS[status]?.schritt}</p>
+                      <p className="text-meta text-foreground truncate">{ziel.blick?.divergenz || ZIEL_STATUS[status]?.schritt}</p>
+                      {ziel.blick?.divergenz && <p className={cn("text-meta", TON_TEXT.attention)}>{ZIEL_STATUS[status]?.schritt}</p>}
                     </div>
                     <StatusEtikett ton={ZIEL_STATUS[status]?.ton}>{ZIEL_STATUS[status]?.label}</StatusEtikett>
                     <span className="text-meta text-muted-foreground whitespace-nowrap hidden md:inline">
@@ -199,7 +200,8 @@ export default function Zielliste() {
                 {sichtbar.map(({ ziel, status, k }) => {
                   const bk = ziel.budgetklasse ? BUDGETKLASSE[ziel.budgetklasse] : null;
                   const label = [ziel.kuerzel, ziel.region, ziel.branche].filter(Boolean).join(" · ") || ziel.website;
-                  const zusatz = [
+                  // Die Divergenz in einem Satz, sobald der Scan sie geliefert hat — sonst die Eckdaten
+                  const zusatz = ziel.blick?.divergenz || [
                     k.anzeigen ? `${k.anzeigen} Anzeigen aktiv` : null,
                     bk ? `Budgetklasse ${ziel.budgetklasse} (${bk.label})` : null,
                     k.letztes ? `zuletzt ${relativerTag(k.letztes)}` : null,
