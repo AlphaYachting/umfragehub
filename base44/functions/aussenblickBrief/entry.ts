@@ -57,7 +57,7 @@ export default async function (req) {
     // Ohne Einladung darf kein Code im Text stehen — erfundene Codes auf den Platzhalter zurücksetzen
     if (!echterCode && !text.includes('[CODE]')) {
       text = text.replace(/(Code\s*:?\s*)([A-Za-z0-9][A-Za-z0-9\-_]{2,})/g, '$1[CODE]');
-      if (!text.includes('[CODE]')) text = text.replace(new RegExp(`(${PORTAL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`), '$1 | Code: [CODE]');
+      if (!text.includes('[CODE]') && text.includes(PORTAL)) text = text.replace(PORTAL, `${PORTAL} | Code: [CODE]`);
     }
 
     // Sperrwörter nachprüfen — das Modell soll sie meiden, wir melden, wenn eines durchrutscht
