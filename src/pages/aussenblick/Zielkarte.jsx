@@ -705,7 +705,8 @@ export default function Zielkarte() {
           </div>
           <Box>
             <BoxInhalt className="p-5">
-              <MarkdownLeicht text={registerAnsicht === "befund" ? ziel.befundMarkdown : ziel.registerMarkdown} />
+              {/* Ein Feld fasst rund 16 KB — längere Register liegen in drei Teilen */}
+              <MarkdownLeicht text={registerAnsicht === "befund" ? ziel.befundMarkdown : [ziel.registerMarkdown, ziel.registerMarkdown2, ziel.registerMarkdown3].filter(Boolean).join("\n\n")} />
             </BoxInhalt>
           </Box>
         </TabsContent>
