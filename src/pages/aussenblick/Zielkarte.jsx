@@ -390,7 +390,7 @@ export default function Zielkarte() {
             )}
           </Box>
 
-          <button type="button" onClick={() => setMehr(!mehr)} className="order-2 self-start v-chip">
+          <button type="button" onClick={() => setMehr(!mehr)} className="order-2 self-start text-meta text-muted-foreground hover:text-foreground underline underline-offset-2">
             {mehr ? "Weniger anzeigen" : "Mehr aus dem Befund: Kurzeinschätzung, Hypothese, Siegerbotschaft, Modul, Stärken und Lücken"}
           </button>
 
