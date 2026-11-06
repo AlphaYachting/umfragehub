@@ -36,7 +36,8 @@ export default async function (req) {
     const einladungen = await db.Einladung.filter({ zielId });
     const haupt = einladungen.find((e) => e.art !== 'welle');
 
-    const prompt = bauePrompt({ ziel, fragen, code: haupt?.code || '<CODE — entsteht mit der Freigabe>', art, hinweis });
+    const echterCode = haupt?.code || '';
+    const prompt = bauePrompt({ ziel, fragen, code: echterCode || '[CODE]', codeFehlt: !echterCode, art, hinweis });
     const ergebnis = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt,
       response_json_schema: {
@@ -50,8 +51,14 @@ export default async function (req) {
       },
     });
     const r = typeof ergebnis === 'string' ? sicherParsen(ergebnis) : (ergebnis || {});
-    const text = String(r.text || '').trim();
+    let text = String(r.text || '').trim();
     if (!text) return Response.json({ error: 'leer' }, { status: 502 });
+
+    // Ohne Einladung darf kein Code im Text stehen — erfundene Codes auf den Platzhalter zurücksetzen
+    if (!echterCode && !text.includes('[CODE]')) {
+      text = text.replace(/(Code\s*:?\s*)([A-Za-z0-9][A-Za-z0-9\-_]{2,})/g, '$1[CODE]');
+      if (!text.includes('[CODE]')) text = text.replace(new RegExp(`(${PORTAL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`), '$1 | Code: [CODE]');
+    }
 
     // Sperrwörter nachprüfen — das Modell soll sie meiden, wir melden, wenn eines durchrutscht
     const treffer = SPERRLISTE.filter((w) => new RegExp(`(^|[^A-Za-zÄÖÜäöüß])${w}([^A-Za-zÄÖÜäöüß]|$)`).test(text));
@@ -61,6 +68,7 @@ export default async function (req) {
       text,
       spiegelung: String(r.spiegelung || '').trim(),
       sperrwoerter: treffer,
+      codeFehlt: !echterCode,
     });
   } catch (error) {
     console.error('aussenblickBrief:', error?.message || error);
@@ -86,7 +94,7 @@ function sieForm(frage) {
     .replace(/\bdu wirbst\b/g, 'Sie werben').replace(/\bdu\b/g, 'Sie').replace(/\bdich\b/g, 'Sie').replace(/\bdir\b/g, 'Ihnen');
 }
 
-function bauePrompt({ ziel, fragen, code, art, hinweis }) {
+function bauePrompt({ ziel, fragen, code, codeFehlt, art, hinweis }) {
   const e = (ziel.entscheider || [])[0] || {};
   const fragenText = fragen.length
     ? fragen.map((f) => `${f.nummer}. ${sieForm(f.text)}`).join('\n')
@@ -115,7 +123,7 @@ WAS WIR GESEHEN HABEN (nur für dein Verständnis — NICHT in den Text, kein Be
 DIE FÜNF FRAGEN (wortgleich übernehmen, Sie-Form, nummeriert 1–5, nichts hinzufügen):
 ${fragenText}
 
-PORTAL: ${PORTAL} · Code ${code} · Die Seite ist nur für den Empfänger und bleibt 30 Tage offen; dort kann er die fünf Fragen beantworten.
+PORTAL: ${PORTAL} · Code ${code} · Die Seite ist nur für den Empfänger und bleibt 30 Tage offen; dort kann er die fünf Fragen beantworten.${codeFehlt ? '\nDer Einladungscode existiert noch nicht. Schreib exakt den Platzhalter [CODE] in eckigen Klammern an die Stelle des Codes. Erfinde keinen Code.' : ''}
 
 ABSENDER: ${ABSENDER.name}, ${ABSENDER.firma}, ${ABSENDER.telefon}, ${ABSENDER.mail}
 
