@@ -1,0 +1,447 @@
+{
+  "name": "Ziel",
+  "type": "object",
+  "description": "Au\u00dfenblick-Modul: ein Unternehmen, das online wirbt und als Ziel f\u00fcr andi fragt. gepr\u00fcft wird. Tr\u00e4gt Stammdaten, Scan-Stand, Befund-Kurzfassung, Modul, Hebel und die Pipeline bis zum Erstgespr\u00e4ch. Nie f\u00fcr Befragte sichtbar.",
+  "properties": {
+    "kuerzel": {
+      "type": "string",
+      "title": "K\u00fcrzel",
+      "description": "2\u20134 Buchstaben, z. B. pcf"
+    },
+    "unternehmen": {
+      "type": "string",
+      "title": "Unternehmen"
+    },
+    "website": {
+      "type": "string",
+      "title": "Website"
+    },
+    "branche": {
+      "type": "string",
+      "title": "Branche"
+    },
+    "region": {
+      "type": "string",
+      "title": "Region",
+      "description": "Bundesland / Raum, z. B. Steiermark"
+    },
+    "sitz": {
+      "type": "string",
+      "title": "Sitz (laut Impressum)"
+    },
+    "weitereStandorte": {
+      "type": "string",
+      "title": "Weitere Standorte"
+    },
+    "firmenbuch": {
+      "type": "string",
+      "title": "Firmenbuch"
+    },
+    "groesse": {
+      "type": "string",
+      "title": "Gr\u00f6\u00dfe",
+      "description": "Mitarbeitende laut Website / Verzeichnis"
+    },
+    "ansprache": {
+      "type": "string",
+      "enum": [
+        "du",
+        "sie"
+      ],
+      "default": "sie",
+      "title": "Ansprache im Portal",
+      "description": "So, wie das Unternehmen seine Kunden anspricht"
+    },
+    "entscheider": {
+      "type": "array",
+      "title": "Entscheider",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "rolle": {
+            "type": "string"
+          },
+          "quelle": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "quelle": {
+      "type": "string",
+      "enum": [
+        "alfons",
+        "reviersuche",
+        "anfrage",
+        "empfehlung"
+      ],
+      "default": "alfons",
+      "title": "Woher kommt das Ziel"
+    },
+    "ausloeser": {
+      "type": "string",
+      "format": "textarea",
+      "title": "Ausl\u00f6ser / Hypothese",
+      "description": "Alfons' Eindruck oder das Jagdrevier \u2014 wird im Scan als vermutet gepr\u00fcft"
+    },
+    "hypotheseErgebnis": {
+      "type": "string",
+      "enum": [
+        "offen",
+        "bestaetigt",
+        "teils",
+        "widerlegt"
+      ],
+      "default": "offen",
+      "title": "Hypothese gepr\u00fcft"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "vorgemerkt",
+        "scan_angefordert",
+        "scan_laeuft",
+        "befund",
+        "no_go",
+        "go",
+        "freigabe",
+        "freigegeben",
+        "versendet",
+        "geoeffnet",
+        "antworten",
+        "erstgespraech",
+        "kunde",
+        "beobachtung",
+        "abgelegt"
+      ],
+      "default": "vorgemerkt",
+      "title": "Status",
+      "description": "Pipeline: vorgemerkt \u2192 scan_angefordert \u2192 scan_laeuft \u2192 befund (go/no-go) \u2192 go \u2192 freigabe (Portal+Brief liegen vor) \u2192 freigegeben \u2192 versendet (Code aktiv) \u2192 geoeffnet \u2192 antworten \u2192 erstgespraech \u2192 kunde. Daneben: beobachtung, abgelegt."
+    },
+    "empfehlung": {
+      "type": "string",
+      "enum": [
+        "offen",
+        "go",
+        "no_go"
+      ],
+      "default": "offen",
+      "title": "Empfehlung aus dem Befund"
+    },
+    "modul": {
+      "type": "string",
+      "enum": [
+        "kunden",
+        "positionierung",
+        "vertrieb",
+        "team"
+      ],
+      "title": "Einstiegsmodul"
+    },
+    "modulZweiterSchritt": {
+      "type": "string",
+      "enum": [
+        "kunden",
+        "positionierung",
+        "vertrieb",
+        "team"
+      ],
+      "title": "Zweiter Schritt"
+    },
+    "modulBegruendung": {
+      "type": "string",
+      "format": "textarea",
+      "title": "Begr\u00fcndung Modul"
+    },
+    "budgetklasse": {
+      "type": "number",
+      "title": "Budgetklasse (1\u20134)",
+      "description": "Indikatorbasiert aus Anzeigenzahl, Laufzeit, Kan\u00e4len \u2014 keine Euro-Sch\u00e4tzung"
+    },
+    "budgetklasseBegruendung": {
+      "type": "string",
+      "title": "Begr\u00fcndung Budgetklasse"
+    },
+    "werbung": {
+      "type": "object",
+      "title": "Werbung (Stand Scan)",
+      "properties": {
+        "meta": {
+          "type": "number"
+        },
+        "google": {
+          "type": "number"
+        },
+        "linkedin": {
+          "type": "number"
+        },
+        "tiktok": {
+          "type": "number"
+        },
+        "pixel": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "siegerbotschaft": {
+          "type": "object",
+          "properties": {
+            "hook": {
+              "type": "string"
+            },
+            "seit": {
+              "type": "string"
+            },
+            "monate": {
+              "type": "number"
+            },
+            "varianten": {
+              "type": "number"
+            },
+            "format": {
+              "type": "string"
+            },
+            "zielgruppe": {
+              "type": "string"
+            },
+            "markenname": {
+              "type": "string"
+            }
+          }
+        },
+        "juengste": {
+          "type": "object",
+          "properties": {
+            "hook": {
+              "type": "string"
+            },
+            "seit": {
+              "type": "string"
+            },
+            "varianten": {
+              "type": "number"
+            },
+            "format": {
+              "type": "string"
+            },
+            "zielgruppe": {
+              "type": "string"
+            },
+            "markenname": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "stimmen": {
+      "type": "object",
+      "title": "Stimmen",
+      "properties": {
+        "googleWert": {
+          "type": "number"
+        },
+        "googleAnzahl": {
+          "type": "number"
+        },
+        "lob": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "kritik": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "markennamen": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Markennamen in Umlauf"
+    },
+    "zielgruppen": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Zielgruppenbezeichnungen in Umlauf"
+    },
+    "wunschzielgruppe": {
+      "type": "string",
+      "title": "Wunschzielgruppe"
+    },
+    "staerken": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "St\u00e4rken (intern)"
+    },
+    "schwaechen": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "L\u00fccken (intern)"
+    },
+    "hebel": {
+      "type": "array",
+      "title": "Hebel ohne Zahl",
+      "items": {
+        "type": "object",
+        "properties": {
+          "art": {
+            "type": "string",
+            "enum": [
+              "lern",
+              "zielgruppen",
+              "bruch",
+              "substanz"
+            ]
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "kurzeinschaetzung": {
+      "type": "string",
+      "format": "textarea",
+      "title": "Kurzeinsch\u00e4tzung (5 S\u00e4tze)"
+    },
+    "portalTexte": {
+      "type": "object",
+      "title": "Portal: feste Texte",
+      "properties": {
+        "einstiegSatz": {
+          "type": "string"
+        },
+        "einstiegFolgt": {
+          "type": "string"
+        },
+        "welleText": {
+          "type": "string"
+        },
+        "welleWeiterleitung": {
+          "type": "string"
+        },
+        "rechnerHebel": {
+          "type": "string"
+        },
+        "erstgespraechText": {
+          "type": "string"
+        },
+        "erstgespraechKontakt": {
+          "type": "string"
+        }
+      }
+    },
+    "briefText": {
+      "type": "string",
+      "format": "textarea",
+      "title": "Brief (Entwurf)"
+    },
+    "briefAufhaenger": {
+      "type": "string",
+      "title": "Brief: Aufh\u00e4nger"
+    },
+    "warmerDraht": {
+      "type": "string",
+      "title": "Warmer Draht",
+      "description": "fr\u00fchere Anfrage, Messe, LinkedIn \u2014 zu pr\u00fcfen"
+    },
+    "postadresse": {
+      "type": "string",
+      "format": "textarea",
+      "title": "Postadresse f\u00fcr den Brief"
+    },
+    "registerMarkdown": {
+      "type": "string",
+      "format": "textarea",
+      "title": "Faktenregister (Markdown)"
+    },
+    "befundMarkdown": {
+      "type": "string",
+      "format": "textarea",
+      "title": "Befund (Markdown)"
+    },
+    "offen": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Offen / zu pr\u00fcfen durch einen Menschen"
+    },
+    "scanAm": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Scan am"
+    },
+    "scanVon": {
+      "type": "string",
+      "title": "Scan durch"
+    },
+    "naechsterSchritt": {
+      "type": "string",
+      "title": "N\u00e4chster Schritt"
+    },
+    "wiedervorlage": {
+      "type": "string",
+      "format": "date",
+      "title": "Wiedervorlage"
+    },
+    "projektId": {
+      "type": "string",
+      "title": "Projekt (nach Auftrag)",
+      "description": "Verkn\u00fcpfung zum andi fragt.-Projekt, sobald das Interview angelegt ist"
+    },
+    "notizen": {
+      "type": "string",
+      "format": "textarea",
+      "title": "Notizen"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "title": "Beschreibung",
+      "description": "Kurze Beschreibung des Datensatzes f\u00fcr Suche und Vorschau, bis 1000 Zeichen."
+    }
+  },
+  "required": [
+    "kuerzel",
+    "unternehmen"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

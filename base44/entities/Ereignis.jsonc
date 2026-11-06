@@ -1,0 +1,98 @@
+{
+  "description": "Au\u00dfenblick-Modul: Verlauf je Ziel \u2014 Scan, Statuswechsel, Freigabe, Versand (von Alfons markiert), Portal ge\u00f6ffnet, Block gesehen, Frage beantwortet, Rechner benutzt, Welle geteilt, Erstgespr\u00e4ch. Nichts davon l\u00f6st einen Kontakt zum Unternehmen aus.",
+  "name": "Ereignis",
+  "properties": {
+    "am": {
+      "format": "date-time",
+      "title": "Zeitpunkt",
+      "type": "string"
+    },
+    "art": {
+      "enum": [
+        "angelegt",
+        "scan_angefordert",
+        "scan_gestartet",
+        "scan_fertig",
+        "status",
+        "freigabe",
+        "versendet",
+        "geoeffnet",
+        "block",
+        "frage_beantwortet",
+        "rechner",
+        "welle_geteilt",
+        "erstgespraech_klick",
+        "anruf",
+        "notiz",
+        "beobachtung"
+      ],
+      "title": "Art",
+      "type": "string"
+    },
+    "block": {
+      "description": "einstieg, spiegel, fragen, welle, rechner, erstgespraech",
+      "title": "Block im Portal",
+      "type": "string"
+    },
+    "dauerSekunden": {
+      "title": "Verweildauer (s)",
+      "type": "number"
+    },
+    "description": {
+      "description": "Kurze Beschreibung des Datensatzes f\u00fcr Suche und Vorschau, bis 1000 Zeichen.",
+      "maxLength": 1000,
+      "title": "Beschreibung",
+      "type": "string"
+    },
+    "details": {
+      "title": "Details",
+      "type": "string"
+    },
+    "einladungId": {
+      "title": "Einladung (Code)",
+      "type": "string"
+    },
+    "von": {
+      "default": "system",
+      "enum": [
+        "system",
+        "alfons",
+        "unternehmen",
+        "welle"
+      ],
+      "title": "Ausgel\u00f6st von",
+      "type": "string"
+    },
+    "zielId": {
+      "title": "Ziel",
+      "type": "string"
+    }
+  },
+  "required": [
+    "zielId",
+    "art"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  },
+  "type": "object"
+}
