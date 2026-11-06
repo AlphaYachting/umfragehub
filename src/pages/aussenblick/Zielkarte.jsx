@@ -20,6 +20,7 @@ import { bestaetigen } from "@/components/shared/Bestaetigen";
 import { kachel } from "@/components/verwaltung/Kachel";
 import ModulPille from "@/components/aussenblick/ModulPille";
 import MarkdownLeicht from "@/components/aussenblick/MarkdownLeicht";
+import AufEinenBlick from "@/components/aussenblick/AufEinenBlick";
 import { TON_TEXT } from "@/lib/designTon";
 import { alsDatum, datumKurz, relativerTag, inZwischenablage } from "@/lib/verwaltung";
 import {
@@ -110,6 +111,7 @@ export default function Zielkarte() {
   const [briefGeaendert, setBriefGeaendert] = useState(false);
   const [notiz, setNotiz] = useState("");
   const [registerAnsicht, setRegisterAnsicht] = useState("befund");
+  const [mehr, setMehr] = useState(false); // Befund-Reiter: Details unter den Widersprüchen aufklappen
 
   const ziel = d?.ziel || null;
 
@@ -301,6 +303,9 @@ export default function Zielkarte() {
         kachel("Portal", haupt ? EINLADUNG_STATUS[haupt.status]?.label : "kein Code", haupt ? (haupt.status === "versendet" ? `${haupt.aufrufe || 0} Aufrufe${haupt.zuletztGeoeffnet ? ` · zuletzt ${relativerTag(alsDatum(haupt.zuletztGeoeffnet))}` : ""}` : `Code ${haupt.code}`) : "kommt mit der Freigabe", haupt?.status === "versendet" ? "done" : undefined),
       ]} />
 
+      {/* Die Entscheidungsansicht — auf jedem Reiter sichtbar */}
+      <AufEinenBlick ziel={ziel} />
+
       <Tabs value={reiter} onValueChange={setReiter}>
         <TabsList>
           <TabsTrigger value="befund">Befund</TabsTrigger>
@@ -311,8 +316,8 @@ export default function Zielkarte() {
         </TabsList>
 
         {/* ------------------------------------------------------------ Befund */}
-        <TabsContent value="befund" className="space-y-5 mt-4">
-          <div className="grid lg:grid-cols-3 gap-5">
+        <TabsContent value="befund" className="flex flex-col gap-5 mt-4">
+          {mehr && (<div className="order-3 grid lg:grid-cols-3 gap-5">
             <Box className="lg:col-span-2">
               <BoxKopf titel="Kurzeinschätzung" hinweis={ziel.scanAm ? `Scan ${datumKurz(alsDatum(ziel.scanAm), true)}${ziel.scanVon ? ` · ${ziel.scanVon}` : ""}` : undefined} />
               <BoxInhalt>
@@ -345,10 +350,10 @@ export default function Zielkarte() {
                 )}
               </BoxInhalt>
             </Box>
-          </div>
+          </div>)}
 
-          <Box>
-            <BoxKopf titel="Widersprüche" zaehler={d.widersprueche.length} hinweis="beide Belege öffentlich, jeder aufrufbar" />
+          <Box className="order-1">
+            <BoxKopf titel="Widersprüche" zaehler={d.widersprueche.length} hinweis="die Belege zur Divergenz — jeder öffentlich aufrufbar" />
             {d.widersprueche.length === 0 ? (
               <BoxInhalt><p className="text-meta text-muted-foreground">Noch keine — kommen mit dem Befund.</p></BoxInhalt>
             ) : (
@@ -385,7 +390,11 @@ export default function Zielkarte() {
             )}
           </Box>
 
-          <div className="grid lg:grid-cols-2 gap-5">
+          <button type="button" onClick={() => setMehr(!mehr)} className="order-2 self-start text-meta text-muted-foreground hover:text-foreground underline underline-offset-2">
+            {mehr ? "Weniger anzeigen" : "Mehr aus dem Befund: Kurzeinschätzung, Hypothese, Siegerbotschaft, Modul, Stärken und Lücken"}
+          </button>
+
+          {mehr && (<div className="order-4 grid lg:grid-cols-2 gap-5">
             <Box>
               <BoxKopf titel="Siegerbotschaft gegen Jüngste" hinweis="aus den Werbebibliotheken" />
               <BoxInhalt>
@@ -435,9 +444,9 @@ export default function Zielkarte() {
                 )}
               </BoxInhalt>
             </Box>
-          </div>
+          </div>)}
 
-          <div className="grid lg:grid-cols-3 gap-5">
+          {mehr && (<div className="order-5 grid lg:grid-cols-3 gap-5">
             <Box>
               <BoxKopf titel="Stärken" hinweis="intern" />
               <BoxInhalt><Liste eintraege={ziel.staerken} leer="—" /></BoxInhalt>
@@ -468,7 +477,7 @@ export default function Zielkarte() {
                 )}
               </BoxInhalt>
             </Box>
-          </div>
+          </div>)}
         </TabsContent>
 
         {/* ------------------------------------------------------------ Portal */}
