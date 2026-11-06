@@ -23,6 +23,9 @@ const WaveDashboard = lazy(() => import('@/pages/WaveDashboard'));
 const RawData = lazy(() => import('@/pages/RawData'));
 const WaveInvites = lazy(() => import('@/pages/WaveInvites'));
 const QuestionLibrary = lazy(() => import('@/pages/QuestionLibrary'));
+// Außenblick-Modul (Akquise): Zielliste und Zielkarte — nur Verwaltung, nie für Befragte
+const Zielliste = lazy(() => import('@/pages/aussenblick/Zielliste'));
+const Zielkarte = lazy(() => import('@/pages/aussenblick/Zielkarte'));
 const Interview = lazy(() => import('@/pages/Interview'));
 const Startseite = lazy(() => import('@/pages/Startseite'));
 const KundenCockpit = lazy(() => import('@/pages/KundenCockpit'));
@@ -144,6 +147,8 @@ const AuthenticatedApp = () => {
           <Route path="/welle/:id/rohdaten" element={<RawData />} />
           <Route path="/welle/:id/einladungen" element={<WaveInvites />} />
           <Route path="/bibliothek" element={<QuestionLibrary />} />
+          <Route path="/aussenblick" element={<Zielliste />} />
+          <Route path="/aussenblick/:id" element={<Zielkarte />} />
         </Route>
       </Route>
       {/* Unbekannte Adressen: eigene Seite mit noindex statt Kopie der Startseite */}
