@@ -185,6 +185,11 @@ Satz 3 — was die Geschäftsführerin davon hat, konkret in ihren Zahlen: das B
 Verboten in diesem Absatz: Allgemeinplätze ohne Bezug auf ihre Zahlen oder ihr Material („Botschaften, die wirklich tragen“ allein reicht nicht), Fachjargon, mehr als drei Sätze.
 Haltung: ${POSITIONIERUNG}
 
+IHR AUFWAND, IHR NUTZEN (Pflicht: zwei Sätze, direkt nach WAS WIR FÜR SIE TUN und direkt vor Link und Code — das ist der eigentliche Vorschlag der Mail, Vorgabe von Alfons Rittler):
+Satz 1 — was es kostet, als Zahl: 15 Minuten. Nämlich die Seite ansehen, auf der nebeneinander steht, was jeder sieht, der ${ziel.unternehmen} sucht, und dort die fünf Fragen beantworten.
+Satz 2 — was dabei herauskommt: Danach wissen Sie, ob unsere Methode für ${ziel.unternehmen} einen Mehrwert bringt — und wir wissen es auch. Mehr steht nicht auf dem Spiel.
+Formuliere beides als Angebot, nicht als Bedingung und nicht als Verkaufsdruck: keine Frist außer den 30 Tagen, kein „unverbindlich“, kein „gerne“, kein „einfach“. Das Wort „Methode“ ist hier erlaubt, aber nicht, wie sie abläuft.
+
 REGELN (hart):
 - Sie-Form. Deutsch (Österreich). Kein Gendersternchen.
 - Kein Befund, keine Kritik, keine Bewertung des Unternehmens, keine Lösung für den Empfänger, kein Ratschlag. Der Absatz WAS WIR FÜR SIE TUN ist die Ausnahme: dort ein Fakt aus ihrem Material ohne Wertung und die Spezialisierung von Rittler & Co — was wir tun und wofür, nicht als Ablauf.
@@ -201,12 +206,12 @@ AUSGABE als JSON mit den Feldern "betreff", "text", "spiegelung".
 
   if (art === 'mail') {
     return `${gemeinsam}
-FORM: E-Mail, höchstens 190 Wörter im Fließtext plus die fünf Fragen. Aufbau: Betreff (höchstens sechs Wörter; gibt es einen früheren Kontakt, knüpft der Betreff daran an, z. B. „Ihre Anfrage im Juli — ein Nachtrag“; sonst der Aufhänger; nie „Fünf Fragen“ im Betreff), Anrede, ein Satz zum früheren Kontakt (wenn vorhanden) oder Aufhänger, ein Satz „Ihre Anzeigen sind mir öfter begegnet. Ich habe getan, was Ihr nächster Kunde auch tut: gegoogelt.“ (sinngemäß, nicht wörtlich zwingend), Überleitung zu den fünf Fragen, die Liste, dann der Absatz WAS WIR FÜR SIE TUN (drei Sätze), dann Link und Code in einer eigenen Zeile mit dem Hinweis, dass die Seite nur für sie/ihn ist und 30 Tage offen bleibt, Gruß mit Name, Firma, Telefon. Keine Signatur-Floskeln, kein Disclaimer, kein Logo-Hinweis.
+FORM: E-Mail, höchstens 210 Wörter im Fließtext plus die fünf Fragen. Aufbau: Betreff (höchstens sechs Wörter; gibt es einen früheren Kontakt, knüpft der Betreff daran an, z. B. „Ihre Anfrage im Juli — ein Nachtrag“; sonst der Aufhänger; nie „Fünf Fragen“ im Betreff), Anrede, ein Satz zum früheren Kontakt (wenn vorhanden) oder Aufhänger, ein Satz „Ihre Anzeigen sind mir öfter begegnet. Ich habe getan, was Ihr nächster Kunde auch tut: gegoogelt.“ (sinngemäß, nicht wörtlich zwingend), Überleitung zu den fünf Fragen, die Liste, dann der Absatz WAS WIR FÜR SIE TUN (drei Sätze), dann IHR AUFWAND, IHR NUTZEN (zwei Sätze, eigener Absatz), dann Link und Code in einer eigenen Zeile mit dem Hinweis, dass die Seite nur für sie/ihn ist und 30 Tage offen bleibt, Gruß mit Name, Firma, Telefon. Keine Signatur-Floskeln, kein Disclaimer, kein Logo-Hinweis.
 "text" enthält nur den E-Mail-Text ohne Betreff — als reiner Text mit Zeilenumbrüchen: Anrede eigene Zeile, Absätze durch Leerzeile getrennt, jede der fünf Fragen in einer eigenen Zeile, Link und Code in einer eigenen Zeile, Gruß und Signatur je eigene Zeile. Kein Markdown.`;
   }
 
   return `${gemeinsam}
-FORM: Brief per Post, eine Seite, höchstens 220 Wörter im Fließtext plus die fünf Fragen. Aufbau genau so:
+FORM: Brief per Post, eine Seite, höchstens 240 Wörter im Fließtext plus die fünf Fragen. Aufbau genau so:
 Anschrift (Name, Rolle, Unternehmen, Adresse, jede Angabe eigene Zeile)
 Leerzeile
 ${ABSENDER.ort}, ${heute}
@@ -218,7 +223,7 @@ Absatz 1: Der frühere Kontakt konkret (wenn vorhanden), dann der Aufhänger —
 Absatz 2: Ihre Anzeigen sind mir in den letzten Wochen öfter begegnet. Ich habe getan, was Ihr nächster Kunde auch tut: gegoogelt. Dabei sind mir fünf Fragen gekommen, die ich Ihnen nicht beantworten kann — nur Sie: (sinngemäß)
 Die fünf Fragen als Liste 1–5.
 Absatz 3: Der Absatz WAS WIR FÜR SIE TUN (drei Sätze).
-Absatz 4: Was mir dabei aufgefallen ist, habe ich auf einer Seite zusammengestellt — nur Dinge, die jeder sieht, der Sie sucht. Dann Link und Code in eigener Zeile. Dort können Sie die fünf Fragen gleich beantworten; die Seite ist nur für Sie und bleibt 30 Tage offen.
+Absatz 4: IHR AUFWAND, IHR NUTZEN (zwei Sätze): Was mir dabei aufgefallen ist, habe ich auf einer Seite zusammengestellt — nur Dinge, die jeder sieht, der Sie sucht; die Seite ansehen und die fünf Fragen beantworten kostet Sie 15 Minuten. Danach wissen Sie, ob unsere Methode für Sie einen Mehrwert bringt. Dann Link und Code in eigener Zeile; die Seite ist nur für Sie und bleibt 30 Tage offen.
 Grußformel, Name, Firma, Telefon, E-Mail.
 "betreff" = die Betreffzeile. "text" = der gesamte Brief von der Anschrift bis zur Unterschrift als reiner Text mit Zeilenumbrüchen, ohne Markdown.`;
 }
