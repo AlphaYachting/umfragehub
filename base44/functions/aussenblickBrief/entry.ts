@@ -53,8 +53,22 @@ export default async function (req) {
     const kontakt = String(ziel.warmerDraht || '').trim();
     const kontaktUnbelegt = /zu pr[üu]fen|falls belegbar|unbelegt|vermutlich|unsicher|\?/i.test(kontakt);
 
+    // Köder: der stärkste Widerspruch, der ohnehin im Portal offen steht — ein Fakt aus dem eigenen
+    // Material des Unternehmens, nebeneinander gelegt, ohne Wertung. Macht den Absatz „was wir für Sie tun“ konkret.
+    const widersprueche = await db.Widerspruch.filter({ zielId });
+    const rang = (w) => (w.staerke === 'stark' ? 0 : w.staerke === 'mittel' ? 1 : 2) * 10 + (w.portal === 'offen' ? 0 : w.portal === 'gesperrt' ? 1 : 5) + (w.reihenfolgePortal || w.nummer || 9) / 100;
+    const koeder = widersprueche.filter((w) => w.portal !== 'intern' && w.belegA?.text && w.belegB?.text).sort((a, b) => rang(a) - rang(b))[0] || null;
+    const w = ziel.werbung || {};
+    const zahlen = [
+      (w.meta || w.google || w.linkedin || w.tiktok) ? `${(w.meta || 0) + (w.google || 0) + (w.linkedin || 0) + (w.tiktok || 0)} aktive Anzeigen (${[w.meta ? `Meta ${w.meta}` : null, w.google ? `Google ${w.google}` : null, w.linkedin ? `LinkedIn ${w.linkedin}` : null, w.tiktok ? `TikTok ${w.tiktok}` : null].filter(Boolean).join(', ')})` : null,
+      w.siegerbotschaft?.monate ? `älteste aktive Anzeige läuft seit ${w.siegerbotschaft.monate} Monaten${w.siegerbotschaft.seit ? ` (seit ${w.siegerbotschaft.seit})` : ''}` : null,
+      ziel.stimmen?.googleWert ? `Google ${String(ziel.stimmen.googleWert).replace('.', ',')} bei ${ziel.stimmen.googleAnzahl || '?'} Bewertungen` : null,
+      ziel.zielgruppen?.length ? `${ziel.zielgruppen.length} Zielgruppenbezeichnungen in Umlauf` : null,
+      ziel.markennamen?.length ? `${ziel.markennamen.length} Markennamen in Umlauf` : null,
+    ].filter(Boolean);
+
     const echterCode = haupt?.code || '';
-    const prompt = bauePrompt({ ziel, fragen, code: echterCode || '[CODE]', codeFehlt: !echterCode, art, hinweis, kontakt, kontaktUnbelegt, notizen, bisher });
+    const prompt = bauePrompt({ ziel, fragen, code: echterCode || '[CODE]', codeFehlt: !echterCode, art, hinweis, kontakt, kontaktUnbelegt, notizen, bisher, koeder, zahlen });
     const ergebnis = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt,
       response_json_schema: {
@@ -123,7 +137,7 @@ function sieForm(frage) {
     .replace(/\bdu wirbst\b/g, 'Sie werben').replace(/\bdu\b/g, 'Sie').replace(/\bdich\b/g, 'Sie').replace(/\bdir\b/g, 'Ihnen');
 }
 
-function bauePrompt({ ziel, fragen, code, codeFehlt, art, hinweis, kontakt, kontaktUnbelegt, notizen, bisher }) {
+function bauePrompt({ ziel, fragen, code, codeFehlt, art, hinweis, kontakt, kontaktUnbelegt, notizen, bisher, koeder, zahlen }) {
   const e = (ziel.entscheider || [])[0] || {};
   const fragenText = fragen.length
     ? fragen.map((f) => `${f.nummer}. ${sieForm(f.text)}`).join('\n')
@@ -162,8 +176,14 @@ PORTAL: ${PORTAL} · Code ${code} · Die Seite ist nur für den Empfänger und b
 
 ABSENDER: ${ABSENDER.name}, ${ABSENDER.firma}, ${ABSENDER.telefon}, ${ABSENDER.mail}
 
-WER WIR SIND (Pflicht: ein bis zwei Sätze im Text, nach den fünf Fragen und vor dem Link; sinngemäß, in dieser Haltung, ohne zu erklären, wie es abläuft):
-${POSITIONIERUNG}
+WAS WIR FÜR SIE TUN (Pflicht: ein kurzer Absatz von drei Sätzen, nach den fünf Fragen und vor dem Link — auf DIESES Unternehmen gemünzt, nicht allgemein):
+Satz 1 — der Köder: ein Fakt aus dem eigenen Material des Unternehmens, nebeneinander gelegt, ohne Wertung, ohne „falsch“, ohne Schlussfolgerung. Nimm dafür diesen Widerspruch:
+${koeder ? `  A: ${koeder.belegA.text} (${koeder.belegA.fundstelle || ''})\n  B: ${koeder.belegB.text} (${koeder.belegB.fundstelle || ''})\n  Im Portal steht dazu: ${koeder.zeile || koeder.spannung || ''}` : '  (keiner hinterlegt — dann die Zahlen unten nehmen)'}
+  Zahlen des Unternehmens, die du nennen darfst (alle öffentlich): ${zahlen.length ? zahlen.join(' · ') : 'keine'}
+Satz 2 — was wir daraus machen, in Verbindung mit Satz 1: Rittler & Co hat sich mit andi fragt. darauf spezialisiert, genau das zu klären — welche Botschaft trägt — und zwar nicht aus Annahmen, sondern aus dem Unternehmen selbst: von den Kunden, die geblieben sind, und vom Team.
+Satz 3 — was die Geschäftsführerin davon hat, konkret in ihren Zahlen: das Budget (ihre Anzeigenzahl nennen) fließt in die eine Botschaft, die trägt (effizienter); eine Zielgruppe statt vieler (zielgerichteter); eine Botschaft in den Worten der eigenen Kunden, die Jahre hält statt Wochen (nachhaltiger).
+Verboten in diesem Absatz: Allgemeinplätze ohne Bezug auf ihre Zahlen oder ihr Material („Botschaften, die wirklich tragen“ allein reicht nicht), Fachjargon, mehr als drei Sätze.
+Haltung: ${POSITIONIERUNG}
 
 REGELN (hart):
 - Sie-Form. Deutsch (Österreich). Kein Gendersternchen.
