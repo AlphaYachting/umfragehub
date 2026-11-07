@@ -21,6 +21,8 @@ import MarkdownLeicht from "@/components/aussenblick/MarkdownLeicht";
 import AufEinenBlick, { Urteil } from "@/components/aussenblick/AufEinenBlick";
 import Kennzahlen from "@/components/aussenblick/Kennzahlen";
 import { TraegtBricht, Belege, Vorschlag, Einschaetzung, Anzeigenpaar } from "@/components/aussenblick/Bericht";
+import Diktat from "@/components/aussenblick/Diktat";
+import MailVorschau from "@/components/aussenblick/MailVorschau";
 import { TON_TEXT } from "@/lib/designTon";
 import { alsDatum, datumKurz, inZwischenablage } from "@/lib/verwaltung";
 import {
@@ -196,15 +198,22 @@ export default function Zielkarte() {
     setCodeFehlt(false);
     setKiKontext(null);
     try {
-      const res = await base44.functions.invoke("aussenblickBrief", { zielId: ziel.id, art: brief.briefArt, hinweis: kiHinweis });
+      // Gibt es schon einen Entwurf und einen Hinweis, arbeitet die KI nur die Änderungen ein —
+      // alles andere bleibt, wie es ist. Ohne Entwurf schreibt sie neu.
+      const ueberarbeiten = Boolean(brief.briefText?.trim()) && Boolean(kiHinweis.trim());
+      const res = await base44.functions.invoke("aussenblickBrief", {
+        zielId: ziel.id, art: brief.briefArt, hinweis: kiHinweis,
+        bisher: ueberarbeiten ? { betreff: brief.briefBetreff, text: brief.briefText } : null,
+      });
       const r = res?.data;
       if (!r || r.error || !r.text) throw new Error(r?.error || "leer");
-      setBrief({ ...brief, briefText: r.text, briefBetreff: r.betreff || brief.briefBetreff, briefSpiegelung: r.spiegelung || "" });
+      setBrief({ ...brief, briefText: r.text, briefBetreff: r.betreff || brief.briefBetreff, briefSpiegelung: typeof r.spiegelung === "string" ? r.spiegelung : JSON.stringify(r.spiegelung || "") });
       setBriefGeaendert(true);
       setSperrwoerter(r.sperrwoerter || []);
       setCodeFehlt(Boolean(r.codeFehlt));
       setKiKontext(r.kontext || null);
-      toast.success(brief.briefArt === "mail" ? "E-Mail-Entwurf da — lesen, ändern, speichern." : "Brief-Entwurf da — lesen, ändern, speichern.");
+      if (ueberarbeiten) setKiHinweis("");
+      toast.success(ueberarbeiten ? "Änderungen eingearbeitet — lesen, speichern." : brief.briefArt === "mail" ? "E-Mail-Entwurf da — lesen, ändern, speichern." : "Brief-Entwurf da — lesen, ändern, speichern.");
     } catch (e) {
       toast.error("Der Entwurf ist nicht gekommen. Noch einmal versuchen.");
     } finally {
@@ -502,8 +511,8 @@ export default function Zielkarte() {
                         <SelectItem value="post">Brief (Post)</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Button size="sm" variant="outline" onClick={briefErzeugen} disabled={kiLaeuft || beschaeftigt}>
-                      <Sparkles className={cn(kiLaeuft && "animate-pulse")} /> {kiLaeuft ? "Schreibt …" : brief.briefText ? "Neu schreiben" : "Mit KI schreiben"}
+                    <Button size="sm" variant={brief.briefText && kiHinweis.trim() ? "default" : "outline"} onClick={briefErzeugen} disabled={kiLaeuft || beschaeftigt}>
+                      <Sparkles className={cn(kiLaeuft && "animate-pulse")} /> {kiLaeuft ? "Schreibt …" : brief.briefText ? (kiHinweis.trim() ? "Änderungen einarbeiten" : "Neu schreiben") : "Mit KI schreiben"}
                     </Button>
                     <Button size="sm" onClick={briefSpeichern} disabled={!briefGeaendert || beschaeftigt}><Save /> Speichern</Button>
                   </>
@@ -511,8 +520,11 @@ export default function Zielkarte() {
               />
               <BoxInhalt>
                 <div className="space-y-1.5">
-                  <Label htmlFor="b-hinweis">Hinweis an die KI (optional)</Label>
-                  <Input id="b-hinweis" value={kiHinweis} onChange={(e) => setKiHinweis(e.target.value)} placeholder="z. B. kürzer, den steirischen Bezug nach vorn" />
+                  <div className="flex items-center justify-between gap-2">
+                    <Label htmlFor="b-hinweis">{brief.briefText ? "Was soll sich ändern?" : "Hinweis an die KI (optional)"}</Label>
+                    <Diktat wert={kiHinweis} onChange={setKiHinweis} />
+                  </div>
+                  <Textarea id="b-hinweis" rows={3} value={kiHinweis} onChange={(e) => setKiHinweis(e.target.value)} placeholder={brief.briefText ? "Diktieren oder tippen — z. B. „den zweiten Absatz kürzer, die Teams-Besprechung nicht erwähnen, am Schluss das Erstgespräch anbieten“. Dann „Änderungen einarbeiten“." : "z. B. kürzer, den steirischen Bezug nach vorn"} className="text-[14px] leading-relaxed" />
                   <p className="text-meta text-muted-foreground">
                     Die KI liest: {brief.warmerDraht ? <span className="text-foreground">früheren Kontakt</span> : <span className={TON_TEXT.attention}>keinen früheren Kontakt (rechts eintragen)</span>}, {brief.briefAufhaenger ? "Aufhänger" : "keinen Aufhänger"}, die fünf Fragen, Notizen und Anrufe aus dem Verlauf, den Code.
                   </p>
@@ -532,19 +544,48 @@ export default function Zielkarte() {
                 {sperrwoerter.length > 0 && (
                   <p className={cn("text-meta", TON_TEXT.attention)}>Im Entwurf stehen Sperrwörter: {sperrwoerter.join(", ")} — bitte vor dem Speichern streichen.</p>
                 )}
-                <Textarea
-                  rows={brief.briefArt === "mail" ? 16 : 24}
-                  value={brief.briefText}
-                  onChange={(e) => { setBrief({ ...brief, briefText: e.target.value }); setBriefGeaendert(true); }}
-                  placeholder="„Mit KI schreiben“ holt den Entwurf aus früherem Kontakt, Aufhänger, den fünf Fragen und dem Code — oder hier selbst schreiben."
-                  className="font-inter text-[14px] leading-relaxed"
-                />
-                {brief.briefSpiegelung && (
-                  <div className="rounded-lg border bg-muted/30 p-3 space-y-1">
-                    <p className="text-label uppercase text-muted-foreground">Spiegelung — so liest es der Empfänger</p>
-                    <p className="text-meta text-foreground whitespace-pre-wrap">{brief.briefSpiegelung}</p>
-                  </div>
-                )}
+                {brief.briefText ? (
+                  <MailVorschau
+                    art={brief.briefArt}
+                    betreff={brief.briefBetreff}
+                    text={brief.briefText}
+                    an={ziel.entscheider?.[0]?.email || ""}
+                    anName={ziel.entscheider?.[0]?.name || ""}
+                    codeFehlt={codeFehlt || /\[CODE\]/.test(brief.briefText)}
+                  />
+                ) : null}
+                <details className="group" open={!brief.briefText}>
+                  <summary className="cursor-pointer text-meta text-muted-foreground hover:text-foreground select-none">{brief.briefText ? "Text selbst bearbeiten" : "Oder selbst schreiben"}</summary>
+                  <Textarea
+                    rows={brief.briefArt === "mail" ? 16 : 24}
+                    value={brief.briefText}
+                    onChange={(e) => { setBrief({ ...brief, briefText: e.target.value }); setBriefGeaendert(true); }}
+                    placeholder="„Mit KI schreiben“ holt den Entwurf aus früherem Kontakt, Aufhänger, den fünf Fragen und dem Code — oder hier selbst schreiben."
+                    className="font-inter text-[14px] leading-relaxed mt-2"
+                  />
+                </details>
+                {brief.briefSpiegelung && (() => {
+                  let s = brief.briefSpiegelung;
+                  try { const o = JSON.parse(s); if (o && typeof o === "object") s = o; } catch { /* Text */ }
+                  const zeilen = typeof s === "object" ? [["Gefühl", s.gefuehl], ["Riskantester Satz", s.risiko], ["Streichen", s.streichen]].filter(([, v]) => v) : null;
+                  return (
+                    <div className="rounded-lg border bg-muted/30 p-3 space-y-2">
+                      <p className="text-label uppercase text-muted-foreground">Spiegelung — so liest es {ziel.entscheider?.[0]?.name ? ziel.entscheider[0].name.split(" ").slice(-1)[0] : "die Empfängerin"}</p>
+                      {zeilen ? (
+                        <dl className="grid sm:grid-cols-[150px_1fr] gap-x-3 gap-y-1.5">
+                          {zeilen.map(([k, v]) => (
+                            <React.Fragment key={k}>
+                              <dt className="text-meta text-muted-foreground">{k}</dt>
+                              <dd className="text-meta text-foreground">{v}</dd>
+                            </React.Fragment>
+                          ))}
+                        </dl>
+                      ) : (
+                        <p className="text-meta text-foreground whitespace-pre-wrap">{s}</p>
+                      )}
+                    </div>
+                  );
+                })()}
               </BoxInhalt>
             </Box>
             <div className="space-y-5">
