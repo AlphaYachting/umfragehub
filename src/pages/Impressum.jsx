@@ -35,6 +35,20 @@ export default function Impressum() {
         />
       </Abschnitt>
 
+      <Abschnitt id="marke" titel="Idee, Konzept und Marke">
+        <Angaben
+          zeilen={[
+            ["Idee und Konzept", "Alfons Rittler"],
+            ["Marke andi fragt.", "Alfons Rittler"],
+          ]}
+        />
+        <p>
+          Idee, Konzept und die Marke andi fragt. stammen von Alfons Rittler und liegen bei ihm persönlich. Sie
+          gehören nicht zur Rittler & Co GmbH. Die Rittler & Co GmbH bietet die Interviews unter dieser Marke mit
+          seiner Zustimmung an.
+        </p>
+      </Abschnitt>
+
       <Abschnitt id="gewerbe" titel="Gewerbe und Aufsicht">
         <Angaben
           zeilen={[
