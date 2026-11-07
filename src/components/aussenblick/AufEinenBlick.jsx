@@ -1,7 +1,7 @@
 import React from "react";
 import { Megaphone, Globe, MessageSquareQuote, Crosshair, Search, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Box } from "@/components/shared/Box";
+import { Box, BoxKopf } from "@/components/shared/Box";
 import StatusEtikett from "@/components/shared/StatusEtikett";
 import ModulPille from "@/components/aussenblick/ModulPille";
 
@@ -64,7 +64,7 @@ export function Urteil({ ziel }) {
 }
 
 // Block 2: die Quellen — drei Spalten, darunter Wunschzielgruppe und Sichtbarkeit, dann die Eckdaten.
-export default function AufEinenBlick({ ziel, eckdaten = [] }) {
+export default function AufEinenBlick({ ziel, eckdaten = [], titel, hinweis }) {
   const b = ziel?.blick || {};
   const leer = !b.verkaufen && !b.auftritt && !b.kunden;
 
@@ -81,6 +81,7 @@ export default function AufEinenBlick({ ziel, eckdaten = [] }) {
 
   return (
     <Box className="overflow-hidden">
+      {titel && <BoxKopf titel={titel} hinweis={hinweis} />}
       <div className="grid md:grid-cols-3 md:divide-x divide-y md:divide-y-0">
         <Spalte symbol={Megaphone} titel="Sie werben für" text={b.verkaufen} />
         <Spalte symbol={Globe} titel="So treten sie auf" text={b.auftritt} />
