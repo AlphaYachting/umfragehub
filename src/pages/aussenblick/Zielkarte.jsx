@@ -234,7 +234,7 @@ export default function Zielkarte() {
   async function loeschen() {
     if (!(await bestaetigen(`Ziel „${ziel.unternehmen}“ löschen? Befund, Widersprüche, Fragen, Antworten, Codes und Verlauf werden mitgelöscht.`))) return;
     await tun(() => zielLoeschen(ziel));
-    navigate("/aussenblick");
+    navigate("/akquise");
   }
 
   if (loading && !ziel) {
@@ -270,7 +270,7 @@ export default function Zielkarte() {
   return (
     <div className="v-seite">
       <Seitenkopf
-        zurueck={{ to: "/aussenblick", label: "Außenblick" }}
+        zurueck={{ to: "/akquise", label: "Außenblick" }}
         bereich={`Ziel · ${ziel.kuerzel || ""}`}
         titel={ziel.unternehmen}
         versalien={false}
