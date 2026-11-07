@@ -107,12 +107,13 @@ export default function Zielkarte() {
   const [versand, setVersand] = useState(null); // Einladung, die als versendet markiert werden soll
   const [versandweg, setVersandweg] = useState("post");
   const [versandAm, setVersandAm] = useState(heuteTag);
-  const [brief, setBrief] = useState({ briefText: "", briefAufhaenger: "", warmerDraht: "", postadresse: "", briefArt: "post", briefBetreff: "", briefSpiegelung: "" });
+  const [brief, setBrief] = useState({ briefText: "", briefAufhaenger: "", warmerDraht: "", postadresse: "", briefArt: "mail", briefBetreff: "", briefSpiegelung: "" });
   const [briefGeaendert, setBriefGeaendert] = useState(false);
   const [kiHinweis, setKiHinweis] = useState("");
   const [kiLaeuft, setKiLaeuft] = useState(false);
   const [sperrwoerter, setSperrwoerter] = useState([]);
   const [codeFehlt, setCodeFehlt] = useState(false);
+  const [kiKontext, setKiKontext] = useState(null); // was die KI beim letzten Entwurf hatte
   const [notiz, setNotiz] = useState("");
   const [registerAnsicht, setRegisterAnsicht] = useState("befund");
   const [mehr, setMehr] = useState(false); // Befund-Reiter: Details unter den Widersprüchen aufklappen
@@ -124,7 +125,7 @@ export default function Zielkarte() {
     const z = neu.ziel || {};
     setBrief({
       briefText: z.briefText || "", briefAufhaenger: z.briefAufhaenger || "", warmerDraht: z.warmerDraht || "", postadresse: z.postadresse || "",
-      briefArt: z.briefArt || "post", briefBetreff: z.briefBetreff || "", briefSpiegelung: z.briefSpiegelung || "",
+      briefArt: z.briefArt || "mail", briefBetreff: z.briefBetreff || "", briefSpiegelung: z.briefSpiegelung || "",
     });
     setBriefGeaendert(false);
   }
@@ -226,6 +227,7 @@ export default function Zielkarte() {
     setKiLaeuft(true);
     setSperrwoerter([]);
     setCodeFehlt(false);
+    setKiKontext(null);
     try {
       const res = await base44.functions.invoke("aussenblickBrief", { zielId: ziel.id, art: brief.briefArt, hinweis: kiHinweis });
       const r = res?.data;
@@ -234,6 +236,7 @@ export default function Zielkarte() {
       setBriefGeaendert(true);
       setSperrwoerter(r.sperrwoerter || []);
       setCodeFehlt(Boolean(r.codeFehlt));
+      setKiKontext(r.kontext || null);
       toast.success(brief.briefArt === "mail" ? "E-Mail-Entwurf da — lesen, ändern, speichern." : "Brief-Entwurf da — lesen, ändern, speichern.");
     } catch (e) {
       toast.error("Der Entwurf ist nicht gekommen. Noch einmal versuchen.");
@@ -688,12 +691,16 @@ export default function Zielkarte() {
                 }
               />
               <BoxInhalt>
-                <div className="grid sm:grid-cols-[1fr_auto] gap-2 items-end">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="b-hinweis">Hinweis an die KI (optional)</Label>
-                    <Input id="b-hinweis" value={kiHinweis} onChange={(e) => setKiHinweis(e.target.value)} placeholder="z. B. kürzer, den steirischen Bezug nach vorn, Anfrage von damals erwähnen" />
-                  </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="b-hinweis">Hinweis an die KI (optional)</Label>
+                  <Input id="b-hinweis" value={kiHinweis} onChange={(e) => setKiHinweis(e.target.value)} placeholder="z. B. kürzer, den steirischen Bezug nach vorn" />
+                  <p className="text-meta text-muted-foreground">
+                    Die KI liest: {brief.warmerDraht ? <span className="text-foreground">früheren Kontakt</span> : <span className={TON_TEXT.attention}>keinen früheren Kontakt (rechts eintragen)</span>}, {brief.briefAufhaenger ? "Aufhänger" : "keinen Aufhänger"}, die fünf Fragen, Notizen und Anrufe aus dem Verlauf, den Code.
+                  </p>
                 </div>
+                {kiKontext?.kontaktUnbelegt && (
+                  <p className={cn("text-meta", TON_TEXT.attention)}>Der frühere Kontakt ist als „zu prüfen“ markiert — die KI hat ihn deshalb nicht als Tatsache geschrieben. Prüfen, rechts konkret eintragen (wann, worum), neu schreiben.</p>
+                )}
                 {brief.briefArt === "mail" && (
                   <div className="space-y-1.5">
                     <Label htmlFor="b-betreff">Betreff</Label>
@@ -710,7 +717,7 @@ export default function Zielkarte() {
                   rows={brief.briefArt === "mail" ? 16 : 24}
                   value={brief.briefText}
                   onChange={(e) => { setBrief({ ...brief, briefText: e.target.value }); setBriefGeaendert(true); }}
-                  placeholder="„Mit KI schreiben“ holt den Entwurf aus Aufhänger, warmem Draht, den fünf Fragen und dem Code — oder hier selbst schreiben."
+                  placeholder="„Mit KI schreiben“ holt den Entwurf aus früherem Kontakt, Aufhänger, den fünf Fragen und dem Code — oder hier selbst schreiben."
                   className="font-inter text-[14px] leading-relaxed"
                 />
                 {brief.briefSpiegelung && (
@@ -723,20 +730,23 @@ export default function Zielkarte() {
             </Box>
             <div className="space-y-5">
               <Box>
-                <BoxKopf titel="Versand" />
+                <BoxKopf titel="Kontext und Versand" />
                 <BoxInhalt>
                   <div className="space-y-1.5">
+                    <Label htmlFor="b-draht">Früherer Kontakt</Label>
+                    <Textarea id="b-draht" rows={4} value={brief.warmerDraht} onChange={(e) => { setBrief({ ...brief, warmerDraht: e.target.value }); setBriefGeaendert(true); }} placeholder="Wann, worum, mit wem — z. B. Anfrage über die Website am 06.07., Kennenlerngespräch am 09.07. Steht hier „zu prüfen“, nennt die KI den Kontakt nicht als Tatsache." />
+                    <p className="text-meta text-muted-foreground">Der erste Satz des Entwurfs. Geprüft eintragen — nichts, was nur vermutet ist.</p>
+                  </div>
+                  <div className="space-y-1.5">
                     <Label htmlFor="b-aufhaenger">Aufhänger</Label>
-                    <Input id="b-aufhaenger" value={brief.briefAufhaenger} onChange={(e) => { setBrief({ ...brief, briefAufhaenger: e.target.value }); setBriefGeaendert(true); }} placeholder="Nähe, Branche, frühere Anfrage" />
+                    <Input id="b-aufhaenger" value={brief.briefAufhaenger} onChange={(e) => { setBrief({ ...brief, briefAufhaenger: e.target.value }); setBriefGeaendert(true); }} placeholder="Nähe, Branche, Anlass" />
                   </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="b-draht">Warmer Draht (zu prüfen)</Label>
-                    <Input id="b-draht" value={brief.warmerDraht} onChange={(e) => { setBrief({ ...brief, warmerDraht: e.target.value }); setBriefGeaendert(true); }} placeholder="frühere Anfrage, Messe, LinkedIn" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="b-adresse">Postadresse</Label>
-                    <Textarea id="b-adresse" rows={4} value={brief.postadresse} onChange={(e) => { setBrief({ ...brief, postadresse: e.target.value }); setBriefGeaendert(true); }} />
-                  </div>
+                  {brief.briefArt === "post" && (
+                    <div className="space-y-1.5">
+                      <Label htmlFor="b-adresse">Postadresse</Label>
+                      <Textarea id="b-adresse" rows={4} value={brief.postadresse} onChange={(e) => { setBrief({ ...brief, postadresse: e.target.value }); setBriefGeaendert(true); }} />
+                    </div>
+                  )}
                   {haupt && (
                     <p className="text-meta text-muted-foreground">Code im Brief: <span className="font-mono text-foreground">{haupt.code}</span> · {portalUrl(haupt.code)}</p>
                   )}
@@ -751,7 +761,7 @@ export default function Zielkarte() {
               </Box>
               <div className="v-hinweis border-l-border">
                 <Info className="w-4 h-4 mt-0.5 shrink-0 text-muted-foreground" />
-                <p className="text-meta text-muted-foreground">Per Post, nicht per Mail: Werbe-E-Mails ohne Einwilligung sind in Österreich auch im B2B heikel (TKG). Rechtliche Freigabe vor einem breiten Rollout ist deine Sache. Nach 10 Tagen ohne Öffnung ein kurzer Anruf, kein zweiter Brief.</p>
+                <p className="text-meta text-muted-foreground">E-Mail ist der Standard. Ohne früheren Kontakt (Anfrage, Gespräch, Messe) ist eine Werbe-E-Mail in Österreich auch im B2B heikel (TKG) — dann Brief per Post. Rechtliche Freigabe vor einem breiten Rollout ist deine Sache. Nach 10 Tagen ohne Öffnung ein kurzer Anruf, kein zweites Schreiben.</p>
               </div>
             </div>
           </div>
