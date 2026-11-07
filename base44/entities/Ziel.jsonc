@@ -333,6 +333,46 @@
       "title": "L\u00fccken (intern)",
       "type": "array"
     },
+    "sieb": {
+      "description": "Erste Kennzahlen aus dem Sieb (Stufe 0, Reviersuche): Punkte 0\u201310 = Werbedruck 0\u20134 + erster Widerspruch 0\u20133 + Draht 0\u20133. Grundlage f\u00fcr die Entscheidung, wo der tiefe Scan l\u00e4uft.",
+      "properties": {
+        "punkte": {
+          "title": "Punkte (0\u201310)",
+          "type": "number"
+        },
+        "werbedruck": {
+          "title": "Werbedruck (0\u20134)",
+          "type": "number"
+        },
+        "widerspruch": {
+          "title": "Erster Widerspruch (0\u20133)",
+          "type": "number"
+        },
+        "draht": {
+          "title": "Draht (0\u20133)",
+          "type": "number"
+        },
+        "drahtKurz": {
+          "title": "Draht in zwei W\u00f6rtern (z. B. Kunde 2017, LinkedIn 2. Grad, kalt)",
+          "type": "string"
+        },
+        "wirbtJetzt": {
+          "title": "Anzeige in den letzten 30 Tagen",
+          "type": "boolean"
+        },
+        "jetzt": {
+          "title": "Aktuell aktive Kan\u00e4le (z. B. LinkedIn 48 \u00b7 Google 14 \u00b7 Meta 18)",
+          "type": "string"
+        },
+        "stand": {
+          "format": "date",
+          "title": "Stand des Siebs",
+          "type": "string"
+        }
+      },
+      "title": "Sieb (Stufe 0)",
+      "type": "object"
+    },
     "sitz": {
       "title": "Sitz (laut Impressum)",
       "type": "string"
