@@ -187,10 +187,10 @@ Haltung: ${POSITIONIERUNG}
 
 REGELN (hart):
 - Sie-Form. Deutsch (Österreich). Kein Gendersternchen.
-- Kein Befund, keine Kritik, keine Bewertung des Unternehmens, keine Lösung für den Empfänger, kein Ratschlag. Die Spezialisierung von Rittler & Co darf und soll genannt werden (siehe WER WIR SIND) — als Satz, was wir tun und wofür, nicht als Ablauf.
+- Kein Befund, keine Kritik, keine Bewertung des Unternehmens, keine Lösung für den Empfänger, kein Ratschlag. Der Absatz WAS WIR FÜR SIE TUN ist die Ausnahme: dort ein Fakt aus ihrem Material ohne Wertung und die Spezialisierung von Rittler & Co — was wir tun und wofür, nicht als Ablauf.
 - Verboten sind diese Wörter: ${SPERRLISTE.join(', ')}. Auch nicht „anonym“, „digital“, „Interview-Software“ oder irgendein Hinweis, wie andi fragt. arbeitet. Kein Produktname außer „andi fragt.“.
 - Keine Mitbewerber nennen. Nichts Privates über Personen.
-- Keine Zahl, die nicht aus dem Aufhänger oder den Fragen stammt.
+- Keine Zahl, die nicht aus dem Aufhänger, den Fragen oder der Liste „Zahlen des Unternehmens“ stammt.
 - Kein Lob („beeindruckend“, „spannend“, „toll“), keine Floskeln („ich hoffe, es geht Ihnen gut“).
 - Die fünf Fragen stehen als nummerierte Liste im Text, wortgleich wie oben.
 - Link und Code stehen gut sichtbar in einer eigenen Zeile.
@@ -201,7 +201,7 @@ AUSGABE als JSON mit den Feldern "betreff", "text", "spiegelung".
 
   if (art === 'mail') {
     return `${gemeinsam}
-FORM: E-Mail, höchstens 170 Wörter im Fließtext plus die fünf Fragen. Aufbau: Betreff (höchstens sechs Wörter; gibt es einen früheren Kontakt, knüpft der Betreff daran an, z. B. „Ihre Anfrage im Juli — ein Nachtrag“; sonst der Aufhänger; nie „Fünf Fragen“ im Betreff), Anrede, ein Satz zum früheren Kontakt (wenn vorhanden) oder Aufhänger, ein Satz „Ihre Anzeigen sind mir öfter begegnet. Ich habe getan, was Ihr nächster Kunde auch tut: gegoogelt.“ (sinngemäß, nicht wörtlich zwingend), Überleitung zu den fünf Fragen, die Liste, dann ein bis zwei Sätze WER WIR SIND, dann Link und Code in einer eigenen Zeile mit dem Hinweis, dass die Seite nur für sie/ihn ist und 30 Tage offen bleibt, Gruß mit Name, Firma, Telefon. Keine Signatur-Floskeln, kein Disclaimer, kein Logo-Hinweis.
+FORM: E-Mail, höchstens 190 Wörter im Fließtext plus die fünf Fragen. Aufbau: Betreff (höchstens sechs Wörter; gibt es einen früheren Kontakt, knüpft der Betreff daran an, z. B. „Ihre Anfrage im Juli — ein Nachtrag“; sonst der Aufhänger; nie „Fünf Fragen“ im Betreff), Anrede, ein Satz zum früheren Kontakt (wenn vorhanden) oder Aufhänger, ein Satz „Ihre Anzeigen sind mir öfter begegnet. Ich habe getan, was Ihr nächster Kunde auch tut: gegoogelt.“ (sinngemäß, nicht wörtlich zwingend), Überleitung zu den fünf Fragen, die Liste, dann der Absatz WAS WIR FÜR SIE TUN (drei Sätze), dann Link und Code in einer eigenen Zeile mit dem Hinweis, dass die Seite nur für sie/ihn ist und 30 Tage offen bleibt, Gruß mit Name, Firma, Telefon. Keine Signatur-Floskeln, kein Disclaimer, kein Logo-Hinweis.
 "text" enthält nur den E-Mail-Text ohne Betreff — als reiner Text mit Zeilenumbrüchen: Anrede eigene Zeile, Absätze durch Leerzeile getrennt, jede der fünf Fragen in einer eigenen Zeile, Link und Code in einer eigenen Zeile, Gruß und Signatur je eigene Zeile. Kein Markdown.`;
   }
 
@@ -217,7 +217,7 @@ Anrede (Sehr geehrte Frau … / Sehr geehrter Herr …)
 Absatz 1: Der frühere Kontakt konkret (wenn vorhanden), dann der Aufhänger — zusammen höchstens zwei Sätze.
 Absatz 2: Ihre Anzeigen sind mir in den letzten Wochen öfter begegnet. Ich habe getan, was Ihr nächster Kunde auch tut: gegoogelt. Dabei sind mir fünf Fragen gekommen, die ich Ihnen nicht beantworten kann — nur Sie: (sinngemäß)
 Die fünf Fragen als Liste 1–5.
-Absatz 3: Ein bis zwei Sätze WER WIR SIND.
+Absatz 3: Der Absatz WAS WIR FÜR SIE TUN (drei Sätze).
 Absatz 4: Was mir dabei aufgefallen ist, habe ich auf einer Seite zusammengestellt — nur Dinge, die jeder sieht, der Sie sucht. Dann Link und Code in eigener Zeile. Dort können Sie die fünf Fragen gleich beantworten; die Seite ist nur für Sie und bleibt 30 Tage offen.
 Grußformel, Name, Firma, Telefon, E-Mail.
 "betreff" = die Betreffzeile. "text" = der gesamte Brief von der Anschrift bis zur Unterschrift als reiner Text mit Zeilenumbrüchen, ohne Markdown.`;
