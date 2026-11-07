@@ -46,7 +46,7 @@ export default function MailVorschau({ art, betreff, text, an, anName, codeFehlt
   return (
     <div className="rounded-lg border bg-card overflow-hidden">
       <div className="px-4 py-2.5 border-b bg-muted/30 flex flex-wrap items-center gap-2">
-        <p className="text-label uppercase text-muted-foreground flex-1">So liest es {anName ? anName.split(" ").slice(-1)[0] : "die Empfängerin"}</p>
+        <p className="text-label uppercase text-muted-foreground flex-1">So liest es {anName || "die Empfängerin"}</p>
         <Button type="button" size="sm" variant="outline" onClick={() => { inZwischenablage(ganz); toast.success("Entwurf kopiert."); }}><Copy className="w-3.5 h-3.5" /> Kopieren</Button>
         {art === "mail" && (
           <Button type="button" size="sm" variant="outline" asChild disabled={codeFehlt}>
