@@ -21,6 +21,7 @@ import ModulPille from "@/components/aussenblick/ModulPille";
 import MarkdownLeicht from "@/components/aussenblick/MarkdownLeicht";
 import AufEinenBlick, { Urteil } from "@/components/aussenblick/AufEinenBlick";
 import Kennzahlen from "@/components/aussenblick/Kennzahlen";
+import { TraegtBricht, Belege, Vorschlag, Einschaetzung, Anzeigenpaar } from "@/components/aussenblick/Bericht";
 import { TON_TEXT } from "@/lib/designTon";
 import { alsDatum, datumKurz, relativerTag, inZwischenablage } from "@/lib/verwaltung";
 import {
@@ -346,190 +347,40 @@ export default function Zielkarte() {
         );
       })()}
 
-      {/* 3. Die Quellen: was sie verkaufen wollen, wie sie auftreten, was Kunden sagen */}
-      {(() => {
-        const scanTage = ziel.scanAm ? Math.max(0, Math.round((Date.now() - alsDatum(ziel.scanAm).getTime()) / 86400000)) : null;
-        const eckdaten = [
-          ziel.markennamen?.length ? `${ziel.markennamen.length} Markennamen in Umlauf` : null,
-          ziel.zielgruppen?.length ? `${ziel.zielgruppen.length} Zielgruppenbezeichnungen` : null,
-          haupt ? `Portal: ${EINLADUNG_STATUS[haupt.status]?.label || haupt.status}${haupt.status === "versendet" ? `, ${haupt.aufrufe || 0} Aufrufe${haupt.zuletztGeoeffnet ? `, zuletzt ${relativerTag(alsDatum(haupt.zuletztGeoeffnet))}` : ""}` : ` (Code ${haupt.code})`}` : "Portal: noch kein Code",
-          ziel.scanAm ? `Scan ${scanTage === 0 ? "heute" : `vor ${scanTage} Tagen`} (${datumKurz(alsDatum(ziel.scanAm), true)})` : "noch kein Scan",
-        ];
-        return <AufEinenBlick ziel={ziel} eckdaten={eckdaten} />;
-      })()}
+      {/* 3. Das Positive und das Negative nebeneinander */}
+      <TraegtBricht ziel={ziel} />
 
       <Tabs value={reiter} onValueChange={setReiter}>
         <TabsList>
-          <TabsTrigger value="befund">Befund</TabsTrigger>
+          <TabsTrigger value="befund">Bericht</TabsTrigger>
           <TabsTrigger value="portal">Portal</TabsTrigger>
           <TabsTrigger value="brief">Brief</TabsTrigger>
           <TabsTrigger value="verlauf">Verlauf{verlauf.length ? ` (${verlauf.length})` : ""}</TabsTrigger>
           <TabsTrigger value="register">Register</TabsTrigger>
         </TabsList>
 
-        {/* ------------------------------------------------------------ Befund */}
-        <TabsContent value="befund" className="flex flex-col gap-5 mt-4">
-          {mehr && (<div className="order-3 grid lg:grid-cols-3 gap-5">
-            <Box className="lg:col-span-2">
-              <BoxKopf titel="Kurzeinschätzung" hinweis={ziel.scanAm ? `Scan ${datumKurz(alsDatum(ziel.scanAm), true)}${ziel.scanVon ? ` · ${ziel.scanVon}` : ""}` : undefined} />
-              <BoxInhalt>
-                {ziel.kurzeinschaetzung ? <MarkdownLeicht text={ziel.kurzeinschaetzung} /> : <p className="text-meta text-muted-foreground">Noch kein Befund — kommt mit dem Scan.</p>}
-                {ziel.empfehlung && ziel.empfehlung !== "offen" && (
-                  <p className="pt-1"><StatusEtikett ton={ziel.empfehlung === "go" ? "done" : "neutral"}>Empfehlung: {ziel.empfehlung === "go" ? "go" : "no-go"}</StatusEtikett></p>
-                )}
-              </BoxInhalt>
-            </Box>
-            <Box>
-              <BoxKopf titel="Deine Hypothese" />
-              <BoxInhalt>
-                <p className="text-body text-foreground">{ziel.ausloeser || "—"}</p>
-                <p>
-                  <StatusEtikett ton={ziel.hypotheseErgebnis === "bestaetigt" ? "done" : ziel.hypotheseErgebnis === "widerlegt" ? "attention" : ziel.hypotheseErgebnis === "teils" ? "info" : "neutral"}>
-                    {ziel.hypotheseErgebnis === "offen" || !ziel.hypotheseErgebnis ? "noch offen" : ziel.hypotheseErgebnis === "teils" ? "teils bestätigt" : ziel.hypotheseErgebnis}
-                  </StatusEtikett>
-                </p>
-                {ziel.wunschzielgruppe && (
-                  <div className="pt-1">
-                    <p className="text-label uppercase text-muted-foreground">Wunschzielgruppe</p>
-                    <p className="text-body text-foreground">{ziel.wunschzielgruppe}</p>
-                  </div>
-                )}
-                {ziel.entscheider?.length > 0 && (
-                  <div className="pt-1">
-                    <p className="text-label uppercase text-muted-foreground">Entscheider</p>
-                    {ziel.entscheider.map((e, i) => <p key={i} className="text-body text-foreground">{e.name}{e.rolle ? ` — ${e.rolle}` : ""}</p>)}
-                  </div>
-                )}
-              </BoxInhalt>
-            </Box>
-          </div>)}
+        {/* ------------------------------------------------------------ Bericht */}
+        <TabsContent value="befund" className="space-y-5 mt-4">
+          {/* 1. Belege: jede Behauptung mit A und B und der Spannung als Schluss */}
+          <Belege widersprueche={d.widersprueche} offen={offen} setOffen={setOffen} />
 
-          <Box className="order-1">
-            <BoxKopf titel="Widersprüche" zaehler={d.widersprueche.length} hinweis="die Belege zur Divergenz — jeder öffentlich aufrufbar" />
-            {d.widersprueche.length === 0 ? (
-              <BoxInhalt><p className="text-meta text-muted-foreground">Noch keine — kommen mit dem Befund.</p></BoxInhalt>
-            ) : (
-              <div className="divide-y">
-                {d.widersprueche.map((ws) => {
-                  const typ = WIDERSPRUCH_TYP[ws.typ];
-                  const auf = !!offen[ws.id];
-                  return (
-                    <div key={ws.id} className={cn("px-4 py-3 space-y-2", ws.staerke === "stark" && "shadow-[inset_3px_0_0_hsl(var(--status-attention))]")}>
-                      <button type="button" onClick={() => setOffen((o) => ({ ...o, [ws.id]: !auf }))} className="w-full flex items-start gap-3 text-left">
-                        {auf ? <ChevronDown className="w-4 h-4 mt-1 text-muted-foreground shrink-0" /> : <ChevronRight className="w-4 h-4 mt-1 text-muted-foreground shrink-0" />}
-                        <span className="text-value tabular-nums text-muted-foreground w-6 shrink-0">{ws.nummer ?? ""}</span>
-                        <span className="min-w-0 flex-1">
-                          <span className="block text-object text-foreground">{ws.titel || typ?.label}</span>
-                          <span className="block text-label uppercase text-muted-foreground">Typ {typ?.nr} · {typ?.label}</span>
-                          <span className="block text-body text-foreground mt-1">{ws.spannung}</span>
-                        </span>
-                        <span className="flex flex-col sm:flex-row gap-1.5 shrink-0 items-end sm:items-center">
-                          <StatusEtikett ton={STAERKE[ws.staerke]?.ton}>{STAERKE[ws.staerke]?.label || ws.staerke}</StatusEtikett>
-                          <StatusEtikett ton={PORTAL_STUFE[ws.portal]?.ton}>{PORTAL_STUFE[ws.portal]?.label || "intern"}</StatusEtikett>
-                        </span>
-                      </button>
-                      {auf && (
-                        <div className="grid md:grid-cols-2 gap-3 pl-7">
-                          <Beleg titel="Beleg A" beleg={ws.belegA} />
-                          <Beleg titel="Beleg B" beleg={ws.belegB} />
-                          {ws.zeile && <p className="md:col-span-2 text-meta text-muted-foreground">Zeile im Portal: „{ws.zeile}“</p>}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </Box>
+          {/* 2. Vorschlag: Einstieg, Begründung, Hebel */}
+          <Vorschlag ziel={ziel} />
 
-          <button type="button" onClick={() => setMehr(!mehr)} className="order-2 self-start text-meta text-muted-foreground hover:text-foreground underline underline-offset-2">
-            {mehr ? "Weniger anzeigen" : "Mehr aus dem Befund: Kurzeinschätzung, Hypothese, Siegerbotschaft, Modul, Stärken und Lücken"}
-          </button>
+          {/* 3. Einschätzung, Hypothese, offene Punkte */}
+          <Einschaetzung ziel={ziel} scanHinweis={ziel.scanAm ? `Scan ${datumKurz(alsDatum(ziel.scanAm), true)}${ziel.scanVon ? ` · ${ziel.scanVon}` : ""}` : undefined} />
 
-          {mehr && (<div className="order-4 grid lg:grid-cols-2 gap-5">
-            <Box>
-              <BoxKopf titel="Siegerbotschaft gegen Jüngste" hinweis="aus den Werbebibliotheken" />
-              <BoxInhalt>
-                {w.siegerbotschaft?.hook || w.juengste?.hook ? (
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    {w.siegerbotschaft?.hook && (
-                      <div className="rounded-lg border bg-muted/30 p-3 space-y-1">
-                        <p className="text-label uppercase text-muted-foreground">Läuft am längsten</p>
-                        <p className="text-body text-foreground">„{w.siegerbotschaft.hook}“</p>
-                        <p className="text-meta text-muted-foreground">seit {w.siegerbotschaft.seit}{w.siegerbotschaft.monate ? ` · ${w.siegerbotschaft.monate} Monate` : ""}{w.siegerbotschaft.varianten ? ` · ${w.siegerbotschaft.varianten} Varianten` : ""}</p>
-                        <p className="text-meta text-muted-foreground">{[w.siegerbotschaft.zielgruppe, w.siegerbotschaft.markenname, w.siegerbotschaft.format].filter(Boolean).join(" · ")}</p>
-                      </div>
-                    )}
-                    {w.juengste?.hook && (
-                      <div className="rounded-lg border bg-muted/30 p-3 space-y-1">
-                        <p className="text-label uppercase text-muted-foreground">Jüngste Anzeige</p>
-                        <p className="text-body text-foreground">„{w.juengste.hook}“</p>
-                        <p className="text-meta text-muted-foreground">seit {w.juengste.seit}{w.juengste.varianten ? ` · ${w.juengste.varianten} Varianten` : ""}</p>
-                        <p className="text-meta text-muted-foreground">{[w.juengste.zielgruppe, w.juengste.markenname, w.juengste.format].filter(Boolean).join(" · ")}</p>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-meta text-muted-foreground">Noch keine Anzeigen erfasst.</p>
-                )}
-                {w.pixel?.length > 0 && <p className="text-meta text-muted-foreground">Tracking: {w.pixel.join(", ")}</p>}
-              </BoxInhalt>
-            </Box>
-            <Box>
-              <BoxKopf titel="Modul und Hebel" aktion={<ModulPille modul={ziel.modul} />} />
-              <BoxInhalt>
-                <p className="text-body text-foreground">
-                  {ziel.modul ? <strong className="font-semibold">{MODUL[ziel.modul]?.label}</strong> : "Noch nicht zugeordnet"}
-                  {ziel.modulZweiterSchritt && <span className="text-muted-foreground"> → danach {MODUL[ziel.modulZweiterSchritt]?.label}</span>}
-                </p>
-                {ziel.modulBegruendung && <p className="text-meta text-muted-foreground">{ziel.modulBegruendung}</p>}
-                {ziel.hebel?.length > 0 && (
-                  <div className="space-y-2 pt-1">
-                    {ziel.hebel.map((h, i) => (
-                      <div key={i}>
-                        <p className="text-label uppercase text-muted-foreground">{HEBEL[h.art] || h.art}</p>
-                        <p className="text-body text-foreground">{h.text}</p>
-                      </div>
-                    ))}
-                    <p className="text-meta text-muted-foreground">Zahlen dazu liefert nur der Rechner im Portal — mit den Zahlen des Unternehmens.</p>
-                  </div>
-                )}
-              </BoxInhalt>
-            </Box>
-          </div>)}
-
-          {mehr && (<div className="order-5 grid lg:grid-cols-3 gap-5">
-            <Box>
-              <BoxKopf titel="Stärken" hinweis="intern" />
-              <BoxInhalt><Liste eintraege={ziel.staerken} leer="—" /></BoxInhalt>
-            </Box>
-            <Box>
-              <BoxKopf titel="Lücken" hinweis="intern" />
-              <BoxInhalt><Liste eintraege={ziel.schwaechen} leer="—" /></BoxInhalt>
-            </Box>
-            <Box>
-              <BoxKopf titel="Ein Mensch prüft" hinweis="offen" />
-              <BoxInhalt>
-                <Liste eintraege={ziel.offen} leer="Nichts offen." />
-                {(ziel.markennamen?.length > 0 || ziel.zielgruppen?.length > 0) && (
-                  <div className="pt-2 space-y-2">
-                    {ziel.markennamen?.length > 0 && (
-                      <div>
-                        <p className="text-label uppercase text-muted-foreground">Markennamen in Umlauf ({ziel.markennamen.length})</p>
-                        <p className="text-meta text-foreground">{ziel.markennamen.join(" · ")}</p>
-                      </div>
-                    )}
-                    {ziel.zielgruppen?.length > 0 && (
-                      <div>
-                        <p className="text-label uppercase text-muted-foreground">Zielgruppen in Umlauf ({ziel.zielgruppen.length})</p>
-                        <p className="text-meta text-foreground">{ziel.zielgruppen.join(" · ")}</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </BoxInhalt>
-            </Box>
-          </div>)}
+          {/* 4. Was wir gesehen haben: die Quellen hinter dem Urteil */}
+          {(() => {
+            const scanTage = ziel.scanAm ? Math.max(0, Math.round((Date.now() - alsDatum(ziel.scanAm).getTime()) / 86400000)) : null;
+            const eckdaten = [
+              ziel.markennamen?.length ? `${ziel.markennamen.length} Markennamen in Umlauf: ${ziel.markennamen.join(", ")}` : null,
+              ziel.zielgruppen?.length ? `${ziel.zielgruppen.length} Zielgruppenbezeichnungen: ${ziel.zielgruppen.join(", ")}` : null,
+              ziel.scanAm ? `Scan ${scanTage === 0 ? "heute" : `vor ${scanTage} Tagen`} (${datumKurz(alsDatum(ziel.scanAm), true)})` : "noch kein Scan",
+            ];
+            return <AufEinenBlick ziel={ziel} eckdaten={eckdaten} titel="Was wir gesehen haben" hinweis="die Quellen hinter dem Urteil" />;
+          })()}
+          <Anzeigenpaar werbung={w} />
         </TabsContent>
 
         {/* ------------------------------------------------------------ Portal */}
