@@ -63,6 +63,7 @@ export default function Portal() {
   const [d, setD] = useState(null);
   const [laedt, setLaedt] = useState(true);
   const [fehler, setFehler] = useState("");
+  const [fehlerZiel, setFehlerZiel] = useState("");
 
   const rufen = useCallback(async (body) => {
     const res = await base44.functions.invoke("aussenblickPortal", { code, vorschau, ...body });
@@ -73,7 +74,23 @@ export default function Portal() {
     setLaedt(true);
     try {
       const r = await rufen({ aktion: "laden" });
-      if (r.fehler) { setFehler(r.fehler); setD(null); } else { setD(r); setFehler(""); }
+      if (r.fehler) {
+        let art = r.fehler;
+        let zielId = r.zielId || "";
+        // Ein Entwurfs-Code ist für das Unternehmen zu. Ist hier aber Alfons angemeldet,
+        // zeigen wir statt „kennen wir nicht“ den Weg in die Vorschau — auch dann, wenn die
+        // Funktion noch in einer älteren Fassung läuft und nur „code“ meldet.
+        if (art === "code" && !vorschau) {
+          try {
+            const user = await base44.auth.me().catch(() => null);
+            if (user?.role === "admin") {
+              const treffer = await base44.entities.Einladung.filter({ code: String(code || "").trim().toUpperCase() });
+              if (treffer?.[0] && treffer[0].status !== "versendet") { art = "entwurf"; zielId = treffer[0].zielId || ""; }
+            }
+          } catch { /* bleibt bei „code“ */ }
+        }
+        setFehler(art); setFehlerZiel(zielId); setD(null);
+      } else { setD(r); setFehler(""); }
     } catch (e) {
       setFehler("server");
     } finally {
@@ -120,7 +137,7 @@ export default function Portal() {
   }, [d, melden]);
 
   if (laedt && !d) return <Huelle vorschau={vorschau} zurueck={zurueck}><p className="py-24 text-center" style={{ color: F.daempft }}>Einen Moment ...</p></Huelle>;
-  if (fehler || !d) return <Huelle vorschau={vorschau} zurueck={zurueck}><Fehler art={fehler} /></Huelle>;
+  if (fehler || !d) return <Huelle vorschau={vorschau} zurueck={zurueck}><Fehler art={fehler} code={code} zielId={fehlerZiel} /></Huelle>;
 
   const w = wort(d.ansprache);
   if (d.welle) return <Huelle vorschau={d.vorschau} zurueck={zurueck}><Welle d={d} w={w} rufen={rufen} /></Huelle>;
@@ -171,7 +188,22 @@ function Huelle({ children, vorschau, zurueck, unternehmen, nav }) {
   );
 }
 
-function Fehler({ art }) {
+function Fehler({ art, code, zielId }) {
+  // Nur für angemeldete Admins: der Code existiert, ist aber noch nicht versendet
+  if (art === "entwurf") {
+    return (
+      <div className={`${BREITE} py-24 max-w-[640px]`}>
+        <p className={H2}>Dieser Code ist noch ein Entwurf.</p>
+        <p className="mt-4 text-[18px] leading-[1.6]" style={{ color: F.daempft }}>
+          Für das Unternehmen bleibt die Seite zu, bis du in der Zielkarte „Als versendet markieren“ gesetzt hast. Du bist angemeldet und kannst sie jetzt als Vorschau ansehen — nichts wird gezählt oder gespeichert.
+        </p>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link to={`/a/${code}?vorschau=1${zielId ? `&ziel=${zielId}` : ""}`} className="inline-flex items-center gap-2 min-h-[48px] rounded px-6 text-sm font-semibold uppercase tracking-[0.04em]" style={{ background: F.akzent, color: "#fff", textDecoration: "none" }}>Vorschau öffnen <ArrowRight size={16} /></Link>
+          <Link to={zielId ? `/akquise/${zielId}` : "/akquise"} className="inline-flex items-center gap-2 min-h-[48px] rounded px-6 text-sm font-semibold uppercase tracking-[0.04em]" style={{ border: `1px solid ${F.linie}`, color: F.text, textDecoration: "none" }}>Zur Zielkarte</Link>
+        </div>
+      </div>
+    );
+  }
   const text = art === "abgelaufen"
     ? ["Dieser Zugang ist abgelaufen.", "Die Seite war 30 Tage offen. Rufen Sie an, dann öffnen wir sie noch einmal: " + KONTAKT_TEL]
     : art === "gesperrt"
