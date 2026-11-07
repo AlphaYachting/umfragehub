@@ -20,6 +20,8 @@ import { kachel } from "@/components/verwaltung/Kachel";
 import { TON_TEXT } from "@/lib/designTon";
 import { relativerTag, gruppiere } from "@/lib/verwaltung";
 import ModulPille from "@/components/aussenblick/ModulPille";
+import SiebZeile from "@/components/aussenblick/SiebZeile";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   ZIEL_STATUS, ZIEL_FILTER, STATUS_GRUPPE, BUDGETKLASSE, DOSIS_JE_WOCHE,
   ladeZiele, gemerktAussenblick, zielKennzahlen, versendetDieseWoche, zielAnlegen, kuerzelVorschlag, trichter,
@@ -33,6 +35,10 @@ export default function Zielliste() {
   const [loading, setLoading] = useState(true);
   const [suche, setSuche] = useState("");
   const [filter, setFilter] = useState("offen");
+  // Sieb: sortieren nach Punkten, schnell eingrenzen, Region wählen
+  const [sortierung, setSortierung] = useState("punkte");
+  const [schnell, setSchnell] = useState({ ab6: false, warm: false, jetzt: false });
+  const [region, setRegion] = useState("alle");
   const [dialog, setDialog] = useState(false);
   const [neu, setNeu] = useState({ unternehmen: "", website: "", kuerzel: "", region: "", branche: "", ausloeser: "", scanGleich: true });
   const [speichert, setSpeichert] = useState(false);
@@ -71,7 +77,8 @@ export default function Zielliste() {
   const entscheiden = useMemo(() => zeilen.filter((z) => STATUS_GRUPPE.entscheiden.includes(z.status)), [zeilen]);
   const t = useMemo(() => trichter(daten.ziele), [daten]);
 
-  const sichtbar = useMemo(() => {
+  // Grundmenge: Statusfilter und Suche — darauf zählen die Schnellfilter
+  const grundmenge = useMemo(() => {
     const q = suche.trim().toLowerCase();
     const f = ZIEL_FILTER.find((x) => x.key === filter) || ZIEL_FILTER[0];
     return zeilen.filter((z) => {
@@ -80,6 +87,40 @@ export default function Zielliste() {
       return [z.ziel.unternehmen, z.ziel.kuerzel, z.ziel.region, z.ziel.branche, z.ziel.website].join(" ").toLowerCase().includes(q);
     });
   }, [zeilen, suche, filter]);
+
+  const regionen = useMemo(() => {
+    const n = {};
+    for (const z of zeilen) if (z.ziel.region) n[z.ziel.region] = (n[z.ziel.region] || 0) + 1;
+    return Object.entries(n).sort((a, b) => b[1] - a[1]).map(([r]) => r);
+  }, [zeilen]);
+
+  const SCHNELL = {
+    ab6: { label: "Ab 6 Punkten", passt: (z) => (z.ziel.sieb?.punkte || 0) >= 6 },
+    warm: { label: "Warmer Draht", passt: (z) => (z.ziel.sieb?.draht || 0) >= 2 },
+    jetzt: { label: "Wirbt jetzt", passt: (z) => !!z.ziel.sieb?.wirbtJetzt },
+  };
+
+  const sichtbar = useMemo(() => {
+    const liste = grundmenge.filter((z) => {
+      if (region !== "alle" && z.ziel.region !== region) return false;
+      for (const [k, an] of Object.entries(schnell)) if (an && !SCHNELL[k].passt(z)) return false;
+      return true;
+    });
+    if (sortierung !== "punkte") return liste;
+    // Ohne Sieb (von Hand angelegt, schon weiter) zuerst, dann nach Punkten, Draht, Werbedruck, Widerspruch
+    const schl = (z) => {
+      const s = z.ziel.sieb;
+      return s ? [1, s.punkte || 0, s.draht || 0, s.werbedruck || 0, s.widerspruch || 0] : [0, 0, 0, 0, 0];
+    };
+    return [...liste].sort((a, b) => {
+      const x = schl(a), y = schl(b);
+      if (x[0] !== y[0]) return x[0] - y[0];
+      for (let i = 1; i < x.length; i++) if (x[i] !== y[i]) return y[i] - x[i];
+      return 0;
+    });
+  }, [grundmenge, region, schnell, sortierung]);
+
+  const mitSieb = sichtbar.some((z) => z.ziel.sieb);
 
   function neuFeld(feld, wert) {
     setNeu((n) => {
