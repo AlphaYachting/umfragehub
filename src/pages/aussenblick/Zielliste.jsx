@@ -244,14 +244,56 @@ export default function Zielliste() {
               </div>
             </div>
 
+            {/* Sieb: sortieren und eingrenzen */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-label uppercase text-muted-foreground mr-1">Sortieren</span>
+              {[["punkte", "Nach Punkten"], ["neu", "Neueste zuerst"]].map(([key, text]) => (
+                <button key={key} type="button" onClick={() => setSortierung(key)} className={cn("v-chip", sortierung === key && "v-chip-aktiv")}>
+                  {text}
+                </button>
+              ))}
+              <span className="w-px h-5 bg-border mx-1 hidden sm:inline-block" />
+              {Object.entries(SCHNELL).map(([key, f]) => (
+                <button key={key} type="button" onClick={() => setSchnell((s) => ({ ...s, [key]: !s[key] }))} className={cn("v-chip", schnell[key] && "v-chip-aktiv")}>
+                  {f.label} ({grundmenge.filter(f.passt).length})
+                </button>
+              ))}
+              {regionen.length > 1 && (
+                <Select value={region} onValueChange={setRegion}>
+                  <SelectTrigger className="h-8 w-[200px] bg-card" aria-label="Region">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="alle">Alle Regionen</SelectItem>
+                    {regionen.map((r) => (
+                      <SelectItem key={r} value={r}>{r}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+
             {sichtbar.length === 0 ? (
               <div className="v-leer">
                 {suche.trim() ? "Kein Ziel passt zur Suche. " : `Kein Ziel im Filter „${ZIEL_FILTER.find((f) => f.key === filter)?.label}“. `}
-                <button type="button" className="underline" onClick={() => { setSuche(""); setFilter("alle"); }}>Alle Ziele anzeigen</button>
+                <button type="button" className="underline" onClick={() => { setSuche(""); setFilter("alle"); setSchnell({ ab6: false, warm: false, jetzt: false }); setRegion("alle"); }}>Alle Ziele anzeigen</button>
               </div>
             ) : (
+              <>
+              {mitSieb && (
+                <div className="hidden lg:grid gap-x-5 px-4 text-label uppercase text-muted-foreground grid-cols-[64px_minmax(0,1fr)_300px_230px_auto]">
+                  <span>Punkte</span>
+                  <span>Unternehmen · erster Befund</span>
+                  <span>Sieb</span>
+                  <span>Anzeigen gesehen</span>
+                  <span className="text-right">Status</span>
+                </div>
+              )}
               <Box className="divide-y overflow-hidden">
                 {sichtbar.map(({ ziel, status, k }) => {
+                  if (ziel.sieb) {
+                    return <SiebZeile key={ziel.id} ziel={ziel} status={status} onClick={() => navigate(`/akquise/${ziel.id}`)} />;
+                  }
                   const bk = ziel.budgetklasse ? BUDGETKLASSE[ziel.budgetklasse] : null;
                   const label = [ziel.kuerzel, ziel.region, ziel.branche].filter(Boolean).join(" · ") || ziel.website;
                   // Die Divergenz in einem Satz, sobald der Scan sie geliefert hat — sonst die Eckdaten
