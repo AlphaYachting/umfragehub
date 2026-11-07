@@ -89,7 +89,7 @@ export default function AufEinenBlick({ ziel, eckdaten = [] }) {
       {(b.wunsch || b.sichtbarkeit) && (
         <div className="grid md:grid-cols-2 md:divide-x divide-y md:divide-y-0 border-t">
           <Spalte symbol={Target} titel="Wen sie eigentlich wollen" text={b.wunsch} />
-          <Spalte symbol={Search} titel="Sichtbarkeit" text={b.sichtbarkeit} />
+          <Spalte symbol={Search} titel="Bei Google" text={b.sichtbarkeit} />
         </div>
       )}
       {eckdaten.length > 0 && (
