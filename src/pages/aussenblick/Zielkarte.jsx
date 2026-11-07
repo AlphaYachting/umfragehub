@@ -234,7 +234,7 @@ export default function Zielkarte() {
   async function loeschen() {
     if (!(await bestaetigen(`Ziel „${ziel.unternehmen}“ löschen? Befund, Widersprüche, Fragen, Antworten, Codes und Verlauf werden mitgelöscht.`))) return;
     await tun(() => zielLoeschen(ziel));
-    navigate("/aussenblick");
+    navigate("/akquise");
   }
 
   if (loading && !ziel) {
@@ -270,7 +270,7 @@ export default function Zielkarte() {
   return (
     <div className="v-seite">
       <Seitenkopf
-        zurueck={{ to: "/aussenblick", label: "Außenblick" }}
+        zurueck={{ to: "/akquise", label: "Außenblick" }}
         bereich={`Ziel · ${ziel.kuerzel || ""}`}
         titel={ziel.unternehmen}
         versalien={false}
@@ -390,7 +390,7 @@ export default function Zielkarte() {
                       </div>
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <Button variant="ghost" size="sm" onClick={async () => { (await inZwischenablage(portalUrl(e.code))) ? toast.success("Link kopiert.") : toast.error("Kopieren nicht möglich."); }}><Copy /> Link</Button>
-                        <a href={portalVorschauUrl(e.code)} target="_blank" rel="noopener noreferrer" title="Vorschau — die Portalseite kommt in Schritt 2">
+                        <a href={portalVorschauUrl(e.code)} target="_blank" rel="noopener noreferrer" title="Vorschau: so sieht das Unternehmen die Seite (nichts wird gezählt)">
                           <Button variant="ghost" size="sm"><ExternalLink /> Vorschau</Button>
                         </a>
                         {e.art !== "welle" && e.status !== "versendet" && (

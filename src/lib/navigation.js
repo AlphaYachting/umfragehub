@@ -36,10 +36,10 @@ export const NAVIGATION = [
     einklappbar: false,
     items: [
       {
-        path: "/aussenblick",
+        path: "/akquise",
         label: "Außenblick",
         icon: Telescope,
-        aktivBei: (pfad) => pfad.startsWith("/aussenblick"),
+        aktivBei: (pfad) => pfad.startsWith("/akquise"),
       },
     ],
   },

@@ -23,9 +23,12 @@ const WaveDashboard = lazy(() => import('@/pages/WaveDashboard'));
 const RawData = lazy(() => import('@/pages/RawData'));
 const WaveInvites = lazy(() => import('@/pages/WaveInvites'));
 const QuestionLibrary = lazy(() => import('@/pages/QuestionLibrary'));
-// Außenblick-Modul (Akquise): Zielliste und Zielkarte — nur Verwaltung, nie für Befragte
+// Außenblick-Modul (Akquise): Zielliste und Zielkarte (nur Verwaltung, unter /akquise) sowie das
+// öffentliche Portal für das Unternehmen (/aussenblick = Code-Eingang, /a/:code = die Seite)
 const Zielliste = lazy(() => import('@/pages/aussenblick/Zielliste'));
 const Zielkarte = lazy(() => import('@/pages/aussenblick/Zielkarte'));
+const PortalEingang = lazy(() => import('@/pages/aussenblick/PortalEingang'));
+const Portal = lazy(() => import('@/pages/aussenblick/Portal'));
 const Interview = lazy(() => import('@/pages/Interview'));
 const Startseite = lazy(() => import('@/pages/Startseite'));
 const KundenCockpit = lazy(() => import('@/pages/KundenCockpit'));
@@ -134,6 +137,9 @@ const AuthenticatedApp = () => {
       <Route path="/i/:linkToken" element={<Interview />} />
       {/* Öffentlich mit Passwort: Kunden-Cockpit des Auftraggebers */}
       <Route path="/k/:code" element={<KundenCockpit />} />
+      {/* Außenblick-Modul, öffentlich mit Einladungscode: Eingang und Portal */}
+      <Route path="/aussenblick" element={<PortalEingang />} />
+      <Route path="/a/:code" element={<Portal />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -147,8 +153,8 @@ const AuthenticatedApp = () => {
           <Route path="/welle/:id/rohdaten" element={<RawData />} />
           <Route path="/welle/:id/einladungen" element={<WaveInvites />} />
           <Route path="/bibliothek" element={<QuestionLibrary />} />
-          <Route path="/aussenblick" element={<Zielliste />} />
-          <Route path="/aussenblick/:id" element={<Zielkarte />} />
+          <Route path="/akquise" element={<Zielliste />} />
+          <Route path="/akquise/:id" element={<Zielkarte />} />
         </Route>
       </Route>
       {/* Unbekannte Adressen: eigene Seite mit noindex statt Kopie der Startseite */}

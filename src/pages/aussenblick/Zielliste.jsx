@@ -100,7 +100,7 @@ export default function Zielliste() {
       toast.success(neu.scanGleich ? "Ziel angelegt, Scan angefordert." : "Ziel vorgemerkt.");
       setDialog(false);
       setNeu({ unternehmen: "", website: "", kuerzel: "", region: "", branche: "", ausloeser: "", scanGleich: true });
-      navigate(`/aussenblick/${z.id}`);
+      navigate(`/akquise/${z.id}`);
     } catch (e) {
       toast.error("Anlegen fehlgeschlagen.");
     } finally {
@@ -165,7 +165,7 @@ export default function Zielliste() {
                   <div key={ziel.id} className="px-4 py-3 flex items-center gap-3.5 min-w-0 shadow-[inset_3px_0_0_hsl(var(--status-attention))]">
                     <ModulPille modul={ziel.modul} />
                     <div className="min-w-0 flex-1">
-                      <button type="button" onClick={() => navigate(`/aussenblick/${ziel.id}`)} className="block text-object text-foreground truncate hover:underline text-left">
+                      <button type="button" onClick={() => navigate(`/akquise/${ziel.id}`)} className="block text-object text-foreground truncate hover:underline text-left">
                         {ziel.unternehmen}
                       </button>
                       <p className="text-meta text-foreground truncate">{ziel.blick?.divergenz || ZIEL_STATUS[status]?.schritt}</p>
@@ -175,7 +175,7 @@ export default function Zielliste() {
                     <span className="text-meta text-muted-foreground whitespace-nowrap hidden md:inline">
                       {k.stark} stark · {k.gesamt} gesamt
                     </span>
-                    <Button variant="outline" size="sm" onClick={() => navigate(`/aussenblick/${ziel.id}`)}>Öffnen</Button>
+                    <Button variant="outline" size="sm" onClick={() => navigate(`/akquise/${ziel.id}`)}>Öffnen</Button>
                   </div>
                 ))}
               </Box>
@@ -231,7 +231,7 @@ export default function Zielliste() {
                       wertHinweis={k.gesamt ? `stark von ${k.gesamt}` : "noch kein Befund"}
                       wertTon={k.stark >= 3 ? "attention" : "neutral"}
                       streifen={STATUS_GRUPPE.entscheiden.includes(status) ? "attention" : undefined}
-                      onClick={() => navigate(`/aussenblick/${ziel.id}`)}
+                      onClick={() => navigate(`/akquise/${ziel.id}`)}
                       aktion={
                         k.haupt?.status === "versendet" ? (
                           <span className="text-meta text-muted-foreground whitespace-nowrap">{k.haupt.aufrufe || 0} Aufrufe{k.antworten ? ` · ${k.antworten} Antworten` : ""}</span>
