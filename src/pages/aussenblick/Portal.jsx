@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useSearchParams, Link } from "react-router-dom";
-import { ArrowRight, Lock, Check, Copy, ExternalLink, Phone, Mail, RefreshCw } from "lucide-react";
+import { ArrowRight, Lock, Check, Copy, ExternalLink, Phone, Mail } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
 // Außenblick-Portal unter /a/:code — Stufe null des Kunden-Cockpits von andi fragt.
@@ -45,8 +45,12 @@ function wort(ansprache) {
   };
 }
 
-function Nummer({ n }) {
-  return <p className="text-[12px] font-semibold uppercase tracking-[0.2em] mb-4" style={{ color: F.etikett }}>{n}</p>;
+function Nummer({ nr, titel }) {
+  return (
+    <p className="text-[12px] font-semibold uppercase tracking-[0.2em] mb-4" style={{ color: F.etikett }}>
+      {nr && <span className="mr-3">{nr}</span>}{titel}
+    </p>
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -113,7 +117,7 @@ export default function Portal() {
     return () => { io.disconnect(); document.removeEventListener("visibilitychange", beimVerlassen); };
   }, [d, melden]);
 
-  if (laedt && !d) return <Huelle><p className="py-24 text-center" style={{ color: F.daempft }}>Einen Moment …</p></Huelle>;
+  if (laedt && !d) return <Huelle><p className="py-24 text-center" style={{ color: F.daempft }}>Einen Moment ...</p></Huelle>;
   if (fehler || !d) return <Huelle><Fehler art={fehler} /></Huelle>;
 
   const w = wort(d.ansprache);
@@ -186,7 +190,7 @@ function Einstieg({ d, w }) {
   const t = d.texte;
   return (
     <section id="einstieg" data-block="einstieg" className={`${BREITE} pt-14 pb-16 sm:pt-20 sm:pb-20`}>
-      <Nummer n="01 · Für {d.unternehmen}" />
+      <Nummer nr="01" titel={`Für ${d.unternehmen}`} />
       <h1 className="font-black uppercase leading-[0.98] text-[36px] sm:text-[56px] max-w-[880px]">
         {t.einstiegSatz || (w.du ? "Wir haben nur getan, was dein nächster Kunde auch tut: gegoogelt." : "Wir haben nur getan, was Ihr nächster Kunde auch tut: gegoogelt.")}
       </h1>
@@ -206,7 +210,7 @@ function Karte({ k, kennung }) {
   if (!k) return null;
   return (
     <div className="rounded-lg p-5 sm:p-6 flex flex-col gap-2 min-w-0" style={{ background: "#fff", border: `1px solid ${F.linie}` }}>
-      <p className="text-[12px] font-semibold uppercase tracking-[0.14em]" style={{ color: F.grauMid }}>{kennung} · {k.label}</p>
+      <p className="text-[12px] font-semibold uppercase tracking-[0.14em]" style={{ color: F.grauMid }}>{kennung}: {k.label}</p>
       <p className="text-[17px] leading-[1.55]">{k.text}</p>
       {k.url && <a href={k.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[14px] font-semibold mt-1 hover:underline" style={{ color: F.etikett }}>Fundstelle ansehen <ExternalLink size={14} /></a>}
     </div>
@@ -219,7 +223,7 @@ function Spiegel({ d, w }) {
   return (
     <section id="spiegel" data-block="spiegel" style={{ background: F.grau }}>
       <div className={`${BREITE} py-16 sm:py-20`}>
-        <Nummer n="02 · Der Spiegel" />
+        <Nummer nr="02" titel="Der Spiegel" />
         <h2 className={H2}>Was jeder sieht, der {w.dich} sucht.</h2>
         <p className="mt-4 text-[17px] leading-[1.6] max-w-[720px]" style={{ color: F.daempft }}>Links und rechts stehen zwei Dinge, die beide von {w.dir} stammen. Wir sagen nicht, was richtig wäre. Wir legen sie nebeneinander.</p>
         <div className="mt-10 space-y-10">
@@ -277,7 +281,7 @@ function Frage({ f, antwort, w, onSpeichern, rolle }) {
           />
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <button type="button" onClick={speichern} disabled={laeuft || !text.trim() || (!geaendert && ok)} className="inline-flex items-center gap-2 min-h-[44px] rounded px-5 text-sm font-semibold uppercase tracking-[0.04em] disabled:opacity-50" style={{ background: ok && !geaendert ? "#fff" : F.akzent, color: ok && !geaendert ? F.gutText : "#fff", border: ok && !geaendert ? `1px solid ${F.gut}` : "none" }}>
-              {ok && !geaendert ? <><Check size={16} /> Gespeichert</> : laeuft ? "Speichert …" : ok ? "Änderung speichern" : "Antwort speichern"}
+              {ok && !geaendert ? <><Check size={16} /> Gespeichert</> : laeuft ? "Speichert ..." : ok ? "Änderung speichern" : "Antwort speichern"}
             </button>
           </div>
         </div>
@@ -298,7 +302,7 @@ function Fragen({ d, w, rufen, neuLaden }) {
   }
   return (
     <section id="fragen" data-block="fragen" className={`${BREITE} py-16 sm:py-20`}>
-      <Nummer n="03 · Fünf Fragen" />
+      <Nummer nr="03" titel="Fünf Fragen" />
       <h2 className={H2}>Fünf Fragen, die nur {w.du_} beantworten {w.kannst}.</h2>
       <p className="mt-4 text-[17px] leading-[1.6] max-w-[720px]" style={{ color: F.daempft }}>Keine Falle, keine Prüfung. Jede Frage zeigt auf eine Stelle, an der {w.deine} Kanäle verschiedene Dinge sagen. Ein Satz je Frage reicht. {w.Deine} Antworten landen bei Alfons Rittler, sonst nirgends.</p>
       <div className="mt-10 space-y-4">
@@ -328,7 +332,7 @@ function WelleBlock({ d, w, rufen }) {
   return (
     <section id="welle" data-block="welle" style={{ background: F.dunkel, color: "#fff" }}>
       <div className={`${BREITE} py-16 sm:py-20`}>
-        <p className="text-[12px] font-semibold uppercase tracking-[0.2em] mb-4" style={{ color: "#ff7a98" }}>04 · Die Welle</p>
+        <p className="text-[12px] font-semibold uppercase tracking-[0.2em] mb-4" style={{ color: "#ff7a98" }}><span className="mr-3">04</span>Die Welle</p>
         <h2 className={H2}>Dieselben fünf Fragen, andere Augen.</h2>
         <p className="mt-4 text-[17px] leading-[1.6] max-w-[720px]" style={{ color: "#d4d4d4" }}>{d.texte.welleText || (w.du ? "Gib die fünf Fragen an drei Mitarbeitende und drei Kunden weiter. Gehen die Antworten auseinander, hast du die Unschärfe selbst erlebt, bevor jemand etwas ändert." : "Geben Sie die fünf Fragen an drei Mitarbeitende und drei Kunden weiter. Gehen die Antworten auseinander, haben Sie die Unschärfe selbst erlebt, bevor jemand etwas ändert.")}</p>
         {link ? (
@@ -389,7 +393,7 @@ function Rechner({ d, w, rufen }) {
   return (
     <section id="rechner" data-block="rechner" style={{ background: F.grau }}>
       <div className={`${BREITE} py-16 sm:py-20`}>
-        <Nummer n="05 · Der Rechner" />
+        <Nummer nr="05" titel="Der Rechner" />
         <h2 className={H2}>{w.Deine} Zahlen. Unsere Rechnung.</h2>
         <p className="mt-4 text-[17px] leading-[1.6] max-w-[720px]" style={{ color: F.daempft }}>Drei Zahlen, die nur {w.du_} {w.hast}. Wir rechnen nur, wir schätzen nichts. Was {w.du_} hier {w.gibst}, bleibt {w.dein}e Zahl.</p>
         <div className="mt-10 grid md:grid-cols-[1fr_1fr] gap-8">
@@ -436,7 +440,7 @@ function Erstgespraech({ d, w, rufen, code }) {
   function klick() { rufen({ aktion: "ereignis", art: "erstgespraech_klick" }).catch(() => null); }
   return (
     <section id="erstgespraech" data-block="erstgespraech" className={`${BREITE} py-16 sm:py-24`}>
-      <Nummer n="06 · Erstgespräch" />
+      <Nummer nr="06" titel="Erstgespräch" />
       <h2 className={H2}>Dreißig Minuten mit {d.texte.erstgespraechKontakt || "Alfons Rittler"}.</h2>
       <p className="mt-4 text-[17px] leading-[1.6] max-w-[720px]" style={{ color: F.daempft }}>{d.texte.erstgespraechText || (w.du ? "Kostenlos, keine Präsentation. Du bringst deine fünf Antworten mit, wir bringen die Fundstellen." : "Kostenlos, keine Präsentation. Sie bringen Ihre fünf Antworten mit, wir bringen die Fundstellen.")}</p>
       <div className="mt-8 flex flex-wrap gap-3">
@@ -462,11 +466,11 @@ function Welle({ d, w, rufen }) {
   }
   return (
     <section data-block="welle-fragen" className={`${BREITE} py-14 sm:py-20`}>
-      <Nummer n={`Fünf Fragen zu ${d.unternehmen}`} />
+      <Nummer titel={`Fünf Fragen zu ${d.unternehmen}`} />
       <h1 className="font-black uppercase leading-[0.98] text-[34px] sm:text-[52px] max-w-[880px]">{d.unternehmen} hat {w.dich} um {w.deine} Sicht gebeten.</h1>
       <p className="mt-5 text-[18px] leading-[1.6] max-w-[720px]" style={{ color: F.daempft }}>Fünf Fragen, ein Satz je Frage. Kein Name, keine E-Mail. {w.Deine} Antworten gehen an Rittler &amp; Co, die Agentur, die {d.unternehmen} dabei begleitet, und werden nur gesammelt weitergegeben.</p>
       <div className="mt-8">
-        <p className="text-[13px] font-semibold uppercase tracking-[0.12em]" style={{ color: F.grauMid }}>{w.Du} {w.bist} …</p>
+        <p className="text-[13px] font-semibold uppercase tracking-[0.12em]" style={{ color: F.grauMid }}>{w.Du} {w.bist} ...</p>
         <div className="mt-2 flex flex-wrap gap-2">
           {[["mitarbeiter", w.du ? "im Team" : "im Team"], ["kunde", w.du ? "Kunde oder Kundin" : "Kunde oder Kundin"], ["unbekannt", "etwas anderes"]].map(([k, l]) => (
             <button key={k} type="button" onClick={() => setRolle(k)} className="inline-flex items-center min-h-[44px] px-4 rounded-full text-[15px] font-medium" style={rolle === k ? { background: F.dunkel, color: "#fff" } : { border: `1px solid ${F.hauchRand}`, color: F.text, background: "#fff" }}>{l}</button>
@@ -484,4 +488,3 @@ function Welle({ d, w, rufen }) {
   );
 }
 
-export { RefreshCw };
