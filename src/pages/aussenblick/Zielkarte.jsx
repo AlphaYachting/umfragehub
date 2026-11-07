@@ -390,7 +390,7 @@ export default function Zielkarte() {
                       </div>
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <Button variant="ghost" size="sm" onClick={async () => { (await inZwischenablage(portalUrl(e.code))) ? toast.success("Link kopiert.") : toast.error("Kopieren nicht möglich."); }}><Copy /> Link</Button>
-                        <a href={portalVorschauUrl(e.code)} target="_blank" rel="noopener noreferrer" title="Vorschau — die Portalseite kommt in Schritt 2">
+                        <a href={portalVorschauUrl(e.code)} target="_blank" rel="noopener noreferrer" title="Vorschau: so sieht das Unternehmen die Seite (nichts wird gezählt)">
                           <Button variant="ghost" size="sm"><ExternalLink /> Vorschau</Button>
                         </a>
                         {e.art !== "welle" && e.status !== "versendet" && (
