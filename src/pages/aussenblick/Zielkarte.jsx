@@ -13,7 +13,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 import Seitenkopf from "@/components/shared/Seitenkopf";
-import Kennzahlleiste from "@/components/shared/Kennzahlleiste";
 import StatusEtikett from "@/components/shared/StatusEtikett";
 import { Box, BoxKopf, BoxInhalt } from "@/components/shared/Box";
 import { bestaetigen } from "@/components/shared/Bestaetigen";
@@ -335,10 +334,9 @@ export default function Zielkarte() {
       {(() => {
         const sicht = sichtbarkeitZahl(ziel.blick?.sichtbarkeit);
         const sieger = w.siegerbotschaft || {};
-        const kanaeleKurz = [w.meta ? `Meta ${w.meta}` : null, w.google ? `Google ${w.google}` : null, w.linkedin ? `LinkedIn ${w.linkedin}` : null, w.tiktok ? `TikTok ${w.tiktok}` : null].filter(Boolean).join(" · ");
         return (
           <Kennzahlen werte={[
-            kachel("Anzeigen aktiv", k.anzeigen || "—", kanaeleKurz || "noch kein Scan"),
+            kachel("Anzeigen aktiv", k.anzeigen || "—", kanaele || "noch kein Scan"),
             kachel("Budget", ziel.budgetklasse ? `${ziel.budgetklasse} / 4` : "—", bk ? `${bk.label} · ${ziel.budgetklasseBegruendung || bk.text}` : "aus Anzeigen, Laufzeit, Kanälen"),
             kachel("Läuft seit", sieger.monate ? `${sieger.monate} Mon.` : "—", sieger.monate ? `älteste aktive Anzeige${sieger.varianten ? ` · ${sieger.varianten} Varianten` : ""}` : "älteste aktive Anzeige"),
             kachel("Widersprüche", k.gesamt || "—", k.gesamt ? `${k.stark} stark · ${k.imPortal} im Portal` : "noch kein Befund", k.stark >= 3 ? "attention" : undefined),
