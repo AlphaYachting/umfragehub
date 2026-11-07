@@ -22,14 +22,15 @@ export default async function (req) {
     const body = await req.json().catch(() => ({}));
     const aktion = String(body.aktion || 'laden');
 
-    let admin = false;
-    if (body.vorschau) {
-      const user = await base44.auth.me().catch(() => null);
-      admin = !!(user && user.role === 'admin');
-    }
+    // Angemeldete Admins erkennen wir immer: Ein Entwurfs-Code bleibt für das Unternehmen zu,
+    // aber Alfons bekommt statt „kennen wir nicht“ den Hinweis samt Weg in die Vorschau.
+    // Die Vorschau selbst (nichts zählen, nichts speichern) gilt nur mit ?vorschau=1.
+    const user = await base44.auth.me().catch(() => null);
+    const istAdmin = !!(user && user.role === 'admin');
+    const admin = istAdmin && !!body.vorschau;
 
-    const zugang = await pruefen(db, body, admin);
-    if (zugang.fehler) return Response.json({ fehler: zugang.fehler });
+    const zugang = await pruefen(db, body, admin, istAdmin);
+    if (zugang.fehler) return Response.json({ fehler: zugang.fehler, zielId: zugang.zielId || undefined });
     const { einladung, ziel } = zugang;
 
     if (aktion === 'laden') return Response.json(await laden(db, einladung, ziel, admin));
@@ -46,7 +47,7 @@ export default async function (req) {
 // ---------------------------------------------------------------------------
 // Zugang
 // ---------------------------------------------------------------------------
-async function pruefen(db, body, admin) {
+async function pruefen(db, body, admin, istAdmin = false) {
   const code = String(body.code || '').trim().toUpperCase().replace(/\s+/g, '');
   if (!/^[A-Z0-9]{2,6}-[A-Z0-9]{4}(-W)?$/.test(code)) return { fehler: 'code' };
   const treffer = await db.Einladung.filter({ code });
@@ -57,6 +58,8 @@ async function pruefen(db, body, admin) {
 
   if (!admin) {
     if (einladung.status !== 'versendet') {
+      // Admin ohne Vorschau-Schalter: kein Fehlversuch, sondern der Weg zur Vorschau
+      if (istAdmin) return { fehler: 'entwurf', zielId: einladung.zielId };
       await fehlversuch(db, einladung);
       return { fehler: einladung.status === 'abgelaufen' ? 'abgelaufen' : 'code' };
     }
