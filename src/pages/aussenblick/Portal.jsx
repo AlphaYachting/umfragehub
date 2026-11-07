@@ -58,6 +58,8 @@ export default function Portal() {
   const { code } = useParams();
   const [params] = useSearchParams();
   const vorschau = params.get("vorschau") === "1";
+  // Aus der Zielkarte geöffnet: der Weg zurück steht in der Adresse (nur in der Vorschau)
+  const zurueck = vorschau ? (params.get("ziel") ? `/akquise/${params.get("ziel")}` : "/akquise") : null;
   const [d, setD] = useState(null);
   const [laedt, setLaedt] = useState(true);
   const [fehler, setFehler] = useState("");
@@ -117,13 +119,13 @@ export default function Portal() {
     return () => { io.disconnect(); document.removeEventListener("visibilitychange", beimVerlassen); };
   }, [d, melden]);
 
-  if (laedt && !d) return <Huelle><p className="py-24 text-center" style={{ color: F.daempft }}>Einen Moment ...</p></Huelle>;
-  if (fehler || !d) return <Huelle><Fehler art={fehler} /></Huelle>;
+  if (laedt && !d) return <Huelle vorschau={vorschau} zurueck={zurueck}><p className="py-24 text-center" style={{ color: F.daempft }}>Einen Moment ...</p></Huelle>;
+  if (fehler || !d) return <Huelle vorschau={vorschau} zurueck={zurueck}><Fehler art={fehler} /></Huelle>;
 
   const w = wort(d.ansprache);
-  if (d.welle) return <Huelle vorschau={d.vorschau}><Welle d={d} w={w} rufen={rufen} /></Huelle>;
+  if (d.welle) return <Huelle vorschau={d.vorschau} zurueck={zurueck}><Welle d={d} w={w} rufen={rufen} /></Huelle>;
   return (
-    <Huelle vorschau={d.vorschau} unternehmen={d.unternehmen} nav>
+    <Huelle vorschau={d.vorschau} zurueck={zurueck} unternehmen={d.unternehmen} nav>
       <Einstieg d={d} w={w} />
       <Spiegel d={d} w={w} />
       <Fragen d={d} w={w} rufen={rufen} neuLaden={laden} />
@@ -135,13 +137,14 @@ export default function Portal() {
 }
 
 // ---------------------------------------------------------------------------
-function Huelle({ children, vorschau, unternehmen, nav }) {
+function Huelle({ children, vorschau, zurueck, unternehmen, nav }) {
   const punkte = [["einstieg", "Einstieg"], ["spiegel", "Der Spiegel"], ["fragen", "Fünf Fragen"], ["welle", "Die Welle"], ["rechner", "Der Rechner"], ["erstgespraech", "Erstgespräch"]];
   return (
     <div className="min-h-screen bg-white" style={{ color: F.text, fontFamily: "var(--schrift-marke)" }}>
       {vorschau && (
-        <div className="px-6 py-2.5 text-sm text-center font-semibold" style={{ background: "#ffd8a8" }}>
-          Vorschau für Rittler &amp; Co: Nichts wird gezählt oder gespeichert. Das Unternehmen sieht diese Leiste nicht.
+        <div className="px-6 py-2.5 text-sm font-semibold flex flex-wrap items-center justify-center gap-x-6 gap-y-1" style={{ background: "#ffd8a8" }}>
+          <span>Vorschau für Rittler &amp; Co: Nichts wird gezählt oder gespeichert. Das Unternehmen sieht diese Leiste nicht.</span>
+          {zurueck && <Link to={zurueck} className="underline" style={{ color: F.text }}>Zurück zur Zielkarte</Link>}
         </div>
       )}
       <header style={{ borderBottom: `1px solid ${F.linie}` }}>
