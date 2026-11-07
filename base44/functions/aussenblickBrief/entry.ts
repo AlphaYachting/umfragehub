@@ -28,7 +28,11 @@ export default async function (req) {
     const body = await req.json().catch(() => ({}));
     const zielId = String(body.zielId || '');
     const art = body.art === 'post' ? 'post' : 'mail'; // E-Mail ist der Standard (Alfons, 07.11.2026)
-    const hinweis = String(body.hinweis || '').slice(0, 800);
+    const hinweis = String(body.hinweis || '').slice(0, 1500);
+    // Überarbeiten: Alfons hat schon einen Entwurf und sagt (diktiert), was sich ändern soll
+    const bisher = body.bisher && typeof body.bisher === 'object' && String(body.bisher.text || '').trim()
+      ? { betreff: String(body.bisher.betreff || '').slice(0, 300), text: String(body.bisher.text || '').slice(0, 8000) }
+      : null;
     if (!zielId) return Response.json({ error: 'zielId fehlt' }, { status: 400 });
 
     const db = base44.asServiceRole.entities;
@@ -50,7 +54,7 @@ export default async function (req) {
     const kontaktUnbelegt = /zu pr[üu]fen|falls belegbar|unbelegt|vermutlich|unsicher|\?/i.test(kontakt);
 
     const echterCode = haupt?.code || '';
-    const prompt = bauePrompt({ ziel, fragen, code: echterCode || '[CODE]', codeFehlt: !echterCode, art, hinweis, kontakt, kontaktUnbelegt, notizen });
+    const prompt = bauePrompt({ ziel, fragen, code: echterCode || '[CODE]', codeFehlt: !echterCode, art, hinweis, kontakt, kontaktUnbelegt, notizen, bisher });
     const ergebnis = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt,
       response_json_schema: {
@@ -58,7 +62,15 @@ export default async function (req) {
         properties: {
           betreff: { type: 'string' },
           text: { type: 'string' },
-          spiegelung: { type: 'string' },
+          spiegelung: {
+            type: 'object',
+            properties: {
+              gefuehl: { type: 'string', description: 'Ein Satz: Fühlt sich die Empfängerin beobachtet oder verstanden — und warum?' },
+              risiko: { type: 'string', description: 'Der riskanteste Satz des Entwurfs, wörtlich zitiert, und in einem Halbsatz, warum.' },
+              streichen: { type: 'string', description: 'Was du streichen würdest — im Zweifel streichen, nicht ergänzen. Oder: nichts.' },
+            },
+            required: ['gefuehl', 'risiko', 'streichen'],
+          },
         },
         required: ['text', 'spiegelung'],
       },
@@ -79,7 +91,10 @@ export default async function (req) {
       art,
       betreff: String(r.betreff || '').trim(),
       text,
-      spiegelung: String(r.spiegelung || '').trim(),
+      spiegelung: r.spiegelung && typeof r.spiegelung === 'object'
+        ? { gefuehl: String(r.spiegelung.gefuehl || '').trim(), risiko: String(r.spiegelung.risiko || '').trim(), streichen: String(r.spiegelung.streichen || '').trim() }
+        : String(r.spiegelung || '').trim(),
+      ueberarbeitet: Boolean(bisher),
       sperrwoerter: treffer,
       codeFehlt: !echterCode,
       kontext: { kontakt: Boolean(kontakt), kontaktUnbelegt: Boolean(kontakt) && kontaktUnbelegt, aufhaenger: Boolean(ziel.briefAufhaenger), notizen: notizen.length },
@@ -108,7 +123,7 @@ function sieForm(frage) {
     .replace(/\bdu wirbst\b/g, 'Sie werben').replace(/\bdu\b/g, 'Sie').replace(/\bdich\b/g, 'Sie').replace(/\bdir\b/g, 'Ihnen');
 }
 
-function bauePrompt({ ziel, fragen, code, codeFehlt, art, hinweis, kontakt, kontaktUnbelegt, notizen }) {
+function bauePrompt({ ziel, fragen, code, codeFehlt, art, hinweis, kontakt, kontaktUnbelegt, notizen, bisher }) {
   const e = (ziel.entscheider || [])[0] || {};
   const fragenText = fragen.length
     ? fragen.map((f) => `${f.nummer}. ${sieForm(f.text)}`).join('\n')
@@ -159,9 +174,9 @@ REGELN (hart):
 - Kein Lob („beeindruckend“, „spannend“, „toll“), keine Floskeln („ich hoffe, es geht Ihnen gut“).
 - Die fünf Fragen stehen als nummerierte Liste im Text, wortgleich wie oben.
 - Link und Code stehen gut sichtbar in einer eigenen Zeile.
-${hinweis ? `\nHINWEIS VON ALFONS (hat Vorrang vor Stilfragen, nie vor den Regeln): ${hinweis}\n` : ''}
+${bisher ? `\nÜBERARBEITUNG — das ist der Modus dieses Aufrufs. Hier ist der bisherige Entwurf, den Alfons schon gelesen hat:\n---\n${bisher.betreff ? `Betreff: ${bisher.betreff}\n\n` : ''}${bisher.text}\n---\nAlfons will diese Änderungen (diktiert, kann umgangssprachlich sein): „${hinweis}“\nSetz genau diese Änderungen um und lass alles andere wortgleich stehen — keine neuen Formulierungen an Stellen, die er nicht genannt hat, keine neue Gliederung, die fünf Fragen bleiben wortgleich, sofern er nicht ausdrücklich eine Frage ändern will. Die Regeln oben gelten weiter.\n` : hinweis ? `\nHINWEIS VON ALFONS (hat Vorrang vor Stilfragen, nie vor den Regeln): ${hinweis}\n` : ''}
 AUSGABE als JSON mit den Feldern "betreff", "text", "spiegelung".
-- "spiegelung": drei Sätze aus Sicht der Empfängerin/des Empfängers, die/der gerade Geld in diese Anzeigen steckt: Fühlt sie/er sich beobachtet oder verstanden? Welcher Satz ist der riskanteste? Was würdest du streichen? (Im Zweifel streichen, nicht ergänzen.)
+- "spiegelung" ist ein Objekt mit drei Feldern, aus Sicht der Empfängerin/des Empfängers, die/der gerade Geld in diese Anzeigen steckt: "gefuehl" (ein Satz: fühlt sie/er sich beobachtet oder verstanden, und warum), "risiko" (der riskanteste Satz wörtlich zitiert plus ein Halbsatz warum), "streichen" (was du streichen würdest — im Zweifel streichen, nicht ergänzen; sonst „nichts“).
 `;
 
   if (art === 'mail') {
