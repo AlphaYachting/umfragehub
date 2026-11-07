@@ -337,7 +337,7 @@ export default function Zielkarte() {
         return (
           <Kennzahlen werte={[
             kachel("Anzeigen aktiv", k.anzeigen || "—", kanaele || "noch kein Scan"),
-            kachel("Budget", ziel.budgetklasse ? `${ziel.budgetklasse} / 4` : "—", bk ? `${bk.label} · ${ziel.budgetklasseBegruendung || bk.text}` : "aus Anzeigen, Laufzeit, Kanälen"),
+            kachel("Budget", ziel.budgetklasse ? `${ziel.budgetklasse} / 4` : "—", bk ? `${bk.label} · ${bk.text}` : "aus Anzeigen, Laufzeit, Kanälen"),
             kachel("Läuft seit", sieger.monate ? `${sieger.monate} Mon.` : "—", sieger.monate ? `älteste aktive Anzeige${sieger.varianten ? ` · ${sieger.varianten} Varianten` : ""}` : "älteste aktive Anzeige"),
             kachel("Widersprüche", k.gesamt || "—", k.gesamt ? `${k.stark} stark · ${k.imPortal} im Portal` : "noch kein Befund", k.stark >= 3 ? "attention" : undefined),
             kachel("Bewertungen", ziel.stimmen?.googleWert ? String(ziel.stimmen.googleWert).replace(".", ",") : "—", ziel.stimmen?.googleAnzahl ? `${ziel.stimmen.googleAnzahl} auf Google` : "Google-Bewertung"),
