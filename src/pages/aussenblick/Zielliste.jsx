@@ -20,6 +20,8 @@ import { kachel } from "@/components/verwaltung/Kachel";
 import { TON_TEXT } from "@/lib/designTon";
 import { relativerTag, gruppiere } from "@/lib/verwaltung";
 import ModulPille from "@/components/aussenblick/ModulPille";
+import SiebZeile from "@/components/aussenblick/SiebZeile";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   ZIEL_STATUS, ZIEL_FILTER, STATUS_GRUPPE, BUDGETKLASSE, DOSIS_JE_WOCHE,
   ladeZiele, gemerktAussenblick, zielKennzahlen, versendetDieseWoche, zielAnlegen, kuerzelVorschlag, trichter,
@@ -33,6 +35,10 @@ export default function Zielliste() {
   const [loading, setLoading] = useState(true);
   const [suche, setSuche] = useState("");
   const [filter, setFilter] = useState("offen");
+  // Sieb: sortieren nach Punkten, schnell eingrenzen, Region wählen
+  const [sortierung, setSortierung] = useState("punkte");
+  const [schnell, setSchnell] = useState({ ab6: false, warm: false, jetzt: false });
+  const [region, setRegion] = useState("alle");
   const [dialog, setDialog] = useState(false);
   const [neu, setNeu] = useState({ unternehmen: "", website: "", kuerzel: "", region: "", branche: "", ausloeser: "", scanGleich: true });
   const [speichert, setSpeichert] = useState(false);
@@ -71,7 +77,8 @@ export default function Zielliste() {
   const entscheiden = useMemo(() => zeilen.filter((z) => STATUS_GRUPPE.entscheiden.includes(z.status)), [zeilen]);
   const t = useMemo(() => trichter(daten.ziele), [daten]);
 
-  const sichtbar = useMemo(() => {
+  // Grundmenge: Statusfilter und Suche — darauf zählen die Schnellfilter
+  const grundmenge = useMemo(() => {
     const q = suche.trim().toLowerCase();
     const f = ZIEL_FILTER.find((x) => x.key === filter) || ZIEL_FILTER[0];
     return zeilen.filter((z) => {
@@ -80,6 +87,40 @@ export default function Zielliste() {
       return [z.ziel.unternehmen, z.ziel.kuerzel, z.ziel.region, z.ziel.branche, z.ziel.website].join(" ").toLowerCase().includes(q);
     });
   }, [zeilen, suche, filter]);
+
+  const regionen = useMemo(() => {
+    const n = {};
+    for (const z of zeilen) if (z.ziel.region) n[z.ziel.region] = (n[z.ziel.region] || 0) + 1;
+    return Object.entries(n).sort((a, b) => b[1] - a[1]).map(([r]) => r);
+  }, [zeilen]);
+
+  const SCHNELL = {
+    ab6: { label: "Ab 6 Punkten", passt: (z) => (z.ziel.sieb?.punkte || 0) >= 6 },
+    warm: { label: "Warmer Draht", passt: (z) => (z.ziel.sieb?.draht || 0) >= 2 },
+    jetzt: { label: "Wirbt jetzt", passt: (z) => !!z.ziel.sieb?.wirbtJetzt },
+  };
+
+  const sichtbar = useMemo(() => {
+    const liste = grundmenge.filter((z) => {
+      if (region !== "alle" && z.ziel.region !== region) return false;
+      for (const [k, an] of Object.entries(schnell)) if (an && !SCHNELL[k].passt(z)) return false;
+      return true;
+    });
+    if (sortierung !== "punkte") return liste;
+    // Ohne Sieb (von Hand angelegt, schon weiter) zuerst, dann nach Punkten, Draht, Werbedruck, Widerspruch
+    const schl = (z) => {
+      const s = z.ziel.sieb;
+      return s ? [1, s.punkte || 0, s.draht || 0, s.werbedruck || 0, s.widerspruch || 0] : [0, 0, 0, 0, 0];
+    };
+    return [...liste].sort((a, b) => {
+      const x = schl(a), y = schl(b);
+      if (x[0] !== y[0]) return x[0] - y[0];
+      for (let i = 1; i < x.length; i++) if (x[i] !== y[i]) return y[i] - x[i];
+      return 0;
+    });
+  }, [grundmenge, region, schnell, sortierung]);
+
+  const mitSieb = sichtbar.some((z) => z.ziel.sieb);
 
   function neuFeld(feld, wert) {
     setNeu((n) => {
@@ -203,14 +244,56 @@ export default function Zielliste() {
               </div>
             </div>
 
+            {/* Sieb: sortieren und eingrenzen */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-label uppercase text-muted-foreground mr-1">Sortieren</span>
+              {[["punkte", "Nach Punkten"], ["neu", "Neueste zuerst"]].map(([key, text]) => (
+                <button key={key} type="button" onClick={() => setSortierung(key)} className={cn("v-chip", sortierung === key && "v-chip-aktiv")}>
+                  {text}
+                </button>
+              ))}
+              <span className="w-px h-5 bg-border mx-1 hidden sm:inline-block" />
+              {Object.entries(SCHNELL).map(([key, f]) => (
+                <button key={key} type="button" onClick={() => setSchnell((s) => ({ ...s, [key]: !s[key] }))} className={cn("v-chip", schnell[key] && "v-chip-aktiv")}>
+                  {f.label} ({grundmenge.filter(f.passt).length})
+                </button>
+              ))}
+              {regionen.length > 1 && (
+                <Select value={region} onValueChange={setRegion}>
+                  <SelectTrigger className="h-8 w-[200px] bg-card" aria-label="Region">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="alle">Alle Regionen</SelectItem>
+                    {regionen.map((r) => (
+                      <SelectItem key={r} value={r}>{r}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+
             {sichtbar.length === 0 ? (
               <div className="v-leer">
                 {suche.trim() ? "Kein Ziel passt zur Suche. " : `Kein Ziel im Filter „${ZIEL_FILTER.find((f) => f.key === filter)?.label}“. `}
-                <button type="button" className="underline" onClick={() => { setSuche(""); setFilter("alle"); }}>Alle Ziele anzeigen</button>
+                <button type="button" className="underline" onClick={() => { setSuche(""); setFilter("alle"); setSchnell({ ab6: false, warm: false, jetzt: false }); setRegion("alle"); }}>Alle Ziele anzeigen</button>
               </div>
             ) : (
+              <>
+              {mitSieb && (
+                <div className="hidden lg:grid gap-x-5 px-4 text-label uppercase text-muted-foreground grid-cols-[64px_minmax(0,1fr)_300px_230px_auto]">
+                  <span>Punkte</span>
+                  <span>Unternehmen · erster Befund</span>
+                  <span>Sieb</span>
+                  <span>Anzeigen gesehen</span>
+                  <span className="text-right">Status</span>
+                </div>
+              )}
               <Box className="divide-y overflow-hidden">
                 {sichtbar.map(({ ziel, status, k }) => {
+                  if (ziel.sieb) {
+                    return <SiebZeile key={ziel.id} ziel={ziel} status={status} onClick={() => navigate(`/akquise/${ziel.id}`)} />;
+                  }
                   const bk = ziel.budgetklasse ? BUDGETKLASSE[ziel.budgetklasse] : null;
                   const label = [ziel.kuerzel, ziel.region, ziel.branche].filter(Boolean).join(" · ") || ziel.website;
                   // Die Divergenz in einem Satz, sobald der Scan sie geliefert hat — sonst die Eckdaten
@@ -241,6 +324,7 @@ export default function Zielliste() {
                   );
                 })}
               </Box>
+              </>
             )}
           </div>
         </>
