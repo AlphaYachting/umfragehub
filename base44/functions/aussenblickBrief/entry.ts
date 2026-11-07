@@ -25,7 +25,7 @@ export default async function (req) {
 
     const body = await req.json().catch(() => ({}));
     const zielId = String(body.zielId || '');
-    const art = body.art === 'mail' ? 'mail' : 'post';
+    const art = body.art === 'post' ? 'post' : 'mail'; // E-Mail ist der Standard (Alfons, 07.11.2026)
     const hinweis = String(body.hinweis || '').slice(0, 800);
     if (!zielId) return Response.json({ error: 'zielId fehlt' }, { status: 400 });
 
@@ -36,8 +36,19 @@ export default async function (req) {
     const einladungen = await db.Einladung.filter({ zielId });
     const haupt = einladungen.find((e) => e.art !== 'welle');
 
+    // Kontakt-Kontext: früherer Kontakt, Aufhänger, Notizen und Anrufe aus dem Verlauf.
+    // Die Regel von Alfons: Gab es Kontakt, muss der Text ihn konkret nennen — die KI prüft den Kontext.
+    const verlauf = (await db.Ereignis.filter({ zielId })).filter((x) => ['notiz', 'anruf', 'erstgespraech_klick'].includes(x.art) && (x.details || x.text));
+    verlauf.sort((a, b) => String(b.created_date || '').localeCompare(String(a.created_date || '')));
+    const notizen = [
+      ...(ziel.notizen ? [String(ziel.notizen)] : []),
+      ...verlauf.slice(0, 6).map((x) => `${x.created_date ? String(x.created_date).slice(0, 10) : ''} ${x.art === 'anruf' ? 'Anruf' : 'Notiz'}: ${String(x.details || x.text || '')}`.trim()),
+    ].map((s) => s.slice(0, 400));
+    const kontakt = String(ziel.warmerDraht || '').trim();
+    const kontaktUnbelegt = /zu pr[üu]fen|falls belegbar|unbelegt|vermutlich|unsicher|\?/i.test(kontakt);
+
     const echterCode = haupt?.code || '';
-    const prompt = bauePrompt({ ziel, fragen, code: echterCode || '[CODE]', codeFehlt: !echterCode, art, hinweis });
+    const prompt = bauePrompt({ ziel, fragen, code: echterCode || '[CODE]', codeFehlt: !echterCode, art, hinweis, kontakt, kontaktUnbelegt, notizen });
     const ergebnis = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt,
       response_json_schema: {
@@ -69,6 +80,7 @@ export default async function (req) {
       spiegelung: String(r.spiegelung || '').trim(),
       sperrwoerter: treffer,
       codeFehlt: !echterCode,
+      kontext: { kontakt: Boolean(kontakt), kontaktUnbelegt: Boolean(kontakt) && kontaktUnbelegt, aufhaenger: Boolean(ziel.briefAufhaenger), notizen: notizen.length },
     });
   } catch (error) {
     console.error('aussenblickBrief:', error?.message || error);
@@ -94,7 +106,7 @@ function sieForm(frage) {
     .replace(/\bdu wirbst\b/g, 'Sie werben').replace(/\bdu\b/g, 'Sie').replace(/\bdich\b/g, 'Sie').replace(/\bdir\b/g, 'Ihnen');
 }
 
-function bauePrompt({ ziel, fragen, code, codeFehlt, art, hinweis }) {
+function bauePrompt({ ziel, fragen, code, codeFehlt, art, hinweis, kontakt, kontaktUnbelegt, notizen }) {
   const e = (ziel.entscheider || [])[0] || {};
   const fragenText = fragen.length
     ? fragen.map((f) => `${f.nummer}. ${sieForm(f.text)}`).join('\n')
@@ -111,9 +123,15 @@ EMPFÄNGER
 - Adresse: ${(ziel.postadresse || ziel.sitz || '').replace(/\n/g, ', ')}
 - Website: ${ziel.website || ''}
 
-AUFHÄNGER (ein bis zwei Sätze, daraus den Einstieg bauen; kein Lob, keine Floskel):
+FRÜHERER KONTAKT MIT RITTLER & CO (geprüfter Kontext — das Wichtigste für den Einstieg):
+${kontakt || '(keiner bekannt — dann ist es der erste Kontakt)'}
+${kontakt && !kontaktUnbelegt ? `REGEL: Der erste Satz nennt diesen Kontakt konkret — Zeitpunkt (Monat oder Datum) und Anlass in den Worten des Kontexts, z. B. „Anfang Juli haben Sie bei uns angefragt, weil …; am 9. Juli haben wir uns per Teams kennengelernt.“ Kein vager Satz wie „unsere Wege haben sich gekreuzt“. Kein Wort dazu, warum es damals nicht weiterging, kein Bedauern, kein Vorwurf. Danach die Brücke: Seither sind mir Ihre Anzeigen öfter begegnet …` : ''}${kontakt && kontaktUnbelegt ? `REGEL: Dieser Kontakt ist noch nicht belegt. Nenn ihn nicht als Tatsache. Schreib stattdessen an diese Stelle genau den Platzhalter [FRÜHERER KONTAKT — prüfen] als eigenen Satz, damit Alfons ihn ersetzt.` : ''}
+
+AUFHÄNGER (zusätzlich, ein Satz; kein Lob, keine Floskel):
 ${ziel.briefAufhaenger || '(keiner hinterlegt — dann Nähe oder Branche nehmen)'}
-Warmer Draht (nur erwähnen, wenn hier etwas steht, und nur als Tatsache, nicht als Vorwurf): ${ziel.warmerDraht || '—'}
+
+NOTIZEN UND ANRUFE VON ALFONS (Kontext, nur verwenden, wenn es den Einstieg konkreter macht; nichts davon zitieren, was intern klingt):
+${notizen.length ? notizen.map((n) => `- ${n}`).join('\n') : '- keine'}
 
 WAS WIR GESEHEN HABEN (nur für dein Verständnis — NICHT in den Text, kein Befund, keine Kritik):
 - Sie werben für: ${blick.verkaufen || ''}
@@ -143,7 +161,7 @@ AUSGABE als JSON mit den Feldern "betreff", "text", "spiegelung".
 
   if (art === 'mail') {
     return `${gemeinsam}
-FORM: E-Mail, höchstens 140 Wörter im Fließtext plus die fünf Fragen. Aufbau: Betreff (ohne „Fünf Fragen“ im Betreff zu verraten — eher der Aufhänger in fünf Wörtern), Anrede, ein Satz Aufhänger, ein Satz „Ihre Anzeigen sind mir öfter begegnet. Ich habe getan, was Ihr nächster Kunde auch tut: gegoogelt.“ (sinngemäß, nicht wörtlich zwingend), Überleitung zu den fünf Fragen, die Liste, dann Link und Code in einer eigenen Zeile mit dem Hinweis, dass die Seite nur für sie/ihn ist und 30 Tage offen bleibt, Gruß mit Name, Firma, Telefon. Keine Signatur-Floskeln, kein Disclaimer, kein Logo-Hinweis.
+FORM: E-Mail, höchstens 140 Wörter im Fließtext plus die fünf Fragen. Aufbau: Betreff (höchstens sechs Wörter; gibt es einen früheren Kontakt, knüpft der Betreff daran an, z. B. „Ihre Anfrage im Juli — ein Nachtrag“; sonst der Aufhänger; nie „Fünf Fragen“ im Betreff), Anrede, ein Satz zum früheren Kontakt (wenn vorhanden) oder Aufhänger, ein Satz „Ihre Anzeigen sind mir öfter begegnet. Ich habe getan, was Ihr nächster Kunde auch tut: gegoogelt.“ (sinngemäß, nicht wörtlich zwingend), Überleitung zu den fünf Fragen, die Liste, dann Link und Code in einer eigenen Zeile mit dem Hinweis, dass die Seite nur für sie/ihn ist und 30 Tage offen bleibt, Gruß mit Name, Firma, Telefon. Keine Signatur-Floskeln, kein Disclaimer, kein Logo-Hinweis.
 "text" enthält nur den E-Mail-Text ohne Betreff.`;
   }
 
