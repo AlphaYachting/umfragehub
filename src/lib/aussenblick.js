@@ -133,7 +133,10 @@ export const DOSIS_JE_WOCHE = 5;
 // Links und Codes
 // ---------------------------------------------------------------------------
 export const portalUrl = (code) => `${OEFFENTLICHE_URL}/a/${code}`;
-export const portalVorschauUrl = (code) => `${window.location.origin}/a/${code}?vorschau=1`;
+// Die Vorschau bleibt in der App (gleicher Tab, gleiche Anmeldung): Im Base44-Editor
+// hängt die Anmeldung am Token in der Vorschau-Adresse, ein neuer Tab hätte ihn nicht —
+// und ohne Admin-Anmeldung weist das Portal einen Entwurfs-Code ab. `ziel` führt zurück.
+export const portalVorschauPfad = (code, zielId) => `/a/${code}?vorschau=1${zielId ? `&ziel=${zielId}` : ""}`;
 
 // Code wie im Brief: Kürzel in Versalien, Bindestrich, vier Zeichen ohne 0/O/1/I/L.
 export function neuerCode(kuerzel, welle = false) {
@@ -335,6 +338,16 @@ export async function einladungAnlegen(ziel, art = "unternehmen", empfaenger = {
     fehlversuche: 0,
     ...empfaenger,
   });
+}
+
+// Entwurfs-Codes verwerfen (Hauptcode und Welle), solange nichts versendet ist —
+// danach legt „Codes anlegen“ neue an. Versendete Codes bleiben unangetastet.
+export async function einladungenVerwerfen(ziel) {
+  const alleEinl = await alle(base44.entities.Einladung, { zielId: ziel.id });
+  const weg = alleEinl.filter((e) => e.status !== "versendet");
+  for (const e of weg) await base44.entities.Einladung.delete(e.id);
+  if (weg.length) await ereignis(ziel.id, "notiz", { details: `Code${weg.length > 1 ? "s" : ""} verworfen: ${weg.map((e) => e.code).join(", ")}` });
+  return weg.length;
 }
 
 // Der einzige Weg, einen Code scharf zu schalten: Alfons markiert den Versand von Hand.

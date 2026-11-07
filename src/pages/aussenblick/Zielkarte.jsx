@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Copy, ExternalLink, KeyRound, MoreHorizontal, RefreshCw, Save, Send, Trash2, Phone, Pencil, Info, Sparkles } from "lucide-react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { Copy, Eye, KeyRound, MoreHorizontal, RefreshCw, Save, Send, Trash2, Phone, Pencil, Info, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { base44 } from "@/api/base44Client";
@@ -29,7 +29,7 @@ import {
   ZIEL_STATUS, STATUS_REIHENFOLGE, WIDERSPRUCH_TYP, PORTAL_STUFE, BUDGETKLASSE,
   EINLADUNG_STATUS, EREIGNIS_ART, ROLLE,
   ladeZiel, zielAusZwischenspeicher, zielKennzahlen, ereignisZeit,
-  statusSetzen, notizSchreiben, einladungAnlegen, versendetMarkieren, zielLoeschen, portalUrl, portalVorschauUrl, sichtbarkeitZahl,
+  statusSetzen, notizSchreiben, einladungAnlegen, einladungenVerwerfen, versendetMarkieren, zielLoeschen, portalUrl, portalVorschauPfad, sichtbarkeitZahl,
 } from "@/lib/aussenblick";
 
 const REITER = ["befund", "portal", "brief", "verlauf", "register"];
@@ -176,6 +176,11 @@ export default function Zielkarte() {
       await einladungAnlegen(ziel, "unternehmen", { empfaengerName: ziel.entscheider?.[0]?.name || "", empfaengerRolle: ziel.entscheider?.[0]?.rolle || "", adresse: ziel.postadresse || "" });
       await einladungAnlegen(ziel, "welle");
     }, "Codes angelegt (Entwurf).");
+  }
+
+  async function codesVerwerfen() {
+    if (!(await bestaetigen("Entwurfs-Codes verwerfen? Hauptcode und Welle-Code werden gelöscht; danach kannst du neue anlegen. Ein bereits versendeter Code bleibt.", { aktion: "Verwerfen" }))) return;
+    await tun(() => einladungenVerwerfen(ziel), "Codes verworfen.");
   }
 
   async function versendetBestaetigen() {
@@ -390,16 +395,19 @@ export default function Zielkarte() {
                       </div>
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <Button variant="ghost" size="sm" onClick={async () => { (await inZwischenablage(portalUrl(e.code))) ? toast.success("Link kopiert.") : toast.error("Kopieren nicht möglich."); }}><Copy /> Link</Button>
-                        <a href={portalVorschauUrl(e.code)} target="_blank" rel="noopener noreferrer" title="Vorschau: so sieht das Unternehmen die Seite (nichts wird gezählt)">
-                          <Button variant="ghost" size="sm"><ExternalLink /> Vorschau</Button>
-                        </a>
+                        <Link to={portalVorschauPfad(e.code, ziel.id)} title="Vorschau: so sieht das Unternehmen die Seite — öffnet hier in der App, nichts wird gezählt">
+                          <Button variant="ghost" size="sm"><Eye /> Vorschau</Button>
+                        </Link>
                         {e.art !== "welle" && e.status !== "versendet" && (
-                          <Button size="sm" onClick={() => setVersand(e)} disabled={beschaeftigt}><Send /> Als versendet markieren</Button>
+                          <>
+                            <Button variant="ghost" size="sm" onClick={codesVerwerfen} disabled={beschaeftigt} title="Beide Entwurfs-Codes löschen und neu anlegen können"><Trash2 /> Verwerfen</Button>
+                            <Button size="sm" onClick={() => setVersand(e)} disabled={beschaeftigt}><Send /> Als versendet markieren</Button>
+                          </>
                         )}
                       </div>
                     </div>
                   ))}
-                  <p className="text-meta text-muted-foreground flex items-start gap-1.5"><Info className="w-3.5 h-3.5 mt-0.5 shrink-0" /> Die Software verschickt nichts. Brief drucken, zur Post bringen, dann hier markieren — erst dann lässt sich der Link öffnen. Die Portalseite selbst (andifragt.at/a/…) kommt in Schritt 2.</p>
+                  <p className="text-meta text-muted-foreground flex items-start gap-1.5"><Info className="w-3.5 h-3.5 mt-0.5 shrink-0" /> Die Software verschickt nichts. Brief oder E-Mail hinaus, dann hier markieren — erst dann öffnet der Code für das Unternehmen. Bis dahin siehst nur du die Seite, über „Vorschau“.</p>
                 </div>
               )}
             </BoxInhalt>
