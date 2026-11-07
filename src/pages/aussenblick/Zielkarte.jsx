@@ -570,7 +570,7 @@ export default function Zielkarte() {
                   const zeilen = typeof s === "object" ? [["Gefühl", s.gefuehl], ["Riskantester Satz", s.risiko], ["Streichen", s.streichen]].filter(([, v]) => v) : null;
                   return (
                     <div className="rounded-lg border bg-muted/30 p-3 space-y-2">
-                      <p className="text-label uppercase text-muted-foreground">Spiegelung — so liest es {ziel.entscheider?.[0]?.name ? ziel.entscheider[0].name.split(" ").slice(-1)[0] : "die Empfängerin"}</p>
+                      <p className="text-label uppercase text-muted-foreground">Spiegelung — so liest es {ziel.entscheider?.[0]?.name || "die Empfängerin"}</p>
                       {zeilen ? (
                         <dl className="grid sm:grid-cols-[150px_1fr] gap-x-3 gap-y-1.5">
                           {zeilen.map(([k, v]) => (
