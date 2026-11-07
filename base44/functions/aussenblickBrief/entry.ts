@@ -162,7 +162,7 @@ AUSGABE als JSON mit den Feldern "betreff", "text", "spiegelung".
   if (art === 'mail') {
     return `${gemeinsam}
 FORM: E-Mail, höchstens 140 Wörter im Fließtext plus die fünf Fragen. Aufbau: Betreff (höchstens sechs Wörter; gibt es einen früheren Kontakt, knüpft der Betreff daran an, z. B. „Ihre Anfrage im Juli — ein Nachtrag“; sonst der Aufhänger; nie „Fünf Fragen“ im Betreff), Anrede, ein Satz zum früheren Kontakt (wenn vorhanden) oder Aufhänger, ein Satz „Ihre Anzeigen sind mir öfter begegnet. Ich habe getan, was Ihr nächster Kunde auch tut: gegoogelt.“ (sinngemäß, nicht wörtlich zwingend), Überleitung zu den fünf Fragen, die Liste, dann Link und Code in einer eigenen Zeile mit dem Hinweis, dass die Seite nur für sie/ihn ist und 30 Tage offen bleibt, Gruß mit Name, Firma, Telefon. Keine Signatur-Floskeln, kein Disclaimer, kein Logo-Hinweis.
-"text" enthält nur den E-Mail-Text ohne Betreff.`;
+"text" enthält nur den E-Mail-Text ohne Betreff — als reiner Text mit Zeilenumbrüchen: Anrede eigene Zeile, Absätze durch Leerzeile getrennt, jede der fünf Fragen in einer eigenen Zeile, Link und Code in einer eigenen Zeile, Gruß und Signatur je eigene Zeile. Kein Markdown.`;
   }
 
   return `${gemeinsam}
