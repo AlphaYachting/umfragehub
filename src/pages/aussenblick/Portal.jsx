@@ -45,8 +45,6 @@ function wort(ansprache) {
   };
 }
 
-const DEMO = { ok: true, vorschau: true, welle: false, unternehmen: "Procfit GmbH", ansprache: "du", entscheider: "Mag. Margot Königshofer", texte: { einstiegSatz: "Wir haben nur getan, was dein nächster Kunde auch tut: gegoogelt.", einstiegFolgt: "Fünf Dinge, die uns dabei aufgefallen sind, und fünf Fragen, die nur du beantworten kannst.", welleText: "Dieselben fünf Fragen an drei Mitarbeitende und drei Kunden weitergeben.", welleWeiterleitung: "Ich habe fünf Fragen zu Procfit bekommen, die ich gern aus deiner Sicht beantwortet hätte. Dauert fünf Minuten:", rechnerHebel: "25 Botschaften teilen sich ein Budget. Jede lernt mit einem Bruchteil davon. Eine Botschaft, die trägt, lernt mit allem.", erstgespraechText: "30 Minuten, kostenlos, keine Präsentation.", erstgespraechKontakt: "Alfons Rittler" }, spiegel: [{ id: "1", zeile: "Die Seite, die du für sie gebaut hast, und die Seiten, auf die deine Anzeigen führen.", gesperrt: false, a: { label: "Deine Landingpage, seit 06.08.2026", text: "Herstellerwechsel nach Europa, sicher und planbar: für alle, die aktuell in Asien produzieren lassen.", url: "https://procfit.at/herstellerwechsel-europa/" }, b: { label: "Deine Anzeigen und dein Menü, 06.11.2026", text: "50 Google-Anzeigen führen auf die Startseite. 105 Meta-Anzeigen auf die Startseite. Im Hauptmenü: fünf Punkte, diese Seite nicht.", url: "https://adstransparency.google.com/" } }, { id: "2", zeile: "Die Namen, unter denen man dich findet.", gesperrt: true, a: null, b: null }], gesperrteKarten: 1, schwelle: 2, fragen: [{ nummer: 1, text: "Warum haben deine Kunden gewechselt?", hilfetext: "Ein Satz genügt." }, { nummer: 2, text: "Für wen ist Procfit da?", hilfetext: "" }], antworten: [], welleCode: "PCF-DEMO-W", hebel: [], gueltigBis: "2026-12-07" };
-
 function Nummer({ nr, titel }) {
   return (
     <p className="text-[12px] font-semibold uppercase tracking-[0.2em] mb-4" style={{ color: F.etikett }}>
@@ -71,7 +69,6 @@ export default function Portal() {
 
   const laden = useCallback(async () => {
     setLaedt(true);
-    if (window.__AUSSENBLICK_DEMO__ || new URLSearchParams(window.location.search).get("demo") === "1") { setD(DEMO); setFehler(""); setLaedt(false); return; }
     try {
       const r = await rufen({ aktion: "laden" });
       if (r.fehler) { setFehler(r.fehler); setD(null); } else { setD(r); setFehler(""); }
