@@ -324,6 +324,7 @@ export default function Zielliste() {
                   );
                 })}
               </Box>
+              </>
             )}
           </div>
         </>
