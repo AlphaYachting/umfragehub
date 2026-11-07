@@ -13,14 +13,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 import Seitenkopf from "@/components/shared/Seitenkopf";
-import Kennzahlleiste from "@/components/shared/Kennzahlleiste";
 import StatusEtikett from "@/components/shared/StatusEtikett";
 import { Box, BoxKopf, BoxInhalt } from "@/components/shared/Box";
 import { bestaetigen } from "@/components/shared/Bestaetigen";
 import { kachel } from "@/components/verwaltung/Kachel";
 import ModulPille from "@/components/aussenblick/ModulPille";
 import MarkdownLeicht from "@/components/aussenblick/MarkdownLeicht";
-import AufEinenBlick from "@/components/aussenblick/AufEinenBlick";
+import AufEinenBlick, { Urteil } from "@/components/aussenblick/AufEinenBlick";
+import Kennzahlen from "@/components/aussenblick/Kennzahlen";
 import { TON_TEXT } from "@/lib/designTon";
 import { alsDatum, datumKurz, relativerTag, inZwischenablage } from "@/lib/verwaltung";
 import {
@@ -105,14 +105,15 @@ export default function Zielkarte() {
   const [offen, setOffen] = useState({});
   const [beschaeftigt, setBeschaeftigt] = useState(false);
   const [versand, setVersand] = useState(null); // Einladung, die als versendet markiert werden soll
-  const [versandweg, setVersandweg] = useState("post");
+  const [versandweg, setVersandweg] = useState("mail");
   const [versandAm, setVersandAm] = useState(heuteTag);
-  const [brief, setBrief] = useState({ briefText: "", briefAufhaenger: "", warmerDraht: "", postadresse: "", briefArt: "post", briefBetreff: "", briefSpiegelung: "" });
+  const [brief, setBrief] = useState({ briefText: "", briefAufhaenger: "", warmerDraht: "", postadresse: "", briefArt: "mail", briefBetreff: "", briefSpiegelung: "" });
   const [briefGeaendert, setBriefGeaendert] = useState(false);
   const [kiHinweis, setKiHinweis] = useState("");
   const [kiLaeuft, setKiLaeuft] = useState(false);
   const [sperrwoerter, setSperrwoerter] = useState([]);
   const [codeFehlt, setCodeFehlt] = useState(false);
+  const [kiKontext, setKiKontext] = useState(null); // was die KI beim letzten Entwurf hatte
   const [notiz, setNotiz] = useState("");
   const [registerAnsicht, setRegisterAnsicht] = useState("befund");
   const [mehr, setMehr] = useState(false); // Befund-Reiter: Details unter den Widersprüchen aufklappen
@@ -124,7 +125,7 @@ export default function Zielkarte() {
     const z = neu.ziel || {};
     setBrief({
       briefText: z.briefText || "", briefAufhaenger: z.briefAufhaenger || "", warmerDraht: z.warmerDraht || "", postadresse: z.postadresse || "",
-      briefArt: z.briefArt || "post", briefBetreff: z.briefBetreff || "", briefSpiegelung: z.briefSpiegelung || "",
+      briefArt: z.briefArt || "mail", briefBetreff: z.briefBetreff || "", briefSpiegelung: z.briefSpiegelung || "",
     });
     setBriefGeaendert(false);
   }
@@ -226,6 +227,7 @@ export default function Zielkarte() {
     setKiLaeuft(true);
     setSperrwoerter([]);
     setCodeFehlt(false);
+    setKiKontext(null);
     try {
       const res = await base44.functions.invoke("aussenblickBrief", { zielId: ziel.id, art: brief.briefArt, hinweis: kiHinweis });
       const r = res?.data;
@@ -234,6 +236,7 @@ export default function Zielkarte() {
       setBriefGeaendert(true);
       setSperrwoerter(r.sperrwoerter || []);
       setCodeFehlt(Boolean(r.codeFehlt));
+      setKiKontext(r.kontext || null);
       toast.success(brief.briefArt === "mail" ? "E-Mail-Entwurf da — lesen, ändern, speichern." : "Brief-Entwurf da — lesen, ändern, speichern.");
     } catch (e) {
       toast.error("Der Entwurf ist nicht gekommen. Noch einmal versuchen.");
@@ -324,34 +327,36 @@ export default function Zielkarte() {
         </p>
       ) : null}
 
-      <Kennzahlleiste werte={[
-        kachel("Anzeigen aktiv", k.anzeigen || "—", kanaele || "noch kein Scan"),
-        kachel("Budgetklasse", ziel.budgetklasse ? `${ziel.budgetklasse} · ${bk?.label}` : "—", ziel.budgetklasseBegruendung || (bk ? bk.text : "aus Anzeigen, Laufzeit, Kanälen")),
-        kachel("Widersprüche", k.gesamt || "—", k.gesamt ? `${k.stark} stark · ${k.imPortal} im Portal` : "noch kein Befund", k.stark >= 3 ? "attention" : undefined),
-        kachel("Kundenstimmen", ziel.stimmen?.googleWert ? `${String(ziel.stimmen.googleWert).replace(".", ",")} · ${ziel.stimmen.googleAnzahl || 0}` : "—", "Google-Bewertung · Anzahl"),
-        kachel("Portal", haupt ? EINLADUNG_STATUS[haupt.status]?.label : "kein Code", haupt ? (haupt.status === "versendet" ? `${haupt.aufrufe || 0} Aufrufe${haupt.zuletztGeoeffnet ? ` · zuletzt ${relativerTag(alsDatum(haupt.zuletztGeoeffnet))}` : ""}` : `Code ${haupt.code}`) : "kommt mit der Freigabe", haupt?.status === "versendet" ? "done" : undefined),
-      ]} />
+      {/* 1. Das Urteil: Divergenz in einem Satz, darunter der Zugriff */}
+      <Urteil ziel={ziel} />
 
-      {/* Zweite Reihe: die Zahlen hinter dem Blick */}
+      {/* 2. Sechs Zahlen, die das Urteil tragen — eine Reihe, nichts abgeschnitten */}
       {(() => {
-        const grad = ziel.blick?.divergenzGrad;
         const sicht = sichtbarkeitZahl(ziel.blick?.sichtbarkeit);
-        const scanTage = ziel.scanAm ? Math.max(0, Math.round((Date.now() - alsDatum(ziel.scanAm).getTime()) / 86400000)) : null;
         const sieger = w.siegerbotschaft || {};
         return (
-          <Kennzahlleiste werte={[
-            kachel("Divergenz", grad ? grad : "—", grad === "hoch" ? "drei Richtungen oder eigenes Material" : grad === "mittel" ? "zwei Richtungen" : grad === "gering" ? "Nuancen" : "kommt mit dem Scan", grad === "hoch" ? "attention" : undefined),
-            kachel("Sichtbarkeit", sicht ? `${sicht.treffer} von ${sicht.von}` : "—", "Suchanfragen der Wunschzielgruppe", sicht && sicht.treffer === 0 ? "attention" : undefined),
-            kachel("Markennamen", ziel.markennamen?.length || "—", "in Umlauf", (ziel.markennamen?.length || 0) >= 3 ? "attention" : undefined),
-            kachel("Zielgruppen", ziel.zielgruppen?.length || "—", "Bezeichnungen in Umlauf", (ziel.zielgruppen?.length || 0) >= 4 ? "attention" : undefined),
-            kachel("Siegerbotschaft", sieger.monate ? `${sieger.monate} Mon.` : "—", sieger.varianten ? `${sieger.varianten} Varianten · ${sieger.zielgruppe || ""}` : "älteste aktive Anzeige"),
-            kachel("Scan", scanTage === null ? "—" : scanTage === 0 ? "heute" : `vor ${scanTage} T.`, ziel.scanAm ? datumKurz(alsDatum(ziel.scanAm), true) : "noch keiner", scanTage !== null && scanTage > 45 ? "attention" : undefined),
+          <Kennzahlen werte={[
+            kachel("Anzeigen aktiv", k.anzeigen || "—", kanaele || "noch kein Scan"),
+            kachel("Budget", ziel.budgetklasse ? `${ziel.budgetklasse} / 4` : "—", bk ? `${bk.label} · ${bk.text}` : "aus Anzeigen, Laufzeit, Kanälen"),
+            kachel("Läuft seit", sieger.monate ? `${sieger.monate} Mon.` : "—", sieger.monate ? `älteste aktive Anzeige${sieger.varianten ? ` · ${sieger.varianten} Varianten` : ""}` : "älteste aktive Anzeige"),
+            kachel("Widersprüche", k.gesamt || "—", k.gesamt ? `${k.stark} stark · ${k.imPortal} im Portal` : "noch kein Befund", k.stark >= 3 ? "attention" : undefined),
+            kachel("Bewertungen", ziel.stimmen?.googleWert ? String(ziel.stimmen.googleWert).replace(".", ",") : "—", ziel.stimmen?.googleAnzahl ? `${ziel.stimmen.googleAnzahl} auf Google` : "Google-Bewertung"),
+            kachel("Sichtbarkeit", sicht ? `${sicht.treffer} / ${sicht.von}` : "—", "Suchanfragen der Wunschzielgruppe", sicht && sicht.treffer === 0 ? "attention" : undefined),
           ]} />
         );
       })()}
 
-      {/* Die Entscheidungsansicht — auf jedem Reiter sichtbar */}
-      <AufEinenBlick ziel={ziel} />
+      {/* 3. Die Quellen: was sie verkaufen wollen, wie sie auftreten, was Kunden sagen */}
+      {(() => {
+        const scanTage = ziel.scanAm ? Math.max(0, Math.round((Date.now() - alsDatum(ziel.scanAm).getTime()) / 86400000)) : null;
+        const eckdaten = [
+          ziel.markennamen?.length ? `${ziel.markennamen.length} Markennamen in Umlauf` : null,
+          ziel.zielgruppen?.length ? `${ziel.zielgruppen.length} Zielgruppenbezeichnungen` : null,
+          haupt ? `Portal: ${EINLADUNG_STATUS[haupt.status]?.label || haupt.status}${haupt.status === "versendet" ? `, ${haupt.aufrufe || 0} Aufrufe${haupt.zuletztGeoeffnet ? `, zuletzt ${relativerTag(alsDatum(haupt.zuletztGeoeffnet))}` : ""}` : ` (Code ${haupt.code})`}` : "Portal: noch kein Code",
+          ziel.scanAm ? `Scan ${scanTage === 0 ? "heute" : `vor ${scanTage} Tagen`} (${datumKurz(alsDatum(ziel.scanAm), true)})` : "noch kein Scan",
+        ];
+        return <AufEinenBlick ziel={ziel} eckdaten={eckdaten} />;
+      })()}
 
       <Tabs value={reiter} onValueChange={setReiter}>
         <TabsList>
@@ -676,8 +681,8 @@ export default function Zielkarte() {
                     <Select value={brief.briefArt} onValueChange={(v) => { setBrief({ ...brief, briefArt: v }); setBriefGeaendert(true); }}>
                       <SelectTrigger className="h-8 w-[120px]"><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="post">Brief (Post)</SelectItem>
                         <SelectItem value="mail">E-Mail</SelectItem>
+                        <SelectItem value="post">Brief (Post)</SelectItem>
                       </SelectContent>
                     </Select>
                     <Button size="sm" variant="outline" onClick={briefErzeugen} disabled={kiLaeuft || beschaeftigt}>
@@ -688,12 +693,16 @@ export default function Zielkarte() {
                 }
               />
               <BoxInhalt>
-                <div className="grid sm:grid-cols-[1fr_auto] gap-2 items-end">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="b-hinweis">Hinweis an die KI (optional)</Label>
-                    <Input id="b-hinweis" value={kiHinweis} onChange={(e) => setKiHinweis(e.target.value)} placeholder="z. B. kürzer, den steirischen Bezug nach vorn, Anfrage von damals erwähnen" />
-                  </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="b-hinweis">Hinweis an die KI (optional)</Label>
+                  <Input id="b-hinweis" value={kiHinweis} onChange={(e) => setKiHinweis(e.target.value)} placeholder="z. B. kürzer, den steirischen Bezug nach vorn" />
+                  <p className="text-meta text-muted-foreground">
+                    Die KI liest: {brief.warmerDraht ? <span className="text-foreground">früheren Kontakt</span> : <span className={TON_TEXT.attention}>keinen früheren Kontakt (rechts eintragen)</span>}, {brief.briefAufhaenger ? "Aufhänger" : "keinen Aufhänger"}, die fünf Fragen, Notizen und Anrufe aus dem Verlauf, den Code.
+                  </p>
                 </div>
+                {kiKontext?.kontaktUnbelegt && (
+                  <p className={cn("text-meta", TON_TEXT.attention)}>Der frühere Kontakt ist als „zu prüfen“ markiert — die KI hat ihn deshalb nicht als Tatsache geschrieben. Prüfen, rechts konkret eintragen (wann, worum), neu schreiben.</p>
+                )}
                 {brief.briefArt === "mail" && (
                   <div className="space-y-1.5">
                     <Label htmlFor="b-betreff">Betreff</Label>
@@ -710,7 +719,7 @@ export default function Zielkarte() {
                   rows={brief.briefArt === "mail" ? 16 : 24}
                   value={brief.briefText}
                   onChange={(e) => { setBrief({ ...brief, briefText: e.target.value }); setBriefGeaendert(true); }}
-                  placeholder="„Mit KI schreiben“ holt den Entwurf aus Aufhänger, warmem Draht, den fünf Fragen und dem Code — oder hier selbst schreiben."
+                  placeholder="„Mit KI schreiben“ holt den Entwurf aus früherem Kontakt, Aufhänger, den fünf Fragen und dem Code — oder hier selbst schreiben."
                   className="font-inter text-[14px] leading-relaxed"
                 />
                 {brief.briefSpiegelung && (
@@ -723,20 +732,23 @@ export default function Zielkarte() {
             </Box>
             <div className="space-y-5">
               <Box>
-                <BoxKopf titel="Versand" />
+                <BoxKopf titel="Kontext und Versand" />
                 <BoxInhalt>
                   <div className="space-y-1.5">
+                    <Label htmlFor="b-draht">Früherer Kontakt</Label>
+                    <Textarea id="b-draht" rows={4} value={brief.warmerDraht} onChange={(e) => { setBrief({ ...brief, warmerDraht: e.target.value }); setBriefGeaendert(true); }} placeholder="Wann, worum, mit wem — z. B. Anfrage über die Website am 06.07., Kennenlerngespräch am 09.07. Steht hier „zu prüfen“, nennt die KI den Kontakt nicht als Tatsache." />
+                    <p className="text-meta text-muted-foreground">Der erste Satz des Entwurfs. Geprüft eintragen — nichts, was nur vermutet ist.</p>
+                  </div>
+                  <div className="space-y-1.5">
                     <Label htmlFor="b-aufhaenger">Aufhänger</Label>
-                    <Input id="b-aufhaenger" value={brief.briefAufhaenger} onChange={(e) => { setBrief({ ...brief, briefAufhaenger: e.target.value }); setBriefGeaendert(true); }} placeholder="Nähe, Branche, frühere Anfrage" />
+                    <Input id="b-aufhaenger" value={brief.briefAufhaenger} onChange={(e) => { setBrief({ ...brief, briefAufhaenger: e.target.value }); setBriefGeaendert(true); }} placeholder="Nähe, Branche, Anlass" />
                   </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="b-draht">Warmer Draht (zu prüfen)</Label>
-                    <Input id="b-draht" value={brief.warmerDraht} onChange={(e) => { setBrief({ ...brief, warmerDraht: e.target.value }); setBriefGeaendert(true); }} placeholder="frühere Anfrage, Messe, LinkedIn" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="b-adresse">Postadresse</Label>
-                    <Textarea id="b-adresse" rows={4} value={brief.postadresse} onChange={(e) => { setBrief({ ...brief, postadresse: e.target.value }); setBriefGeaendert(true); }} />
-                  </div>
+                  {brief.briefArt === "post" && (
+                    <div className="space-y-1.5">
+                      <Label htmlFor="b-adresse">Postadresse</Label>
+                      <Textarea id="b-adresse" rows={4} value={brief.postadresse} onChange={(e) => { setBrief({ ...brief, postadresse: e.target.value }); setBriefGeaendert(true); }} />
+                    </div>
+                  )}
                   {haupt && (
                     <p className="text-meta text-muted-foreground">Code im Brief: <span className="font-mono text-foreground">{haupt.code}</span> · {portalUrl(haupt.code)}</p>
                   )}
@@ -751,7 +763,7 @@ export default function Zielkarte() {
               </Box>
               <div className="v-hinweis border-l-border">
                 <Info className="w-4 h-4 mt-0.5 shrink-0 text-muted-foreground" />
-                <p className="text-meta text-muted-foreground">Per Post, nicht per Mail: Werbe-E-Mails ohne Einwilligung sind in Österreich auch im B2B heikel (TKG). Rechtliche Freigabe vor einem breiten Rollout ist deine Sache. Nach 10 Tagen ohne Öffnung ein kurzer Anruf, kein zweiter Brief.</p>
+                <p className="text-meta text-muted-foreground">E-Mail ist der Standard. Ohne früheren Kontakt (Anfrage, Gespräch, Messe) ist eine Werbe-E-Mail in Österreich auch im B2B heikel (TKG) — dann Brief per Post. Rechtliche Freigabe vor einem breiten Rollout ist deine Sache. Nach 10 Tagen ohne Öffnung ein kurzer Anruf, kein zweites Schreiben.</p>
               </div>
             </div>
           </div>
@@ -824,10 +836,10 @@ export default function Zielkarte() {
                 <Select value={versandweg} onValueChange={setVersandweg}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="mail">E-Mail</SelectItem>
                     <SelectItem value="post">Post</SelectItem>
                     <SelectItem value="persoenlich">Persönlich übergeben</SelectItem>
                     <SelectItem value="telefon">Am Telefon genannt</SelectItem>
-                    <SelectItem value="mail">E-Mail (nur mit Einwilligung)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
