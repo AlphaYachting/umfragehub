@@ -74,13 +74,13 @@
       "type": "string"
     },
     "briefArt": {
-      "default": "post",
-      "description": "Post ist der Standard (Werbe-Mails ohne Einwilligung sind in \u00d6sterreich heikel). E-Mail nur bei warmem Draht.",
+      "default": "mail",
+      "description": "E-Mail ist der Standard (Alfons, 07.11.2026). Ohne fr\u00fcheren Kontakt Brief per Post \u2014 Werbe-Mails ohne Einwilligung sind in \u00d6sterreich heikel.",
       "enum": [
         "post",
         "mail"
       ],
-      "title": "Kontakt: Brief oder E-Mail",
+      "title": "Kontakt: E-Mail oder Brief",
       "type": "string"
     },
     "briefAufhaenger": {
@@ -92,7 +92,7 @@
       "type": "string"
     },
     "briefSpiegelung": {
-      "description": "Wie liest das der Empf\u00e4nger, der gerade Geld in diese Anzeigen steckt? Kommt mit dem KI-Entwurf.",
+      "description": "Wie liest das der Empf\u00e4nger, der gerade Geld in diese Anzeigen steckt? Kommt mit dem KI-Entwurf \u2014 als Text oder als JSON {gefuehl, risiko, streichen}.",
       "format": "textarea",
       "title": "Spiegelung",
       "type": "string"
@@ -130,6 +130,10 @@
     "entscheider": {
       "items": {
         "properties": {
+          "email": {
+            "description": "Gesch\u00e4ftliche E-Mail-Adresse, nur wenn belegt (Postfach, Website)",
+            "type": "string"
+          },
           "name": {
             "type": "string"
           },
@@ -392,8 +396,9 @@
       "type": "string"
     },
     "warmerDraht": {
-      "description": "fr\u00fchere Anfrage, Messe, LinkedIn \u2014 zu pr\u00fcfen",
-      "title": "Warmer Draht",
+      "description": "Fr\u00fcherer Kontakt mit Rittler & Co \u2014 gepr\u00fcft (Postfach, CRM), mit Datum und Anlass. Steht hier \u201ezu pr\u00fcfen\u201c, nennt die KI ihn nicht als Tatsache.",
+      "format": "textarea",
+      "title": "Fr\u00fcherer Kontakt",
       "type": "string"
     },
     "website": {
