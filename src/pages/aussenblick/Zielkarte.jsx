@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ChevronDown, ChevronRight, Copy, ExternalLink, KeyRound, MoreHorizontal, RefreshCw, Save, Send, Trash2, Phone, Pencil, Info, Sparkles } from "lucide-react";
+import { Copy, ExternalLink, KeyRound, MoreHorizontal, RefreshCw, Save, Send, Trash2, Phone, Pencil, Info, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { base44 } from "@/api/base44Client";
@@ -17,15 +17,14 @@ import StatusEtikett from "@/components/shared/StatusEtikett";
 import { Box, BoxKopf, BoxInhalt } from "@/components/shared/Box";
 import { bestaetigen } from "@/components/shared/Bestaetigen";
 import { kachel } from "@/components/verwaltung/Kachel";
-import ModulPille from "@/components/aussenblick/ModulPille";
 import MarkdownLeicht from "@/components/aussenblick/MarkdownLeicht";
 import AufEinenBlick, { Urteil } from "@/components/aussenblick/AufEinenBlick";
 import Kennzahlen from "@/components/aussenblick/Kennzahlen";
 import { TraegtBricht, Belege, Vorschlag, Einschaetzung, Anzeigenpaar } from "@/components/aussenblick/Bericht";
 import { TON_TEXT } from "@/lib/designTon";
-import { alsDatum, datumKurz, relativerTag, inZwischenablage } from "@/lib/verwaltung";
+import { alsDatum, datumKurz, inZwischenablage } from "@/lib/verwaltung";
 import {
-  ZIEL_STATUS, STATUS_REIHENFOLGE, WIDERSPRUCH_TYP, STAERKE, PORTAL_STUFE, MODUL, HEBEL, BUDGETKLASSE,
+  ZIEL_STATUS, STATUS_REIHENFOLGE, WIDERSPRUCH_TYP, PORTAL_STUFE, BUDGETKLASSE,
   EINLADUNG_STATUS, EREIGNIS_ART, ROLLE,
   ladeZiel, zielAusZwischenspeicher, zielKennzahlen, ereignisZeit,
   statusSetzen, notizSchreiben, einladungAnlegen, versendetMarkieren, zielLoeschen, portalUrl, portalVorschauUrl, sichtbarkeitZahl,
@@ -47,25 +46,6 @@ function heuteTag() {
 }
 
 // Ein Beleg: Text, Fundstelle als Link, Datum, Belegstufe
-function Beleg({ titel, beleg }) {
-  if (!beleg) return null;
-  return (
-    <div className="rounded-lg border bg-muted/30 p-3 space-y-1.5 min-w-0">
-      <p className="text-label uppercase text-muted-foreground">{titel}</p>
-      <p className="text-body text-foreground">{beleg.text}</p>
-      <p className="text-meta text-muted-foreground flex flex-wrap gap-x-2">
-        {beleg.url ? (
-          <a href={beleg.url} target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground break-all">{beleg.fundstelle || beleg.url}</a>
-        ) : (
-          <span>{beleg.fundstelle}</span>
-        )}
-        {beleg.datum && <span>· {beleg.datum}</span>}
-        {beleg.stufe && <span>· {beleg.stufe}</span>}
-      </p>
-    </div>
-  );
-}
-
 function Karte({ titel, karte }) {
   if (!karte) return null;
   return (
@@ -76,19 +56,6 @@ function Karte({ titel, karte }) {
         <p className="text-meta text-muted-foreground">
           {karte.url ? <a href={karte.url} target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">{karte.label}</a> : karte.label}
         </p>
-      )}
-    </div>
-  );
-}
-
-function Liste({ titel, eintraege, leer }) {
-  return (
-    <div className="space-y-1.5">
-      <p className="text-label uppercase text-muted-foreground">{titel}</p>
-      {eintraege?.length ? (
-        <ul className="list-disc pl-5 space-y-1 text-body text-foreground">{eintraege.map((t, i) => <li key={i}>{t}</li>)}</ul>
-      ) : (
-        <p className="text-meta text-muted-foreground">{leer || "—"}</p>
       )}
     </div>
   );
@@ -117,7 +84,6 @@ export default function Zielkarte() {
   const [kiKontext, setKiKontext] = useState(null); // was die KI beim letzten Entwurf hatte
   const [notiz, setNotiz] = useState("");
   const [registerAnsicht, setRegisterAnsicht] = useState("befund");
-  const [mehr, setMehr] = useState(false); // Befund-Reiter: Details unter den Widersprüchen aufklappen
 
   const ziel = d?.ziel || null;
 
