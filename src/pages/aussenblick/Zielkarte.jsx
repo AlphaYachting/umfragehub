@@ -20,7 +20,8 @@ import { bestaetigen } from "@/components/shared/Bestaetigen";
 import { kachel } from "@/components/verwaltung/Kachel";
 import ModulPille from "@/components/aussenblick/ModulPille";
 import MarkdownLeicht from "@/components/aussenblick/MarkdownLeicht";
-import AufEinenBlick from "@/components/aussenblick/AufEinenBlick";
+import AufEinenBlick, { Urteil } from "@/components/aussenblick/AufEinenBlick";
+import Kennzahlen from "@/components/aussenblick/Kennzahlen";
 import { TON_TEXT } from "@/lib/designTon";
 import { alsDatum, datumKurz, relativerTag, inZwischenablage } from "@/lib/verwaltung";
 import {
@@ -327,34 +328,37 @@ export default function Zielkarte() {
         </p>
       ) : null}
 
-      <Kennzahlleiste werte={[
-        kachel("Anzeigen aktiv", k.anzeigen || "—", kanaele || "noch kein Scan"),
-        kachel("Budgetklasse", ziel.budgetklasse ? `${ziel.budgetklasse} · ${bk?.label}` : "—", ziel.budgetklasseBegruendung || (bk ? bk.text : "aus Anzeigen, Laufzeit, Kanälen")),
-        kachel("Widersprüche", k.gesamt || "—", k.gesamt ? `${k.stark} stark · ${k.imPortal} im Portal` : "noch kein Befund", k.stark >= 3 ? "attention" : undefined),
-        kachel("Kundenstimmen", ziel.stimmen?.googleWert ? `${String(ziel.stimmen.googleWert).replace(".", ",")} · ${ziel.stimmen.googleAnzahl || 0}` : "—", "Google-Bewertung · Anzahl"),
-        kachel("Portal", haupt ? EINLADUNG_STATUS[haupt.status]?.label : "kein Code", haupt ? (haupt.status === "versendet" ? `${haupt.aufrufe || 0} Aufrufe${haupt.zuletztGeoeffnet ? ` · zuletzt ${relativerTag(alsDatum(haupt.zuletztGeoeffnet))}` : ""}` : `Code ${haupt.code}`) : "kommt mit der Freigabe", haupt?.status === "versendet" ? "done" : undefined),
-      ]} />
+      {/* 1. Das Urteil: Divergenz in einem Satz, darunter der Zugriff */}
+      <Urteil ziel={ziel} />
 
-      {/* Zweite Reihe: die Zahlen hinter dem Blick */}
+      {/* 2. Sechs Zahlen, die das Urteil tragen — eine Reihe, nichts abgeschnitten */}
       {(() => {
-        const grad = ziel.blick?.divergenzGrad;
         const sicht = sichtbarkeitZahl(ziel.blick?.sichtbarkeit);
-        const scanTage = ziel.scanAm ? Math.max(0, Math.round((Date.now() - alsDatum(ziel.scanAm).getTime()) / 86400000)) : null;
         const sieger = w.siegerbotschaft || {};
+        const kanaeleKurz = [w.meta ? `Meta ${w.meta}` : null, w.google ? `Google ${w.google}` : null, w.linkedin ? `LinkedIn ${w.linkedin}` : null, w.tiktok ? `TikTok ${w.tiktok}` : null].filter(Boolean).join(" · ");
         return (
-          <Kennzahlleiste werte={[
-            kachel("Divergenz", grad ? grad : "—", grad === "hoch" ? "drei Richtungen oder eigenes Material" : grad === "mittel" ? "zwei Richtungen" : grad === "gering" ? "Nuancen" : "kommt mit dem Scan", grad === "hoch" ? "attention" : undefined),
-            kachel("Sichtbarkeit", sicht ? `${sicht.treffer} von ${sicht.von}` : "—", "Suchanfragen der Wunschzielgruppe", sicht && sicht.treffer === 0 ? "attention" : undefined),
-            kachel("Markennamen", ziel.markennamen?.length || "—", "in Umlauf", (ziel.markennamen?.length || 0) >= 3 ? "attention" : undefined),
-            kachel("Zielgruppen", ziel.zielgruppen?.length || "—", "Bezeichnungen in Umlauf", (ziel.zielgruppen?.length || 0) >= 4 ? "attention" : undefined),
-            kachel("Siegerbotschaft", sieger.monate ? `${sieger.monate} Mon.` : "—", sieger.varianten ? `${sieger.varianten} Varianten · ${sieger.zielgruppe || ""}` : "älteste aktive Anzeige"),
-            kachel("Scan", scanTage === null ? "—" : scanTage === 0 ? "heute" : `vor ${scanTage} T.`, ziel.scanAm ? datumKurz(alsDatum(ziel.scanAm), true) : "noch keiner", scanTage !== null && scanTage > 45 ? "attention" : undefined),
+          <Kennzahlen werte={[
+            kachel("Anzeigen aktiv", k.anzeigen || "—", kanaeleKurz || "noch kein Scan"),
+            kachel("Budget", ziel.budgetklasse ? `${ziel.budgetklasse} / 4` : "—", bk ? `${bk.label} · ${ziel.budgetklasseBegruendung || bk.text}` : "aus Anzeigen, Laufzeit, Kanälen"),
+            kachel("Läuft seit", sieger.monate ? `${sieger.monate} Mon.` : "—", sieger.monate ? `älteste aktive Anzeige${sieger.varianten ? ` · ${sieger.varianten} Varianten` : ""}` : "älteste aktive Anzeige"),
+            kachel("Widersprüche", k.gesamt || "—", k.gesamt ? `${k.stark} stark · ${k.imPortal} im Portal` : "noch kein Befund", k.stark >= 3 ? "attention" : undefined),
+            kachel("Bewertungen", ziel.stimmen?.googleWert ? String(ziel.stimmen.googleWert).replace(".", ",") : "—", ziel.stimmen?.googleAnzahl ? `${ziel.stimmen.googleAnzahl} auf Google` : "Google-Bewertung"),
+            kachel("Sichtbarkeit", sicht ? `${sicht.treffer} / ${sicht.von}` : "—", "Suchanfragen der Wunschzielgruppe", sicht && sicht.treffer === 0 ? "attention" : undefined),
           ]} />
         );
       })()}
 
-      {/* Die Entscheidungsansicht — auf jedem Reiter sichtbar */}
-      <AufEinenBlick ziel={ziel} />
+      {/* 3. Die Quellen: was sie verkaufen wollen, wie sie auftreten, was Kunden sagen */}
+      {(() => {
+        const scanTage = ziel.scanAm ? Math.max(0, Math.round((Date.now() - alsDatum(ziel.scanAm).getTime()) / 86400000)) : null;
+        const eckdaten = [
+          ziel.markennamen?.length ? `${ziel.markennamen.length} Markennamen in Umlauf` : null,
+          ziel.zielgruppen?.length ? `${ziel.zielgruppen.length} Zielgruppenbezeichnungen` : null,
+          haupt ? `Portal: ${EINLADUNG_STATUS[haupt.status]?.label || haupt.status}${haupt.status === "versendet" ? `, ${haupt.aufrufe || 0} Aufrufe${haupt.zuletztGeoeffnet ? `, zuletzt ${relativerTag(alsDatum(haupt.zuletztGeoeffnet))}` : ""}` : ` (Code ${haupt.code})`}` : "Portal: noch kein Code",
+          ziel.scanAm ? `Scan ${scanTage === 0 ? "heute" : `vor ${scanTage} Tagen`} (${datumKurz(alsDatum(ziel.scanAm), true)})` : "noch kein Scan",
+        ];
+        return <AufEinenBlick ziel={ziel} eckdaten={eckdaten} />;
+      })()}
 
       <Tabs value={reiter} onValueChange={setReiter}>
         <TabsList>
