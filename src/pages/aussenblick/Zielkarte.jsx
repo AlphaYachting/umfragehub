@@ -105,7 +105,7 @@ export default function Zielkarte() {
   const [offen, setOffen] = useState({});
   const [beschaeftigt, setBeschaeftigt] = useState(false);
   const [versand, setVersand] = useState(null); // Einladung, die als versendet markiert werden soll
-  const [versandweg, setVersandweg] = useState("post");
+  const [versandweg, setVersandweg] = useState("mail");
   const [versandAm, setVersandAm] = useState(heuteTag);
   const [brief, setBrief] = useState({ briefText: "", briefAufhaenger: "", warmerDraht: "", postadresse: "", briefArt: "mail", briefBetreff: "", briefSpiegelung: "" });
   const [briefGeaendert, setBriefGeaendert] = useState(false);
@@ -679,8 +679,8 @@ export default function Zielkarte() {
                     <Select value={brief.briefArt} onValueChange={(v) => { setBrief({ ...brief, briefArt: v }); setBriefGeaendert(true); }}>
                       <SelectTrigger className="h-8 w-[120px]"><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="post">Brief (Post)</SelectItem>
                         <SelectItem value="mail">E-Mail</SelectItem>
+                        <SelectItem value="post">Brief (Post)</SelectItem>
                       </SelectContent>
                     </Select>
                     <Button size="sm" variant="outline" onClick={briefErzeugen} disabled={kiLaeuft || beschaeftigt}>
@@ -834,10 +834,10 @@ export default function Zielkarte() {
                 <Select value={versandweg} onValueChange={setVersandweg}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="mail">E-Mail</SelectItem>
                     <SelectItem value="post">Post</SelectItem>
                     <SelectItem value="persoenlich">Persönlich übergeben</SelectItem>
                     <SelectItem value="telefon">Am Telefon genannt</SelectItem>
-                    <SelectItem value="mail">E-Mail (nur mit Einwilligung)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
