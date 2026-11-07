@@ -174,7 +174,7 @@ Leerzeile
 Betreffzeile: Fünf Fragen zu ${ziel.unternehmen}
 Leerzeile
 Anrede (Sehr geehrte Frau … / Sehr geehrter Herr …)
-Absatz 1: Aufhänger (ein bis zwei Sätze).
+Absatz 1: Der frühere Kontakt konkret (wenn vorhanden), dann der Aufhänger — zusammen höchstens zwei Sätze.
 Absatz 2: Ihre Anzeigen sind mir in den letzten Wochen öfter begegnet. Ich habe getan, was Ihr nächster Kunde auch tut: gegoogelt. Dabei sind mir fünf Fragen gekommen, die ich Ihnen nicht beantworten kann — nur Sie: (sinngemäß)
 Die fünf Fragen als Liste 1–5.
 Absatz 3: Was mir dabei aufgefallen ist, habe ich auf einer Seite zusammengestellt — nur Dinge, die jeder sieht, der Sie sucht. Dann Link und Code in eigener Zeile. Dort können Sie die fünf Fragen gleich beantworten; die Seite ist nur für Sie und bleibt 30 Tage offen.
