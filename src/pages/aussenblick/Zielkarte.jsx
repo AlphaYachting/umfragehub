@@ -534,7 +534,7 @@ export default function Zielkarte() {
                   </div>
                   <Textarea id="b-hinweis" rows={3} value={kiHinweis} onChange={(e) => setKiHinweis(e.target.value)} placeholder={brief.briefText ? "Diktieren oder tippen — z. B. „den zweiten Absatz kürzer, die Teams-Besprechung nicht erwähnen, am Schluss das Erstgespräch anbieten“. Dann „Änderungen einarbeiten“." : "z. B. kürzer, den steirischen Bezug nach vorn"} className="text-[14px] leading-relaxed" />
                   <p className="text-meta text-muted-foreground">
-                    Die KI liest: {brief.warmerDraht ? <span className="text-foreground">früheren Kontakt</span> : <span className={TON_TEXT.attention}>keinen früheren Kontakt (rechts eintragen)</span>}, {brief.briefAufhaenger ? "Aufhänger" : "keinen Aufhänger"}, die fünf Fragen, Notizen und Anrufe aus dem Verlauf, den Code.
+                    Die KI liest: {brief.warmerDraht ? <span className="text-foreground">früheren Kontakt</span> : <span className={TON_TEXT.attention}>keinen früheren Kontakt (rechts eintragen)</span>}, {brief.briefAufhaenger ? "Aufhänger" : "keinen Aufhänger"}, Befund und Widersprüche, Anzeigen, Notizen und Anrufe aus dem Verlauf. Kein Code, kein Portal-Link — der Anhang kommt mit.
                   </p>
                 </div>
                 {kiKontext?.kontaktUnbelegt && (
@@ -568,7 +568,7 @@ export default function Zielkarte() {
                     rows={brief.briefArt === "mail" ? 16 : 24}
                     value={brief.briefText}
                     onChange={(e) => { setBrief({ ...brief, briefText: e.target.value }); setBriefGeaendert(true); }}
-                    placeholder="„Mit KI schreiben“ holt den Entwurf aus früherem Kontakt, Aufhänger, den fünf Fragen und dem Code — oder hier selbst schreiben."
+                    placeholder="„Mit KI schreiben“ holt den Entwurf aus früherem Kontakt, Aufhänger und Befund: drei Fakten, Anhang, 15 Minuten, keine Agentur — oder hier selbst schreiben."
                     className="font-inter text-[14px] leading-relaxed mt-2"
                   />
                 </details>
@@ -629,7 +629,7 @@ export default function Zielkarte() {
               </Box>
               <div className="v-hinweis border-l-border">
                 <Info className="w-4 h-4 mt-0.5 shrink-0 text-muted-foreground" />
-                <p className="text-meta text-muted-foreground">E-Mail ist der Standard. Ohne früheren Kontakt (Anfrage, Gespräch, Messe) ist eine Werbe-E-Mail in Österreich auch im B2B heikel (TKG) — dann Brief per Post. Rechtliche Freigabe vor einem breiten Rollout ist deine Sache. Nach 10 Tagen ohne Öffnung ein kurzer Anruf, kein zweites Schreiben.</p>
+                <p className="text-meta text-muted-foreground">E-Mail ist der Standard. Ohne früheren Kontakt (Anfrage, Gespräch, Messe) ist eine Werbe-E-Mail in Österreich auch im B2B heikel (TKG) — dann Brief per Post. Rechtliche Freigabe vor einem breiten Rollout ist deine Sache. Zur Mail gehört der zweiseitige Anhang (PDF). Danach: Tag 7 Mail 2, Tag 10 Anruf, Tag 17 Mail 3, Tag 21 Anruf.</p>
               </div>
             </div>
           </div>
