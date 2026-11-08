@@ -7,7 +7,8 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 // Vorher: Mail mit zweiseitigem Anhang statt fünf Fragen mit Portal-Code.
 // Aufbau: Hook (belegter früherer Kontakt) → „gegoogelt, Google und ChatGPT gefragt“ → zwei
 // Fakten aus dem eigenen Material des Unternehmens → die Spannung als eine Frage → Anhang mit
-// Nutzen → 15 Minuten → „keine Agentur, Wissen statt Bauchgefühl“ → Anruf angekündigt.
+// Nutzen → 15 Minuten → „keine Agentur, Wissen statt Bauchgefühl“ → Bitte um kurze Antwort per Mail
+// (kein Anruf angekündigt; der erste Anruf kommt erst nach Mail 3).
 // Das Portal kommt erst nach dem Gespräch; deshalb steht kein Code und kein Link im Text.
 //
 // Die Funktion schreibt nichts in die Datenbank und verschickt nichts. Der Text kommt in
@@ -185,7 +186,7 @@ AUFBAU (genau diese Reihenfolge; HÖCHSTENS 120 WÖRTER ohne Anrede und Gruß; k
 3. Die Spannung als EINE Frage, ein Satz, die nur der Empfänger beantworten kann (z. B. „Welches ${name} soll Ihr nächster Kunde kennen?“). Gibt es eine gewollte Trennung (zwei Unternehmen, zwei Websites), erkenne sie in höchstens fünf Wörtern an.
 4. Anhang, EIN Satz: „Im Anhang sehen Sie, was Ihr nächster Kunde sieht, und was Sie davon haben.“ (sinngemäß, gern auf das Unternehmen gemünzt). Keine Seitenzahl, keine Prozentzahl, keine Euro, keine Aufzählung von Nutzen.
 5. PFLICHT, höchstens zwei kurze Sätze: „Ich möchte Ihnen keine Agentur verkaufen.“ Dann sinngemäß: Was ${name} für diese Entscheidung braucht, weiß das Unternehmen schon, bei seinen Kunden und im Team.
-6. Letzte Zeile: „15 Minuten, Telefon oder Teams? Sagen Sie mir, wann es Ihnen passt, oder ich rufe Sie am ${anruftag} an.“
+6. Letzte Zeile: „15 Minuten, Telefon oder Teams? Eine kurze Antwort genügt, dann schlage ich Ihnen zwei Termine vor.“ Keinen Anruf ankündigen.
 7. Gruß: „${ABSENDER.gruss}“ und darunter „${ABSENDER.name}“. Keine weitere Signatur (die setzt das Mailprogramm).
 
 HARTE REGELN:
@@ -208,7 +209,7 @@ FORM: E-Mail. "text" = nur der E-Mail-Text ohne Betreff, reiner Text: Anrede (�
   }
 
   return `${gemeinsam}
-FORM: Brief per Post (ohne früheren Kontakt der Standard), eine Seite; der Anhang liegt bei. Statt „Im Anhang“ heißt es „Beigelegt finden Sie …“. Statt „oder ich rufe Sie am ${anruftag} kurz an“: „Ich rufe Sie in der kommenden Woche kurz an.“ Aufbau:
+FORM: Brief per Post (ohne früheren Kontakt der Standard), eine Seite; der Anhang liegt bei. Statt „Im Anhang“ heißt es „Beigelegt finden Sie …“. Statt „Eine kurze Antwort genügt“: „Eine kurze Mail an ${ABSENDER.mail} genügt, dann schlage ich Ihnen zwei Termine vor.“ Keinen Anruf ankündigen. Aufbau:
 Anschrift (Name, Rolle, Unternehmen, Adresse ${String(ziel.postadresse || ziel.sitz || '').replace(/\n/g, ', ')} — jede Angabe eigene Zeile)
 Leerzeile
 ${ABSENDER.ort}, ${heute}
