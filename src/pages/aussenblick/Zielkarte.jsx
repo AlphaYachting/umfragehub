@@ -629,7 +629,7 @@ export default function Zielkarte() {
               </Box>
               <div className="v-hinweis border-l-border">
                 <Info className="w-4 h-4 mt-0.5 shrink-0 text-muted-foreground" />
-                <p className="text-meta text-muted-foreground">E-Mail ist der Standard. Ohne früheren Kontakt (Anfrage, Gespräch, Messe) ist eine Werbe-E-Mail in Österreich auch im B2B heikel (TKG) — dann Brief per Post. Rechtliche Freigabe vor einem breiten Rollout ist deine Sache. Zur Mail gehört der zweiseitige Anhang (PDF). Danach: Tag 7 Mail 2, Tag 10 Anruf, Tag 17 Mail 3, Tag 21 Anruf.</p>
+                <p className="text-meta text-muted-foreground">E-Mail ist der Standard. Ohne früheren Kontakt (Anfrage, Gespräch, Messe) ist eine Werbe-E-Mail in Österreich auch im B2B heikel (TKG) — dann Brief per Post. Rechtliche Freigabe vor einem breiten Rollout ist deine Sache. Zur Mail gehört der Anhang (PDF). Die Mail kündigt keinen Anruf an, sie bittet um eine kurze Antwort. Danach: Tag 7 Mail 2, Tag 14 Mail 3, ab Tag 21 Anruf.</p>
               </div>
             </div>
           </div>
