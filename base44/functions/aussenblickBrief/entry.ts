@@ -1,23 +1,35 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 
-// Außenblick-Modul: schreibt den Kontaktbrief (Post) oder die Kontakt-E-Mail eines Ziels
-// mit dem Sprachmodell der Plattform. Nur für Admins.
+// Außenblick-Modul: schreibt die erste Kontakt-E-Mail (Welle 1) eines Ziels — oder, ohne
+// früheren Kontakt, den Brief per Post — mit dem Sprachmodell der Plattform. Nur für Admins.
+//
+// Fassung vom 08.11.2026: Mail mit zweiseitigem Anhang statt fünf Fragen mit Portal-Code.
+// Aufbau: Hook (belegter früherer Kontakt) → „gegoogelt, Google und ChatGPT gefragt“ → drei
+// Fakten aus dem eigenen Material des Unternehmens → die Spannung als eine Frage → Anhang mit
+// Nutzen → 15 Minuten → „keine Agentur, Wissen statt Bauchgefühl“ → Anruf angekündigt.
+// Das Portal kommt erst nach dem Gespräch; deshalb steht kein Code und kein Link im Text.
 //
 // Die Funktion schreibt nichts in die Datenbank und verschickt nichts. Der Text kommt in
-// die Zielkarte zurück; Alfons liest, ändert und speichert von Hand. Sie gehört zum
-// Außenblick-Modul und rührt keine Entität der Befragungssoftware an.
+// die Zielkarte zurück; Alfons liest, ändert und speichert von Hand.
 
 const ABSENDER = {
   name: 'Alfons Rittler',
-  firma: 'Rittler & Co · andi fragt.',
+  rolle: 'Geschäftsführer Rittler & Co',
   telefon: '+43 316 57 01 17',
-  mail: 'office@rittler.co',
+  mail: 'a.rittler@rittler.co',
   ort: 'Graz',
+  gruss: 'Mit Fragen und Grüßen aus Graz,',
 };
-const PORTAL = 'andifragt.at/aussenblick';
-const SPERRLISTE = ['falsch', 'Fehler', 'sollten', 'müssten', 'besser', 'anonym', 'digital', 'KI', 'Software', 'Tool', 'Analyse'];
-// Was Rittler & Co ist — ein Satz im Text, in Alfons' Worten (07.11.2026). Nicht, wie es funktioniert.
-const POSITIONIERUNG = 'Rittler & Co hat sich mit andi fragt. auf genau diese Frage spezialisiert: Welche Botschaft trägt wirklich — damit Werbung effizienter, zielgerichteter und nachhaltiger wird. Die Antwort holen wir nicht aus Annahmen, sondern aus dem Unternehmen selbst: von seinen Kunden und seinem Team.';
+const SPERRLISTE = ['falsch', 'Fehler', 'sollten', 'müssten', 'besser', 'anonym', 'digital', 'Software', 'Tool', 'Analyse'];
+// „KI“ ist nur für unsere Methode gesperrt; „Googles KI-Modus“ darf stehen, wenn er zitiert wird.
+const KI_FREI = /Googles? KI-Modus|KI-Modus/g;
+// Was nie in die erste Mail gehört, gleich welches Unternehmen — die Funktion meldet Treffer.
+const GRENZEN = [
+  { wort: 'Umsatzanteil', re: /(Umsatz|Prozent des Umsatzes|Drittel des Umsatzes|% des Umsatzes)/i },
+  { wort: 'Portal/Code', re: /(andifragt\.at\/|\[CODE\]|Einladungscode|\bCode\b)/i },
+  { wort: 'Rezension/kununu', re: /(kununu|Rezension|„[^“]{5,}“\s*\(?\s*(Google-)?Bewertung)/i },
+  { wort: 'Agentursprache', re: /(spezialisiert|zielgerichtet|effizienter|nachhaltiger|Botschaften, die wirklich tragen)/i },
+];
 
 export default async function (req) {
   try {
@@ -27,9 +39,8 @@ export default async function (req) {
 
     const body = await req.json().catch(() => ({}));
     const zielId = String(body.zielId || '');
-    const art = body.art === 'post' ? 'post' : 'mail'; // E-Mail ist der Standard (Alfons, 07.11.2026)
+    const art = body.art === 'post' ? 'post' : 'mail';
     const hinweis = String(body.hinweis || '').slice(0, 1500);
-    // Überarbeiten: Alfons hat schon einen Entwurf und sagt (diktiert), was sich ändern soll
     const bisher = body.bisher && typeof body.bisher === 'object' && String(body.bisher.text || '').trim()
       ? { betreff: String(body.bisher.betreff || '').slice(0, 300), text: String(body.bisher.text || '').slice(0, 8000) }
       : null;
@@ -38,37 +49,38 @@ export default async function (req) {
     const db = base44.asServiceRole.entities;
     const ziel = await db.Ziel.get(zielId);
     if (!ziel) return Response.json({ error: 'ziel_fehlt' }, { status: 404 });
-    const fragen = (await db.Portalfrage.filter({ zielId })).sort((a, b) => (a.nummer || 0) - (b.nummer || 0));
-    const einladungen = await db.Einladung.filter({ zielId });
-    const haupt = einladungen.find((e) => e.art !== 'welle');
 
-    // Kontakt-Kontext: früherer Kontakt, Aufhänger, Notizen und Anrufe aus dem Verlauf.
-    // Die Regel von Alfons: Gab es Kontakt, muss der Text ihn konkret nennen — die KI prüft den Kontext.
-    const verlauf = (await db.Ereignis.filter({ zielId })).filter((x) => ['notiz', 'anruf', 'erstgespraech_klick'].includes(x.art) && (x.details || x.text));
+    const verlauf = (await db.Ereignis.filter({ zielId })).filter((x) => ['notiz', 'anruf'].includes(x.art) && (x.details || x.text));
     verlauf.sort((a, b) => String(b.created_date || '').localeCompare(String(a.created_date || '')));
     const notizen = [
       ...(ziel.notizen ? [String(ziel.notizen)] : []),
       ...verlauf.slice(0, 6).map((x) => `${x.created_date ? String(x.created_date).slice(0, 10) : ''} ${x.art === 'anruf' ? 'Anruf' : 'Notiz'}: ${String(x.details || x.text || '')}`.trim()),
-    ].map((s) => s.slice(0, 400));
+    ].map((s) => s.slice(0, 600));
     const kontakt = String(ziel.warmerDraht || '').trim();
     const kontaktUnbelegt = /zu pr[üu]fen|falls belegbar|unbelegt|vermutlich|unsicher|\?/i.test(kontakt);
 
-    // Köder: der stärkste Widerspruch, der ohnehin im Portal offen steht — ein Fakt aus dem eigenen
-    // Material des Unternehmens, nebeneinander gelegt, ohne Wertung. Macht den Absatz „was wir für Sie tun“ konkret.
     const widersprueche = await db.Widerspruch.filter({ zielId });
-    const rang = (w) => (w.staerke === 'stark' ? 0 : w.staerke === 'mittel' ? 1 : 2) * 10 + (w.portal === 'offen' ? 0 : w.portal === 'gesperrt' ? 1 : 5) + (w.reihenfolgePortal || w.nummer || 9) / 100;
-    const koeder = widersprueche.filter((w) => w.portal !== 'intern' && w.belegA?.text && w.belegB?.text).sort((a, b) => rang(a) - rang(b))[0] || null;
+    const rang = (w) => (w.staerke === 'stark' ? 0 : w.staerke === 'mittel' ? 1 : 2) * 10 + (w.nummer || 9) / 100;
+    const material = widersprueche
+      .filter((w) => w.belegA?.text && w.belegB?.text)
+      .sort((a, b) => rang(a) - rang(b))
+      .slice(0, 6)
+      .map((w) => `- ${w.titel || w.typ}: A „${w.belegA.text}“ (${w.belegA.fundstelle || ''}) · B „${w.belegB.text}“ (${w.belegB.fundstelle || ''}) · Spannung: ${w.spannung || w.zeile || ''}`);
+
     const w = ziel.werbung || {};
     const zahlen = [
-      (w.meta || w.google || w.linkedin || w.tiktok) ? `${(w.meta || 0) + (w.google || 0) + (w.linkedin || 0) + (w.tiktok || 0)} aktive Anzeigen (${[w.meta ? `Meta ${w.meta}` : null, w.google ? `Google ${w.google}` : null, w.linkedin ? `LinkedIn ${w.linkedin}` : null, w.tiktok ? `TikTok ${w.tiktok}` : null].filter(Boolean).join(', ')})` : null,
-      w.siegerbotschaft?.monate ? `älteste aktive Anzeige läuft seit ${w.siegerbotschaft.monate} Monaten${w.siegerbotschaft.seit ? ` (seit ${w.siegerbotschaft.seit})` : ''}` : null,
-      ziel.stimmen?.googleWert ? `Google ${String(ziel.stimmen.googleWert).replace('.', ',')} bei ${ziel.stimmen.googleAnzahl || '?'} Bewertungen` : null,
-      ziel.zielgruppen?.length ? `${ziel.zielgruppen.length} Zielgruppenbezeichnungen in Umlauf` : null,
-      ziel.markennamen?.length ? `${ziel.markennamen.length} Markennamen in Umlauf` : null,
+      (w.meta || w.google || w.linkedin || w.tiktok) ? `Anzeigen: ${[w.linkedin ? `LinkedIn ${w.linkedin}` : null, w.google ? `Google ${w.google}` : null, w.meta ? `Meta ${w.meta}` : null, w.tiktok ? `TikTok ${w.tiktok}` : null].filter(Boolean).join(', ')}` : null,
+      w.siegerbotschaft?.hook ? `längste Anzeige: „${w.siegerbotschaft.hook}“${w.siegerbotschaft.monate ? `, ${w.siegerbotschaft.monate} Monate` : ''}` : null,
+      w.juengste?.hook ? `jüngste Anzeige: „${w.juengste.hook}“` : null,
+      ziel.stimmen?.googleAnzahl ? `${ziel.stimmen.googleAnzahl} Google-Bewertungen${ziel.stimmen.googleWert ? `, Schnitt ${String(ziel.stimmen.googleWert).replace('.', ',')}` : ''}` : null,
+      ziel.markennamen?.length ? `Namen in Umlauf: ${ziel.markennamen.join(', ')}` : null,
     ].filter(Boolean);
 
-    const echterCode = haupt?.code || '';
-    const prompt = bauePrompt({ ziel, fragen, code: echterCode || '[CODE]', codeFehlt: !echterCode, art, hinweis, kontakt, kontaktUnbelegt, notizen, bisher, koeder, zahlen });
+    const befund = String(ziel.befundMarkdown || '').slice(0, 9000);
+    const kurz = String(ziel.registerMarkdown3 || '').slice(0, 3500);
+    const anruftag = String(body.anruftag || 'Donnerstag');
+
+    const prompt = bauePrompt({ ziel, art, hinweis, kontakt, kontaktUnbelegt, notizen, bisher, material, zahlen, befund, kurz, anruftag });
     const ergebnis = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt,
       response_json_schema: {
@@ -79,7 +91,7 @@ export default async function (req) {
           spiegelung: {
             type: 'object',
             properties: {
-              gefuehl: { type: 'string', description: 'Ein Satz: Fühlt sich die Empfängerin beobachtet oder verstanden — und warum?' },
+              gefuehl: { type: 'string', description: 'Ein Satz: Fühlt sich der Empfänger beobachtet oder verstanden — und warum?' },
               risiko: { type: 'string', description: 'Der riskanteste Satz des Entwurfs, wörtlich zitiert, und in einem Halbsatz, warum.' },
               streichen: { type: 'string', description: 'Was du streichen würdest — im Zweifel streichen, nicht ergänzen. Oder: nichts.' },
             },
@@ -90,28 +102,29 @@ export default async function (req) {
       },
     });
     const r = typeof ergebnis === 'string' ? sicherParsen(ergebnis) : (ergebnis || {});
-    let text = String(r.text || '').trim();
+    const text = String(r.text || '').trim();
     if (!text) return Response.json({ error: 'leer' }, { status: 502 });
 
-    // Ohne Einladung darf kein Code im Text stehen — erfundene Codes auf den Platzhalter zurücksetzen
-    if (!echterCode && !text.includes('[CODE]')) {
-      text = text.replace(/(Code\s*:?\s*)([A-Za-z0-9][A-Za-z0-9\-_]{2,})/g, '$1[CODE]');
-      if (!text.includes('[CODE]') && text.includes(PORTAL)) text = text.replace(PORTAL, `${PORTAL} | Code: [CODE]`);
-    }
+    const ohneKiModus = text.replace(KI_FREI, '');
+    const treffer = [
+      ...SPERRLISTE.filter((s) => new RegExp(`(^|[^A-Za-zÄÖÜäöüß])${s}([^A-Za-zÄÖÜäöüß]|$)`).test(text)),
+      ...(/(^|[^A-Za-zÄÖÜäöüß])KI([^A-Za-zÄÖÜäöüß-]|$)/.test(ohneKiModus) ? ['KI (nur „Googles KI-Modus“ erlaubt)'] : []),
+      ...GRENZEN.filter((g) => g.re.test(text)).map((g) => g.wort),
+    ];
+    const woerter = text.split(/\s+/).filter(Boolean).length;
 
-    // Sperrwörter nachprüfen — das Modell soll sie meiden, wir melden, wenn eines durchrutscht
-    const treffer = SPERRLISTE.filter((w) => new RegExp(`(^|[^A-Za-zÄÖÜäöüß])${w}([^A-Za-zÄÖÜäöüß]|$)`).test(text));
     return Response.json({
       art,
-      betreff: String(r.betreff || '').trim(),
+      betreff: String(r.betreff || '').trim() || `Was Ihr nächster Kunde über ${kurzname(ziel)} erfährt`,
       text,
       spiegelung: r.spiegelung && typeof r.spiegelung === 'object'
         ? { gefuehl: String(r.spiegelung.gefuehl || '').trim(), risiko: String(r.spiegelung.risiko || '').trim(), streichen: String(r.spiegelung.streichen || '').trim() }
         : String(r.spiegelung || '').trim(),
       ueberarbeitet: Boolean(bisher),
       sperrwoerter: treffer,
-      codeFehlt: !echterCode,
-      kontext: { kontakt: Boolean(kontakt), kontaktUnbelegt: Boolean(kontakt) && kontaktUnbelegt, aufhaenger: Boolean(ziel.briefAufhaenger), notizen: notizen.length },
+      woerter,
+      codeFehlt: false, // Welle 1 braucht keinen Code mehr; das Portal kommt nach dem Gespräch
+      kontext: { kontakt: Boolean(kontakt), kontaktUnbelegt: Boolean(kontakt) && kontaktUnbelegt, aufhaenger: Boolean(ziel.briefAufhaenger), notizen: notizen.length, befund: Boolean(befund) },
     });
   } catch (error) {
     console.error('aussenblickBrief:', error?.message || error);
@@ -127,98 +140,79 @@ function sicherParsen(s) {
   }
 }
 
-function sieForm(frage) {
-  // Die Portalfragen stehen in der Ansprache des Unternehmens (oft du); der erste Kontakt ist Sie.
-  return String(frage || '')
-    .replace(/\bdeine\b/g, 'Ihre').replace(/\bDeine\b/g, 'Ihre')
-    .replace(/\bdeinen\b/g, 'Ihren').replace(/\bdeinem\b/g, 'Ihrem').replace(/\bdeiner\b/g, 'Ihrer')
-    .replace(/\bdein\b/g, 'Ihr').replace(/\bDein\b/g, 'Ihr')
-    .replace(/\beure\b/g, 'Ihre').replace(/\beuren\b/g, 'Ihren').replace(/\beurem\b/g, 'Ihrem').replace(/\beuer\b/g, 'Ihr')
-    .replace(/\bdu wirbst\b/g, 'Sie werben').replace(/\bdu\b/g, 'Sie').replace(/\bdich\b/g, 'Sie').replace(/\bdir\b/g, 'Ihnen');
+function kurzname(ziel) {
+  return String(ziel.unternehmen || '').replace(/\s+(GmbH|AG|KG|OG|e\.U\.|Group GmbH|GmbH & Co KG).*$/i, '').replace(/\s+Group$/i, '').trim() || ziel.unternehmen;
 }
 
-function bauePrompt({ ziel, fragen, code, codeFehlt, art, hinweis, kontakt, kontaktUnbelegt, notizen, bisher, koeder, zahlen }) {
+function bauePrompt({ ziel, art, hinweis, kontakt, kontaktUnbelegt, notizen, bisher, material, zahlen, befund, kurz, anruftag }) {
   const e = (ziel.entscheider || [])[0] || {};
-  const fragenText = fragen.length
-    ? fragen.map((f) => `${f.nummer}. ${sieForm(f.text)}`).join('\n')
-    : '(Noch keine Fragen hinterlegt — fünf Platzhalter in eckigen Klammern setzen.)';
-  const blick = ziel.blick || {};
+  const name = kurzname(ziel);
   const heute = new Date().toLocaleDateString('de-AT', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
   const gemeinsam = `
-Du schreibst für Alfons Rittler (Rittler & Co, Graz; Angebot „andi fragt.“) den ersten Kontakt an ein Unternehmen, das online wirbt. Der Kontakt soll neugierig machen, nicht belehren. Grundhaltung: Die Antwort steckt im Unternehmen; wir haben nur getan, was sein nächster Kunde auch tut — gegoogelt — und dabei fünf Fragen gefunden, die nur das Unternehmen beantworten kann.
+Du schreibst für Alfons Rittler (Rittler & Co, Graz; Leistung „andi fragt.“) die ERSTE Nachricht an ein Unternehmen, das online wirbt. Ziel: eine strategisch gute, kurze Nachricht, die den Empfänger trifft, ihn neugierig auf den beigelegten zweiseitigen Anhang macht und zu 15 Minuten Gespräch führt. Sie soll sich nicht wie Werbung einer Agentur lesen, sondern wie der Blick eines Kollegen, der genau hingesehen hat.
 
 EMPFÄNGER
-- Unternehmen: ${ziel.unternehmen}
+- Unternehmen: ${ziel.unternehmen} (in der Nachricht kurz: ${name})
 - Entscheider: ${e.name || '[Name]'}${e.rolle ? `, ${e.rolle}` : ''}
-- Adresse: ${(ziel.postadresse || ziel.sitz || '').replace(/\n/g, ', ')}
 - Website: ${ziel.website || ''}
 
-FRÜHERER KONTAKT MIT RITTLER & CO (geprüfter Kontext — das Wichtigste für den Einstieg):
-${kontakt || '(keiner bekannt — dann ist es der erste Kontakt)'}
-${kontakt && !kontaktUnbelegt ? `REGEL: Der erste Satz nennt diesen Kontakt konkret — Zeitpunkt (Monat oder Datum) und Anlass in den Worten des Kontexts, z. B. „Anfang Juli haben Sie bei uns angefragt, weil …; am 9. Juli haben wir uns per Teams kennengelernt.“ Kein vager Satz wie „unsere Wege haben sich gekreuzt“. Kein Wort dazu, warum es damals nicht weiterging, kein Bedauern, kein Vorwurf. Danach die Brücke: Seither sind mir Ihre Anzeigen öfter begegnet …` : ''}${kontakt && kontaktUnbelegt ? `REGEL: Dieser Kontakt ist noch nicht belegt. Nenn ihn nicht als Tatsache. Schreib stattdessen an diese Stelle genau den Platzhalter [FRÜHERER KONTAKT — prüfen] als eigenen Satz, damit Alfons ihn ersetzt.` : ''}
+FRÜHERER KONTAKT (geprüft, wenn nicht anders markiert):
+${kontakt || '(keiner — dann ist es der erste Kontakt; Einstieg über den Aufhänger)'}
+${kontakt && !kontaktUnbelegt ? 'REGEL: Der erste Satz nennt diesen Kontakt konkret — Monat und Jahr und Anlass, in einfachen Worten, ohne interne Namen von Mitarbeitenden von Rittler & Co. Dann: „Es ist bei der Anfrage geblieben.“ oder sinngemäß. Kein Bedauern, kein Vorwurf.' : ''}${kontakt && kontaktUnbelegt ? 'REGEL: Dieser Kontakt ist nicht belegt. Nenn ihn nicht als Tatsache, sondern schreib als ersten Satz genau den Platzhalter [FRÜHERER KONTAKT — prüfen].' : ''}
 
-AUFHÄNGER (zusätzlich, ein Satz; kein Lob, keine Floskel):
-${ziel.briefAufhaenger || '(keiner hinterlegt — dann Nähe oder Branche nehmen)'}
+AUFHÄNGER UND VORGABEN VON ALFONS (haben Vorrang vor allem außer den harten Regeln):
+${ziel.briefAufhaenger || '(keine)'}
 
-NOTIZEN UND ANRUFE VON ALFONS (Kontext, nur verwenden, wenn es den Einstieg konkreter macht; nichts davon zitieren, was intern klingt):
+NOTIZEN UND ANRUFE (Kontext; darin stehen oft Regeln, was draußen bleibt — beachten, nichts Internes zitieren):
 ${notizen.length ? notizen.map((n) => `- ${n}`).join('\n') : '- keine'}
 
-WAS WIR GESEHEN HABEN (nur für dein Verständnis — NICHT in den Text, kein Befund, keine Kritik):
-- Sie werben für: ${blick.verkaufen || ''}
-- So treten sie auf: ${blick.auftritt || ''}
-- Divergenz: ${blick.divergenz || ''}
+MATERIAL, AUS DEM DU DIE DREI FAKTEN WÄHLST (alles öffentlich, vom Unternehmen selbst; nur Fakten, die der Empfänger selbst nachprüfen kann):
+Zahlen: ${zahlen.length ? zahlen.join(' · ') : 'keine'}
+Widersprüche aus dem Befund:
+${material.length ? material.join('\n') : '- keine hinterlegt'}
 
-DIE FÜNF FRAGEN (wortgleich übernehmen, Sie-Form, nummeriert 1–5, nichts hinzufügen):
-${fragenText}
+BEFUND (intern, nur zum Verstehen — NICHT abschreiben, keine Fundstellen, keine Zielzustände, keine Bewertung):
+${befund || '(kein Befund)'}
+${kurz ? `\nKURZFASSUNG DER RECHERCHE (intern):\n${kurz}` : ''}
 
-PORTAL: ${PORTAL} · Code ${code} · Die Seite ist nur für den Empfänger und bleibt 30 Tage offen; dort kann er die fünf Fragen beantworten.${codeFehlt ? '\nDer Einladungscode existiert noch nicht. Schreib exakt den Platzhalter [CODE] in eckigen Klammern an die Stelle des Codes. Erfinde keinen Code.' : ''}
+AUFBAU (genau diese Reihenfolge, insgesamt höchstens 200 Wörter ohne Anrede und Gruß):
+1. Einstieg, höchstens zwei Sätze: der frühere Kontakt konkret (oder der Aufhänger). Dann: „Seither sind mir Ihre Anzeigen öfter begegnet, und ich habe getan, was Ihr nächster Kunde auch tut: gegoogelt und Google und ChatGPT gefragt.“ (sinngemäß, gern kürzer).
+2. „Drei Dinge daraus:“ und drei Zeilen, jede mit Gedankenstrich „– “, jede höchstens 30 Wörter, jede ein Fakt aus dem eigenen Material des Unternehmens, nebeneinander gelegt, ohne Wertung. Wenn das Material eine Antwort von Googles KI-Modus oder ChatGPT enthält, ist das der erste Fakt (was die Antwortmaschine über das Unternehmen sagt — und wo es bei der Frage eines Wunschkunden fehlt oder unter anderem Namen auftaucht). Ein Fakt aus den Anzeigen (längste gegen jüngste, oder Anzeige gegen Website). Ein Fakt, der überrascht (Namen, Einträge, Bewertungen als Zahl). Zahlen nur aus dem Material.
+3. Die Spannung als EINE Frage, ein Satz, die nur der Empfänger beantworten kann (z. B. „Welches der beiden soll Ihr nächster Kunde kennen?“). Erkennt das Material eine gewollte Trennung (zwei Unternehmen, zwei Websites), erkenne sie in einem Halbsatz an und frage nach den Kanälen.
+4. Anhang ankündigen, ein Satz, mit dem Nutzen in seinen Worten: „Im Anhang steht das auf zwei Seiten, mit dem, was Sie davon haben: …“ — zwei oder drei kurze Nutzen (mehr Anfragen aus demselben Budget, weniger bezahlte Klicks ins Leere, mehr Aufträge aus denselben Anfragen; oder auf das Unternehmen gemünzt). Keine Prozentzahl, keine Euro.
+5. Vorschlag, ein Satz: 15 Minuten, Telefon oder Teams, kostenlos; am Ende wissen beide, ob wir helfen können und ob er das will. Wenn es einen Marketingverantwortlichen gibt, ist er eingeladen — ohne Namen.
+6. Schlussabsatz, PFLICHT, zwei bis drei Sätze: „Ich möchte Ihnen keine Agentur verkaufen.“ Rittler & Co hat 25 Jahre Werbung gemacht und sich daraus weiterentwickelt; heute Wissen statt Bauchgefühl: Was ${name} für Entscheidungen über Botschaft, Zielgruppe und Namen braucht, hat das Unternehmen verlässlich schon in sich — bei den Kunden, die geblieben sind, im Team, im Vertrieb —, nur sieht es niemand. Was sein Team oder seine Agentur daraus macht, bleibt seine Sache.
+7. Letzte Zeile: „Sagen Sie mir, wann es Ihnen passt, oder ich rufe Sie am ${anruftag} kurz an.“
+8. Gruß: „${ABSENDER.gruss}“ und darunter „${ABSENDER.name}“. Keine weitere Signatur (die setzt das Mailprogramm).
 
-ABSENDER: ${ABSENDER.name}, ${ABSENDER.firma}, ${ABSENDER.telefon}, ${ABSENDER.mail}
-
-WAS WIR FÜR SIE TUN (Pflicht: ein kurzer Absatz von drei Sätzen, nach den fünf Fragen und vor dem Link — auf DIESES Unternehmen gemünzt, nicht allgemein):
-Satz 1 — der Köder: ein Fakt aus dem eigenen Material des Unternehmens, nebeneinander gelegt, ohne Wertung, ohne „falsch“, ohne Schlussfolgerung. Nimm dafür diesen Widerspruch:
-${koeder ? `  A: ${koeder.belegA.text} (${koeder.belegA.fundstelle || ''})\n  B: ${koeder.belegB.text} (${koeder.belegB.fundstelle || ''})\n  Im Portal steht dazu: ${koeder.zeile || koeder.spannung || ''}` : '  (keiner hinterlegt — dann die Zahlen unten nehmen)'}
-  Zahlen des Unternehmens, die du nennen darfst (alle öffentlich): ${zahlen.length ? zahlen.join(' · ') : 'keine'}
-Satz 2 — was wir daraus machen, in Verbindung mit Satz 1: Rittler & Co hat sich mit andi fragt. darauf spezialisiert, genau das zu klären — welche Botschaft trägt — und zwar nicht aus Annahmen, sondern aus dem Unternehmen selbst: von den Kunden, die geblieben sind, und vom Team.
-Satz 3 — was die Geschäftsführerin davon hat, konkret in ihren Zahlen: das Budget (ihre Anzeigenzahl nennen) fließt in die eine Botschaft, die trägt (effizienter); eine Zielgruppe statt vieler (zielgerichteter); eine Botschaft in den Worten der eigenen Kunden, die Jahre hält statt Wochen (nachhaltiger).
-Verboten in diesem Absatz: Allgemeinplätze ohne Bezug auf ihre Zahlen oder ihr Material („Botschaften, die wirklich tragen“ allein reicht nicht), Fachjargon, mehr als drei Sätze.
-Haltung: ${POSITIONIERUNG}
-
-REGELN (hart):
-- Sie-Form. Deutsch (Österreich). Kein Gendersternchen.
-- Kein Befund, keine Kritik, keine Bewertung des Unternehmens, keine Lösung für den Empfänger, kein Ratschlag. Der Absatz WAS WIR FÜR SIE TUN ist die Ausnahme: dort ein Fakt aus ihrem Material ohne Wertung und die Spezialisierung von Rittler & Co — was wir tun und wofür, nicht als Ablauf.
-- Verboten sind diese Wörter: ${SPERRLISTE.join(', ')}. Auch nicht „anonym“, „digital“, „Interview-Software“ oder irgendein Hinweis, wie andi fragt. arbeitet. Kein Produktname außer „andi fragt.“.
-- Keine Mitbewerber nennen. Nichts Privates über Personen.
-- Keine Zahl, die nicht aus dem Aufhänger, den Fragen oder der Liste „Zahlen des Unternehmens“ stammt.
-- Kein Lob („beeindruckend“, „spannend“, „toll“), keine Floskeln („ich hoffe, es geht Ihnen gut“).
-- Die fünf Fragen stehen als nummerierte Liste im Text, wortgleich wie oben.
-- Link und Code stehen gut sichtbar in einer eigenen Zeile.
-${bisher ? `\nÜBERARBEITUNG — das ist der Modus dieses Aufrufs. Hier ist der bisherige Entwurf, den Alfons schon gelesen hat:\n---\n${bisher.betreff ? `Betreff: ${bisher.betreff}\n\n` : ''}${bisher.text}\n---\nAlfons will diese Änderungen (diktiert, kann umgangssprachlich sein): „${hinweis}“\nSetz genau diese Änderungen um und lass alles andere wortgleich stehen — keine neuen Formulierungen an Stellen, die er nicht genannt hat, keine neue Gliederung, die fünf Fragen bleiben wortgleich, sofern er nicht ausdrücklich eine Frage ändern will. Die Regeln oben gelten weiter.\n` : hinweis ? `\nHINWEIS VON ALFONS (hat Vorrang vor Stilfragen, nie vor den Regeln): ${hinweis}\n` : ''}
-AUSGABE als JSON mit den Feldern "betreff", "text", "spiegelung".
-- "spiegelung" ist ein Objekt mit drei Feldern, aus Sicht der Empfängerin/des Empfängers, die/der gerade Geld in diese Anzeigen steckt: "gefuehl" (ein Satz: fühlt sie/er sich beobachtet oder verstanden, und warum), "risiko" (der riskanteste Satz wörtlich zitiert plus ein Halbsatz warum), "streichen" (was du streichen würdest — im Zweifel streichen, nicht ergänzen; sonst „nichts“).
+HARTE REGELN:
+- Sie-Form, Deutsch (Österreich), kein Gendersternchen, kein Markdown, kein Fettdruck.
+- Verbotene Wörter: ${SPERRLISTE.join(', ')}, sowie „KI“ für unsere Arbeit. „Googles KI-Modus“ und „ChatGPT“ dürfen genannt werden, wenn du ihre Antworten über das Unternehmen wiedergibst.
+- Nie erklären, wie andi fragt. arbeitet. Kein Interview-, Befragungs- oder Methodenbegriff. Kein Portal, kein Link, kein Code, keine Fragenliste.
+- Keine Kundennamen des Unternehmens, keine Umsatzanteile oder Umsatzzahlen, keine Rezensionen im Wortlaut, kein kununu, keine Standorte von Mitarbeitenden, nichts Privates über Personen, keine Mitbewerber.
+- Keine Agentursprache: nicht „spezialisiert“, „zielgerichtet“, „effizienter“, „nachhaltiger“, „Botschaften, die wirklich tragen“, keine Floskeln, kein Lob („beeindruckend“, „spannend“).
+- Keine Zahl, die nicht im Material steht. Nichts, was das Unternehmen mit einem Anruf bei seiner Agentur in einer Woche erledigt hätte, als Fakt 1.
+- Jede Zeile muss der Empfänger selbst nachprüfen können, ohne uns zu glauben.
+- Betreff: Standard „Was Ihr nächster Kunde über ${name} erfährt“ (passt zur Headline des Anhangs); nur bei ausdrücklichem Hinweis von Alfons ein anderer, höchstens acht Wörter.
+${bisher ? `\nÜBERARBEITUNG — das ist der Modus dieses Aufrufs. Bisheriger Entwurf, den Alfons gelesen hat:\n---\n${bisher.betreff ? `Betreff: ${bisher.betreff}\n\n` : ''}${bisher.text}\n---\nAlfons will diese Änderungen (diktiert, kann umgangssprachlich sein): „${hinweis}“\nSetz genau diese Änderungen um und lass alles andere wortgleich stehen. Die Regeln oben gelten weiter.\n` : hinweis ? `\nHINWEIS VON ALFONS (Vorrang vor Stilfragen, nie vor den harten Regeln): ${hinweis}\n` : ''}
+AUSGABE als JSON mit "betreff", "text", "spiegelung".
+- "spiegelung": Objekt aus Sicht des Empfängers, der gerade Geld in diese Anzeigen steckt: "gefuehl" (ein Satz: beobachtet oder verstanden, und warum), "risiko" (der riskanteste Satz wörtlich plus ein Halbsatz warum), "streichen" (was du streichen würdest, sonst „nichts“).
 `;
 
   if (art === 'mail') {
     return `${gemeinsam}
-FORM: E-Mail, höchstens 190 Wörter im Fließtext plus die fünf Fragen. Aufbau: Betreff (höchstens sechs Wörter; gibt es einen früheren Kontakt, knüpft der Betreff daran an, z. B. „Ihre Anfrage im Juli — ein Nachtrag“; sonst der Aufhänger; nie „Fünf Fragen“ im Betreff), Anrede, ein Satz zum früheren Kontakt (wenn vorhanden) oder Aufhänger, ein Satz „Ihre Anzeigen sind mir öfter begegnet. Ich habe getan, was Ihr nächster Kunde auch tut: gegoogelt.“ (sinngemäß, nicht wörtlich zwingend), Überleitung zu den fünf Fragen, die Liste, dann der Absatz WAS WIR FÜR SIE TUN (drei Sätze), dann Link und Code in einer eigenen Zeile mit dem Hinweis, dass die Seite nur für sie/ihn ist und 30 Tage offen bleibt, Gruß mit Name, Firma, Telefon. Keine Signatur-Floskeln, kein Disclaimer, kein Logo-Hinweis.
-"text" enthält nur den E-Mail-Text ohne Betreff — als reiner Text mit Zeilenumbrüchen: Anrede eigene Zeile, Absätze durch Leerzeile getrennt, jede der fünf Fragen in einer eigenen Zeile, Link und Code in einer eigenen Zeile, Gruß und Signatur je eigene Zeile. Kein Markdown.`;
+FORM: E-Mail. "text" = nur der E-Mail-Text ohne Betreff, reiner Text: Anrede („Sehr geehrte Frau …,“ / „Sehr geehrter Herr …,“) eigene Zeile, Absätze durch Leerzeile getrennt, „Drei Dinge daraus:“ eigene Zeile, jeder Fakt eigene Zeile mit „– “, Gruß und Name je eigene Zeile.`;
   }
 
   return `${gemeinsam}
-FORM: Brief per Post, eine Seite, höchstens 220 Wörter im Fließtext plus die fünf Fragen. Aufbau genau so:
-Anschrift (Name, Rolle, Unternehmen, Adresse, jede Angabe eigene Zeile)
+FORM: Brief per Post (ohne früheren Kontakt der Standard), eine Seite; der zweiseitige Anhang liegt bei. Statt „Im Anhang“ heißt es „Beigelegt finden Sie …“. Statt „oder ich rufe Sie am ${anruftag} kurz an“: „Ich rufe Sie in der kommenden Woche kurz an.“ Aufbau:
+Anschrift (Name, Rolle, Unternehmen, Adresse ${String(ziel.postadresse || ziel.sitz || '').replace(/\n/g, ', ')} — jede Angabe eigene Zeile)
 Leerzeile
 ${ABSENDER.ort}, ${heute}
 Leerzeile
-Betreffzeile: Fünf Fragen zu ${ziel.unternehmen}
+Betreffzeile
 Leerzeile
-Anrede (Sehr geehrte Frau … / Sehr geehrter Herr …)
-Absatz 1: Der frühere Kontakt konkret (wenn vorhanden), dann der Aufhänger — zusammen höchstens zwei Sätze.
-Absatz 2: Ihre Anzeigen sind mir in den letzten Wochen öfter begegnet. Ich habe getan, was Ihr nächster Kunde auch tut: gegoogelt. Dabei sind mir fünf Fragen gekommen, die ich Ihnen nicht beantworten kann — nur Sie: (sinngemäß)
-Die fünf Fragen als Liste 1–5.
-Absatz 3: Der Absatz WAS WIR FÜR SIE TUN (drei Sätze).
-Absatz 4: Was mir dabei aufgefallen ist, habe ich auf einer Seite zusammengestellt — nur Dinge, die jeder sieht, der Sie sucht. Dann Link und Code in eigener Zeile. Dort können Sie die fünf Fragen gleich beantworten; die Seite ist nur für Sie und bleibt 30 Tage offen.
-Grußformel, Name, Firma, Telefon, E-Mail.
-"betreff" = die Betreffzeile. "text" = der gesamte Brief von der Anschrift bis zur Unterschrift als reiner Text mit Zeilenumbrüchen, ohne Markdown.`;
+Dann der Text wie oben, am Ende Gruß, Name, ${ABSENDER.rolle}, ${ABSENDER.telefon}, ${ABSENDER.mail} je eigene Zeile.
+"betreff" = die Betreffzeile. "text" = der gesamte Brief von der Anschrift bis zur Unterschrift, reiner Text.`;
 }
