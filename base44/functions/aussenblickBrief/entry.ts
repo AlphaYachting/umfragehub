@@ -5,7 +5,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 //
 // Fassung vom 08.11.2026 (gekürzt 11:55): Mail mit Anhang, höchstens 120 Wörter, zwei Fakten.
 // Vorher: Mail mit zweiseitigem Anhang statt fünf Fragen mit Portal-Code.
-// Aufbau: Hook (belegter früherer Kontakt) → „gegoogelt, Google und ChatGPT gefragt“ → drei
+// Aufbau: Hook (belegter früherer Kontakt) → „gegoogelt, Google und ChatGPT gefragt“ → zwei
 // Fakten aus dem eigenen Material des Unternehmens → die Spannung als eine Frage → Anhang mit
 // Nutzen → 15 Minuten → „keine Agentur, Wissen statt Bauchgefühl“ → Anruf angekündigt.
 // Das Portal kommt erst nach dem Gespräch; deshalb steht kein Code und kein Link im Text.
@@ -182,7 +182,7 @@ ${kurz ? `\nKURZFASSUNG DER RECHERCHE (intern):\n${kurz}` : ''}
 AUFBAU (genau diese Reihenfolge; HÖCHSTENS 120 WÖRTER ohne Anrede und Gruß; kein Satz länger als 22 Wörter; jeder Absatz höchstens zwei Sätze):
 1. Einstieg, zwei kurze Sätze: der frühere Kontakt konkret, Monat, Jahr und Anlass (oder der Aufhänger). Dann: „Ich habe getan, was Ihr nächster Kunde tut: gegoogelt und Google und ChatGPT gefragt.“
 2. „Zwei Dinge daraus:“ und genau zwei Zeilen mit Gedankenstrich „– “, jede höchstens 25 Wörter, jede ein Fakt aus dem eigenen Material des Unternehmens, nebeneinander gelegt, ohne Wertung. Erster Fakt: was Googles KI-Modus oder ChatGPT über das Unternehmen sagt, wenn das Material es enthält (dieselbe Frage, zwei Antworten; oder es fehlt bei der Frage eines Wunschkunden). Zweiter Fakt: die längste Anzeige gegen das, was Website oder Absender sagen (oder gegen die jüngste Anzeige). Kein dritter Fakt. Zahlen nur aus dem Material.
-3. Die Spannung als EINE Frage, ein Satz, die nur der Empfänger beantworten kann (z. B. „Welches Hintsteiner soll Ihr nächster Kunde kennen?“). Gibt es eine gewollte Trennung (zwei Unternehmen, zwei Websites), erkenne sie in höchstens fünf Wörtern an.
+3. Die Spannung als EINE Frage, ein Satz, die nur der Empfänger beantworten kann (z. B. „Welches ${name} soll Ihr nächster Kunde kennen?“). Gibt es eine gewollte Trennung (zwei Unternehmen, zwei Websites), erkenne sie in höchstens fünf Wörtern an.
 4. Anhang, EIN Satz: „Im Anhang sehen Sie, was Ihr nächster Kunde sieht, und was Sie davon haben.“ (sinngemäß, gern auf das Unternehmen gemünzt). Keine Seitenzahl, keine Prozentzahl, keine Euro, keine Aufzählung von Nutzen.
 5. PFLICHT, höchstens zwei kurze Sätze: „Ich möchte Ihnen keine Agentur verkaufen.“ Dann sinngemäß: Was ${name} für diese Entscheidung braucht, weiß das Unternehmen schon, bei seinen Kunden und im Team.
 6. Letzte Zeile: „15 Minuten, Telefon oder Teams? Sagen Sie mir, wann es Ihnen passt, oder ich rufe Sie am ${anruftag} an.“
@@ -204,7 +204,7 @@ AUSGABE als JSON mit "betreff", "text", "spiegelung".
 
   if (art === 'mail') {
     return `${gemeinsam}
-FORM: E-Mail. "text" = nur der E-Mail-Text ohne Betreff, reiner Text: Anrede („Sehr geehrte Frau …,“ / „Sehr geehrter Herr …,“) eigene Zeile, Absätze durch Leerzeile getrennt, „Drei Dinge daraus:“ eigene Zeile, jeder Fakt eigene Zeile mit „– “, Gruß und Name je eigene Zeile.`;
+FORM: E-Mail. "text" = nur der E-Mail-Text ohne Betreff, reiner Text: Anrede („Sehr geehrte Frau …,“ / „Sehr geehrter Herr …,“) eigene Zeile, Absätze durch Leerzeile getrennt, „Zwei Dinge daraus:“ eigene Zeile, jeder Fakt eigene Zeile mit „– “, Gruß und Name je eigene Zeile.`;
   }
 
   return `${gemeinsam}
