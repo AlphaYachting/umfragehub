@@ -3,7 +3,8 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 // Außenblick-Modul: schreibt die erste Kontakt-E-Mail (Welle 1) eines Ziels — oder, ohne
 // früheren Kontakt, den Brief per Post — mit dem Sprachmodell der Plattform. Nur für Admins.
 //
-// Fassung vom 08.11.2026: Mail mit zweiseitigem Anhang statt fünf Fragen mit Portal-Code.
+// Fassung vom 08.11.2026 (gekürzt 11:55): Mail mit Anhang, höchstens 120 Wörter, zwei Fakten.
+// Vorher: Mail mit zweiseitigem Anhang statt fünf Fragen mit Portal-Code.
 // Aufbau: Hook (belegter früherer Kontakt) → „gegoogelt, Google und ChatGPT gefragt“ → drei
 // Fakten aus dem eigenen Material des Unternehmens → die Spannung als eine Frage → Anhang mit
 // Nutzen → 15 Minuten → „keine Agentur, Wissen statt Bauchgefühl“ → Anruf angekündigt.
@@ -112,6 +113,8 @@ export default async function (req) {
       ...GRENZEN.filter((g) => g.re.test(text)).map((g) => g.wort),
     ];
     const woerter = text.split(/\s+/).filter(Boolean).length;
+    // Grenze 120 Wörter Rumpf; Anrede, „Zwei Dinge daraus:“, Gruß und Name zählen hier mit.
+    if (art === 'mail' && woerter > 150) treffer.push(`zu lang (${woerter} Wörter)`);
 
     return Response.json({
       art,
@@ -150,7 +153,7 @@ function bauePrompt({ ziel, art, hinweis, kontakt, kontaktUnbelegt, notizen, bis
   const heute = new Date().toLocaleDateString('de-AT', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
   const gemeinsam = `
-Du schreibst für Alfons Rittler (Rittler & Co, Graz; Leistung „andi fragt.“) die ERSTE Nachricht an ein Unternehmen, das online wirbt. Ziel: eine strategisch gute, kurze Nachricht, die den Empfänger trifft, ihn neugierig auf den beigelegten zweiseitigen Anhang macht und zu 15 Minuten Gespräch führt. Sie soll sich nicht wie Werbung einer Agentur lesen, sondern wie der Blick eines Kollegen, der genau hingesehen hat.
+Du schreibst für Alfons Rittler (Rittler & Co, Graz; Leistung „andi fragt.“) die ERSTE Nachricht an ein Unternehmen, das online wirbt. Ziel: eine strategisch gute, sehr kurze Nachricht, die den Empfänger trifft, ihn neugierig auf den beigelegten Anhang macht und zu 15 Minuten Gespräch führt. Prägnanz vor Vollständigkeit: lieber ein Satz weniger. Sie soll sich nicht wie Werbung einer Agentur lesen, sondern wie der Blick eines Kollegen, der genau hingesehen hat.
 
 EMPFÄNGER
 - Unternehmen: ${ziel.unternehmen} (in der Nachricht kurz: ${name})
@@ -167,7 +170,7 @@ ${ziel.briefAufhaenger || '(keine)'}
 NOTIZEN UND ANRUFE (Kontext; darin stehen oft Regeln, was draußen bleibt — beachten, nichts Internes zitieren):
 ${notizen.length ? notizen.map((n) => `- ${n}`).join('\n') : '- keine'}
 
-MATERIAL, AUS DEM DU DIE DREI FAKTEN WÄHLST (alles öffentlich, vom Unternehmen selbst; nur Fakten, die der Empfänger selbst nachprüfen kann):
+MATERIAL, AUS DEM DU DIE ZWEI FAKTEN WÄHLST (alles öffentlich, vom Unternehmen selbst; nur Fakten, die der Empfänger selbst nachprüfen kann):
 Zahlen: ${zahlen.length ? zahlen.join(' · ') : 'keine'}
 Widersprüche aus dem Befund:
 ${material.length ? material.join('\n') : '- keine hinterlegt'}
@@ -176,15 +179,14 @@ BEFUND (intern, nur zum Verstehen — NICHT abschreiben, keine Fundstellen, kein
 ${befund || '(kein Befund)'}
 ${kurz ? `\nKURZFASSUNG DER RECHERCHE (intern):\n${kurz}` : ''}
 
-AUFBAU (genau diese Reihenfolge, insgesamt höchstens 200 Wörter ohne Anrede und Gruß):
-1. Einstieg, höchstens zwei Sätze: der frühere Kontakt konkret (oder der Aufhänger). Dann: „Seither sind mir Ihre Anzeigen öfter begegnet, und ich habe getan, was Ihr nächster Kunde auch tut: gegoogelt und Google und ChatGPT gefragt.“ (sinngemäß, gern kürzer).
-2. „Drei Dinge daraus:“ und drei Zeilen, jede mit Gedankenstrich „– “, jede höchstens 30 Wörter, jede ein Fakt aus dem eigenen Material des Unternehmens, nebeneinander gelegt, ohne Wertung. Wenn das Material eine Antwort von Googles KI-Modus oder ChatGPT enthält, ist das der erste Fakt (was die Antwortmaschine über das Unternehmen sagt — und wo es bei der Frage eines Wunschkunden fehlt oder unter anderem Namen auftaucht). Ein Fakt aus den Anzeigen (längste gegen jüngste, oder Anzeige gegen Website). Ein Fakt, der überrascht (Namen, Einträge, Bewertungen als Zahl). Zahlen nur aus dem Material.
-3. Die Spannung als EINE Frage, ein Satz, die nur der Empfänger beantworten kann (z. B. „Welches der beiden soll Ihr nächster Kunde kennen?“). Erkennt das Material eine gewollte Trennung (zwei Unternehmen, zwei Websites), erkenne sie in einem Halbsatz an und frage nach den Kanälen.
-4. Anhang ankündigen, ein Satz, mit dem Nutzen in seinen Worten: „Im Anhang steht das auf zwei Seiten, mit dem, was Sie davon haben: …“ — zwei oder drei kurze Nutzen (mehr Anfragen aus demselben Budget, weniger bezahlte Klicks ins Leere, mehr Aufträge aus denselben Anfragen; oder auf das Unternehmen gemünzt). Keine Prozentzahl, keine Euro.
-5. Vorschlag, ein Satz: 15 Minuten, Telefon oder Teams, kostenlos; am Ende wissen beide, ob wir helfen können und ob er das will. Wenn es einen Marketingverantwortlichen gibt, ist er eingeladen — ohne Namen.
-6. Schlussabsatz, PFLICHT, zwei bis drei Sätze: „Ich möchte Ihnen keine Agentur verkaufen.“ Rittler & Co hat 25 Jahre Werbung gemacht und sich daraus weiterentwickelt; heute Wissen statt Bauchgefühl: Was ${name} für Entscheidungen über Botschaft, Zielgruppe und Namen braucht, hat das Unternehmen verlässlich schon in sich — bei den Kunden, die geblieben sind, im Team, im Vertrieb —, nur sieht es niemand. Was sein Team oder seine Agentur daraus macht, bleibt seine Sache.
-7. Letzte Zeile: „Sagen Sie mir, wann es Ihnen passt, oder ich rufe Sie am ${anruftag} kurz an.“
-8. Gruß: „${ABSENDER.gruss}“ und darunter „${ABSENDER.name}“. Keine weitere Signatur (die setzt das Mailprogramm).
+AUFBAU (genau diese Reihenfolge; HÖCHSTENS 120 WÖRTER ohne Anrede und Gruß; kein Satz länger als 22 Wörter; jeder Absatz höchstens zwei Sätze):
+1. Einstieg, zwei kurze Sätze: der frühere Kontakt konkret, Monat, Jahr und Anlass (oder der Aufhänger). Dann: „Ich habe getan, was Ihr nächster Kunde tut: gegoogelt und Google und ChatGPT gefragt.“
+2. „Zwei Dinge daraus:“ und genau zwei Zeilen mit Gedankenstrich „– “, jede höchstens 25 Wörter, jede ein Fakt aus dem eigenen Material des Unternehmens, nebeneinander gelegt, ohne Wertung. Erster Fakt: was Googles KI-Modus oder ChatGPT über das Unternehmen sagt, wenn das Material es enthält (dieselbe Frage, zwei Antworten; oder es fehlt bei der Frage eines Wunschkunden). Zweiter Fakt: die längste Anzeige gegen das, was Website oder Absender sagen (oder gegen die jüngste Anzeige). Kein dritter Fakt. Zahlen nur aus dem Material.
+3. Die Spannung als EINE Frage, ein Satz, die nur der Empfänger beantworten kann (z. B. „Welches Hintsteiner soll Ihr nächster Kunde kennen?“). Gibt es eine gewollte Trennung (zwei Unternehmen, zwei Websites), erkenne sie in höchstens fünf Wörtern an.
+4. Anhang, EIN Satz: „Im Anhang sehen Sie, was Ihr nächster Kunde sieht, und was Sie davon haben.“ (sinngemäß, gern auf das Unternehmen gemünzt). Keine Seitenzahl, keine Prozentzahl, keine Euro, keine Aufzählung von Nutzen.
+5. PFLICHT, höchstens zwei kurze Sätze: „Ich möchte Ihnen keine Agentur verkaufen.“ Dann sinngemäß: Was ${name} für diese Entscheidung braucht, weiß das Unternehmen schon, bei seinen Kunden und im Team.
+6. Letzte Zeile: „15 Minuten, Telefon oder Teams? Sagen Sie mir, wann es Ihnen passt, oder ich rufe Sie am ${anruftag} an.“
+7. Gruß: „${ABSENDER.gruss}“ und darunter „${ABSENDER.name}“. Keine weitere Signatur (die setzt das Mailprogramm).
 
 HARTE REGELN:
 - Sie-Form, Deutsch (Österreich), kein Gendersternchen, kein Markdown, kein Fettdruck.
@@ -206,7 +208,7 @@ FORM: E-Mail. "text" = nur der E-Mail-Text ohne Betreff, reiner Text: Anrede (�
   }
 
   return `${gemeinsam}
-FORM: Brief per Post (ohne früheren Kontakt der Standard), eine Seite; der zweiseitige Anhang liegt bei. Statt „Im Anhang“ heißt es „Beigelegt finden Sie …“. Statt „oder ich rufe Sie am ${anruftag} kurz an“: „Ich rufe Sie in der kommenden Woche kurz an.“ Aufbau:
+FORM: Brief per Post (ohne früheren Kontakt der Standard), eine Seite; der Anhang liegt bei. Statt „Im Anhang“ heißt es „Beigelegt finden Sie …“. Statt „oder ich rufe Sie am ${anruftag} kurz an“: „Ich rufe Sie in der kommenden Woche kurz an.“ Aufbau:
 Anschrift (Name, Rolle, Unternehmen, Adresse ${String(ziel.postadresse || ziel.sitz || '').replace(/\n/g, ', ')} — jede Angabe eigene Zeile)
 Leerzeile
 ${ABSENDER.ort}, ${heute}
