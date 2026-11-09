@@ -1,12 +1,12 @@
 // Beitrag Nr. 26 im Wissensbereich: /wissen/ki-texte-klingen-gleich
 // Inhalte aus n17.py und grafik_n17.py (Arbeitsfläche andi fragt. Produktseite), umgewandelt am 05.11.2026.
-// Status entwurf. Belege im Projekt unter analyse/.
+// Status freigegeben (09.11.2026). Belege im Projekt unter analyse/.
 const beitrag = {
   "slug": "ki-texte-klingen-gleich",
   "nr": 26,
-  "status": "entwurf",
-  "geprueft": null,
-  "erschienen": null,
+  "status": "freigegeben",
+  "geprueft": "2026-11-09",
+  "erschienen": "2026-11-09",
   "aktualisiert": null,
   "leitartikel": false,
   "modul": "positionierung",

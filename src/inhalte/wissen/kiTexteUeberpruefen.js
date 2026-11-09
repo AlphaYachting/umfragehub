@@ -1,12 +1,12 @@
 // Beitrag Nr. 25 im Wissensbereich: /wissen/ki-texte-ueberpruefen
 // Inhalte aus n16.py und grafik_n16.py (Arbeitsfläche andi fragt. Produktseite), umgewandelt am 05.11.2026.
-// Status entwurf. Belege im Projekt unter analyse/.
+// Status freigegeben (09.11.2026). Belege im Projekt unter analyse/.
 const beitrag = {
   "slug": "ki-texte-ueberpruefen",
   "nr": 25,
-  "status": "entwurf",
-  "geprueft": null,
-  "erschienen": null,
+  "status": "freigegeben",
+  "geprueft": "2026-11-09",
+  "erschienen": "2026-11-09",
   "aktualisiert": null,
   "leitartikel": false,
   "modul": "positionierung",

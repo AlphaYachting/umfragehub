@@ -1,12 +1,12 @@
 // Beitrag Nr. 24 im Wissensbereich: /wissen/marketing-mit-ki-selbst-machen
 // Inhalte aus n15.py und grafik_n15.py (Arbeitsfläche andi fragt. Produktseite), umgewandelt am 05.11.2026.
-// Status entwurf. Belege im Projekt unter analyse/.
+// Status freigegeben (09.11.2026). Belege im Projekt unter analyse/.
 const beitrag = {
   "slug": "marketing-mit-ki-selbst-machen",
   "nr": 24,
-  "status": "entwurf",
-  "geprueft": null,
-  "erschienen": null,
+  "status": "freigegeben",
+  "geprueft": "2026-11-09",
+  "erschienen": "2026-11-09",
   "aktualisiert": null,
   "leitartikel": false,
   "modul": "kunden",
