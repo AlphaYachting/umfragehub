@@ -30,6 +30,9 @@ import personalabbauMitarbeiterHalten from "./personalabbauMitarbeiterHalten";
 import vertriebAnkurbeln from "./vertriebAnkurbeln";
 import preiserhoehungKundenMitteilen from "./preiserhoehungKundenMitteilen";
 import kiEinfuehrenMitarbeiter from "./kiEinfuehrenMitarbeiter";
+import marketingMitKiSelbstMachen from "./marketingMitKiSelbstMachen";
+import kiTexteUeberpruefen from "./kiTexteUeberpruefen";
+import kiTexteKlingenGleich from "./kiTexteKlingenGleich";
 export const BEITRAEGE = [
   mitarbeiterbefragungErgebnisse,
   warumKuendigenGuteMitarbeiter,
@@ -50,6 +53,9 @@ export const BEITRAEGE = [
   vertriebAnkurbeln,
   preiserhoehungKundenMitteilen,
   kiEinfuehrenMitarbeiter,
+  marketingMitKiSelbstMachen,
+  kiTexteUeberpruefen,
+  kiTexteKlingenGleich,
 ];
 
 export const MODUL_NAMEN = { team: "Team", positionierung: "Positionierung", kunden: "Kunden", vertrieb: "Vertrieb" };

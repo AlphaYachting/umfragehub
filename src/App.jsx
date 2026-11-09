@@ -57,6 +57,9 @@ const WissenMitarbeiterNachBetriebsuebernahme = lazy(() => import('@/pages/wisse
 const WissenBetriebsuebernahmeErste100Tage = lazy(() => import('@/pages/wissen/beitrag/WissenBetriebsuebernahmeErste100Tage'));
 const WissenBetriebsuebergabeVorbereiten = lazy(() => import('@/pages/wissen/beitrag/WissenBetriebsuebergabeVorbereiten'));
 const WissenGesellschafterUneinigMarketing = lazy(() => import('@/pages/wissen/beitrag/WissenGesellschafterUneinigMarketing'));
+const WissenKiTexteKlingenGleich = lazy(() => import('@/pages/wissen/beitrag/WissenKiTexteKlingenGleich'));
+const WissenKiTexteUeberpruefen = lazy(() => import('@/pages/wissen/beitrag/WissenKiTexteUeberpruefen'));
+const WissenMarketingMitKiSelbstMachen = lazy(() => import('@/pages/wissen/beitrag/WissenMarketingMitKiSelbstMachen'));
 const WissenKiEinfuehrenMitarbeiter = lazy(() => import('@/pages/wissen/beitrag/WissenKiEinfuehrenMitarbeiter'));
 const WissenPreiserhoehungKundenMitteilen = lazy(() => import('@/pages/wissen/beitrag/WissenPreiserhoehungKundenMitteilen'));
 const WissenVertriebAnkurbeln = lazy(() => import('@/pages/wissen/beitrag/WissenVertriebAnkurbeln'));
@@ -133,6 +136,9 @@ const AuthenticatedApp = () => {
       <Route path="/wissen/vertrieb-ankurbeln" element={<WissenVertriebAnkurbeln />} />
       <Route path="/wissen/preiserhoehung-kunden-mitteilen" element={<WissenPreiserhoehungKundenMitteilen />} />
       <Route path="/wissen/ki-einfuehren-mitarbeiter" element={<WissenKiEinfuehrenMitarbeiter />} />
+      <Route path="/wissen/marketing-mit-ki-selbst-machen" element={<WissenMarketingMitKiSelbstMachen />} />
+      <Route path="/wissen/ki-texte-ueberpruefen" element={<WissenKiTexteUeberpruefen />} />
+      <Route path="/wissen/ki-texte-klingen-gleich" element={<WissenKiTexteKlingenGleich />} />
       <Route path="/wissen/*" element={<NichtGefunden />} />
       <Route path="/i/:linkToken" element={<Interview />} />
       {/* Öffentlich mit Passwort: Kunden-Cockpit des Auftraggebers */}

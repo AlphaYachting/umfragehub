@@ -842,7 +842,100 @@ function VertriebAnkurbeln() {
   return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Eine Karte mit der Überschrift Deine Kunden im Aufschwung und drei Zeilen. Pink hervorgehoben: Export und Investitionen, kauft schon wieder. Grau: Lageraufbau, kauft auf Vorrat. Umrandet: Bau und Konsum, wartet noch." />;
 }
 
+// Nr. 24: Marketing mit KI selbst machen, drei Ebenen der Prüfung: Fakten, Recht, Wirkung bei Kunden
+function MarketingKi() {
+  const felder = [
+    { oben: "1 STIMMT ES?", tag: "CHECKLISTE", text: "Fakten und Zahlen", pink: false },
+    { oben: "2 DARF ICH DAS?", tag: "CHECKLISTE", text: "Recht und Kennzeichnung", pink: false },
+    { oben: "3 WIRKT ES?", tag: "NUR DEINE KUNDEN", text: "Botschaft und Kaufgrund", pink: true },
+  ];
+  const feld = (f, x, y, w, h, oben, tag, gross, yo, yt) => (
+    <g key={f.oben}>
+      <rect x={x} y={y} width={w} height={h} rx="18" fill={f.pink ? PINK : "#4a4a4a"} />
+      <text x={x + 40} y={y + yo} fill={f.pink ? "#ffe3ea" : "#b3b3b3"} fontSize={oben} fontWeight="700" letterSpacing="3">{f.oben}</text>
+      <text x={x + w - 30} y={y + yo} fill={f.pink ? "#ffe3ea" : "#b3b3b3"} fontSize={tag} fontWeight="700" letterSpacing="2" textAnchor="end">{f.tag}</text>
+      <text x={x + 40} y={y + yt} fill="#ffffff" fontSize={gross} fontWeight={f.pink ? 900 : 800}>{f.text}</text>
+    </g>
+  );
+  const breit = (
+    <>
+      <Kopftext oben="MARKETING MIT KI" z1="KI schreibt." z3="Wer prüft," z4="ob es stimmt?" unter="Drei Ebenen: Fakten, Recht und deine Kunden." />
+      {felder.map((f, i) => feld(f, 900, 190 + i * 140, 580, 110, 17, 15, 30, 42, 86))}
+    </>
+  );
+  const schmal = (
+    <>
+      <Kopftext schmal oben="MARKETING MIT KI" z1="KI schreibt." z3="Wer prüft," z4="ob es stimmt?" />
+      {felder.map((f, i) => feld(f, 48, 440 + i * 144, 704, 124, 24, 24, 38, 46, 100))}
+    </>
+  );
+  return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Drei Felder untereinander. Stimmt es: Fakten und Zahlen, mit Checkliste. Darf ich das: Recht und Kennzeichnung, mit Checkliste. Wirkt es, pink hervorgehoben: Botschaft und Kaufgrund, nur mit deinen Kunden." />;
+}
+
+// Nr. 25: KI-Texte überprüfen, vier Prüfschritte, der letzte gehört den Kunden
+function KiTexte() {
+  const felder = [
+    { oben: "1 FAKTEN", text: "Quellen öffnen", art: "grau" },
+    { oben: "2 RECHT", text: "Werbung und Kennzeichnung", art: "grau" },
+    { oben: "3 MARKE", text: "Ton und Anrede", art: "grau" },
+    { oben: "4 KUNDE", text: "Stimmt die Botschaft?", art: "pink" },
+  ];
+  const feld = (f, x, y, w, h, oben, gross, yo, yt) => (
+    <g key={f.oben}>
+      <rect x={x} y={y} width={w} height={h} rx="18" fill={f.art === "pink" ? PINK : "#4a4a4a"} />
+      <text x={x + 40} y={y + yo} fill={f.art === "pink" ? "#ffe3ea" : "#b3b3b3"} fontSize={oben} fontWeight="700" letterSpacing="3">{f.oben}</text>
+      <text x={x + 40} y={y + yt} fill="#ffffff" fontSize={gross} fontWeight={f.art === "pink" ? 900 : 800}>{f.text}</text>
+    </g>
+  );
+  const breit = (
+    <>
+      <Kopftext oben="KI-TEXTE PRÜFEN" z1="KI-Text fertig?" z3="Frag zuletzt" z4="deine Kunden." unter="Die Checkliste vor dem Veröffentlichen." />
+      {felder.map((f, i) => feld(f, 900, 180 + i * 112, 580, 90, 16, 28, 34, 72))}
+    </>
+  );
+  const schmal = (
+    <>
+      <Kopftext schmal oben="KI-TEXTE PRÜFEN" z1="KI-Text fertig?" z3="Frag zuletzt" z4="deine Kunden." />
+      {felder.map((f, i) => feld(f, 48, 440 + i * 104, 704, 92, 24, 34, 34, 76))}
+    </>
+  );
+  return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Vier Felder untereinander mit den Prüfschritten. Fakten: Quellen öffnen. Recht: Werbung und Kennzeichnung. Marke: Ton und Anrede. Kunde, pink hervorgehoben: Stimmt die Botschaft?" />;
+}
+
+// Nr. 26: KI-Texte klingen gleich, dreimal derselbe Satz beim Mitbewerb, darunter pink: was deine Kunden erzählen
+function KiAustauschbar() {
+  const felder = [
+    { oben: "MITBEWERB A", text: "Qualität, Beratung, Erfahrung", pink: false },
+    { oben: "MITBEWERB B", text: "Qualität, Beratung, Erfahrung", pink: false },
+    { oben: "MITBEWERB C", text: "Qualität, Beratung, Erfahrung", pink: false },
+    { oben: "DU", text: "Was deine Kunden erzählen", pink: true },
+  ];
+  const feld = (f, x, y, w, h, oben, gross, yo, yt) => (
+    <g key={f.oben}>
+      <rect x={x} y={y} width={w} height={h} rx="16" fill={f.pink ? PINK : "#4a4a4a"} />
+      <text x={x + 36} y={y + yo} fill={f.pink ? "#ffe3ea" : "#b3b3b3"} fontSize={oben} fontWeight="700" letterSpacing="3">{f.oben}</text>
+      <text x={x + 36} y={y + yt} fill="#ffffff" fontSize={f.pink ? gross + 4 : gross} fontWeight={f.pink ? 900 : 800}>{f.text}</text>
+    </g>
+  );
+  const breit = (
+    <>
+      <Kopftext oben="KI UND MITBEWERB" z1="Alle mit KI?" z3="Dann zählt, was" z4="nur du weißt." unter="Warum KI-Texte gleich klingen und was hilft." />
+      {felder.map((f, i) => feld(f, 900, 180 + i * 110, 580, f.pink ? 100 : 90, 16, 26, 34, f.pink ? 80 : 72))}
+    </>
+  );
+  const schmal = (
+    <>
+      <Kopftext schmal oben="KI UND MITBEWERB" z1="Alle mit KI?" z3="Dann zählt, was" z4="nur du weißt." />
+      {felder.map((f, i) => feld(f, 48, 440 + i * 106, 704, 92, 24, 32, 36, 76))}
+    </>
+  );
+  return <Rahmen breit={breit} schmal={schmal} label="Titelgrafik: Drei graue Felder untereinander, Mitbewerb A, B und C, alle mit demselben Satz: Qualität, Beratung, Erfahrung. Darunter ein pinkes Feld, du: Was deine Kunden erzählen." />;
+}
+
 export const TITELGRAFIKEN = {
+  "ki-texte-klingen-gleich": KiAustauschbar,
+  "ki-texte-ueberpruefen": KiTexte,
+  "marketing-mit-ki-selbst-machen": MarketingKi,
   "vertrieb-ankurbeln": VertriebAnkurbeln,
   "preiserhoehung-kunden-mitteilen": Preiserhoehung,
   "personalabbau-mitarbeiter-halten": Personalabbau,
