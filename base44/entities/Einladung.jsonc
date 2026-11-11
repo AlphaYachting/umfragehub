@@ -22,7 +22,7 @@
       "type": "number"
     },
     "code": {
-      "description": "z. B. PCF-7K3M; im Link andifragt.at/a/<code>",
+      "description": "z. B. PCF-7K3M-Q9XA (\u00e4ltere Codes PCF-7K3M bleiben g\u00fcltig); im Link andifragt.at/a/<code>",
       "title": "Code",
       "type": "string"
     },
