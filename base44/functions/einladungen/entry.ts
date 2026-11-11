@@ -656,44 +656,6 @@ function sendeUeberKanal(kanal, mails, art) {
   return sendeMitBrevo(mails, kanal.absender, art);
 }
 
-// --- Versandkanal Resend ----------------------------------------------------
-// Erwartet [{ an, betreff, html, text }] und liefert je Mail { ok, fehler }.
-async function sendeMitResend(mails, absender) {
-  const key = env("RESEND_API_KEY");
-  const kopf = { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" };
-  const nutzlast = (m) => ({ from: absender, to: [m.an], subject: m.betreff, html: m.html, text: m.text });
-
-  // Erst als Stapel — das ist ein einziger Aufruf
-  const stapel = await fetch("https://api.resend.com/emails/batch", {
-    method: "POST",
-    headers: kopf,
-    body: JSON.stringify(mails.map(nutzlast)),
-  });
-  if (stapel.ok) return mails.map(() => ({ ok: true, fehler: "" }));
-  if (stapel.status === 401 || stapel.status === 403) {
-    const t = await stapel.text();
-    throw new Error(`Versanddienst lehnt die Anmeldung ab (${stapel.status}): ${t.slice(0, 200)}`);
-  }
-
-  // Stapel abgelehnt (z. B. eine fehlerhafte Adresse) — einzeln senden, damit
-  // eine schlechte Adresse nicht alle anderen blockiert
-  const ergebnis = [];
-  for (const m of mails) {
-    try {
-      const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: kopf, body: JSON.stringify(nutzlast(m)) });
-      if (r.ok) {
-        ergebnis.push({ ok: true, fehler: "" });
-      } else {
-        ergebnis.push({ ok: false, fehler: `${r.status}: ${(await r.text()).slice(0, 160)}` });
-      }
-    } catch (e) {
-      ergebnis.push({ ok: false, fehler: String(e.message || e).slice(0, 160) });
-    }
-    await new Promise((res) => setTimeout(res, 550)); // Ratenlimit des Dienstes einhalten
-  }
-  return ergebnis;
-}
-
 async function senden(db, welle, body) {
   const art = body.art;
   if (!["einladung", "reminder", "test"].includes(art)) return { error: "Unbekannte Versandart." };
