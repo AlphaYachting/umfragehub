@@ -39,7 +39,7 @@ export default function PortalEingang() {
             <input
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="Code, z. B. PCF-7K3M"
+              placeholder="Code, z. B. PCF-7K3M-Q9XA"
               autoComplete="off"
               autoCapitalize="characters"
               spellCheck={false}
