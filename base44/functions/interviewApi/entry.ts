@@ -32,7 +32,19 @@ export default async function(req) {
   }
 }
 
-async function loadInterview(base44, { linkToken, sessionToken, vorschau }) {
+// Sicherheitsaudit 11.11.2026: Die Vorschau gilt nur für angemeldete Admins.
+// Der Schalter kommt vom Browser und darf allein nichts freigeben.
+async function istAdmin(base44) {
+  try {
+    const user = await base44.auth.me();
+    return !!(user && user.role === "admin");
+  } catch (_e) {
+    return false;
+  }
+}
+
+async function loadInterview(base44, { linkToken, sessionToken, vorschau: vorschauGewuenscht }) {
+  const vorschau = !!vorschauGewuenscht && (await istAdmin(base44));
   const wellen = await base44.asServiceRole.entities.Welle.filter({ linkToken });
   if (!wellen.length) {
     return Response.json({ error: "nicht_gefunden" });
@@ -80,7 +92,11 @@ async function loadInterview(base44, { linkToken, sessionToken, vorschau }) {
   // Fragen aller Blöcke und bisherige Antworten gleichzeitig holen
   const [fragenListen, antworten] = await Promise.all([
     Promise.all(bloecke.map((b) => base44.asServiceRole.entities.Frage.filter({ blockId: b.id }))),
-    session ? base44.asServiceRole.entities.Antwort.filter({ sessionId: session.id }) : Promise.resolve([]),
+    // Bisherige Antworten nur zum Weitermachen: Sitzung läuft noch und Welle ist live.
+    // Eine abgeschlossene Sitzung zeigt nur die Danke-Seite und braucht keine Antworten.
+    session && session.status === "gestartet" && welle.status === "live"
+      ? base44.asServiceRole.entities.Antwort.filter({ sessionId: session.id })
+      : Promise.resolve([]),
   ]);
   const bloeckeMitFragen = bloecke.map((b, i) => {
     const fragen = fragenListen[i];
@@ -151,6 +167,14 @@ async function resumeSession(base44, { sessionToken }) {
     return Response.json({ error: "nicht_gefunden" });
   }
   const session = sListe[0];
+  // Sicherheitsaudit 11.11.2026: Antworten nur für laufende Sitzungen in einer Live-Welle
+  if (session.status !== "gestartet") {
+    return Response.json({ error: "abgeschlossen" });
+  }
+  const welle = await base44.asServiceRole.entities.Welle.get(session.wellenId).catch(() => null);
+  if (!welle || welle.status !== "live") {
+    return Response.json({ error: "geschlossen" });
+  }
   const antworten = await base44.asServiceRole.entities.Antwort.filter({ sessionId: session.id });
   return Response.json({ session, antworten });
 }
