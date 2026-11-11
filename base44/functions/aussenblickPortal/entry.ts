@@ -49,10 +49,17 @@ export default async function (req) {
 // ---------------------------------------------------------------------------
 async function pruefen(db, body, admin, istAdmin = false) {
   const code = String(body.code || '').trim().toUpperCase().replace(/\s+/g, '');
-  if (!/^[A-Z0-9]{2,6}-[A-Z0-9]{4}(-W)?$/.test(code)) return { fehler: 'code' };
+  // Alte Codes: KÜRZEL-XXXX, neue (ab 11.11.2026): KÜRZEL-XXXX-XXXX; jeweils optional -W
+  if (!/^[A-Z0-9]{2,6}-[A-Z0-9]{4}(-[A-Z0-9]{4})?(-W)?$/.test(code)) return { fehler: 'code' };
   const treffer = await db.Einladung.filter({ code });
   const einladung = treffer[0];
-  if (!einladung) return { fehler: 'code' };
+  if (!einladung) {
+    // Sicherheitsaudit 11.11.2026: Ein unbekannter Code zählt als Fehlversuch bei allen
+    // verschickten Einladungen mit demselben Kürzel. So lässt sich der Zufallsteil nicht
+    // durchprobieren: nach 8 Fehlversuchen ist das Kürzel 15 Minuten gesperrt.
+    if (!admin) await fehlversuchKuerzel(db, code);
+    return { fehler: 'code' };
+  }
 
   if (einladung.gesperrtBis && new Date(einladung.gesperrtBis).getTime() > Date.now() && !admin) return { fehler: 'gesperrt' };
 
@@ -72,6 +79,21 @@ async function pruefen(db, body, admin, istAdmin = false) {
   const ziel = await db.Ziel.get(einladung.zielId).catch(() => null);
   if (!ziel) return { fehler: 'code' };
   return { einladung, ziel };
+}
+
+async function fehlversuchKuerzel(db, code) {
+  try {
+    const kuerzel = code.split('-')[0].toLowerCase();
+    const ziele = await db.Ziel.filter({ kuerzel });
+    for (const ziel of ziele || []) {
+      const einladungen = await db.Einladung.filter({ zielId: ziel.id });
+      for (const e of einladungen || []) {
+        if (e.status === 'versendet') await fehlversuch(db, e);
+      }
+    }
+  } catch (_e) {
+    // Die Sperre darf das Portal nie zum Absturz bringen
+  }
 }
 
 async function fehlversuch(db, einladung) {
