@@ -138,13 +138,15 @@ export const portalUrl = (code) => `${OEFFENTLICHE_URL}/a/${code}`;
 // und ohne Admin-Anmeldung weist das Portal einen Entwurfs-Code ab. `ziel` führt zurück.
 export const portalVorschauPfad = (code, zielId) => `/a/${code}?vorschau=1${zielId ? `&ziel=${zielId}` : ""}`;
 
-// Code wie im Brief: Kürzel in Versalien, Bindestrich, vier Zeichen ohne 0/O/1/I/L.
+// Code wie im Brief: Kürzel in Versalien, dann zwei Vierergruppen ohne 0/O/1/I/L
+// (z. B. PCF-7K3M-Q9XA). Seit 11.11.2026 acht statt vier Zufallszeichen, damit sich
+// Codes nicht durchprobieren lassen; ältere Codes mit vier Zeichen bleiben gültig.
 export function neuerCode(kuerzel, welle = false) {
   const z = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-  const arr = new Uint32Array(4);
+  const arr = new Uint32Array(8);
   crypto.getRandomValues(arr);
   const rest = Array.from(arr, (x) => z[x % z.length]).join("");
-  return `${String(kuerzel || "ZIEL").toUpperCase()}-${rest}${welle ? "-W" : ""}`;
+  return `${String(kuerzel || "ZIEL").toUpperCase()}-${rest.slice(0, 4)}-${rest.slice(4)}${welle ? "-W" : ""}`;
 }
 
 export function kuerzelVorschlag(unternehmen) {
