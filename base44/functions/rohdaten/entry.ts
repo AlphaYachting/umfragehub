@@ -2,15 +2,18 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 
 // Serverseitige Rohdaten-Abfrage — erzwingt die Anonymitätssperre
 // (Mindestteilnehmer), bevor auch nur eine Antwort den Server verlässt.
-// Nur für eingeloggte Nutzer der App arbeitend.
+// Nur für eingeloggte Admins (Sicherheitsaudit 11.11.2026).
 
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
     // Auth prüfen, bevor irgendwelche Daten gelesen werden
-    const user = await base44.auth.me();
+    const user = await base44.auth.me().catch(() => null);
     if (!user) {
       return Response.json({ error: "Nicht eingeloggt." }, { status: 401 });
+    }
+    if (user.role !== "admin") {
+      return Response.json({ error: "Nur für Administratoren." }, { status: 403 });
     }
     const body = await req.json();
     const { wellenId } = body;
