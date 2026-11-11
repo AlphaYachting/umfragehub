@@ -12,10 +12,11 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 // - Ohne eingerichteten Versandkanal läuft alles als Probelauf: es wird nichts
 //   verschickt und kein Empfängerstatus verändert.
 //
-// Versandkanal: Umgebungsvariable BREVO_API_KEY (bevorzugt) oder RESEND_API_KEY,
-// dazu MAIL_ABSENDER (z. B. "Befragung <befragung@beispiel.at>" — bei Brevo muss
-// diese Adresse dort als Absender bestätigt sein). Links in Mails zeigen immer auf
-// OEFFENTLICHE_URL (https://andifragt.at); APP_URL überschreibt das nur bei Bedarf.
+// Versandkanal: Brevo über die Umgebungsvariable BREVO_API_KEY, dazu MAIL_ABSENDER
+// (z. B. "Befragung <befragung@beispiel.at>" — die Adresse muss in Brevo als Absender
+// bestätigt sein). Links in Mails zeigen immer auf OEFFENTLICHE_URL (https://andifragt.at).
+// Der frühere Ausweichkanal Resend und die Übersteuerung APP_URL sind seit 11.11.2026
+// entfernt (nie genutzt; Base44-Sicherheitsscan).
 //
 // Layouts (nur Brevo): je Welle kann für Einladung und Erinnerung eine
 // transaktionale Brevo-Vorlage gewählt werden. Ohne Auswahl gilt das
@@ -89,10 +90,9 @@ function env(name: string): string {
 
 function kanalInfo() {
   const brevo = env("BREVO_API_KEY");
-  const resend = env("RESEND_API_KEY");
   const absender = env("MAIL_ABSENDER");
   const fehlt: string[] = [];
-  if (!brevo && !resend) fehlt.push("BREVO_API_KEY");
+  if (!brevo) fehlt.push("BREVO_API_KEY");
   if (!absender) fehlt.push("MAIL_ABSENDER");
   if (brevo && /^xsmtpsib-/i.test(brevo.trim())) {
     return {
@@ -102,7 +102,7 @@ function kanalInfo() {
   }
   const layouts = !!brevo; // Brevo-Layouts lassen sich auch ohne Absender schon auswählen
   if (fehlt.length) return { kanal: "probelauf", bereit: false, absender, fehlt, layouts };
-  return { kanal: brevo ? "brevo" : "resend", bereit: true, absender, fehlt, layouts };
+  return { kanal: "brevo", bereit: true, absender, fehlt, layouts };
 }
 
 function absenderTeilen(s: string) {
@@ -318,12 +318,7 @@ function mailNurText({ text, link }) {
 const OEFFENTLICHE_URL = "https://andifragt.at";
 
 function basisUrl(_body) {
-  // Eine alte APP_URL auf base44.app/Vorschau darf die öffentliche Domain nicht verdrängen.
-  const gesetzt = env("APP_URL");
-  const url = gesetzt && !/base44\.app|preview-sandbox|localhost|127\.0\.0\.1/.test(gesetzt)
-    ? gesetzt
-    : OEFFENTLICHE_URL;
-  return url.replace(/\/+$/, "");
+  return OEFFENTLICHE_URL.replace(/\/+$/, "");
 }
 
 function linkFuer(welle, basis, empfaenger) {
@@ -658,8 +653,7 @@ async function sendeMitBrevo(mails, absender, art) {
 }
 
 function sendeUeberKanal(kanal, mails, art) {
-  if (kanal.kanal === "brevo") return sendeMitBrevo(mails, kanal.absender, art);
-  return sendeMitResend(mails, kanal.absender);
+  return sendeMitBrevo(mails, kanal.absender, art);
 }
 
 // --- Versandkanal Resend ----------------------------------------------------
