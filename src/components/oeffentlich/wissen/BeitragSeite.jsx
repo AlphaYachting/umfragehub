@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { ArrowRight, Check, ChevronDown, ChevronRight, Clock, Linkedin, Mail, Plus } from "lucide-react";
+import { base44 } from "@/api/base44Client";
 import { BREITE, F, Hauptknopf, Modulseite, Portraet } from "@/components/oeffentlich/Oeffentlich";
 import Baustein, { Text, nummerieren } from "@/components/oeffentlich/wissen/Bausteine";
 import { Kennzahlen } from "@/components/oeffentlich/wissen/Grafiken";
@@ -225,6 +226,12 @@ export default function BeitragSeite({ beitrag }) {
     const rest = alle.filter((x) => !gewuenscht.includes(x));
     return [...gewuenscht, ...rest].slice(0, 3);
   }, [b]);
+
+  // Ereigniszählung: Aufruf eines einzelnen Beitrags (nur der Slug, keine Personenbezüge)
+  useEffect(() => {
+    if (!sichtbar) return;
+    base44.analytics.track({ eventName: "wissen_beitrag_view", properties: { slug: b.slug } });
+  }, [b.slug, sichtbar]);
 
   if (!sichtbar) return <Navigate to="/wissen" replace />;
 

@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { base44 } from "@/api/base44Client";
 import { BREITE, Etikett, F, Hauptknopf, Modulseite } from "@/components/oeffentlich/Oeffentlich";
 import { Brotkrumen, StrukturierteDaten, useKopfdaten } from "@/components/oeffentlich/wissen/BeitragSeite";
 import { MODUL_NAMEN, MODUL_PFAD, NACHFOLGE, SITE, bereichName, istNachfolge, istVorschau, lesezeit, sichtbareBeitraege } from "@/inhalte/wissen";
@@ -41,6 +42,11 @@ export default function Wissen() {
   const hatFreigegebene = alle.some((b) => b.status === "freigegeben");
 
   useKopfdaten({ titel: TITEL, beschreibung: BESCHREIBUNG, pfad: "/wissen", typ: "website", robots: hatFreigegebene ? "index, follow" : "noindex, nofollow" });
+
+  // Ereigniszählung: Aufrufe der Wissens-Übersicht (keine Personenbezüge)
+  useEffect(() => {
+    base44.analytics.track({ eventName: "wissen_uebersicht_view", properties: { pfad: "/wissen" } });
+  }, []);
 
   const ld = [
     {
