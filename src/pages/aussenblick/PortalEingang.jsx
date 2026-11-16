@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { base44 } from "@/api/base44Client";
 
 // Eingang zum Außenblick-Portal unter /aussenblick: der Code aus dem Brief oder der
 // E-Mail führt nach /a/<code>. Öffentlich, ohne Login; zeigt nichts außer dem Feld.
@@ -14,6 +15,11 @@ export default function PortalEingang() {
   useEffect(() => {
     const vorher = document.title;
     document.title = "andi fragt. | Außenblick";
+    // Ereigniszählung: wie oft die Portal-Startseite geöffnet wird (keine Personenbezüge)
+    base44.analytics.track({
+      eventName: "portal_landing_view",
+      properties: { pfad: "/aussenblick" },
+    });
     return () => { document.title = vorher; };
   }, []);
   function weiter(e) {
