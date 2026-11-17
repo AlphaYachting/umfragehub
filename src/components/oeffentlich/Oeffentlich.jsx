@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { useSprache, useSprachVerweise, umschaltZiel } from "@/lib/sprache";
 
 // Gemeinsame Bausteine der öffentlichen Seiten von andifragt.at
 // (Startseite und die vier Modulseiten).
@@ -47,6 +48,10 @@ export function anfrageLink(betreff = "") {
   return thema ? `/kontakt#anfrage-${thema}` : "/kontakt#anfrage";
 }
 export const mailAn = anfrageLink;
+// Englische Seiten: dasselbe Formular unter /en/contact
+export function anfrageLinkEn(betreff = "") {
+  return anfrageLink(betreff).replace("/kontakt", "/en/contact");
+}
 
 export const MODULE = [
   { id: "positionierung", pfad: "/positionierung", name: "Positionierung" },
@@ -54,6 +59,48 @@ export const MODULE = [
   { id: "kunden", pfad: "/kunden", name: "Kunden" },
   { id: "vertrieb", pfad: "/vertrieb", name: "Vertrieb" },
 ];
+export const MODULE_EN = [
+  { id: "positionierung", pfad: "/en/positioning", name: "Positioning" },
+  { id: "team", pfad: "/en/team", name: "Team" },
+  { id: "kunden", pfad: "/en/customers", name: "Customers" },
+  { id: "vertrieb", pfad: "/en/sales", name: "Sales" },
+];
+
+// Feste Texte in Kopf und Fuß je Sprache. Rechtstexte gibt es nur auf Deutsch.
+const NAV = {
+  de: {
+    start: "/", startLabel: "andi fragt. Zur Startseite", module: MODULE, modulNav: "Module",
+    preise: ["/preise", "Preise"], wissen: ["/wissen", "Wissen"], ueber: ["/ueber-uns", "Über uns"], kontakt: ["/kontakt", "Kontakt"],
+    zurStart: "Zur Startseite", impressum: "Impressum", datenschutz: "Datenschutz",
+    adresse: "Peter-Rosegger-Straße 27, 8053 Graz",
+    umschalten: { kurz: "EN", label: "English version", hreflang: "en" },
+  },
+  en: {
+    start: "/en", startLabel: "andi fragt. Home", module: MODULE_EN, modulNav: "Modules",
+    preise: ["/en/pricing", "Pricing"], wissen: ["/en/insights", "Insights"], ueber: ["/en/about", "About"], kontakt: ["/en/contact", "Contact"],
+    zurStart: "Home", impressum: "Legal notice (German)", datenschutz: "Privacy policy (German)",
+    adresse: "Peter-Rosegger-Strasse 27, 8053 Graz, Austria",
+    umschalten: { kurz: "DE", label: "Deutsche Fassung", hreflang: "de" },
+  },
+};
+
+// Sprachumschalter: führt zum Gegenstück der Seite, sonst zur Startseite der anderen Sprache.
+export function Sprachumschalter({ dunkel = false }) {
+  const { pathname } = useLocation();
+  const t = NAV[useSprache()].umschalten;
+  return (
+    <Link
+      to={umschaltZiel(pathname)}
+      hrefLang={t.hreflang}
+      aria-label={t.label}
+      title={t.label}
+      className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] px-2 text-[13px] font-semibold tracking-[0.08em] hover:underline"
+      style={{ color: dunkel ? "#ffffff" : F.text, textDecoration: "none" }}
+    >
+      {t.kurz}
+    </Link>
+  );
+}
 
 export const H1_STIL = {
 
@@ -147,13 +194,14 @@ export function Wortmarke({ verb = "fragt", groesse = 24, gewicht = 900, farbe, 
 
 // „Für dich als“ mit den Rollen der Zielgruppe.
 export function FuerDich({ rollen, dunkel = false, mitte = false, className = "mt-7" }) {
+  const sprache = useSprache();
   return (
     <div className={`flex flex-wrap items-center gap-2 ${mitte ? "justify-center" : ""} ${className}`}>
       <span
         className="mr-1 text-xs font-medium uppercase tracking-[0.2em]"
         style={{ color: dunkel ? F.hellAufDunkel : F.daempft }}
       >
-        Für dich als
+        {sprache === "en" ? "Made for" : "Für dich als"}
       </span>
       {rollen.map((r) => (
         <span
@@ -180,6 +228,8 @@ export const TEAM = [
     name: "Alfons Rittler",
     rolle: "Creative Director und Consultant",
     aufgabe: "Dein Ansprechpartner, schon ab dem Erstgespräch.",
+    rolleEn: "Creative Director and Consultant",
+    aufgabeEn: "Your point of contact, from the very first call.",
     foto: "/team/alfons-rittler-480.jpg",
     fotoKlein: "/team/alfons-rittler-160.jpg",
     telefon: true,
@@ -189,6 +239,8 @@ export const TEAM = [
     name: "Sebastian Haslinger",
     rolle: "Interviewkonzeption und Kampagne",
     aufgabe: "Macht aus dem Zielgespräch ein Interview für jede Gruppe und sorgt dafür, dass die Einladung ankommt und beantwortet wird.",
+    rolleEn: "Interview Design and Campaign",
+    aufgabeEn: "Turns the goal-setting meeting into an interview for each group and makes sure the invitation lands and gets answered.",
     foto: "/team/sebastian-haslinger-480.jpg",
     fotoKlein: "/team/sebastian-haslinger-160.jpg",
   },
@@ -197,6 +249,8 @@ export const TEAM = [
     name: "Mathias Galler",
     rolle: "Senior Data Analyst",
     aufgabe: "Wertet die Antworten aus und findet in den Zahlen die Muster und Abweichungen, über die wir mit dir sprechen.",
+    rolleEn: "Senior Data Analyst",
+    aufgabeEn: "Analyses the answers and finds the patterns and gaps in the numbers that we then discuss with you.",
     foto: "/team/mathias-galler-480.jpg",
     fotoKlein: "/team/mathias-galler-160.jpg",
   },
@@ -205,11 +259,12 @@ export const TEAM = [
 // Porträt im Kreis. Name steht immer daneben; für Screenreader ausgeblendet,
 // der Alt-Text nennt die Person trotzdem (Bildersuche, SEO-Prüfungen).
 export function Portraet({ person = TEAM[0], className = "w-16 h-16", gross = false, style }) {
+  const sprache = useSprache();
   return (
     <span aria-hidden="true" className={`shrink-0 inline-block rounded-full overflow-hidden ${className}`} style={{ background: F.dunkel, ...style }}>
       <img
         src={gross ? person.foto : person.fotoKlein}
-        alt={`Porträt ${person.name}, Rittler & Co Graz`}
+        alt={sprache === "en" ? `Portrait of ${person.name}, Rittler & Co, Graz` : `Porträt ${person.name}, Rittler & Co Graz`}
         width={gross ? 480 : 160}
         height={gross ? 480 : 160}
         loading="lazy"
@@ -261,11 +316,14 @@ export function wissenImMenue() {
 export function Kopf({ modul, dunkel = false, randUnten = true, extra = null }) {
   const schrift = dunkel ? "#ffffff" : F.text;
   const mitWissen = wissenImMenue();
+  const t = NAV[useSprache()];
+  // html lang und hreflang je Seite (alle öffentlichen Seiten haben diesen Kopf)
+  useSprachVerweise();
   return (
     <header style={{ borderBottom: randUnten ? `1px solid ${dunkel ? "#444444" : F.linie}` : "none" }}>
       <div className={`${BREITE} min-h-[80px] flex flex-wrap items-center justify-between gap-x-7 gap-y-3`}>
         <span className="inline-flex items-center gap-3.5">
-          <Link to="/" aria-label="andi fragt. Zur Startseite" style={{ color: schrift, textDecoration: "none" }}>
+          <Link to={t.start} aria-label={t.startLabel} style={{ color: schrift, textDecoration: "none" }}>
             <Wortmarke />
           </Link>
           {modul && (
@@ -280,8 +338,8 @@ export function Kopf({ modul, dunkel = false, randUnten = true, extra = null }) 
             </>
           )}
         </span>
-        <nav aria-label="Module" className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm font-semibold">
-          {MODULE.map((m) => {
+        <nav aria-label={t.modulNav} className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm font-semibold">
+          {t.module.map((m) => {
             const aktiv = m.name === modul;
             return (
               <Link
@@ -300,44 +358,45 @@ export function Kopf({ modul, dunkel = false, randUnten = true, extra = null }) 
             );
           })}
           <Link
-            to="/preise"
-            aria-current={modul === "Preise" ? "page" : undefined}
+            to={t.preise[0]}
+            aria-current={modul === t.preise[1] ? "page" : undefined}
             className="hidden min-[900px]:inline-flex items-center min-h-[44px]"
             style={{
-              color: modul === "Preise" ? (dunkel ? F.etikettDunkel : F.link) : schrift,
+              color: modul === t.preise[1] ? (dunkel ? F.etikettDunkel : F.link) : schrift,
               textDecoration: "none",
-              borderBottom: modul === "Preise" ? `2px solid ${F.akzent}` : "2px solid transparent",
+              borderBottom: modul === t.preise[1] ? `2px solid ${F.akzent}` : "2px solid transparent",
             }}
           >
-            Preise
+            {t.preise[1]}
           </Link>
           {mitWissen && (
             <Link
-              to="/wissen"
-              aria-current={modul === "Wissen" ? "page" : undefined}
+              to={t.wissen[0]}
+              aria-current={modul === t.wissen[1] ? "page" : undefined}
               className="hidden min-[900px]:inline-flex items-center min-h-[44px]"
               style={{
-                color: modul === "Wissen" ? (dunkel ? F.etikettDunkel : F.link) : schrift,
+                color: modul === t.wissen[1] ? (dunkel ? F.etikettDunkel : F.link) : schrift,
                 textDecoration: "none",
-                borderBottom: modul === "Wissen" ? `2px solid ${F.akzent}` : "2px solid transparent",
+                borderBottom: modul === t.wissen[1] ? `2px solid ${F.akzent}` : "2px solid transparent",
               }}
             >
-              Wissen
+              {t.wissen[1]}
             </Link>
           )}
           <Link
-            to="/ueber-uns"
+            to={t.ueber[0]}
             className="hidden min-[900px]:inline-flex items-center min-h-[44px]"
             style={{ color: schrift, textDecoration: "none" }}
           >
-            Über uns
+            {t.ueber[1]}
           </Link>
+          <Sprachumschalter dunkel={dunkel} />
           <Link
-            to="/kontakt"
+            to={t.kontakt[0]}
             className="inline-flex items-center min-h-[44px] px-4 rounded"
             style={{ background: dunkel ? F.akzent : F.dunkel, color: "#ffffff", textDecoration: "none" }}
           >
-            Kontakt
+            {t.kontakt[1]}
           </Link>
           {extra}
         </nav>
@@ -348,23 +407,24 @@ export function Kopf({ modul, dunkel = false, randUnten = true, extra = null }) 
 
 export function Fuss({ dunkel = false, hintergrund }) {
   const farbe = dunkel ? "#b3b3b3" : F.daempft;
+  const t = NAV[useSprache()];
   return (
     <footer style={{ borderTop: `1px solid ${dunkel ? "#444444" : F.linie}`, background: hintergrund }}>
       <div className={`${BREITE} py-8 flex flex-wrap gap-x-8 gap-y-4 items-center justify-between text-sm`} style={{ color: farbe }}>
         <div className="flex flex-wrap gap-x-4 gap-y-1">
           <strong className="font-semibold" style={{ color: dunkel ? "#ffffff" : F.text }}>Rittler &amp; Co GmbH</strong>
-          <span>Peter-Rosegger-Straße 27, 8053 Graz</span>
+          <span>{t.adresse}</span>
           <a href={`tel:${KONTAKT_TEL.replace(/\s/g, "")}`} className="hover:underline" style={{ color: farbe }}>{KONTAKT_TEL}</a>
           <a href={`mailto:${KONTAKT_MAIL}`} className="hover:underline" style={{ color: farbe }}>{KONTAKT_MAIL}</a>
         </div>
         <div className="flex flex-wrap gap-x-5 gap-y-2">
-          <Link to="/" className="hover:underline" style={{ color: farbe }}>Zur Startseite</Link>
-          <Link to="/preise" className="hover:underline" style={{ color: farbe }}>Preise</Link>
-          {wissenImMenue() && <Link to="/wissen" className="hover:underline" style={{ color: farbe }}>Wissen</Link>}
-          <Link to="/ueber-uns" className="hover:underline" style={{ color: farbe }}>Über uns</Link>
-          <Link to="/kontakt" className="hover:underline" style={{ color: farbe }}>Kontakt</Link>
-          <Link to={IMPRESSUM} className="hover:underline" style={{ color: farbe }}>Impressum</Link>
-          <Link to={DATENSCHUTZ} className="hover:underline" style={{ color: farbe }}>Datenschutz</Link>
+          <Link to={t.start} className="hover:underline" style={{ color: farbe }}>{t.zurStart}</Link>
+          <Link to={t.preise[0]} className="hover:underline" style={{ color: farbe }}>{t.preise[1]}</Link>
+          {wissenImMenue() && <Link to={t.wissen[0]} className="hover:underline" style={{ color: farbe }}>{t.wissen[1]}</Link>}
+          <Link to={t.ueber[0]} className="hover:underline" style={{ color: farbe }}>{t.ueber[1]}</Link>
+          <Link to={t.kontakt[0]} className="hover:underline" style={{ color: farbe }}>{t.kontakt[1]}</Link>
+          <Link to={IMPRESSUM} hrefLang="de" className="hover:underline" style={{ color: farbe }}>{t.impressum}</Link>
+          <Link to={DATENSCHUTZ} hrefLang="de" className="hover:underline" style={{ color: farbe }}>{t.datenschutz}</Link>
           {/* Bewusst kein Link zur Verwaltung */}
         </div>
       </div>
@@ -390,10 +450,12 @@ export function Modulseite({ titel, modul, hintergrund = "#ffffff", dunkel = fal
   );
 }
 
-export function Beispielhinweis({ dunkel = false, children = "Beispiel zur Veranschaulichung, keine echten Daten.", className = "mt-4" }) {
+export function Beispielhinweis({ dunkel = false, children, className = "mt-4" }) {
+  const sprache = useSprache();
+  const text = children ?? (sprache === "en" ? "Example for illustration, not real data." : "Beispiel zur Veranschaulichung, keine echten Daten.");
   return (
     <p className={`text-[13px] ${className}`} style={{ color: dunkel ? "#b3b3b3" : F.daempft }}>
-      {children}
+      {text}
     </p>
   );
 }
