@@ -283,7 +283,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "How positioning with andi fragt. works is explained on the page [positioning from within the company](/en/positioning). Why the difference is usually already inside the business is the subject of [find your USP](/en/insights/find-your-usp). If it is not two generations but several partners who disagree, read [partners disagree on marketing](/en/insights/partners-disagree-on-marketing)."
+          "text": "How positioning with andi fragt. works is explained on the page [positioning from inside the company](/en/positioning). Why the difference is usually already inside the business is the subject of [find your USP](/en/insights/find-your-usp). If it is not two generations but several partners who disagree, read [partners disagree on marketing](/en/insights/partners-disagree-on-marketing)."
         }
       ]
     }

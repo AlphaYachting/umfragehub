@@ -332,7 +332,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "How this works is explained on the pages on [positioning from within the company](/en/positioning) and the [customer interview](/en/customers)."
+          "text": "How this works is explained on the pages on [positioning from inside the company](/en/positioning) and the [customer interview](/en/customers)."
         }
       ]
     }
