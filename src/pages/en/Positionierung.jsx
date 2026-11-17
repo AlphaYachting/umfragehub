@@ -28,13 +28,13 @@ const KOSTEN = [
 // The ANDI method: four touchstones. Only the what, not the how.
 const ANDI = [
   { b: "A", wort: "Attention", frage: "What draws people in?", text: "Which problems and wishes of your customers you address, and where your brand creates instant relevance." },
-  { b: "N", wort: "Need", frage: "What's in it for the customer?", text: "Which concrete benefits really count: time, cost, service or personal support." },
-  { b: "D", wort: "Differentiation", frage: "Why you, of all companies?", text: "What makes you unique, such as your origins, special expertise or the way you work." },
+  { b: "N", wort: "Net benefit", frage: "What's in it for the customer?", text: "Which concrete benefits really count: time, cost, service or personal support." },
+  { b: "D", wort: "Differentiation", frage: "Why choose you?", text: "What makes you unique, such as your origins, special expertise or the way you work." },
   { b: "I", wort: "Identity", frage: "What do you stand for?", text: "Which values make you unmistakable, beyond your products." },
 ];
 
 const KREISE = [
-  { nr: "1", wer: "Leadership", text: "We start with your picture: goals, strengths, ideal customers.", frage: "What should customers know us for three years from now?" },
+  { nr: "1", wer: "Leadership", text: "We start with your view: goals, strengths, ideal customers.", frage: "What should customers know us for three years from now?" },
   { nr: "2", wer: "Team", text: "The people who work with customers every day often know more than any strategy.", frage: "What do customers thank you for most often?" },
   { nr: "3", wer: "Customers", text: "The outside view shows what really lands, and what is missing.", frage: "Why did you choose us back then?" },
 ];
@@ -72,7 +72,7 @@ export default function PositionierungEn() {
             <span className="block mt-4">
               You are better
               <br />
-              <span style={{ color: "transparent", WebkitTextStroke: `2px ${F.dunkel}` }}>than you look.</span>
+              <span style={{ color: "transparent", WebkitTextStroke: `2px ${F.dunkel}` }}>than your image.</span>
             </span>
           </h1>
           <div className="mt-9 flex flex-wrap items-end gap-x-16 gap-y-8">
@@ -311,8 +311,8 @@ export default function PositionierungEn() {
             <Etikett>The next step</Etikett>
             <h3 className="mt-2.5 text-[28px] leading-[1.15] font-bold">Insight becomes a brand presence.</h3>
             <p className="mt-2.5 leading-[1.6]" style={{ color: F.daempft }}>
-              The interview is the core of the ANDI brand check by Rittler &amp; Co. If you wish, we implement the
-              positioning straight away, from the message to the website.
+              The interview is the core of the ANDI brand check by Rittler &amp; Co. If you like, we can put the
+              positioning into practice straight away, from the message to the website.
             </p>
           </div>
           <a
