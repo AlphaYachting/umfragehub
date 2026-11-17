@@ -68,7 +68,7 @@ const beitrag = {
     {
       "wert": "59",
       "einheit": "%",
-      "text": "of open skilled positions at the businesses surveyed stayed vacant for more than six months on average.",
+      "text": "of open skilled positions at the Austrian businesses surveyed stayed vacant for more than six months on average.",
       "quelle": "WKO Fachkräfteradar 2026"
     }
   ],
@@ -88,7 +88,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "Holding back towards managers is widespread. In an interview study with 40 employees, most kept important issues to themselves for fear of being seen negatively and damaging relationships (Milliken and colleagues, 2003). The good news: a study of 107 bank branches found that teams became more open after a change of leader when the new leader offered noticeable support (Zettna and colleagues, 2025)."
+          "text": "Staying quiet with managers is common. In an interview study with 40 employees, most kept important issues to themselves for fear of being seen negatively and damaging relationships (Milliken and colleagues, 2003). The good news: a study of 107 bank branches found that teams became more open after a change of leader when the new leader offered noticeable support (Zettna and colleagues, 2025)."
         },
         {
           "typ": "dialog",
@@ -119,13 +119,13 @@ const beitrag = {
           "karten": [
             {
               "symbol": "person",
-              "titel": "Worry about their own place",
+              "titel": "Worry about where they stand",
               "text": "What does the new leadership have in mind, and am I part of it?"
             },
             {
               "symbol": "herz",
               "titel": "Loyalty to the outgoing owner",
-              "text": "People who have been through a lot with the outgoing owner can easily take changes as criticism of them."
+              "text": "People who have been through a lot with the outgoing owner easily read changes as criticism of the old boss."
             },
             {
               "symbol": "warnung",
@@ -201,7 +201,7 @@ const beitrag = {
             },
             {
               "fett": "Talk to key people one to one.",
-              "text": "In the first weeks, not after months. Ask what they need to be glad to stay."
+              "text": "In the first weeks, not after months. Ask what would make them want to stay."
             },
             {
               "fett": "Honour what came before.",
@@ -230,7 +230,7 @@ const beitrag = {
       "bloecke": [
         {
           "typ": "absatz",
-          "text": "One-to-one conversations are essential. But people are only honest in them if they feel safe, and in the first months the shared experience for that is often still missing. Hardly anyone criticises the outgoing owner or colleagues to the new leadership's face."
+          "text": "One-to-one conversations are essential. But people are only honest in them if they feel safe, and in the first months you often have not yet worked together long enough for that. Hardly anyone criticises the outgoing owner or colleagues to the new leadership's face."
         },
         {
           "typ": "tabelle",
