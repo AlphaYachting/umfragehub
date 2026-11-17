@@ -30,7 +30,7 @@ const beitrag = {
     "unterschrift": "Customers who leave know exactly why. It's just that hardly anyone asks them.",
     "platzhalter": "Placeholder cover image: conversation with a customer, 1600 x 900 px"
   },
-  "kurzAntwort": "Customers buy from your competitors when a competitor fits better at one point: faster, simpler, more reliable or simply closer. Often even satisfied customers leave. You only learn the real reasons if you ask, and ask in a way that lets customers answer honestly.",
+  "kurzAntwort": "Customers buy from your competitors when a competitor is a better fit in one respect: faster, simpler, more reliable or simply closer. Often even satisfied customers leave. You only learn the real reasons if you ask, and ask in a way that lets customers answer honestly.",
   "wichtigstes": [
     {
       "fett": "Satisfied doesn't mean loyal.",
@@ -39,7 +39,7 @@ const beitrag = {
     },
     {
       "fett": "Customers rarely say why they leave.",
-      "text": "They simply order less, or order elsewhere. With business customers this often only shows up late.",
+      "text": "They simply order less, or order elsewhere. With business customers, this is often noticed late.",
       "akzent": false
     },
     {
@@ -48,7 +48,7 @@ const beitrag = {
       "akzent": false
     },
     {
-      "fett": "Asking works twice.",
+      "fett": "Asking pays off twice.",
       "text": "With andi fragt. you learn the real reasons, and your customers see that their opinion counts.",
       "akzent": true
     }
@@ -81,7 +81,7 @@ const beitrag = {
       "bloecke": [
         {
           "typ": "absatz",
-          "text": "This applies to business customers and private customers alike: anyone who asked you for a quote and bought elsewhere knows the reason. You usually don't. Many companies suspect price first. Sometimes that's right, but often price only makes something else visible. Typical reasons are:"
+          "text": "This applies to business customers and private customers alike: anyone who asked you for a quote and bought elsewhere knows the reason. You usually don't. Many companies suspect price first. Sometimes that's right, but often price is just where something else shows up. Typical reasons are:"
         },
         {
           "typ": "karten",
@@ -155,11 +155,11 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "That is expensive. In 1990 Frederick Reichheld and Earl Sasser showed, using American service companies, that five percent fewer defections could raise profits by 25 to 85%, depending on the industry. Work out what a regular customer brings your business over the years, and you will see what each lost one costs."
+          "text": "That is expensive. In 1990 Frederick Reichheld and Earl Sasser showed in a study of US service companies that five percent fewer defections could raise profits by 25 to 85%, depending on the industry. Work out what a regular customer brings your business over the years, and you will see what each lost one costs."
         },
         {
           "typ": "absatz",
-          "text": "In B2B, one person rarely decides alone. According to a 2024 Gartner survey of 632 business buyers, buying groups consist of 5 to 16 people from up to four functions. In mid-sized companies there are fewer, but the principle holds: the buyer can be satisfied while engineering has long preferred another supplier."
+          "text": "In B2B, one person rarely decides alone. According to a 2024 Gartner survey of 632 business buyers, buying groups consist of 5 to 16 people from up to four functions. In mid-sized companies fewer people are involved, but the principle holds: the buyer can be satisfied while engineering has long been favouring another supplier."
         },
         {
           "typ": "figuren",
@@ -197,7 +197,7 @@ const beitrag = {
         },
         {
           "typ": "kundenliste",
-          "titel": "You find the quiet departures by comparing with last year",
+          "titel": "Comparing with last year reveals the quiet departures",
           "legende": [
             {
               "farbe": "grau",
@@ -254,10 +254,10 @@ const beitrag = {
             },
             {
               "fett": "Call former customers without selling.",
-              "text": "Say at the start that you don't want to make an offer, you want to learn."
+              "text": "Make it clear at the start that you are not selling anything, you want to learn."
             },
             {
-              "fett": "Ask about the why behind the price.",
+              "fett": "Ask what lies behind the price.",
               "text": "If someone says it was too expensive, ask: compared with what? What tipped the balance there?"
             },
             {
@@ -266,7 +266,7 @@ const beitrag = {
             },
             {
               "fett": "Write the answers down word for word.",
-              "text": "Look for patterns, not for the one loud individual case. Your customers' words will later be your best sales argument, too."
+              "text": "Look for patterns, not the one loud exception. Your customers' words will later be your best selling points, too."
             }
           ]
         },
@@ -283,7 +283,7 @@ const beitrag = {
       "bloecke": [
         {
           "typ": "absatz",
-          "text": "If you ask yourself, you quickly hit limits. Not because customers are dishonest, but because the situation makes it hard for them."
+          "text": "If you do the asking yourself, you soon hit limits. Not because customers are dishonest, but because the situation makes it hard for them."
         },
         {
           "typ": "dialog",
@@ -315,7 +315,7 @@ const beitrag = {
               "text": "People who know you personally don't want to hurt your feelings. The answer is polite, but vague."
             },
             {
-              "fett": "The suspicion of a sales pitch.",
+              "fett": "The customer suspects a sales pitch.",
               "text": "When the supplier calls, the customer expects an offer and holds back."
             },
             {
@@ -388,7 +388,7 @@ const beitrag = {
               "farbe": "grau"
             }
           ],
-          "fazit": "The difference between the groups shows what tips the balance. It becomes arguments for your website, your quotes and your sales conversations."
+          "fazit": "The difference between the groups shows what tips the balance. This gives you arguments for your website, your quotes and your sales conversations."
         },
         {
           "typ": "absatz",
@@ -429,7 +429,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "The page about the [customer interview](/en/customers) shows the process in detail. If your sales team should have a say too, the [sales interview](/en/sales) is the right addition."
+          "text": "The page about the [customer interview](/en/customers) shows the process in detail. If you want your sales team to have a say too, the [sales interview](/en/sales) is the right addition."
         }
       ]
     }
