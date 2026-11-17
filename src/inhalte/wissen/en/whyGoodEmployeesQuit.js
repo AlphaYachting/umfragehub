@@ -98,12 +98,12 @@ const beitrag = {
             {
               "symbol": "stumm",
               "titel": "Not being asked",
-              "text": "People who have no say in decisions about their own work detach inwardly."
+              "text": "People who have no say in decisions about their own work mentally check out."
             },
             {
               "symbol": "fuehrung",
               "titel": "Leadership that doesn't ask",
-              "text": "Not ill will, just missing conversations: problems are left lying until someone leaves."
+              "text": "Not ill will, just a lack of conversation: problems go unaddressed until someone leaves."
             },
             {
               "symbol": "geld",
@@ -215,7 +215,7 @@ const beitrag = {
             }
           ],
           "rechner": {
-            "label": "Calculate with an annual salary from your business",
+            "label": "Try it with an annual salary from your business",
             "einheit": "euros",
             "zusatz": "gross per year",
             "min": 25000,
@@ -272,7 +272,7 @@ const beitrag = {
             {
               "farbe": "dunkel",
               "form": "balken",
-              "text": "This is where the exit interview comes"
+              "text": "This is where the exit interview happens"
             }
           ],
           "stufen": [
@@ -288,7 +288,7 @@ const beitrag = {
             },
             {
               "titel": "Quiet quitting",
-              "text": "Only the bare minimum, the decision takes shape.",
+              "text": "Doing the bare minimum while the decision takes shape.",
               "phase": "handeln"
             },
             {
@@ -331,7 +331,7 @@ const beitrag = {
         },
         {
           "typ": "tipp",
-          "text": "Two questions for your next one-to-one: What would have to happen for you to still enjoy working here in two years? And: what would make you leave?"
+          "text": "Two questions for your next one-to-one: what would have to happen for you to still enjoy working here in two years? And what would make you leave?"
         }
       ]
     },
@@ -354,7 +354,7 @@ const beitrag = {
             },
             {
               "fett": "In a small business, everyone knows everyone.",
-              "text": "That is exactly why nobody tells the boss everything. Honesty needs the feeling of not being recognisable."
+              "text": "That is exactly why nobody tells the boss everything. People are only honest when they feel they cannot be singled out."
             },
             {
               "fett": "The exit interview comes too late.",
@@ -368,7 +368,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "An employee survey is good at showing the mood. The team interview starts where it stops: with the reasons good people would stay or leave."
+          "text": "An employee survey is good at showing the mood. The team interview picks up where it leaves off: with the reasons good people would stay or leave."
         },
         {
           "typ": "tabelle",
@@ -465,7 +465,7 @@ const beitrag = {
         },
         {
           "typ": "zitat",
-          "text": "Uncomfortable answers are the most valuable. Otherwise you only hear them with the resignation letter."
+          "text": "Uncomfortable answers are the most valuable. Otherwise you only hear them when the resignation letter arrives."
         },
         {
           "typ": "absatz",
@@ -484,7 +484,7 @@ const beitrag = {
             },
             {
               "verb": "macht",
-              "text": "This becomes three priorities instead of a list of 40 problem areas, plus sentences for job ads in your team's own words."
+              "text": "The result is three priorities instead of a list of 40 problem areas, plus sentences for job ads in your team's own words."
             },
             {
               "verb": "zeigt",
@@ -514,12 +514,12 @@ const beitrag = {
       "a": "In Austria, the Supreme Court ruled in 2004 (9 ObA 114/04m) that a questionnaire does not need the works council's approval under section 96(1)(2) of the Labour Constitution Act if the employer has no access to individual answers and only sees aggregated results. That is how the team interview is set up. The works council's rights to information and participation remain, so we involve it early. Rules differ between countries and should be checked locally. This is not legal advice; have your specific case checked."
     },
     {
-      "q": "From how many employees does this make sense?",
+      "q": "How many employees do you need for this to make sense?",
       "a": "We only analyse a group from 6 people upwards and merge smaller groups. In very small teams we tell you openly if some answers could still be traced back to individuals, and then we usually recommend starting with the customer interview."
     },
     {
       "q": "How much does a team interview with andi fragt. cost?",
-      "a": "There are fixed prices by group size, for example €5,400 net for 21 to 50 people and €7,400 net for 51 to 100 people. All levels are on the pricing page, and the first call beforehand is free."
+      "a": "There are fixed prices by group size, for example €5,400 net for 21 to 50 people and €7,400 net for 51 to 100 people. All price tiers are on the pricing page, and the first call beforehand is free."
     }
   ],
   "quellen": [
