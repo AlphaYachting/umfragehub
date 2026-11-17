@@ -19,7 +19,7 @@ const SCHUH = [
   { modul: "team", satz: "Good people are leaving, and you don't really know why.", knopf: "The team interview" },
   { modul: "positionierung", satz: "Your advertising sounds like everyone else's.", knopf: "Positioning" },
   { modul: "kunden", satz: "Customers leave quietly, without saying why.", knopf: "The customer interview" },
-  { modul: "vertrieb", satz: "Proposals go out, deals don't come back.", knopf: "The sales interview" },
+  { modul: "vertrieb", satz: "Proposals go out, but the deals don't come in.", knopf: "The sales interview" },
 ];
 
 function EntwurfsMarke({ b }) {
@@ -199,7 +199,7 @@ export default function InsightsEn() {
       <section aria-labelledby="h-abschluss" className="mt-24" style={{ background: F.akzent, color: "#ffffff" }}>
         <div className={`${BREITE} py-20 flex flex-wrap items-center justify-between gap-x-12 gap-y-7`}>
           <div className="flex-[1_1_560px] min-w-0">
-            <h2 id="h-abschluss" className="text-[clamp(28px,3.2vw,42px)] font-black uppercase leading-[1.1]">Rather talk about your company right away?</h2>
+            <h2 id="h-abschluss" className="text-[clamp(28px,3.2vw,42px)] font-black uppercase leading-[1.1]">Prefer to talk about your company now?</h2>
             <p className="mt-3.5 text-lg leading-[1.6]">Free first call, about 30 minutes, online or by phone. A reply within 24 hours.</p>
           </div>
           <Hauptknopf href="/en/contact#anfrage" farbe={F.dunkel}>Request a first call</Hauptknopf>
