@@ -32,7 +32,7 @@ const STUFEN = [
 const MODULE = [
   { id: "kunden", name: "Customers", nameDe: "Kunden", frage: "Why do they buy?" },
   { id: "team", name: "Team", nameDe: "Team", frage: "Why do they stay?" },
-  { id: "vertrieb", name: "Sales", nameDe: "Vertrieb", frage: "Why do they close?" },
+  { id: "vertrieb", name: "Sales", nameDe: "Vertrieb", frage: "Why do deals close?" },
   { id: "positionierung", name: "Positioning", nameDe: "Positionierung", frage: "What do you stand for?" },
 ];
 
@@ -263,7 +263,7 @@ function Rechner() {
                 className="mt-1 flex items-center justify-center gap-2 min-h-[54px] px-6 rounded text-sm font-semibold uppercase tracking-[0.04em] text-white cursor-pointer disabled:opacity-70 disabled:cursor-wait"
                 style={{ background: F.akzent, border: 0, fontFamily: "inherit" }}
               >
-                {zustand === "sendet" ? "Sending" : "Request for free"} <ArrowRight size={16} aria-hidden="true" />
+                {zustand === "sendet" ? "Sending" : "Request a free call"} <ArrowRight size={16} aria-hidden="true" />
               </button>
               <p className="text-xs leading-[1.5]" style={{ color: F.hellAufDunkel }}>
                 We get back to you within 24 hours and use your details only for that.{" "}
@@ -304,7 +304,7 @@ export default function PreiseEn() {
             className="inline-flex items-center justify-center min-h-[52px] px-6 rounded text-sm font-semibold"
             style={{ border: "1px solid #d6d3d0", color: F.text, textDecoration: "none" }}
           >
-            Rather call: {KONTAKT_TEL}
+            Prefer to call? {KONTAKT_TEL}
           </a>
         </div>
         <ul className="mt-12 grid gap-3.5 grid-cols-1 md:grid-cols-3">
