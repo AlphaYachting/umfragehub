@@ -87,7 +87,7 @@ export default function KontaktEn() {
 
       <section className={`${BREITE} py-14`} style={{ borderTop: `1px solid ${F.linie}` }}>
         <div className="max-w-[680px]">
-          <Etikett>What it can be about</Etikett>
+          <Etikett>What we can help with</Etikett>
           <h2 className="mt-3 text-2xl font-bold">Three typical requests</h2>
           <ul className="mt-5 flex flex-col gap-3">
             {ANLIEGEN.map((a) => (
