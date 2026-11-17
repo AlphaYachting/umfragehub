@@ -24,8 +24,8 @@ const beitrag = {
   "titelAkzent": "Who checks that it is right?",
   "titelbild": {
     "src": "/bilder/team.webp",
-    "alt": "Title graphic: three fields stacked. Is it true: facts and figures, with a checklist. Am I allowed to: law and labelling, with a checklist. Does it work, highlighted in pink: message and reason to buy, only with your customers.",
-    "unterschrift": "AI writes fast and plausibly. Whether it is right for your customers, only your customers know.",
+    "alt": "Title graphic: three fields stacked. Is it true: facts and figures, with a checklist. Is it allowed: law and labelling, with a checklist. Does it work, highlighted in pink: message and reason to buy, only with your customers.",
+    "unterschrift": "AI writes fast and plausibly. Only your customers know whether it is right for them.",
     "platzhalter": "Placeholder title image: business owner at a desk with a laptop and a printed text with highlighting, 1600 x 900 px"
   },
   "titelgrafik": true,
@@ -43,12 +43,12 @@ const beitrag = {
     },
     {
       "fett": "Two levels you can manage with a checklist.",
-      "text": "Whether the facts are right and whether you are allowed to say something, you can check yourself. Whether a message works, only your customers can tell you.",
+      "text": "You can check for yourself whether the facts are right and whether you are allowed to say something. Only your customers can tell you whether a message works.",
       "akzent": false
     },
     {
       "fett": "Your customers as the test.",
-      "text": "With andi fragt. you learn in interviews why customers buy from you. That becomes your messages, also as the basis for your AI tool.",
+      "text": "With andi fragt. you learn in interviews why customers buy from you. These become your messages, which can also feed your AI tool.",
       "akzent": true
     }
   ],
@@ -84,7 +84,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "The page also shows what they use it for. Of the companies using AI, exactly 67.5% apply it in marketing or sales in 2026, up from 45% in 2025. That is the most common area, ahead of management and organisation at 51.4%, production or service processes at 40.6% and finance and accounting at 24.3%. Back in 2025, 51% of companies using AI were already generating text, speech or programme code with it."
+          "text": "The page also shows what they use it for. Of the companies using AI, exactly 67.5% apply it in marketing or sales in 2026, up from 45% in 2025. That is the most common area, ahead of management and organisation at 51.4%, production or service processes at 40.6% and finance and accounting at 24.3%. Back in 2025, 51% of companies using AI were already generating text, speech or computer code with it."
         },
         {
           "typ": "balken",
@@ -141,7 +141,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "How often things go wrong is shown by a study from the US agency NP Digital, so a vendor, from February 2026 among 565 marketers in the US who work with AI. 47.1% come across AI errors several times a week, and 36.5% say that false AI content has already been published."
+          "text": "A February 2026 study by the US agency NP Digital, so a vendor study, of 565 US marketers who work with AI shows how often things go wrong. 47.1% come across AI errors several times a week, and 36.5% say that false AI content has already been published."
         },
         {
           "typ": "balken",
@@ -263,7 +263,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "AI writes from the average of what is on the web. Leadership writes from the inside view. Whether a message holds up for your customers, only your customers know, along with the people who work with them every day."
+          "text": "AI writes from the average of what is on the web. Leadership writes from the inside view. Only your customers, and the people who work with them every day, know whether a message holds up for them."
         },
         {
           "typ": "vierfeld",
@@ -272,11 +272,11 @@ const beitrag = {
           "achseUnten": "Checked: from plausible to evidenced",
           "felder": [
             {
-              "kopf": "Right direction, thin ground",
+              "kopf": "Right direction, shaky ground",
               "text": "From customer conversations, but only from memory or from individual customers."
             },
             {
-              "kopf": "A message that carries",
+              "kopf": "A message that holds up",
               "text": "Backed by evidence and in your customers' words.",
               "akzent": true
             },
@@ -290,7 +290,7 @@ const beitrag = {
             }
           ],
           "fazit": "Checklists move you to the right. Only your customers can move you up.",
-          "unterschrift": "Our own illustration, andi fragt., not data."
+          "unterschrift": "Our own illustration, andi fragt. Not data."
         }
       ]
     },
@@ -330,7 +330,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "Asking yourself has a limit: face to face, customers tend to say what you want to hear. A meta-analysis in the Journal of Applied Psychology (Richman and colleagues, 1999) shows in general terms that people gloss over their answers more in a personal interview than when answering alone and anonymously at a computer."
+          "text": "Asking customers yourself has a limit: face to face, customers tend to say what you want to hear. A meta-analysis in the Journal of Applied Psychology (Richman and colleagues, 1999) shows in general terms that people gloss over their answers more in a personal interview than when answering alone and anonymously at a computer."
         }
       ]
     },
@@ -345,7 +345,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "Your customers answer without giving their names, on their phone or computer, in about 15 to 30 minutes. People at Rittler & Co in Graz read the answers, and you receive the summary. We merge groups of fewer than six people and summarise free-text answers. Even so, recognition cannot be ruled out completely."
+          "text": "Your customers answer without giving their names, on their phone or computer, in about 15 to 30 minutes. People at Rittler & Co in Graz read the answers, and you receive the summary. We merge groups of fewer than six people and summarise free-text answers. Even so, we cannot completely rule out that someone is recognised."
         },
         {
           "typ": "absatz",
