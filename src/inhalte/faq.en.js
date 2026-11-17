@@ -58,7 +58,7 @@ export const FAQ_EN = {
       {
         g: "auftrag",
         q: "Is it worth it for a business with 30 people?",
-        kopf: "Especially there.",
+        kopf: "All the more so.",
         text: "In small businesses the owner thinks they know everything because they know everyone, and that is exactly why nobody tells them everything. To keep answers confidential, a group needs at least 6 interviews, so we analyse 30 people in a few groups or as a whole. There is no upper limit: we usually interview 5 to 100 people, and your customers too if you wish.",
       },
       {
@@ -108,17 +108,17 @@ export const FAQ_EN = {
       {
         q: "How do I know we need a new positioning?",
         kopf: "Three signs.",
-        text: "Conversations keep ending up on price. Your team cannot tell a new customer in two sentences why they should buy from you. And your website would fit a competitor just as well with a different logo. At the latest before a larger investment in how you present yourself, such as a website, a trade fair stand or handing over to the next generation, an outside view pays off.",
+        text: "Conversations keep ending up on price. Your team cannot tell a new customer in two sentences why they should buy from you. And your website would fit a competitor just as well with a different logo. By the time you plan a larger investment in how you present yourself, such as a website, a trade fair stand or handing over to the next generation, an outside view pays off.",
       },
       {
-        q: "What do I have in my hands at the end?",
+        q: "What do I actually get at the end?",
         kopf: "A basis for decisions, not a data report.",
         text: "An analysis handout with every gap we found, the presentation at your premises and recommendations for the next 90 days. Plus your positioning on a single page: the promise, three proof points, tone of voice and what you will stop saying. From then on it guides your website, proposals, trade fair stand and job ads.",
       },
       {
         q: "Do you also implement the positioning?",
         kopf: "Yes.",
-        text: "andi fragt. is run by Rittler & Co, a brand and advertising agency in Graz. The interview is the core of the ANDI brand check, and if you wish we implement the positioning straight away, from the core message to the website. Because analysis and implementation come from one source, nothing gets lost between insight and execution. You can just as well implement the results with your own team.",
+        text: "andi fragt. is run by Rittler & Co, a brand and advertising agency in Graz. The interview is the core of the ANDI brand check, and if you wish we can implement the positioning straight away, from the core message to the website. Because analysis and implementation come from one source, nothing gets lost between insight and execution. You can just as well implement the results with your own team.",
       },
     ],
   },
@@ -147,7 +147,7 @@ export const FAQ_EN = {
         text: "An interview without consequences is the most common reason nobody answers honestly the next time. In the goal-setting meeting we agree what you want to do with the results and what you will report back to the team. You get three priorities instead of a list of 40 problems, and after six months a short pulse check shows whether anything has moved.",
       },
       {
-        q: "From how many employees does the team interview stay confidential?",
+        q: "How many employees do you need for the team interview to stay confidential?",
         kopf: "A group is only shown once at least 6 interviews are in.",
         text: "Smaller departments are merged, so a team of eight is analysed as one group. Until then you only see how many have taken part: no answers and no trend.",
       },
@@ -184,7 +184,7 @@ export const FAQ_EN = {
       {
         q: "What does a customer interview tell me that a satisfaction score doesn't?",
         kopf: "The why.",
-        text: "A score shows how satisfied customers are, but not why they buy from you, why they leave, and what they buy elsewhere even though they would rather buy it from you. Which of these questions matters for you right now, we decide together in the goal-setting meeting. Our strategists read every answer and turn it into arguments and actions.",
+        text: "A score shows how satisfied customers are, but not why they buy from you, why they leave, and what they buy elsewhere even though they would rather buy it from you. We decide together in the goal-setting meeting which of these questions matters most to you right now. Our strategists read every answer and turn it into arguments and actions.",
       },
       {
         q: "Won't this annoy our customers?",
@@ -244,7 +244,7 @@ export const FAQ_EN = {
       {
         q: "How realistic is the revenue calculator?",
         kopf: "The calculator is a worked example based on your assumptions, not a promise.",
-        text: "It shows what a single lever is worth: if your close rate rises by five points, you win one more out of every twenty proposals. Which levers will do the most for you, only the interviews can show.",
+        text: "It shows what a single lever is worth: if your close rate rises by five points, you win one more out of every twenty proposals. Only the interviews can show which levers will do the most for you.",
       },
       {
         q: "What will my sales team do differently afterwards?",
@@ -256,8 +256,8 @@ export const FAQ_EN = {
 
   ueberUns: {
     etikett: "Questions about Rittler & Co and the ANDI method",
-    titelA: "Who asks,",
-    titelB: "and why this way.",
+    titelA: "Who's asking,",
+    titelB: "and why we ask this way.",
     lead: "Who is behind andi fragt., how the method works and why an advertising agency asks the right questions.",
     verweis: true,
     fragen: [
@@ -325,15 +325,15 @@ export const FAQ_EN = {
       {
         q: "My interview link doesn't work. What should I do?",
         kopf: "The best option is to open the link directly from your invitation or enter your interview code on the home page.",
-        text: "If that doesn't work, call us. We will send you a new link, and your answers stay without names.",
+        text: "If that doesn't work, call us. We will send you a new link, and your answers remain confidential.",
       },
     ],
   },
 
   preise: {
     etikett: "Questions about pricing",
-    titelA: "Answered",
-    titelB: "briefly.",
+    titelA: "Quick",
+    titelB: "answers.",
     lead: "What managing directors, HR and sales leaders want to know about price and effort before the first call.",
     fragen: [
       {
