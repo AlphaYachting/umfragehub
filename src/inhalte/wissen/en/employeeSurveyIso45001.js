@@ -37,7 +37,7 @@ const beitrag = {
       "akzent": false
     },
     {
-      "fett": "In Austria, the evaluation is the law.",
+      "fett": "In Austria, the evaluation is a legal duty.",
       "text": "Since 2013, Austria's Employee Protection Act (ASchG) has stated explicitly that psychological stress must also be identified and assessed, with or without a certificate.",
       "akzent": false
     },
@@ -47,7 +47,7 @@ const beitrag = {
       "akzent": false
     },
     {
-      "fett": "The interview adds to it.",
+      "fett": "The interview complements it.",
       "text": "An interview with andi fragt. does not replace the evaluation. It helps with consultation, culture and the causes behind the results.",
       "akzent": true
     }
@@ -195,7 +195,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "The AUVA states clearly that this is not about measuring job satisfaction, burnout, performance or stress in individual employees. Meaningful results require standardised methods in line with ÖNORM EN ISO 10075-3. A home-made satisfaction survey does not usually meet this standard."
+          "text": "The AUVA states clearly that this is not about measuring job satisfaction, burnout, performance or stress in individual employees. Meaningful results require standardised methods in line with ÖNORM EN ISO 10075-3. A home-made satisfaction survey does not usually meet this requirement."
         },
         {
           "typ": "absatz",
@@ -234,7 +234,7 @@ const beitrag = {
             }
           ],
           "fazit": "The larger the activity group, the more a questionnaire makes sense. In small groups, a conversation is more precise.",
-          "unterschrift": "AUVA, Evaluierung arbeitsbedingter psychischer Belastung, short information for businesses, 11/2025, in German."
+          "unterschrift": "AUVA, Evaluierung arbeitsbedingter psychischer Belastung, Kurzinformation für Betriebe, 11/2025, in German."
         },
         {
           "typ": "absatz",
@@ -249,7 +249,7 @@ const beitrag = {
     {
       "id": "anonym",
       "toc": "Anonymity and works council",
-      "frage": "What applies in Austria to the works council and anonymity?",
+      "frage": "Works council and anonymity: what applies in Austria?",
       "bloecke": [
         {
           "typ": "absatz",
@@ -288,7 +288,7 @@ const beitrag = {
     {
       "id": "selbst",
       "toc": "What you can do yourself",
-      "frage": "How do you proceed as the ISO 45001 audit approaches?",
+      "frage": "What should you do as your ISO 45001 audit approaches?",
       "bloecke": [
         {
           "typ": "schritte",
@@ -306,8 +306,8 @@ const beitrag = {
               "text": "Decide how non-managerial workers have a say and share in decisions, for example through the safety representative or a steering group."
             },
             {
-              "fett": "Derive actions.",
-              "text": "Record which actions you derive from the results, who will carry them out and by when."
+              "fett": "Define actions.",
+              "text": "Record which actions follow from the results, who will carry them out and by when."
             },
             {
               "fett": "Check the effect.",
@@ -366,7 +366,7 @@ const beitrag = {
           "mitte": "Actions",
           "beschreibung": "Two overlapping circles. On the left, the evaluation, which assesses the conditions; on the right, the interview, which shows the causes. In the middle, the actions.",
           "fazit": "The evaluation assesses the conditions. The interview shows what lies behind them. Together, they give you a better basis for action.",
-          "unterschrift": "Own illustration by andi fragt."
+          "unterschrift": "Illustration: andi fragt."
         },
         {
           "typ": "absatz",
