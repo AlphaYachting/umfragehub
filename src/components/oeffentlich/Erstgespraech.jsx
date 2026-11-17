@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Check, Clock, Phone, Video } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { BREITE, Etikett, F, H2_STIL, KONTAKT_TEL, Portraet } from "@/components/oeffentlich/Oeffentlich";
+import { useSprache } from "@/lib/sprache";
 
 // Anfrageformular für ein Erstgespräch (Kontaktseite, Anker #anfrage).
 // Aufbau wie im Prototyp „Erstgespräch anfragen“: links was passiert und wer sich
@@ -31,6 +32,21 @@ const SCHRITTE = [
   { titel: "Wir melden uns innerhalb von 24 Stunden.", text: "Mit zwei, drei Terminvorschlägen." },
   { titel: "Im Gespräch klären wir Ziel, Gruppen und Aufwand.", text: "Danach bekommst du einen Fixpreis, schwarz auf weiß." },
 ];
+
+// Englische Fassung auf /en/contact (17.11.2026). Gespeichert wird dasselbe;
+// die Herkunft bekommt den Vorsatz [EN], damit die Anfrage in der Meldung als englisch erkennbar ist.
+const EN = {
+  themen: {
+    positionierung: "Positioning", team: "Team", kunden: "Customers", vertrieb: "Sales",
+    einstieg: "Just getting started", offen: "Not sure yet",
+  },
+  kanaele: { telefon: "Phone", online: "Online" },
+  schritte: [
+    { titel: "You send us your request.", text: "It takes a minute." },
+    { titel: "We get back to you within 24 hours.", text: "With two or three suggested times." },
+    { titel: "On the call we clarify goal, groups and effort.", text: "Then you get a fixed price, in black and white." },
+  ],
+};
 
 // Thema aus dem Anker (#anfrage-team) oder, für ältere Links, aus ?thema=team.
 function themaAusAdresse() {
@@ -63,7 +79,7 @@ function Feld({ id, label, optional, fehler, children }) {
   return (
     <div>
       <label htmlFor={id} className="block text-[15px] font-bold">
-        {label} {optional && <span className="font-medium" style={{ color: F.daempft }}>optional</span>}
+        {label} {optional && <span className="font-medium" style={{ color: F.daempft }}>{optional === true ? "optional" : optional}</span>}
       </label>
       {children}
       {fehler && <p id={`${id}-fehler`} className="mt-1.5 text-sm font-semibold" style={{ color: F.link }}>{fehler}</p>}
@@ -74,6 +90,10 @@ function Feld({ id, label, optional, fehler, children }) {
 const FELD_KLASSE = "mt-2 block w-full box-border min-h-[52px] px-4 py-3 rounded-md bg-white text-base";
 
 export default function Erstgespraech() {
+  const en = useSprache() === "en";
+  const tx = (de, eng) => (en ? eng : de);
+  const themaName = (t) => (en ? EN.themen[t.id] : t.name);
+  const schritte = en ? EN.schritte : SCHRITTE;
   const start = useRef(Date.now());
   const [themen, setThemen] = useState(themaAusAdresse);
   const [kanal, setKanal] = useState("online");
@@ -88,9 +108,9 @@ export default function Erstgespraech() {
   async function senden(e) {
     e.preventDefault();
     const f = {};
-    if (!werte.name.trim()) f.name = "Bitte gib deinen Namen an.";
-    if (!werte.firma.trim()) f.firma = "Bitte gib dein Unternehmen an.";
-    if (!/^[^\s@<>,;]+@[^\s@<>,;]+\.[^\s@<>,;]{2,}$/.test(werte.email.trim())) f.email = "Bitte gib eine gültige E-Mail-Adresse an.";
+    if (!werte.name.trim()) f.name = tx("Bitte gib deinen Namen an.", "Please enter your name.");
+    if (!werte.firma.trim()) f.firma = tx("Bitte gib dein Unternehmen an.", "Please enter your company.");
+    if (!/^[^\s@<>,;]+@[^\s@<>,;]+\.[^\s@<>,;]{2,}$/.test(werte.email.trim())) f.email = tx("Bitte gib eine gültige E-Mail-Adresse an.", "Please enter a valid email address.");
     setFehler(f);
     if (Object.keys(f).length) {
       document.getElementById(Object.keys(f)[0])?.focus();
@@ -102,14 +122,18 @@ export default function Erstgespraech() {
         ...werte,
         themen: ausgewaehlt,
         kanal,
-        herkunft: document.referrer ? new URL(document.referrer).pathname : "",
+        herkunft: (() => {
+          const pfad = document.referrer ? new URL(document.referrer).pathname : "";
+          return en ? `[EN] ${pfad || "/en/contact"}` : pfad;
+        })(),
         dauerSekunden: Math.round((Date.now() - start.current) / 1000),
       });
       const d = res?.data || {};
       if (d.ok) setZustand("gesendet");
       else if (d.zuViele) setZustand("zuViele");
       else if (d.fehler) {
-        setFehler(d.fehler);
+        // Fehlertexte der Serverfunktion sind deutsch; englisch je Feld ersetzen
+        setFehler(en ? Object.fromEntries(Object.keys(d.fehler).map((k) => [k, "Please check this field."])) : d.fehler);
         setZustand("offen");
       } else setZustand("fehler");
     } catch {
@@ -126,19 +150,21 @@ export default function Erstgespraech() {
       <div className={`${BREITE} py-24 flex flex-wrap items-start gap-x-[72px] gap-y-14`}>
         {/* Links: was passiert, wer sich meldet */}
         <div className="flex-[1_1_380px] min-w-0">
-          <Etikett>Erstgespräch</Etikett>
+          <Etikett>{tx("Erstgespräch", "First call")}</Etikett>
           <h2 id="anfrage-titel" className="mt-3" style={H2_STIL}>
-            Erst reden. <span style={{ color: F.akzent }}>Dann fragen.</span>
+            {tx("Erst reden.", "Talk first.")} <span style={{ color: F.akzent }}>{tx("Dann fragen.", "Then ask.")}</span>
           </h2>
           <p className="mt-5 text-[19px] leading-[1.6]" style={{ color: F.daempft }}>
-            Im Erstgespräch klären wir, wo es in deinem Unternehmen hakt und ob ein Interview dir weiterhilft. Wenn
-            nicht, sagen wir es dir offen.
+            {tx(
+              "Im Erstgespräch klären wir, wo es in deinem Unternehmen hakt und ob ein Interview dir weiterhilft. Wenn nicht, sagen wir es dir offen.",
+              "In the first call we work out where things are stuck in your company and whether an interview will help. If it won't, we will tell you so.",
+            )}
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
             {[
-              { icon: Check, text: "kostenlos", farbe: F.gut },
-              { icon: Clock, text: "rund 30 Minuten" },
-              { icon: Phone, text: "online oder telefonisch" },
+              { icon: Check, text: tx("kostenlos", "free"), farbe: F.gut },
+              { icon: Clock, text: tx("rund 30 Minuten", "about 30 minutes") },
+              { icon: Phone, text: tx("online oder telefonisch", "online or by phone") },
             ].map(({ icon: Icon, text, farbe }) => (
               <span key={text} className="inline-flex items-center gap-2 min-h-[36px] px-3.5 rounded-full bg-white text-[15px] font-semibold">
                 <Icon size={16} strokeWidth={2.2} aria-hidden="true" style={{ color: farbe || F.text }} />
@@ -147,10 +173,10 @@ export default function Erstgespraech() {
             ))}
           </div>
 
-          <h3 className="mt-12 text-xl font-bold">So geht es weiter</h3>
+          <h3 className="mt-12 text-xl font-bold">{tx("So geht es weiter", "What happens next")}</h3>
           <ol className="mt-5">
-            {SCHRITTE.map((s, i) => {
-              const letzter = i === SCHRITTE.length - 1;
+            {schritte.map((s, i) => {
+              const letzter = i === schritte.length - 1;
               return (
                 <li key={s.titel} className="grid grid-cols-[32px_minmax(0,1fr)] gap-x-4">
                   <span className="flex flex-col items-center">
@@ -180,9 +206,9 @@ export default function Erstgespraech() {
           <div className="mt-10 p-6 rounded-[20px] bg-white flex items-center gap-[18px]">
             <Portraet className="w-16 h-16" style={{ boxShadow: `0 0 0 4px #ffffff, 0 0 0 6px ${F.hauchRand}` }} />
             <div className="min-w-0">
-              <p className="text-[13px]" style={{ color: F.daempft }}>Dein Ansprechpartner</p>
+              <p className="text-[13px]" style={{ color: F.daempft }}>{tx("Dein Ansprechpartner", "Your point of contact")}</p>
               <p className="mt-0.5 text-[17px] font-bold">Alfons Rittler</p>
-              <p className="text-[15px]" style={{ color: F.daempft }}>Creative Director und Consultant</p>
+              <p className="text-[15px]" style={{ color: F.daempft }}>{tx("Creative Director und Consultant", "Creative Director and Consultant")}</p>
               <a href={TEL_LINK} className="inline-flex items-center min-h-[36px] text-[15px] font-semibold hover:underline" style={{ color: F.text }}>
                 {KONTAKT_TEL}
               </a>
@@ -200,34 +226,37 @@ export default function Erstgespraech() {
               <span aria-hidden="true" className="inline-flex items-center justify-center w-16 h-16 rounded-full" style={{ background: "#e3f6ec", color: "#2f9e64" }}>
                 <Check size={32} strokeWidth={2.4} />
               </span>
-              <h3 className="text-[30px] font-black leading-[1.15]">Danke. Wir melden uns.</h3>
+              <h3 className="text-[30px] font-black leading-[1.15]">{tx("Danke. Wir melden uns.", "Thank you. We'll be in touch.")}</h3>
               <p className="text-lg leading-[1.6]" style={{ color: F.daempft }}>
-                Du hörst innerhalb von 24 Stunden von uns, mit Terminvorschlägen für dein Erstgespräch.
+                {tx(
+                  "Du hörst innerhalb von 24 Stunden von uns, mit Terminvorschlägen für dein Erstgespräch.",
+                  "You will hear from us within 24 hours, with suggested times for your first call.",
+                )}
               </p>
               <p className="text-lg leading-[1.6]" style={{ color: F.daempft }}>
-                Lieber gleich reden?{" "}
+                {tx("Lieber gleich reden?", "Rather talk right away?")}{" "}
                 <a href={TEL_LINK} className="font-bold whitespace-nowrap hover:underline" style={{ color: F.text }}>{KONTAKT_TEL}</a>
               </p>
               <Link
-                to="/"
+                to={en ? "/en" : "/"}
                 className="mt-2 inline-flex items-center gap-2 min-h-[48px] px-5 rounded text-sm font-semibold"
                 style={{ border: "1px solid #d6d3d0", color: F.text, textDecoration: "none" }}
               >
-                Die Interviews ansehen
+                {tx("Die Interviews ansehen", "Explore the interviews")}
               </Link>
             </div>
           ) : (
             <form onSubmit={senden} noValidate aria-labelledby="formular-titel" className="flex flex-col gap-[26px]">
-              <h3 id="formular-titel" className="text-[26px] font-black leading-[1.15]">Erstgespräch anfragen</h3>
+              <h3 id="formular-titel" className="text-[26px] font-black leading-[1.15]">{tx("Erstgespräch anfragen", "Request a first call")}</h3>
 
               <fieldset>
                 <legend className="text-base font-bold">
-                  Worum geht es? <span className="font-medium" style={{ color: F.daempft }}>Mehrere möglich</span>
+                  {tx("Worum geht es?", "What is it about?")} <span className="font-medium" style={{ color: F.daempft }}>{tx("Mehrere möglich", "Choose any")}</span>
                 </legend>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {THEMEN.map((t) => (
                     <Chip key={t.id} an={!!themen[t.id]} onClick={() => setThemen((x) => ({ ...x, [t.id]: !x[t.id] }))}>
-                      {t.name}
+                      {themaName(t)}
                     </Chip>
                   ))}
                 </div>
@@ -239,36 +268,36 @@ export default function Erstgespraech() {
                     aria-invalid={!!fehler.name} aria-describedby={fehler.name ? "name-fehler" : undefined}
                     className={FELD_KLASSE} style={feldStil("name")} />
                 </Feld>
-                <Feld id="firma" label="Unternehmen" fehler={fehler.firma}>
+                <Feld id="firma" label={tx("Unternehmen", "Company")} fehler={fehler.firma}>
                   <input id="firma" type="text" autoComplete="organization" value={werte.firma} onChange={setze("firma")}
                     aria-invalid={!!fehler.firma} aria-describedby={fehler.firma ? "firma-fehler" : undefined}
                     className={FELD_KLASSE} style={feldStil("firma")} />
                 </Feld>
-                <Feld id="email" label="E-Mail" fehler={fehler.email}>
+                <Feld id="email" label={tx("E-Mail", "Email")} fehler={fehler.email}>
                   <input id="email" type="email" autoComplete="email" value={werte.email} onChange={setze("email")}
                     aria-invalid={!!fehler.email} aria-describedby={fehler.email ? "email-fehler" : undefined}
                     className={FELD_KLASSE} style={feldStil("email")} />
                 </Feld>
-                <Feld id="telefon" label="Telefon" optional>
+                <Feld id="telefon" label={tx("Telefon", "Phone")} optional>
                   <input id="telefon" type="tel" autoComplete="tel" value={werte.telefon} onChange={setze("telefon")}
                     className={FELD_KLASSE} style={feldStil("telefon")} />
                 </Feld>
               </div>
 
               <fieldset>
-                <legend className="text-base font-bold">Wie wollen wir reden?</legend>
+                <legend className="text-base font-bold">{tx("Wie wollen wir reden?", "How would you like to talk?")}</legend>
                 <div role="radiogroup" className="mt-3 flex flex-wrap gap-2">
                   {KANAELE.map(({ id, name, icon: Icon }) => (
                     <Chip key={id} rolle="radio" an={kanal === id} onClick={() => setKanal(id)}>
-                      <Icon size={16} aria-hidden="true" /> {name}
+                      <Icon size={16} aria-hidden="true" /> {en ? EN.kanaele[id] : name}
                     </Chip>
                   ))}
                 </div>
               </fieldset>
 
-              <Feld id="nachricht" label="Was beschäftigt dich gerade?" optional>
+              <Feld id="nachricht" label={tx("Was beschäftigt dich gerade?", "What's on your mind right now?")} optional>
                 <textarea id="nachricht" rows={4} value={werte.nachricht} onChange={setze("nachricht")}
-                  placeholder="Zum Beispiel: Gute Leute gehen, und wir wissen nicht genau, warum."
+                  placeholder={tx("Zum Beispiel: Gute Leute gehen, und wir wissen nicht genau, warum.", "For example: good people are leaving, and we don't really know why.")}
                   className={`${FELD_KLASSE} resize-y`} style={feldStil("nachricht")} />
               </Feld>
 
@@ -281,9 +310,9 @@ export default function Erstgespraech() {
               {(zustand === "fehler" || zustand === "zuViele") && (
                 <p role="alert" className="p-4 rounded-xl text-[15px] leading-[1.5]" style={{ background: "#fff0f3", color: F.text }}>
                   {zustand === "zuViele"
-                    ? "Wir haben gerade schon Anfragen von dir. Wir melden uns, versprochen."
-                    : "Das hat leider nicht geklappt."}{" "}
-                  Ruf uns einfach an:{" "}
+                    ? tx("Wir haben gerade schon Anfragen von dir. Wir melden uns, versprochen.", "We already have requests from you. We'll be in touch, promise.")
+                    : tx("Das hat leider nicht geklappt.", "Sorry, that didn't work.")}{" "}
+                  {tx("Ruf uns einfach an:", "Just give us a call:")}{" "}
                   <a href={TEL_LINK} className="font-bold whitespace-nowrap hover:underline" style={{ color: F.text }}>{KONTAKT_TEL}</a>
                 </p>
               )}
@@ -295,12 +324,12 @@ export default function Erstgespraech() {
                   className="inline-flex items-center justify-center gap-2 min-h-[56px] px-7 rounded text-[15px] font-semibold uppercase tracking-[0.04em] text-white cursor-pointer disabled:opacity-70 disabled:cursor-wait"
                   style={{ background: F.akzent, border: 0, fontFamily: "inherit" }}
                 >
-                  {zustand === "sendet" ? "Wird gesendet" : "Erstgespräch anfragen"} <ArrowRight size={16} aria-hidden="true" />
+                  {zustand === "sendet" ? tx("Wird gesendet", "Sending") : tx("Erstgespräch anfragen", "Request a first call")} <ArrowRight size={16} aria-hidden="true" />
                 </button>
                 <p className="text-[13px] leading-[1.55]" style={{ color: F.daempft }}>
-                  Wir verwenden deine Angaben nur, um uns bei dir zu melden. Mehr dazu im{" "}
-                  <a href="/datenschutz#anfrage" target="_blank" rel="noopener" className="font-semibold hover:underline" style={{ color: F.link }}>
-                    Datenschutz
+                  {tx("Wir verwenden deine Angaben nur, um uns bei dir zu melden. Mehr dazu im", "We only use your details to get back to you. More in our")}{" "}
+                  <a href="/datenschutz#anfrage" hrefLang="de" target="_blank" rel="noopener" className="font-semibold hover:underline" style={{ color: F.link }}>
+                    {tx("Datenschutz", "privacy policy (German)")}
                   </a>
                   .
                 </p>
