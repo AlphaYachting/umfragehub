@@ -40,12 +40,12 @@ const beitrag = {
     },
     {
       "fett": "Starting early helps everyone.",
-      "text": "In Austria, the Economic Chambers of Salzburg and Lower Austria recommend starting the planning three to five and two to three years ahead respectively.",
+      "text": "In Austria, the Salzburg Economic Chamber recommends starting to plan three to five years ahead, the Lower Austria Economic Chamber two to three years.",
       "akzent": false
     },
     {
       "fett": "Writing it down is not a sign of mistrust.",
-      "text": "What is on paper, your successor can carry on instead of having to work it out again.",
+      "text": "Whatever is on paper, your successor can build on instead of having to work it out all over again.",
       "akzent": false
     },
     {
@@ -164,7 +164,7 @@ const beitrag = {
         },
         {
           "typ": "tipp",
-          "text": "Start with what only you know. Contracts, figures and tax you will settle with your advisers. What customers value about your business, nobody can work out for you."
+          "text": "Start with what only you know. You will sort out contracts, figures and tax with your advisers. Capturing what customers value about your business is a job nobody can do for you."
         }
       ]
     },
@@ -253,12 +253,12 @@ const beitrag = {
             {
               "symbol": "dokument",
               "titel": "Agree on roles and an end date",
-              "text": "Who decides what from when, who accompanies which customers until when, and when does your support come to an end?"
+              "text": "Who decides what, and from when? Who stays with which customers, and for how long? And when does your involvement end?"
             },
             {
               "symbol": "gruppe",
               "titel": "Introduce your successor together",
-              "text": "In person, at the most important customers. Your word gives the new generation trust in advance."
+              "text": "In person, with your most important customers. Your word gives the new generation a head start on trust."
             },
             {
               "symbol": "wechsel",
@@ -330,7 +330,7 @@ const beitrag = {
     },
     {
       "q": "I am taking over soon. How can I help the outgoing owner with this?",
-      "a": "Ask about the stories behind customers, partners and decisions before you change anything. Say openly what you want to continue and where you will do things differently. Clarity makes letting go easier than tiptoeing around."
+      "a": "Ask about the stories behind customers, partners and decisions before you change anything. Say openly what you want to continue and where you will do things differently. Clarity makes letting go easier than trying to spare their feelings."
     },
     {
       "q": "Can I use andi fragt. before the handover is public?",
