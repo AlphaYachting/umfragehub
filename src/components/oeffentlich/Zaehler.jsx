@@ -1,28 +1,36 @@
 import React, { useState } from "react";
 import { Minus, Plus } from "lucide-react";
 import { F } from "@/components/oeffentlich/Oeffentlich";
+import { useSprache } from "@/lib/sprache";
 
 // Zum Ausprobieren: Eine Gruppe wird erst gezeigt, wenn genug Interviews da sind.
 // Genutzt auf der Teamseite und auf Über uns.
 export const MINDESTZAHL = 6;
 
-export default function Zaehler({ titel = "Das siehst du", bereich = "Werkstatt" }) {
+export default function Zaehler({ titel, bereich }) {
+  const en = useSprache() === "en";
+  titel = titel ?? (en ? "What you see" : "Das siehst du");
+  bereich = bereich ?? (en ? "Workshop" : "Werkstatt");
   const [n, setN] = useState(3);
   const offen = n >= MINDESTZAHL;
   let sichtbar;
-  if (n === 0) sichtbar = "Noch nichts. Hier wartet niemand auf einzelne Antworten.";
+  if (en) {
+    if (n === 0) sichtbar = "Nothing yet. Nobody here is waiting for individual answers.";
+    else if (!offen) sichtbar = `Only that ${n} of the ${MINDESTZAHL} required interviews are in. No answers, no trend.`;
+    else sichtbar = `From now on, the shared picture of the ${bereich.toLowerCase()} team. Never a single answer, never a name.`;
+  } else if (n === 0) sichtbar = "Noch nichts. Hier wartet niemand auf einzelne Antworten.";
   else if (!offen) sichtbar = `Nur, dass ${n} von ${MINDESTZAHL} nötigen Interviews da sind. Keine Antworten, keine Tendenz.`;
   else sichtbar = `Ab jetzt das gemeinsame Bild der ${bereich}. Nie eine einzelne Antwort, nie ein Name.`;
 
   return (
     <div className="flex-[1_1_440px] min-w-0 rounded-[28px] p-8" style={{ background: F.dunkelKarte }}>
       <div className="flex items-center justify-between gap-4">
-        <p className="text-lg font-bold">Bereich {bereich}</p>
+        <p className="text-lg font-bold">{en ? `Department: ${bereich}` : `Bereich ${bereich}`}</p>
         <div className="flex items-center gap-2.5">
           <button
             type="button"
             onClick={() => setN((x) => Math.max(0, x - 1))}
-            aria-label="Ein Interview weniger"
+            aria-label={en ? "One interview fewer" : "Ein Interview weniger"}
             className="w-11 h-11 rounded-full inline-flex items-center justify-center text-white"
             style={{ border: "1px solid #767676", background: "transparent" }}
           >
@@ -32,7 +40,7 @@ export default function Zaehler({ titel = "Das siehst du", bereich = "Werkstatt"
           <button
             type="button"
             onClick={() => setN((x) => Math.min(10, x + 1))}
-            aria-label="Ein Interview mehr"
+            aria-label={en ? "One interview more" : "Ein Interview mehr"}
             className="w-11 h-11 rounded-full inline-flex items-center justify-center text-white"
             style={{ background: F.akzent }}
           >
@@ -57,7 +65,7 @@ export default function Zaehler({ titel = "Das siehst du", bereich = "Werkstatt"
         <p className="text-xs font-bold uppercase tracking-[0.14em] opacity-85">{titel}</p>
         <p aria-live="polite" className="mt-1.5 text-lg leading-[1.4] font-bold">{sichtbar}</p>
       </div>
-      <p className="mt-3.5 text-xs" style={{ color: "#b3b3b3" }}>Die Mindestzahl legen wir mit dir fest, standardmäßig {MINDESTZAHL}.</p>
+      <p className="mt-3.5 text-xs" style={{ color: "#b3b3b3" }}>{en ? `We agree the minimum with you; the default is ${MINDESTZAHL}.` : `Die Mindestzahl legen wir mit dir fest, standardmäßig ${MINDESTZAHL}.`}</p>
     </div>
   );
 }
