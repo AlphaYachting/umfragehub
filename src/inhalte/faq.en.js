@@ -53,7 +53,7 @@ export const FAQ_EN = {
         g: "auftrag",
         q: "What does a project with andi fragt. cost?",
         kopf: "Less than a single wrong hire or a website relaunch that heads in the wrong direction.",
-        text: "Every module has a fixed price based on group size: from EUR 2,900 plus VAT for small businesses with up to 6 people, EUR 5,400 plus VAT for 21 to 50 people. All tiers are listed on the pricing page. The price covers the goal-setting meeting, developing the interview, analysis by our strategists and the presentation at your premises. More groups, customers as an additional group or several locations add to the effort. You get your fixed price after the first call.",
+        text: "Every module has a fixed price based on group size: from €2,900 net for small businesses with up to 6 people, €5,400 net for 21 to 50 people. All tiers are listed on the pricing page. The price covers the goal-setting meeting, developing the interview, analysis by our strategists and the presentation at your premises. More groups, customers as an additional group or several locations add to the effort. You get your fixed price after the first call.",
       },
       {
         g: "auftrag",
