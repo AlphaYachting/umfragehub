@@ -81,7 +81,7 @@ const beitrag = {
       "bloecke": [
         {
           "typ": "absatz",
-          "text": "Because each of you knows the business from a different angle. Whoever is responsible for engineering sees quality and precision. Whoever is in sales hears about prices and delivery times. Whoever runs the finances sees costs and margins. You are all right, just from your own point of view."
+          "text": "Because each of you knows the business from a different angle. The partner in charge of engineering sees quality and precision. The one in sales hears about prices and delivery times. The one running the finances sees costs and margins. You are all right, just from your own point of view."
         },
         {
           "typ": "absatz",
@@ -96,7 +96,7 @@ const beitrag = {
           "karten": [
             {
               "symbol": "uhr",
-              "titel": "Tradition or new departure",
+              "titel": "Tradition or fresh start",
               "text": "Some want to show what has proved itself for decades, others what is new."
             },
             {
@@ -124,7 +124,7 @@ const beitrag = {
       "bloecke": [
         {
           "typ": "absatz",
-          "text": "Time, first of all: decisions get postponed, the website stays old, the brochure becomes a compromise that convinces nobody. Then clarity towards the outside world: if each partner tells customers something different, they notice."
+          "text": "Time, first of all: decisions get postponed, the website stays old, the brochure becomes a compromise that convinces nobody. Then a clear face to the market: if each partner tells customers something different, customers notice."
         },
         {
           "typ": "absatz",
@@ -132,7 +132,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "It gets difficult when a question about the matter turns into a personal one. A study of family businesses in the USA links conflict in relationships with weaker performance, and a strategy process in which family members take part with stronger performance (Eddleston and Kellermanns, 2007)."
+          "text": "It gets difficult when a disagreement about the issue turns personal. A study of family businesses in the USA links relationship conflict with weaker performance, and a strategy process that involves family members with stronger performance (Eddleston and Kellermanns, 2007)."
         },
         {
           "typ": "begriff",
@@ -318,7 +318,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "How the positioning works is described on the page [Positioning from within the company](/en/positioning). If the conflict is between generations, the article [Generational change and the brand](/en/insights/family-business-succession-brand) will help."
+          "text": "How the positioning works is described on the page [Positioning from inside the company](/en/positioning). If the conflict is between generations, the article [Generational change and the brand](/en/insights/family-business-succession-brand) will help."
         }
       ]
     }
