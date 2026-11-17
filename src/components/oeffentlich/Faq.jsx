@@ -1,7 +1,45 @@
 import React, { useMemo, useState } from "react";
 import { ArrowRight, Plus } from "lucide-react";
-import { F, BREITE, H2_STIL, KONTAKT_TEL, Hauptknopf, mailAn } from "@/components/oeffentlich/Oeffentlich";
+import { F, BREITE, H2_STIL, KONTAKT_TEL, Hauptknopf, mailAn, anfrageLinkEn } from "@/components/oeffentlich/Oeffentlich";
 import { FAQ } from "@/inhalte/faq";
+import { FAQ_EN } from "@/inhalte/faq.en";
+import { useSprache } from "@/lib/sprache";
+
+// Feste Texte je Sprache (englische Seiten unter /en, 17.11.2026)
+const TEXTE = {
+  de: {
+    filter: [
+      { id: "alle", name: "Alle Fragen" },
+      { id: "auftrag", name: "Für Auftraggeber" },
+      { id: "eingeladen", name: "Für Eingeladene" },
+    ],
+    filtern: "Fragen filtern",
+    nichtDabei: "Deine Frage ist nicht dabei?",
+    ruf: "Ruf an. Wir sagen dir offen, ob ein Interview in deiner Situation Sinn ergibt.",
+    knopf: "Erstgespräch vereinbaren",
+    link: mailAn("andi fragt. Erstgespräch"),
+    beispiel: "Ein Beispiel",
+    platzhalter: "Platzhalter, echtes Beispiel einsetzen",
+    verweis: "Ablauf, Kosten und Datenschutz: alle Fragen zu andi fragt.",
+    verweisZiel: "/#fragen",
+  },
+  en: {
+    filter: [
+      { id: "alle", name: "All questions" },
+      { id: "auftrag", name: "For clients" },
+      { id: "eingeladen", name: "For participants" },
+    ],
+    filtern: "Filter questions",
+    nichtDabei: "Your question isn't here?",
+    ruf: "Give us a call. We will tell you honestly whether an interview makes sense in your situation.",
+    knopf: "Book a first call",
+    link: anfrageLinkEn("andi fragt. Erstgespräch"),
+    beispiel: "An example",
+    platzhalter: "Placeholder, insert a real example",
+    verweis: "Process, cost and data protection: all questions about andi fragt.",
+    verweisZiel: "/en#fragen",
+  },
+};
 
 // FAQ-Sektion der öffentlichen Seiten (Image- und Informationsseiten).
 // Steht jeweils vor dem Abschlussblock. Die Antworten bleiben auch zugeklappt im
@@ -55,12 +93,6 @@ const LOOKS = {
     chipAktiv: { background: "#ffffff", color: F.dunkel, border: "1px solid #ffffff" },
   },
 };
-
-const FILTER = [
-  { id: "alle", name: "Alle Fragen" },
-  { id: "auftrag", name: "Für Auftraggeber" },
-  { id: "eingeladen", name: "Für Eingeladene" },
-];
 
 const PLATZHALTER = /\[([^\]]+)\]/g;
 const hatPlatzhalter = (s) => /\[[^\]]+\]/.test(s || "");
@@ -119,7 +151,9 @@ function strukturierteDaten(fragen) {
 }
 
 export default function Faq({ seite, look: lookName = "weiss" }) {
-  const daten = FAQ[seite];
+  const sprache = useSprache();
+  const t = TEXTE[sprache];
+  const daten = (sprache === "en" ? FAQ_EN : FAQ)[seite];
   const look = LOOKS[lookName] || LOOKS.weiss;
   const [offen, setOffen] = useState({ 0: true });
   const [filter, setFilter] = useState("alle");
@@ -151,9 +185,9 @@ export default function Faq({ seite, look: lookName = "weiss" }) {
 
           {!daten.ohneKontaktkarte && (
             <div className="mt-9 p-7 rounded-3xl" style={look.kontakt}>
-              <p className="text-xl leading-[1.3] font-bold">Deine Frage ist nicht dabei?</p>
+              <p className="text-xl leading-[1.3] font-bold">{t.nichtDabei}</p>
               <p className="mt-2 text-base leading-[1.55]" style={{ color: look.kontaktText }}>
-                Ruf an. Wir sagen dir offen, ob ein Interview in deiner Situation Sinn ergibt.
+                {t.ruf}
               </p>
               <a
                 href={`tel:${KONTAKT_TEL.replace(/\s/g, "")}`}
@@ -163,7 +197,7 @@ export default function Faq({ seite, look: lookName = "weiss" }) {
                 {KONTAKT_TEL}
               </a>
               <div className="mt-3">
-                <Hauptknopf href={mailAn("andi fragt. Erstgespräch")}>Erstgespräch vereinbaren</Hauptknopf>
+                <Hauptknopf href={t.link}>{t.knopf}</Hauptknopf>
               </div>
             </div>
           )}
@@ -172,8 +206,8 @@ export default function Faq({ seite, look: lookName = "weiss" }) {
         {/* Rechts: die Fragen */}
         <div className="flex-[999_1_560px] min-w-0">
           {daten.filter && (
-            <div role="group" aria-label="Fragen filtern" className="mb-7 flex flex-wrap gap-2.5">
-              {FILTER.map((c) => {
+            <div role="group" aria-label={t.filtern} className="mb-7 flex flex-wrap gap-2.5">
+              {t.filter.map((c) => {
                 const aktiv = filter === c.id;
                 return (
                   <button
@@ -248,13 +282,13 @@ export default function Faq({ seite, look: lookName = "weiss" }) {
                     {f.beispiel && (
                       <figure className="mt-5 px-5 py-[18px] rounded-[18px] flex flex-col gap-2" style={{ background: look.beispiel.background }}>
                         <span className="flex flex-wrap items-center gap-2">
-                          <span className="text-xs font-medium uppercase tracking-[0.2em]" style={{ color: look.etikett }}>Ein Beispiel</span>
+                          <span className="text-xs font-medium uppercase tracking-[0.2em]" style={{ color: look.etikett }}>{t.beispiel}</span>
                           {hatPlatzhalter(f.beispiel) && (
                             <span
                               className="inline-flex items-center h-[22px] px-2 rounded-full text-[11px] font-bold"
                               style={{ border: `1.5px dashed ${look.ph.borderColor}`, color: look.ph.color }}
                             >
-                              Platzhalter, echtes Beispiel einsetzen
+                              {t.platzhalter}
                             </span>
                           )}
                         </span>
@@ -271,11 +305,11 @@ export default function Faq({ seite, look: lookName = "weiss" }) {
 
           {daten.verweis && (
             <a
-              href="/#fragen"
+              href={t.verweisZiel}
               className="mt-7 inline-flex items-center gap-2 min-h-[44px] text-base font-bold"
               style={{ color: look.link, textDecoration: "none", borderBottom: `2px solid ${F.akzent}` }}
             >
-              Ablauf, Kosten und Datenschutz: alle Fragen zu andi fragt. <ArrowRight size={16} aria-hidden="true" />
+              {t.verweis} <ArrowRight size={16} aria-hidden="true" />
             </a>
           )}
         </div>
