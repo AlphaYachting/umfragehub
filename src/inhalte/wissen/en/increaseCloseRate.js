@@ -247,7 +247,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "Matthew Dixon and Ted McKenna analysed more than 2.5 million recorded sales conversations. Their result, published in Harvard Business Review in 2022: 40 to 60% of deals are not lost to the competition but to customers who want to buy but cannot make up their minds. A discount does little here. A clear recommendation often does more."
+          "text": "Matthew Dixon and Ted McKenna analysed more than 2.5 million recorded sales conversations. Their result, published in Harvard Business Review in 2022: 40 to 60% of deals are not lost to the competition but to customers who want to buy yet cannot make up their minds. A discount does little here. A clear recommendation often does more."
         },
         {
           "typ": "spanne",
@@ -481,7 +481,7 @@ const beitrag = {
     },
     {
       "q": "Won't my sales team feel monitored?",
-      "a": "Hardly, because answers are never analysed person by person. It is about the path to a closed deal, not the close rate of individual salespeople. With small sales teams we merge answers with other groups. People who have been asked are more likely to get on board when it comes to putting things into practice."
+      "a": "Rarely, because answers are never analysed person by person. It is about the path to a closed deal, not the close rate of individual salespeople. With small sales teams we merge answers with other groups. People who have been asked are more likely to get on board when it comes to putting things into practice."
     },
     {
       "q": "How much does a sales interview with andi fragt. cost?",
