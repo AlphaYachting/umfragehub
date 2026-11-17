@@ -21,7 +21,7 @@ const beitrag = {
   "teaser": "Why the brand becomes a point of conflict when a family business changes generations, and how you decide together what stays and what can change.",
   "kurztitel": "Succession and the brand",
   "titel": "Succession in a family business:",
-  "titelAkzent": "What should stay of the brand?",
+  "titelAkzent": "Which parts of the brand should stay?",
   "titelbild": {
     "src": "/bilder/team.webp",
     "alt": "Senior owner and successor looking at the company sign together",
@@ -88,7 +88,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "The advantage has a downside. In 2026, researchers from WU Vienna and the University of Innsbruck reported on two experiments with 534 consumers in the USA: when misconduct was avoidable, a family business was judged more harshly than other companies. So whoever takes over the brand also takes over the height of the fall."
+          "text": "The advantage has a downside. In 2026, researchers from WU Vienna and the University of Innsbruck reported on two experiments with 534 consumers in the USA: when misconduct was avoidable, a family business was judged more harshly than other companies. So whoever takes over the brand also has further to fall."
         },
         {
           "typ": "absatz",
@@ -103,7 +103,7 @@ const beitrag = {
       "bloecke": [
         {
           "typ": "absatz",
-          "text": "Because both can be right. The outgoing owner has seen what worked over decades. The successor sees what customers and applicants expect today. In the PwC NextGen Survey 2022, 51% of the roughly 100 successors surveyed in Germany, Austria and Switzerland said the current generation found it hard to make room. Equally, many successors find it hard to appreciate what has grown before they change it."
+          "text": "Because both can be right. The outgoing owner has seen what worked over decades. The successor sees what customers and applicants expect today. In the PwC NextGen Survey 2022, 51% of the roughly 100 successors surveyed in Germany, Austria and Switzerland said the current generation found it hard to make room. Equally, many successors find it hard to appreciate what has grown over the years before they change it."
         },
         {
           "typ": "absatz",
@@ -153,12 +153,12 @@ const beitrag = {
             {
               "name": "Develop",
               "zweck": "Family as a promise for today",
-              "frage": "Fits when you stand for long-term partnership or short decision paths.",
+              "frage": "Fits when you stand for long-term partnership or quick decision-making.",
               "farbe": "akzent"
             },
             {
               "name": "Into the background",
-              "zweck": "Performance and products up front",
+              "zweck": "Services and products up front",
               "frage": "Fits when the business has grown or is changing direction.",
               "farbe": "hell"
             }
@@ -175,14 +175,14 @@ const beitrag = {
     {
       "id": "gemeinsam",
       "toc": "How to decide together",
-      "frage": "How do you decide together what stays of the brand?",
+      "frage": "How do you decide together which parts of the brand stay?",
       "bloecke": [
         {
           "typ": "schritte",
           "punkte": [
             {
               "fett": "Separate feelings from findings.",
-              "text": "Each of you writes down, separately, what makes the brand and what you would change. Only then do you compare."
+              "text": "Each of you writes down, separately, what defines the brand and what you would change. Only then do you compare."
             },
             {
               "fett": "Get the view from outside.",
@@ -215,7 +215,7 @@ const beitrag = {
                   "art": "dunkel"
                 },
                 {
-                  "text": "The boss can be reached",
+                  "text": "The boss is easy to reach",
                   "art": "dunkel"
                 }
               ]
@@ -224,7 +224,7 @@ const beitrag = {
               "titel": "Can change",
               "teile": [
                 {
-                  "text": "The website from years ago",
+                  "text": "The old website",
                   "art": "fehlt"
                 },
                 {
@@ -339,7 +339,7 @@ const beitrag = {
     }
   ],
   "seitenleisteFrage": "What do customers associate with your name?",
-  "abschlussTitel": "What should stay of your brand?",
+  "abschlussTitel": "Which parts of your brand should stay?",
   "passend": [
     "business-succession-marketing",
     "retaining-employees-after-takeover",
