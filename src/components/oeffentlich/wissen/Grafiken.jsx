@@ -213,12 +213,13 @@ function Figuren({ b }) {
 
 // Waffel-Raster: 100 Felder je Kennzahl
 function Waffel({ b }) {
+  const g = useG();
   return (
     <Grafik b={b}>
       <div className="mt-5 grid gap-7 grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))]">
         {b.felder.map((w, n) => (
           <div key={n}>
-            <div role="img" aria-label={`${w.zahl} von 100 Feldern gefärbt`} className="grid grid-cols-10 gap-1 max-w-[280px]">
+            <div role="img" aria-label={g.felder(w.zahl)} className="grid grid-cols-10 gap-1 max-w-[280px]">
               {Array.from({ length: 100 }, (_, i) => (
                 <span key={i} className="aspect-square rounded-[3px]" style={{ background: i < w.zahl ? (w.akzent ? PINK : F.dunkel) : "#dcd8d4" }} />
               ))}
@@ -754,6 +755,7 @@ function Uebergang({ b }) {
 
 // Vierfeld: zwei Achsen, ein Feld hervorgehoben
 function Vierfeld({ b }) {
+  const g = useG();
   return (
     <Grafik b={b}>
       <div className="mt-5 grid grid-cols-[22px_minmax(0,1fr)_minmax(0,1fr)] gap-2 sm:gap-2.5">
