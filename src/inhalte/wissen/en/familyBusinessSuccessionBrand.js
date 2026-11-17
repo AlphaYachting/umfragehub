@@ -120,7 +120,7 @@ const beitrag = {
             {
               "symbol": "person",
               "titel": "Person versus system",
-              "text": "Customer relationships that depend on the boss, set against processes that are meant to work without him."
+              "text": "Customer relationships that depend on the boss, set against processes that are meant to work without the boss too."
             },
             {
               "symbol": "globus",
