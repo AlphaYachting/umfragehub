@@ -284,7 +284,7 @@ export const FAQ_EN = {
       {
         q: "Do you only work in Graz and Styria?",
         kopf: "No.",
-        text: "We are based in Graz, Austria, and the interviews run online. We work with companies across the German-speaking world and beyond, and interviews are available in German, English, Italian and Croatian. The goal-setting meeting and the presentation take place in person or by video.",
+        text: "We are based in Graz, Austria, and the interviews run online. We work with companies across the German-speaking world, and interviews are available in German, English, Italian and Croatian. We hold the goal-setting meeting and the presentation in person.",
       },
     ],
   },
