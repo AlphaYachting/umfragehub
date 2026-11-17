@@ -30,7 +30,7 @@ const TEXTE = {
       { id: "eingeladen", name: "For participants" },
     ],
     filtern: "Filter questions",
-    nichtDabei: "Your question isn't here?",
+    nichtDabei: "Can't find your question?",
     ruf: "Give us a call. We will tell you honestly whether an interview makes sense in your situation.",
     knopf: "Book a first call",
     link: anfrageLinkEn("andi fragt. Erstgespräch"),
