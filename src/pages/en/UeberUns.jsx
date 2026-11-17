@@ -55,8 +55,8 @@ const KURZ = [
 
 const SCHRITTE = [
   { nr: "0", wann: "Before the start", titel: "First call and goal-setting meeting", text: "We work out where things are stuck, which assumptions need testing and which groups to ask. Then you get a proposal with a fixed price." },
-  { nr: "1", wann: "andi fragt.", titel: "Interviews", text: "Leadership, team, sales and, if you wish, your customers answer online, on a phone or computer, whenever it suits them. Each group gets its own interview." },
-  { nr: "2", wann: "andi weiß.", titel: "Analysis", text: "We condense all answers using the ANDI method. We don't look for the average but for the deviation, because that shows where a decision needs to go differently." },
+  { nr: "1", wann: "andi fragt.", titel: "Online interviews", text: "Leadership, team, sales and, if you wish, your customers answer online, on a phone or computer, whenever it suits them. Each group gets its own interview." },
+  { nr: "2", wann: "andi weiß.", titel: "Analysis and evaluation", text: "We condense all answers using the ANDI method. We don't look for the average but for the deviation, because that shows where a decision needs to go differently." },
   { nr: "3", wann: "andi macht.", titel: "Clarity and essence", text: "The analysis becomes a few clear statements and recommendations. No mountains of data, just what you need to decide." },
   { nr: "4", wann: "andi zeigt.", titel: "Presentation in person", text: "We present the results to you in person. The essence becomes messages for customers, team, sales and applicants." },
 ];
@@ -299,7 +299,7 @@ export default function UeberUnsEn() {
             argument.
           </p>
 
-          <h3 className={H3}>People read, not software</h3>
+          <h3 className={H3}>Read by people, not software</h3>
           <p className="mt-3" style={ABSATZ}>
             Technology helps to collect and sort. Every answer is read and interpreted by people. Software counts how
             often something is said. We look for the one sentence that carries a decision, even if it only comes up
@@ -328,7 +328,7 @@ export default function UeberUnsEn() {
 
       <section style={{ background: F.hauch }}>
         <div className={`${BREITE} py-20`}>
-          <Etikett>Who we ask for</Etikett>
+          <Etikett>Who we work for</Etikett>
           <h2 className="mt-3 max-w-[860px]" style={H2_STIL}>
             For companies <span style={{ color: F.akzent }}>facing a decision.</span>
           </h2>
