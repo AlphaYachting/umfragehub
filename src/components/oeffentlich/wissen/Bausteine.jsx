@@ -11,7 +11,7 @@ import { useSprache } from "@/lib/sprache";
 const L = {
   de: { abb: "Abbildung", tab: "Tabelle", merkmal: "Merkmal", tipp: "Tipp aus der Praxis:", begriff: "Kurz erklärt:", tippAria: "Tipp", begriffAria: "Begriff",
     ablaufWaehlen: "Ablauf wählen", annahme: "Die Annahme:", gezeigt: "Das Interview zeigte:", ergebnis: "Daraus wurde:", platzhalter: "Platzhalter, vor der Freigabe ersetzen" },
-  en: { abb: "Figure", tab: "Table", merkmal: "Feature", tipp: "Tip from practice:", begriff: "In brief:", tippAria: "Tip", begriffAria: "Definition",
+  en: { abb: "Figure", tab: "Table", merkmal: "Feature", tipp: "Practical tip:", begriff: "In brief:", tippAria: "Tip", begriffAria: "Definition",
     ablaufWaehlen: "Choose a process", annahme: "The assumption:", gezeigt: "The interview showed:", ergebnis: "The result:", platzhalter: "Placeholder, replace before release" },
 };
 export function useBeschriftung() {
