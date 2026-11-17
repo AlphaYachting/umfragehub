@@ -6,6 +6,16 @@ import {
 } from "lucide-react";
 import { F } from "@/components/oeffentlich/Oeffentlich";
 import { Text } from "@/components/oeffentlich/wissen/Bausteine";
+import { useSprache } from "@/lib/sprache";
+
+// Feste Beschriftungen je Sprache (englische Beiträge, 17.11.2026). Inhalte kommen aus den Beitragsdateien.
+const G = {
+  de: { abb: "Abbildung", zahlen: "Zahlen zum Thema", felder: (n) => `${n} von 100 Feldern gefärbt`, rund: "rund", tausender: ".",
+    kandidat: "Kandidat wählen", frage: "Frage", ja: "Ja", kaum: "Kaum", nein: "Nein", stabil: "stabil", weniger: "still weniger", weg: "gegangen", lang: "de" },
+  en: { abb: "Figure", zahlen: "Key figures", felder: (n) => `${n} of 100 squares coloured`, rund: "about", tausender: ",",
+    kandidat: "Choose a candidate", frage: "Question", ja: "Yes", kaum: "Barely", nein: "No", stabil: "stable", weniger: "quietly less", weg: "gone", lang: "en" },
+};
+const useG = () => G[useSprache()];
 
 // Grafik-Bausteine der Beitragsseiten: Kennzahlen, Karten und Abbildungen.
 // Aussehen wie in den Prototypen "Wissen Nr. ... visuell" auf der Arbeitsfläche.
@@ -30,10 +40,11 @@ const FARBEN = { akzent: PINK, hell: PINK_HELL, dunkel: F.dunkel, grau: "#b3b3b3
 const farbe = (f) => FARBEN[f] || f || F.dunkel;
 
 function Grafik({ b, children }) {
+  const g = useG();
   const rahmen = b.stil === "rahmen";
   return (
     <figure className="mt-2 mb-8 p-5 sm:p-[26px] rounded-[20px]" style={rahmen ? { border: `1px solid ${F.linie}` } : { background: F.grau }}>
-      <p className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: F.link }}>Abbildung {b._nr}</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: F.link }}>{g.abb} {b._nr}</p>
       {b.titel && <p className="mt-1.5 text-[19px] sm:text-[21px] font-extrabold leading-[1.3]" style={{ color: F.text }}><Text>{b.titel}</Text></p>}
       {children}
       {b.fazit && <p className="mt-[18px] text-base sm:text-[17px] leading-[1.55] font-semibold" style={{ color: F.text }}><Text>{b.fazit}</Text></p>}
@@ -62,9 +73,10 @@ function Legende({ eintraege, className = "mt-3.5" }) {
 
 // Kennzahlen: drei dunkle Kacheln unter "Das Wichtigste in Kürze"
 export function Kennzahlen({ liste }) {
+  const g = useG();
   if (!liste?.length) return null;
   return (
-    <div role="list" aria-label="Zahlen zum Thema" className="mt-9 grid gap-3.5 grid-cols-[repeat(auto-fit,minmax(min(100%,210px),1fr))]">
+    <div role="list" aria-label={g.zahlen} className="mt-9 grid gap-3.5 grid-cols-[repeat(auto-fit,minmax(min(100%,210px),1fr))]">
       {liste.map((k, i) => (
         <div role="listitem" key={i} className="flex flex-col gap-2.5 px-[22px] py-6 rounded-[18px]" style={{ background: F.dunkel }}>
           <p className={`${String(k.wert).length > 4 ? "text-[40px] sm:text-[46px]" : "text-[48px] sm:text-[56px]"} font-black leading-[1.05] text-white`}>
@@ -117,9 +129,11 @@ function Karten({ b }) {
   );
 }
 
-const zahl = (n) => String(Math.round(n / 1000) * 1000).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+const zahlMit = (sep) => (n) => String(Math.round(n / 1000) * 1000).replace(/\B(?=(\d{3})+(?!\d))/g, sep);
 
 function Rechner({ r }) {
+  const g = useG();
+  const zahl = zahlMit(g.tausender);
   const [wert, setWert] = useState(r.start);
   return (
     <div className="mt-7 pt-6" style={{ borderTop: "1px solid #d6d3d0" }}>
@@ -143,7 +157,7 @@ function Rechner({ r }) {
         {r.ergebnisse.map((e) => (
           <div key={e.name} className="p-4 rounded-[14px]" style={{ background: e.dunkel ? F.dunkel : "#ffffff" }}>
             <p className="text-sm leading-[1.4]" style={{ color: e.dunkel ? "#d4d4d4" : F.daempft }}>{e.name}</p>
-            <p className="mt-1 text-[22px] font-black leading-[1.2]" style={{ color: e.dunkel ? "#ffffff" : F.text }}>rund {zahl(wert * e.faktor)} {r.einheit}</p>
+            <p className="mt-1 text-[22px] font-black leading-[1.2]" style={{ color: e.dunkel ? "#ffffff" : F.text }}>{g.rund} {zahl(wert * e.faktor)} {r.einheit}</p>
           </div>
         ))}
       </div>
@@ -378,16 +392,17 @@ function Venn({ b }) {
 
 // Test zum Anklicken: Kandidat wählen, drei Fragen, Ergebnis
 function Test({ b }) {
+  const g = useG();
   const [wahl, setWahl] = useState(0);
   const STIL = {
-    ja: { text: "Ja", grund: "#e3f4ea", schrift: "#1d6b43" },
-    kaum: { text: "Kaum", grund: "#fff3d6", schrift: "#7a4f00" },
-    nein: { text: "Nein", grund: "#e8e6e4", schrift: "#3a3a3a" },
+    ja: { text: g.ja, grund: "#e3f4ea", schrift: "#1d6b43" },
+    kaum: { text: g.kaum, grund: "#fff3d6", schrift: "#7a4f00" },
+    nein: { text: g.nein, grund: "#e8e6e4", schrift: "#3a3a3a" },
   };
   const k = b.kandidaten[wahl];
   return (
     <Grafik b={b}>
-      <div role="group" aria-label="Kandidat wählen" className="mt-4 flex flex-wrap gap-2">
+      <div role="group" aria-label={g.kandidat} className="mt-4 flex flex-wrap gap-2">
         {b.kandidaten.map((c, i) => (
           <button
             key={c.name}
@@ -406,7 +421,7 @@ function Test({ b }) {
           const s = STIL[k.antworten[i]];
           return (
             <li key={f} className="flex flex-col gap-3 p-[18px] rounded-2xl" style={{ background: F.grau }}>
-              <span className="text-[13px] font-black" style={{ color: F.daempft }}>Frage {i + 1}</span>
+              <span className="text-[13px] font-black" style={{ color: F.daempft }}>{g.frage} {i + 1}</span>
               <span className="text-[17px] font-extrabold leading-[1.35]" style={{ color: F.text }}>{f}</span>
               <span className="self-start inline-flex items-center min-h-[30px] px-3 rounded-full text-sm font-extrabold" style={{ background: s.grund, color: s.schrift }}>{s.text}</span>
             </li>
@@ -572,6 +587,7 @@ const STATUS = {
   weg: { text: "gegangen", style: { background: F.dunkel, color: "#ffffff" } },
 };
 function Kundenliste({ b }) {
+  const g = useG();
   return (
     <Grafik b={b}>
       <Legende eintraege={b.legende} />
@@ -583,7 +599,7 @@ function Kundenliste({ b }) {
               <span className="h-2.5 rounded-[3px]" style={{ width: `${z.vorher}%`, background: "#b3b3b3" }} />
               <span className="h-2.5 rounded-[3px]" style={{ width: `${z.jetzt}%`, minWidth: 4, background: F.dunkel }} />
             </span>
-            <span className="justify-self-start px-2.5 py-[3px] rounded-full text-xs sm:text-[13px] font-extrabold whitespace-nowrap" style={STATUS[z.status].style}>{STATUS[z.status].text}</span>
+            <span className="justify-self-start px-2.5 py-[3px] rounded-full text-xs sm:text-[13px] font-extrabold whitespace-nowrap" style={STATUS[z.status].style}>{g[z.status] || STATUS[z.status].text}</span>
           </React.Fragment>
         ))}
       </div>
@@ -745,7 +761,7 @@ function Vierfeld({ b }) {
         {b.felder.map((f) => (
           <div key={f.kopf} className="flex flex-col gap-1.5 p-3.5 sm:p-[18px] rounded-[14px] min-h-[110px]" style={f.akzent ? { background: PINK } : { background: "#ffffff", border: `1px solid ${F.linie}` }}>
             <span className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.1em]" style={{ color: f.akzent ? "#ffffff" : F.daempft }}>{f.kopf}</span>
-            <span lang="de" className="text-[15px] sm:text-[17px] font-extrabold leading-[1.35] hyphens-auto [overflow-wrap:break-word]" style={{ color: f.akzent ? "#ffffff" : F.text }}>{f.text}</span>
+            <span lang={g.lang} className="text-[15px] sm:text-[17px] font-extrabold leading-[1.35] hyphens-auto [overflow-wrap:break-word]" style={{ color: f.akzent ? "#ffffff" : F.text }}>{f.text}</span>
           </div>
         ))}
         <span />
