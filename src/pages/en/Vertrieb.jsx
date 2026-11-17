@@ -476,7 +476,7 @@ export default function VertriebEn() {
             because it is about the path to the deal, not about their quota.
           </p>
           <p className="flex-[1_1_280px] leading-[1.6] text-white">
-            Analysed by people, not by software. So that the answers become a sales team that tells the same story.
+            Analysed by people, not by software. So that your whole sales team ends up telling the same story.
           </p>
         </div>
       </section>
