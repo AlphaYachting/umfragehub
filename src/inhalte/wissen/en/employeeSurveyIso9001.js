@@ -18,7 +18,7 @@ const beitrag = {
   ],
   "seitentitel": "ISO 9001 employee survey: is it required? | andi fragt.",
   "beschreibung": "Does ISO 9001 require an employee survey? What the standard asks for, what is new in ISO 9001:2026 and how the answers become audit evidence and marketing.",
-  "teaser": "What ISO 9001 really requires of your employees, what the 2026 edition changes with quality culture, and how an interview delivers both audit evidence and marketing.",
+  "teaser": "What ISO 9001 really requires of your employees, what the 2026 edition's focus on quality culture changes, and how an interview delivers both audit evidence and marketing.",
   "kurztitel": "Employee survey for ISO 9001",
   "titel": "Employee survey for ISO 9001:",
   "titelAkzent": "What the auditor really wants to see",
@@ -26,13 +26,13 @@ const beitrag = {
     "src": "/bilder/team.webp",
     "alt": "A card headed In the audit with four ticked items: competence, awareness, communication and, marked as new in 2026, quality culture.",
     "unterschrift": "The standard does not want to know whether your team is satisfied. It wants to know whether quality reaches everyday work.",
-    "platzhalter": "Placeholder title image: conversation between a quality manager and an employee on the production floor, 1600 x 900 px"
+    "platzhalter": "Placeholder cover image: conversation between a quality manager and an employee on the production floor, 1600 x 900 px"
   },
   "titelgrafik": true,
   "kurzAntwort": "ISO 9001 does not require an employee survey. It does, however, require your people to be competent, to know the quality policy and their objectives, and to understand their own contribution. Since ISO 9001:2026, quality culture and ethical behaviour have been added. A good interview with your team shows whether all this reaches everyday work, and gives you a basis for the management review.",
   "wichtigstes": [
     {
-      "fett": "No obligation, but evidence.",
+      "fett": "Not mandatory, but you need evidence.",
       "text": "The standard does not require a survey. It requires evidence of competence, awareness and communication.",
       "akzent": false
     },
@@ -132,11 +132,11 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "Specifically, top management is to promote quality culture and ethical behaviour. According to a note in the final draft, these show in shared values, attitudes, practices and actions. According to certification bodies such as SGS, BSI and DQS, the awareness requirements (clause 7.3) now also cover quality culture and ethical behaviour. In other words, employees are to be aware of the organisation's quality culture."
+          "text": "Specifically, top management is to promote quality culture and ethical behaviour. According to a note in the final draft, these are reflected in shared values, attitudes, practices and actions. According to certification bodies such as SGS, BSI and DQS, the awareness requirements (clause 7.3) now also cover quality culture and ethical behaviour. In other words, employees are to be aware of the organisation's quality culture."
         },
         {
           "typ": "absatz",
-          "text": "For you, this means it is no longer enough for the quality policy to hang on the wall. The question is whether people live it. That is hard to show with a document, but easy to show with what your team tells you. For clause 5.1.1, what counts in the end is what top management does. The interview shows you where to start, and the actions that follow are your evidence."
+          "text": "For you, this means it is no longer enough for the quality policy to hang on the wall. The question is whether people live it. That is hard to show with a document, but what your team tells you shows it well. For clause 5.1.1, what counts in the end is what top management does. The interview shows you where to start, and the actions that follow are your evidence."
         },
         {
           "typ": "absatz",
@@ -144,7 +144,7 @@ const beitrag = {
         },
         {
           "typ": "zeitstrahl",
-          "titel": "What applies when during the transition to ISO 9001:2026",
+          "titel": "Key dates for the transition to ISO 9001:2026",
           "legende": [
             {
               "text": "done",
@@ -180,7 +180,7 @@ const beitrag = {
             }
           ],
           "fazit": "Plan the transition so that your team's results are available before the next management review.",
-          "unterschrift": "Dates according to Nemko and ASC Food Safety (2026) based on the Global Accreditation Cooperation's transition rules; end of the deadline expected, according to DQS and NQA. For your certificate, what your certification body confirms applies."
+          "unterschrift": "Dates according to Nemko and ASC Food Safety (2026) based on the Global Accreditation Cooperation's transition rules. According to DQS and NQA, the final deadline is provisional. For your certificate, what your certification body confirms is what applies."
         }
       ]
     },
@@ -222,7 +222,7 @@ const beitrag = {
             ],
             [
               "Clauses 5.1.1 and 7.3",
-              "Is quality culture lived?",
+              "Is the quality culture actually lived?",
               "Which values the team actually experiences, in its own words"
             ]
           ],
@@ -239,7 +239,7 @@ const beitrag = {
           "achseUnten": "Action follows from the answers",
           "felder": [
             {
-              "kopf": "Known, but no consequences",
+              "kopf": "Known, but nothing follows",
               "text": "Everyone knows the objectives, but nothing changes."
             },
             {
@@ -257,7 +257,7 @@ const beitrag = {
             }
           ],
           "fazit": "An auditor wants to see that you are working towards the top right, not that you are already there.",
-          "unterschrift": "Own illustration by andi fragt., not based on data."
+          "unterschrift": "Illustration by andi fragt., not based on data."
         }
       ]
     },
@@ -314,10 +314,10 @@ const beitrag = {
             },
             {
               "fett": "Translate the objectives.",
-              "text": "Every department should be able to say in one sentence which quality objective concerns it and how it can tell."
+              "text": "Every department should be able to say in one sentence which quality objective concerns it and how that shows up in its work."
             },
             {
-              "fett": "Make mistakes discussable.",
+              "fett": "Make it safe to talk about mistakes.",
               "text": "Ask what happens when someone reports a mistake. If the honest answer is trouble, you have a culture issue."
             },
             {
@@ -347,11 +347,11 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "Your team answers without names on a phone or computer, in about 15 to 30 minutes. We see the answers, you see only the results. We merge groups of fewer than six people so that nobody can be identified through their department. Nobody can rule this out completely, for example if someone writes something very personal in a free-text answer, which is why people at our end read and summarise the answers."
+          "text": "Your team answers without names on a phone or computer, in about 15 to 30 minutes. We see the answers, you see only the results. We merge groups of fewer than six people so that nobody can be identified through their department. Nobody can rule this out completely, for example if someone writes something very personal in a free-text answer, which is why the answers are read and summarised by people on our team."
         },
         {
           "typ": "absatz",
-          "text": "**andi fragt. is a method by Rittler & Co GmbH in Graz, Austria: it first works out the right questions for a company, then gathers honest answers from team, customers and sales.** The process has four steps."
+          "text": "**andi fragt. is a method developed by Rittler & Co GmbH in Graz, Austria: it first works out the right questions for a company and then gathers honest answers from the team, customers and sales.** The process has four steps."
         },
         {
           "typ": "ablauf",
@@ -417,7 +417,7 @@ const beitrag = {
           "mitte": "Interview",
           "beschreibung": "Two overlapping circles. On the left, evidence for the audit; on the right, messages for marketing; in the middle, the interview.",
           "fazit": "What your team says about quality and collaboration is also what applicants want to know about you.",
-          "unterschrift": "Own illustration by andi fragt."
+          "unterschrift": "Illustration by andi fragt."
         }
       ]
     }
@@ -449,8 +449,8 @@ const beitrag = {
       "a": "In Austria, according to the Supreme Court (OGH), an anonymous survey in which you see only aggregated results does not, as a rule, require the works council's consent (9 ObA 114/04m). Even so, inform the works council early. Rules differ between countries, so check the position where you are. This is not legal advice."
     },
     {
-      "q": "Does this replace the evaluation of psychological stress?",
-      "a": "No. In Austria, the evaluation under the Employee Protection Act (ASchG) applies to practically every business with employees and, according to the Austrian Workers' Compensation Board (AUVA), requires standardised methods. More on this in [Employee survey for ISO 45001](/en/insights/employee-survey-iso-45001)."
+      "q": "Does this replace the assessment of psychological stress at work?",
+      "a": "No. In Austria, this assessment under the Employee Protection Act (ASchG) applies to practically every business with employees and, according to the Austrian Workers' Compensation Board (AUVA), requires standardised methods. More on this in [Employee survey for ISO 45001](/en/insights/employee-survey-iso-45001)."
     },
     {
       "q": "How much does a team interview with andi fragt. cost?",
