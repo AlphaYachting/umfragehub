@@ -6,9 +6,58 @@ import { BREITE, F, Hauptknopf, Modulseite, Portraet } from "@/components/oeffen
 import Baustein, { Text, nummerieren } from "@/components/oeffentlich/wissen/Bausteine";
 import { Kennzahlen } from "@/components/oeffentlich/wissen/Grafiken";
 import Titelgrafik, { TITELGRAFIKEN } from "@/components/oeffentlich/wissen/Titelgrafiken";
+import TitelgrafikEn, { TITELGRAFIKEN_EN } from "@/components/oeffentlich/wissen/TitelgrafikenEn";
 import {
   SITE, bereichName, beitragNachSlug, datumLang, istSichtbar, istVorschau, lesezeit, nurText, sichtbareBeitraege,
 } from "@/inhalte/wissen";
+import {
+  bereichNameEn, beitragNachSlugEn, datumLangEn, istSichtbarEn, sichtbareBeitraegeEn,
+} from "@/inhalte/wissen/en";
+import { useSprache } from "@/lib/sprache";
+
+// Zweisprachig seit 17.11.2026: Englische Beiträge liegen in src/inhalte/wissen/en und laufen unter /en/insights.
+// Alles Sprachabhängige steht in SPRACHE, damit das Layout für beide Sprachen gleich bleibt.
+export const SPRACHE = {
+  de: {
+    basis: "/wissen", start: "/", startName: "Start", bereich: "Wissen", modul: "Wissen", lang: "de-AT",
+    sichtbar: istSichtbar, alleSichtbar: sichtbareBeitraege, nachSlug: beitragNachSlug, bereichName, datum: datumLang,
+    titelgrafiken: TITELGRAFIKEN, Titelgrafik,
+    rolle: "Creative Director und Consultant", ort: "Rittler & Co, Graz",
+    entwurf: "Entwurf, nicht freigegeben. Nur in der Vorschau sichtbar, live auf andifragt.at ausgeblendet.",
+    geprueft: (d) => ` Faktenprüfung vom ${d}.`, ungeprueft: " Noch nicht geprüft.",
+    kurz: "Das Wichtigste in Kürze", faq: "Häufige Fragen", leit: "Leitartikel", minuten: (n) => `${n} Minuten Lesezeit`,
+    erschienen: "Erschienen am", aktualisiert: "Aktualisiert am", inhaltHandy: "Inhalt dieses Beitrags", inhalt: "Inhalt",
+    inhaltsverzeichnis: "Inhaltsverzeichnis", brotkrumen: "Brotkrumen",
+    erstgespraech: "Kostenloses Erstgespräch, rund 30 Minuten, online oder telefonisch.", anfragen: "Erstgespräch anfragen",
+    teilen: "Teilen:", linkedin: "Auf LinkedIn teilen", mail: "Per E-Mail teilen", kurzBeantwortet: "Kurz beantwortet",
+    quellen: "Quellen und weiterlesen", ueberAutor: "Über den Autor", geschrieben: "Geschrieben von",
+    bio: "Rittler & Co entwickelt seit über 20 Jahren Marken für Unternehmen in Österreich. Mit andi fragt. holt er die Marke dort ab, wo sie entsteht: bei den Menschen im Unternehmen.",
+    weiterlesen: "Weiterlesen", passend: "Passende Beiträge",
+    abschluss: "Kostenloses Erstgespräch, rund 30 Minuten, online oder telefonisch. Antwort innerhalb von 24 Stunden.",
+    preise: "Preise ansehen", preisePfad: "/preise", kontakt: "/kontakt",
+  },
+  en: {
+    basis: "/en/insights", start: "/en", startName: "Home", bereich: "Insights", modul: "Insights", lang: "en-GB",
+    sichtbar: istSichtbarEn, alleSichtbar: sichtbareBeitraegeEn, nachSlug: beitragNachSlugEn, bereichName: bereichNameEn, datum: datumLangEn,
+    titelgrafiken: TITELGRAFIKEN_EN, Titelgrafik: TitelgrafikEn,
+    rolle: "Creative Director and Consultant", ort: "Rittler & Co, Graz, Austria",
+    entwurf: "Draft, not released. Only visible in the preview, hidden on andifragt.at.",
+    geprueft: (d) => ` Fact-checked on ${d}.`, ungeprueft: " Not yet checked.",
+    kurz: "Key points at a glance", faq: "Frequently asked questions", leit: "Featured", minuten: (n) => `${n} min read`,
+    erschienen: "Published", aktualisiert: "Updated", inhaltHandy: "In this article", inhalt: "Contents",
+    inhaltsverzeichnis: "Table of contents", brotkrumen: "Breadcrumb",
+    erstgespraech: "Free first call, about 30 minutes, online or by phone.", anfragen: "Request a first call",
+    teilen: "Share:", linkedin: "Share on LinkedIn", mail: "Share by email", kurzBeantwortet: "The short answer",
+    quellen: "Sources and further reading", ueberAutor: "About the author", geschrieben: "Written by",
+    bio: "Rittler & Co has been developing brands for companies in Austria for more than 20 years. With andi fragt., Alfons Rittler goes to where a brand really comes from: the people inside the company.",
+    weiterlesen: "Keep reading", passend: "Related articles",
+    abschluss: "Free first call, about 30 minutes, online or by phone. A reply within 24 hours.",
+    preise: "See pricing", preisePfad: "/en/pricing", kontakt: "/en/contact",
+  },
+};
+export function useWissenSprache() {
+  return SPRACHE[useSprache()];
+}
 
 // Gemeinsames Layout aller Beiträge im Wissensbereich (Vorlage: Prototyp
 // "Wissen: Layout Blogbeitrag" auf der Arbeitsfläche, Bauanleitung uebergabe/wissen-layout.md).
@@ -65,8 +114,9 @@ export function StrukturierteDaten({ daten }) {
 }
 
 export function Brotkrumen({ teile }) {
+  const t = useWissenSprache();
   return (
-    <nav aria-label="Brotkrumen">
+    <nav aria-label={t.brotkrumen}>
       <ol className="flex flex-wrap items-center gap-1.5 text-sm" style={{ color: F.daempft }}>
         {teile.map((t, i) => (
           <React.Fragment key={t.name}>
@@ -84,12 +134,13 @@ export function Brotkrumen({ teile }) {
 }
 
 export function Entwurfsbalken({ beitrag }) {
+  const t = useWissenSprache();
   if (!istVorschau() || beitrag.status === "freigegeben") return null;
   return (
     <div className="text-sm font-semibold" style={{ background: "#fff4d6", borderBottom: "1px solid #f0d58a", color: "#5c4400" }}>
       <div className={`${BREITE} py-2.5`}>
-        Entwurf, nicht freigegeben. Nur in der Vorschau sichtbar, live auf andifragt.at ausgeblendet.
-        {beitrag.geprueft ? ` Faktenprüfung vom ${datumLang(beitrag.geprueft)}.` : " Noch nicht geprüft."}
+        {t.entwurf}
+        {beitrag.geprueft ? t.geprueft(t.datum(beitrag.geprueft)) : t.ungeprueft}
       </div>
     </div>
   );
@@ -167,32 +218,36 @@ function Nummer({ nr }) {
 }
 
 export function BeitragKarte({ b, hell = true }) {
+  const t = useWissenSprache();
   return (
     <Link
-      to={`/wissen/${b.slug}`}
+      to={`${t.basis}/${b.slug}`}
       className="flex flex-col gap-3 p-[26px] rounded-[20px] transition-transform hover:-translate-y-0.5 motion-reduce:transition-none"
       style={{ background: hell ? "#ffffff" : F.grau, color: F.text, textDecoration: "none", border: hell ? "none" : `1px solid ${F.linie}` }}
     >
-      <span className="text-xs font-bold uppercase tracking-[0.14em]" style={{ color: F.link }}>{b.leitartikel ? "Leitartikel" : bereichName(b)}</span>
+      <span className="text-xs font-bold uppercase tracking-[0.14em]" style={{ color: F.link }}>{b.leitartikel ? t.leit : t.bereichName(b)}</span>
       <span className="text-[21px] font-bold leading-[1.3]">{b.titel} {b.titelAkzent}</span>
-      <span className="mt-auto text-sm" style={{ color: F.daempft }}>{lesezeit(b)} Minuten Lesezeit</span>
+      <span className="mt-auto text-sm" style={{ color: F.daempft }}>{t.minuten(lesezeit(b))}</span>
     </Link>
   );
 }
 
 export default function BeitragSeite({ beitrag }) {
   const b = beitrag;
-  const sichtbar = istSichtbar(b);
-  const pfad = `/wissen/${b.slug}`;
+  const t = useWissenSprache();
+  const sichtbar = t.sichtbar(b);
+  const pfad = `${t.basis}/${b.slug}`;
+  const TG = t.titelgrafiken;
+  const TitelgrafikJe = t.Titelgrafik;
   const abschnitte = useMemo(() => nummerieren(b.abschnitte), [b]);
   const minuten = useMemo(() => lesezeit(b), [b]);
 
   const eintraege = useMemo(() => {
-    const e = [{ id: "kurz", nr: "", label: "Das Wichtigste in Kürze" }];
+    const e = [{ id: "kurz", nr: "", label: t.kurz }];
     abschnitte.forEach((a, i) => e.push({ id: a.id, nr: String(i + 1).padStart(2, "0"), label: a.toc || nurText(a.frage) }));
-    if (b.faq?.length) e.push({ id: "faq", nr: String(abschnitte.length + 1).padStart(2, "0"), label: "Häufige Fragen" });
+    if (b.faq?.length) e.push({ id: "faq", nr: String(abschnitte.length + 1).padStart(2, "0"), label: t.faq }));
     return e;
-  }, [abschnitte, b.faq]);
+  }, [abschnitte, b.faq, t]);
 
   const [aktiv, setAktiv] = useState("kurz");
   // Aktuellen Abschnitt beim Scrollen im Inhaltsverzeichnis markieren
@@ -221,19 +276,19 @@ export default function BeitragSeite({ beitrag }) {
   });
 
   const passend = useMemo(() => {
-    const alle = sichtbareBeitraege().filter((x) => x.slug !== b.slug);
-    const gewuenscht = (b.passend || []).map(beitragNachSlug).filter((x) => x && alle.includes(x));
+    const alle = t.alleSichtbar().filter((x) => x.slug !== b.slug);
+    const gewuenscht = (b.passend || []).map(t.nachSlug).filter((x) => x && alle.includes(x));
     const rest = alle.filter((x) => !gewuenscht.includes(x));
     return [...gewuenscht, ...rest].slice(0, 3);
-  }, [b]);
+  }, [b, t]);
 
   // Ereigniszählung: Aufruf eines einzelnen Beitrags (nur der Slug, keine Personenbezüge)
   useEffect(() => {
     if (!sichtbar) return;
-    base44.analytics.track({ eventName: "wissen_beitrag_view", properties: { slug: b.slug } });
-  }, [b.slug, sichtbar]);
+    base44.analytics.track({ eventName: "wissen_beitrag_view", properties: { slug: b.slug, sprache: t.lang } });
+  }, [b.slug, sichtbar, t.lang]);
 
-  if (!sichtbar) return <Navigate to="/wissen" replace />;
+  if (!sichtbar) return <Navigate to={t.basis} replace />;
 
   const titelGanz = `${b.titel} ${b.titelAkzent}`;
   const datum = b.aktualisiert || b.erschienen || b.geprueft || undefined;
@@ -246,17 +301,17 @@ export default function BeitragSeite({ beitrag }) {
       image: b.titelbild?.src ? [SITE + b.titelbild.src] : undefined,
       datePublished: b.erschienen || undefined,
       dateModified: datum,
-      inLanguage: "de-AT",
+      inLanguage: t.lang,
       mainEntityOfPage: SITE + pfad,
-      author: { "@type": "Person", name: AUTOR.name, jobTitle: AUTOR.rolle, worksFor: { "@type": "Organization", name: "Rittler & Co GmbH" } },
+      author: { "@type": "Person", name: AUTOR.name, jobTitle: t.rolle, worksFor: { "@type": "Organization", name: "Rittler & Co GmbH" } },
       publisher: { "@type": "Organization", name: "Rittler & Co GmbH", url: SITE },
     },
     {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Start", item: SITE + "/" },
-        { "@type": "ListItem", position: 2, name: "Wissen", item: SITE + "/wissen" },
+        { "@type": "ListItem", position: 1, name: t.startName, item: SITE + t.start },
+        { "@type": "ListItem", position: 2, name: t.bereich, item: SITE + t.basis },
         { "@type": "ListItem", position: 3, name: b.kurztitel, item: SITE + pfad },
       ],
     },
@@ -270,16 +325,16 @@ export default function BeitragSeite({ beitrag }) {
   }
 
   const teilenUrl = encodeURIComponent(SITE + pfad);
-  const anfrage = b.modul ? `/kontakt#anfrage-${b.modul}` : "/kontakt#anfrage";
+  const anfrage = b.modul ? `${t.kontakt}#anfrage-${b.modul}` : `${t.kontakt}#anfrage`;
 
   return (
-    <Modulseite titel={b.seitentitel} modul="Wissen">
+    <Modulseite titel={b.seitentitel} modul={t.modul}>
       <StrukturierteDaten daten={ld} />
       <Entwurfsbalken beitrag={b} />
 
       {/* Beitragskopf */}
       <div className={`${BREITE} pt-7`}>
-        <Brotkrumen teile={[{ name: "Start", pfad: "/" }, { name: "Wissen", pfad: "/wissen" }, { name: b.kurztitel }]} />
+        <Brotkrumen teile={[{ name: t.startName, pfad: t.start }, { name: t.bereich, pfad: t.basis }, { name: b.kurztitel }]} />
         <div className="mt-10 max-w-[900px]">
           <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2">
             <span className="inline-flex items-center min-h-[30px] px-3 rounded-full text-[13px] font-bold uppercase tracking-[0.12em]" style={{ background: F.hauch, color: F.link }}>
@@ -296,26 +351,26 @@ export default function BeitragSeite({ beitrag }) {
               <span className="text-[15px] leading-[1.4]">
                 <strong className="font-bold">{AUTOR.name}</strong>
                 <br />
-                <span style={{ color: F.daempft }}>{AUTOR.rolle}, Rittler &amp; Co, Graz</span>
+                <span style={{ color: F.daempft }}>{t.rolle}, {t.ort}</span>
               </span>
             </div>
             <p className="flex flex-wrap gap-x-[18px] gap-y-1 text-sm" style={{ color: F.daempft }}>
-              {b.erschienen && <span>Erschienen am <time dateTime={b.erschienen}>{datumLang(b.erschienen)}</time></span>}
-              {b.aktualisiert && b.aktualisiert !== b.erschienen && <span>Aktualisiert am <time dateTime={b.aktualisiert}>{datumLang(b.aktualisiert)}</time></span>}
-              <span className="inline-flex items-center gap-1.5"><Clock size={15} aria-hidden="true" />{minuten} Minuten Lesezeit</span>
+              {b.erschienen && <span>{t.erschienen} <time dateTime={b.erschienen}>{t.datum(b.erschienen)}</time></span>}
+              {b.aktualisiert && b.aktualisiert !== b.erschienen && <span>{t.aktualisiert} <time dateTime={b.aktualisiert}>{t.datum(b.aktualisiert)}</time></span>}
+              <span className="inline-flex items-center gap-1.5"><Clock size={15} aria-hidden="true" />{t.minuten(minuten)}</span>
             </p>
           </div>
         </div>
 
-        {TITELGRAFIKEN[b.slug] && (
+        {TG[b.slug] && (
           <figure className="mt-8 sm:mt-10">
             <div className="rounded-2xl sm:rounded-3xl overflow-hidden" style={{ background: F.dunkel }}>
-              <Titelgrafik slug={b.slug} />
+              <TitelgrafikJe slug={b.slug} />
             </div>
             {b.titelbild?.unterschrift && <figcaption className="mt-2.5 text-sm" style={{ color: F.daempft }}><Text>{b.titelbild.unterschrift}</Text></figcaption>}
           </figure>
         )}
-        {!TITELGRAFIKEN[b.slug] && b.titelbild?.src && (
+        {!TG[b.slug] && b.titelbild?.src && (
           <figure className="mt-10">
             <div className="relative rounded-3xl overflow-hidden min-h-[240px]" style={{ aspectRatio: "16 / 7", background: F.dunkel }}>
               <img src={b.titelbild.src} alt={b.titelbild.alt} className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: "50% 40%" }} />
@@ -334,7 +389,7 @@ export default function BeitragSeite({ beitrag }) {
       <div className={`${BREITE} mt-8 min-[1000px]:hidden`}>
         <details className="rounded-2xl group" style={{ border: `1px solid ${F.linie}`, background: F.grau }}>
           <summary className="flex items-center justify-between gap-3 min-h-[56px] px-5 font-bold cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-            Inhalt dieses Beitrags <ChevronDown size={18} aria-hidden="true" className="transition-transform group-open:rotate-180" />
+            {t.inhaltHandy} <ChevronDown size={18} aria-hidden="true" className="transition-transform group-open:rotate-180" />
           </summary>
           <div className="px-2.5 pb-3">
             <Inhaltsverzeichnis eintraege={eintraege} aktiv={aktiv} setAktiv={setAktiv} />
@@ -344,27 +399,27 @@ export default function BeitragSeite({ beitrag }) {
 
       {/* Inhalt mit Seitenleiste */}
       <div className={`${BREITE} pt-12 flex flex-wrap items-start gap-x-[72px] gap-y-12`}>
-        <aside aria-label="Inhaltsverzeichnis" className="hidden min-[1000px]:block shrink-0 w-[280px] sticky top-6">
-          <p className="ml-2.5 mb-2.5 text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: F.daempft }}>Inhalt</p>
+        <aside aria-label={t.inhaltsverzeichnis} className="hidden min-[1000px]:block shrink-0 w-[280px] sticky top-6">
+          <p className="ml-2.5 mb-2.5 text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: F.daempft }}>{t.inhalt}</p>
           <Inhaltsverzeichnis eintraege={eintraege} aktiv={aktiv} setAktiv={setAktiv} />
           <div className="mt-7 p-[22px] rounded-[18px] text-white" style={{ background: F.dunkel }}>
             <p className="text-[17px] font-bold leading-[1.3]">{b.seitenleisteFrage}</p>
-            <p className="mt-2 text-sm leading-normal" style={{ color: F.hellAufDunkel }}>Kostenloses Erstgespräch, rund 30 Minuten, online oder telefonisch.</p>
+            <p className="mt-2 text-sm leading-normal" style={{ color: F.hellAufDunkel }}>{t.erstgespraech}</p>
             <Link
               to={anfrage}
               className="mt-3.5 inline-flex items-center gap-2 min-h-[44px] px-4 rounded text-[13px] font-semibold uppercase tracking-[0.04em] text-white"
               style={{ background: F.akzent, textDecoration: "none" }}
             >
-              Erstgespräch anfragen
+              {t.anfragen}
             </Link>
           </div>
           <div className="mt-5 pl-2.5 flex items-center gap-2.5 text-sm" style={{ color: F.daempft }}>
-            <span>Teilen:</span>
-            <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${teilenUrl}`} target="_blank" rel="nofollow noopener noreferrer" aria-label="Auf LinkedIn teilen"
+            <span>{t.teilen}</span>
+            <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${teilenUrl}`} target="_blank" rel="nofollow noopener noreferrer" aria-label={t.linkedin}
               className="inline-flex items-center justify-center w-10 h-10 rounded-full" style={{ border: "1px solid #d6d3d0", color: F.text }}>
               <Linkedin size={18} strokeWidth={1.8} aria-hidden="true" />
             </a>
-            <a href={`mailto:?subject=${encodeURIComponent(nurText(b.kurztitel))}&body=${teilenUrl}`} aria-label="Per E-Mail teilen"
+            <a href={`mailto:?subject=${encodeURIComponent(nurText(b.kurztitel))}&body=${teilenUrl}`} aria-label={t.mail}
               className="inline-flex items-center justify-center w-10 h-10 rounded-full" style={{ border: "1px solid #d6d3d0", color: F.text }}>
               <Mail size={18} strokeWidth={1.8} aria-hidden="true" />
             </a>
@@ -374,13 +429,13 @@ export default function BeitragSeite({ beitrag }) {
         <article className="flex-[999_1_560px] min-w-0 max-w-[760px]">
           {/* Direkte Antwort */}
           <div className="px-[30px] py-7 rounded-[20px]" style={{ background: F.hauch }}>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: F.link }}>Kurz beantwortet</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: F.link }}>{t.kurzBeantwortet}</p>
             <p className="mt-2.5 text-[21px] leading-[1.55] font-semibold" style={{ color: F.text }}><Text>{b.kurzAntwort}</Text></p>
           </div>
 
           {/* Das Wichtigste in Kürze */}
           <section id="kurz" aria-labelledby="kurz-titel" className="mt-10 scroll-mt-6">
-            <h2 id="kurz-titel" className="text-[22px] font-black uppercase tracking-[0.01em]">Das Wichtigste in Kürze</h2>
+            <h2 id="kurz-titel" className="text-[22px] font-black uppercase tracking-[0.01em]">{t.kurz}</h2>
             <ul className="mt-[18px] flex flex-col gap-3.5">
               {b.wichtigstes.map((w, i) => (
                 <li key={i} className="grid grid-cols-[28px_minmax(0,1fr)] gap-3 text-lg leading-[1.55]">
@@ -408,14 +463,14 @@ export default function BeitragSeite({ beitrag }) {
           {b.faq?.length > 0 && (
             <section id="faq" aria-labelledby="h-faq" className="mt-14 scroll-mt-6">
               <Nummer nr={String(abschnitte.length + 1).padStart(2, "0")} />
-              <h2 id="h-faq" className="mt-2.5 mb-[18px] text-[clamp(26px,2.6vw,34px)] font-black leading-[1.15]">{b.faqTitel || "Häufige Fragen"}</h2>
+              <h2 id="h-faq" className="mt-2.5 mb-[18px] text-[clamp(26px,2.6vw,34px)] font-black leading-[1.15]">{b.faqTitel || t.faq}</h2>
               <FaqListe faq={b.faq} />
             </section>
           )}
 
           {b.quellen?.length > 0 && (
             <section aria-labelledby="h-quellen" className="mt-12">
-              <h2 id="h-quellen" className="text-sm font-semibold uppercase tracking-[0.16em]" style={{ color: F.daempft }}>Quellen und weiterlesen</h2>
+              <h2 id="h-quellen" className="text-sm font-semibold uppercase tracking-[0.16em]" style={{ color: F.daempft }}>{t.quellen}</h2>
               <ul className="mt-3 pl-[18px] list-disc text-[15px] leading-[1.7]" style={{ color: F.daempft }}>
                 {b.quellen.map((q) => (
                   <li key={q.url}>
@@ -428,16 +483,13 @@ export default function BeitragSeite({ beitrag }) {
           )}
 
           {/* Autor */}
-          <section aria-label="Über den Autor" className="mt-12 p-7 rounded-3xl flex flex-wrap items-center gap-x-6 gap-y-5" style={{ background: F.grau }}>
+          <section aria-label={t.ueberAutor} className="mt-12 p-7 rounded-3xl flex flex-wrap items-center gap-x-6 gap-y-5" style={{ background: F.grau }}>
             <Portraet className="w-[88px] h-[88px]" gross style={{ boxShadow: `0 0 0 5px ${F.grau}, 0 0 0 7px ${F.hauchRand}` }} />
             <div className="flex-[1_1_320px] min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em]" style={{ color: F.daempft }}>Geschrieben von</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em]" style={{ color: F.daempft }}>{t.geschrieben}</p>
               <p className="mt-1 text-xl font-black">{AUTOR.name}</p>
-              <p className="mt-0.5 text-[15px]" style={{ color: F.daempft }}>{AUTOR.rolle}, Rittler &amp; Co, Graz</p>
-              <p className="mt-2.5 leading-[1.6]" style={{ color: "#3a3a3a" }}>
-                Rittler &amp; Co entwickelt seit über 20 Jahren Marken für Unternehmen in Österreich. Mit andi fragt. holt er die Marke dort ab, wo sie
-                entsteht: bei den Menschen im Unternehmen.
-              </p>
+              <p className="mt-0.5 text-[15px]" style={{ color: F.daempft }}>{t.rolle}, {t.ort}</p>
+              <p className="mt-2.5 leading-[1.6]" style={{ color: "#3a3a3a" }}>{t.bio}</p>
             </div>
           </section>
         </article>
@@ -447,8 +499,8 @@ export default function BeitragSeite({ beitrag }) {
       {passend.length > 0 && (
         <section aria-labelledby="h-weiter" className="mt-24" style={{ background: F.grau }}>
           <div className={`${BREITE} py-20`}>
-            <p className="text-[13px] font-medium uppercase tracking-[0.2em]" style={{ color: F.etikett }}>Weiterlesen</p>
-            <h2 id="h-weiter" className="mt-3 text-[clamp(28px,3vw,38px)] font-black uppercase leading-[1.1]">Passende Beiträge</h2>
+            <p className="text-[13px] font-medium uppercase tracking-[0.2em]" style={{ color: F.etikett }}>{t.weiterlesen}</p>
+            <h2 id="h-weiter" className="mt-3 text-[clamp(28px,3vw,38px)] font-black uppercase leading-[1.1]">{t.passend}</h2>
             <div className="mt-9 grid gap-5 grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))]">
               {passend.map((p) => <BeitragKarte key={p.slug} b={p} />)}
             </div>
@@ -461,12 +513,12 @@ export default function BeitragSeite({ beitrag }) {
         <div className={`${BREITE} py-20 flex flex-wrap items-center justify-between gap-x-12 gap-y-7`}>
           <div className="flex-[1_1_560px] min-w-0">
             <h2 id="h-abschluss" className="text-[clamp(28px,3.2vw,42px)] font-black uppercase leading-[1.1]">{b.abschlussTitel}</h2>
-            <p className="mt-3.5 text-lg leading-[1.6]">Kostenloses Erstgespräch, rund 30 Minuten, online oder telefonisch. Antwort innerhalb von 24 Stunden.</p>
+            <p className="mt-3.5 text-lg leading-[1.6]">{t.abschluss}</p>
           </div>
           <div className="flex flex-col items-start gap-2.5">
-            <Hauptknopf href={anfrage} farbe={F.dunkel}>Erstgespräch anfragen</Hauptknopf>
-            <Link to="/preise" className="inline-flex items-center gap-2 min-h-[44px] font-bold text-white underline underline-offset-2">
-              Preise ansehen <ArrowRight size={16} aria-hidden="true" />
+            <Hauptknopf href={anfrage} farbe={F.dunkel}>{t.anfragen}</Hauptknopf>
+            <Link to={t.preisePfad} className="inline-flex items-center gap-2 min-h-[44px] font-bold text-white underline underline-offset-2">
+              {t.preise} <ArrowRight size={16} aria-hidden="true" />
             </Link>
           </div>
         </div>
