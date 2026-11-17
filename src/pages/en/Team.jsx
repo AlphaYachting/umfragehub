@@ -36,7 +36,7 @@ const FELD = {
   warten: { name: "Can wait", grund: "#5a5a5a", farbe: "#ffffff" },
 };
 const PUNKTE = [
-  { name: "Training", x: 24, y: 20, feld: "verlieren", text: "Very important to your team, experienced as weak with you. This is where good people leave first. A clear plan for each person is the fastest lever." },
+  { name: "Training", x: 24, y: 20, feld: "verlieren", text: "Very important to your team, but they rate you poorly on it. This is where good people leave first. A clear plan for each person is the fastest lever." },
   { name: "Flexible hours", x: 30, y: 38, feld: "verlieren", text: "Often underestimated. Even a little leeway changes how your team experiences you as an employer." },
   { name: "Team spirit", x: 78, y: 14, feld: "halten", text: "Your strength. It belongs in every job ad, in your team's own words." },
   { name: "Job security", x: 70, y: 32, feld: "halten", text: "Taken for granted. Good that it's true. On its own it won't excite anyone." },
@@ -58,7 +58,7 @@ const WEGE = [
       { wann: "Month 3", was: "Fewer ideas, more working to rule.", ...STILL },
       { wann: "Month 6", was: "The online profile gets updated.", ...STILL },
       { wann: "Month 9", was: "The resignation comes as a surprise.", ...LAUT },
-      { wann: "After that", was: "Refill the role. The knowledge is gone.", ...LAUT },
+      { wann: "After that", was: "The role needs refilling. The knowledge is gone.", ...LAUT },
     ],
   },
   {
@@ -82,9 +82,9 @@ const GEWINN = [
 
 const ERGEBNIS = [
   { nr: "Blind spots", titel: "Your view and your team's", text: "Where you see things the same way and where you are far apart, by department once the minimum is reached.", beispiel: "Information: you 80%, team 48%." },
-  { nr: "Map", titel: "Where to act, where to save", text: "What matters to your team, set against what it experiences with you.", beispiel: "Training first, rethink the company party." },
+  { nr: "Map", titel: "Where to act, where to save", text: "What matters to your team, set against what it actually gets from you.", beispiel: "Training first, rethink the company party." },
   { nr: "Employer promise", titel: "Why people work for you", text: "An honest promise your team would sign up to themselves.", beispiel: "Here your word counts, even on day one." },
-  { nr: "Recruiting", titel: "Lines for your job ads", text: "Real answers become copy that speaks to applicants.", beispiel: "We're not looking for someone who can do everything. We're looking for someone who thinks along with us." },
+  { nr: "Recruiting", titel: "Lines for your job ads", text: "Real answers become copy that speaks to applicants.", beispiel: "We're not looking for someone who can do everything. We're looking for someone who thinks ahead." },
 ];
 
 function Einstieg() {
@@ -167,15 +167,15 @@ function Schaetzspiel() {
   if (!alle) {
     const rest = AUSSAGEN.length - fertig;
     fazitTitel = rest === AUSSAGEN.length
-      ? "Three guesses to the answer"
-      : `${rest} more ${rest === 1 ? "guess" : "guesses"} to the answer`;
+      ? "Three guesses to go"
+      : `${rest} more ${rest === 1 ? "guess" : "guesses"} to go`;
     fazitText = "At the end you see how far off your gut feeling is on average.";
   } else {
     const schnitt = Math.round(AUSSAGEN.reduce((s, a, i) => s + Math.abs(tipp[i] - a.team), 0) / AUSSAGEN.length);
     fazitTitel = `On average ${schnitt} points off`;
     fazitText = schnitt <= 10
       ? "Strong gut feeling. Whether it holds for your own team, only the real answers will show."
-      : "That's no criticism. Things look different from the top. That exact gap is the lever we open up with you.";
+      : "That's no criticism. Things look different from the top. That gap is exactly the lever we work on with you.";
   }
 
   return (
@@ -294,7 +294,7 @@ const BLICKWINKEL = [
   },
   {
     titel: "Where you lose people",
-    text: "What your team values in an employer, set against what it experiences with you.",
+    text: "What your team values in an employer, set against what it actually gets from you.",
     bild: (
       <div className="h-[92px] w-[150px] grid grid-cols-2 grid-rows-2 gap-1">
         <span className="relative" style={{ borderRadius: "10px 4px 4px 4px", background: "#ffd6df" }}>
@@ -397,7 +397,7 @@ function Landkarte() {
           Where you lose people. <span style={{ color: F.akzent }}>And where you burn money.</span>
         </h2>
         <p className="mt-[18px] max-w-[680px]" style={{ ...TEXT_STIL, lineHeight: 1.6, color: F.hellAufDunkel }}>
-          Your team tells us what matters to them in an employer and how they experience it with you. That becomes a
+          Your team tells us what matters to them in an employer and how well you deliver it. That becomes a
           map. Tap a point.
         </p>
 
@@ -436,7 +436,7 @@ function Landkarte() {
                 })}
               </div>
               <span />
-              <p className="text-center text-xs font-semibold" style={{ color: "#a9a6a2" }}>how the team experiences it with you</p>
+              <p className="text-center text-xs font-semibold" style={{ color: "#a9a6a2" }}>how the team rates you on it</p>
             </div>
           </div>
 
@@ -459,7 +459,7 @@ function Landkarte() {
 export default function TeamEn() {
   return (
     <Modulseite
-      titel="Find out what your team really thinks | andi fragt."
+      titel="Employee satisfaction: the honest view | andi fragt."
       modul="Team"
       hintergrund={F.hauch}
       kopfRand={false}
