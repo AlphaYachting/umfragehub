@@ -122,7 +122,7 @@ export default function KundenEn() {
             </span>
           </h1>
           <p className="mt-6" style={{ ...LEAD_STIL, color: F.daempft }}>
-            And why others left. They just won't tell you unprompted. They are happy to tell a neutral interview, and you
+            And why others left. They just won't tell you unprompted. In a neutral interview they are happy to talk, and you
             find out where more revenue is waiting.
           </p>
           <div className="mt-8">
