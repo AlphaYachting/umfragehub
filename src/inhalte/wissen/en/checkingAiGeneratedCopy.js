@@ -25,7 +25,7 @@ const beitrag = {
   "titelbild": {
     "src": "/bilder/team.webp",
     "alt": "Title graphic: four fields stacked with the checking steps. Facts: open the sources. Law: advertising and labelling. Brand: tone and form of address. Customer, highlighted in pink: does the message hold up?",
-    "unterschrift": "Everyone checks the spelling. Whether the copy persuades, your customers know.",
+    "unterschrift": "Everyone checks the spelling. Your customers know whether the copy persuades.",
     "platzhalter": "Placeholder title image: two people in a business checking a printed text with a pen at a table, 1600 x 900 px"
   },
   "titelgrafik": true,
@@ -48,7 +48,7 @@ const beitrag = {
     },
     {
       "fett": "The last step belongs to your customers.",
-      "text": "Whether a message holds up is something your customers know, along with the people who work with them every day. With andi fragt. you get their answer.",
+      "text": "Your customers know whether a message holds up, and so do the people who work with them every day. With andi fragt. you get their answer.",
       "akzent": true
     }
   ],
@@ -257,14 +257,14 @@ const beitrag = {
           "punkte": [
             {
               "fett": "Misleading advertising.",
-              "text": "Under section 2(1) of Austria's Unfair Competition Act (UWG), a commercial practice such as advertising is misleading if it contains false information or can deceive, for instance about essential features of the product, and so prompts a decision that would not otherwise have been made. AI copy likes to exaggerate: fastest delivery, best quality. Since 27 September 2026, you have to be able to substantiate generic environmental claims such as eco-friendly towards consumers in Austria (UWG amendment, Federal Law Gazette BGBl. I No. 58/2026)."
+              "text": "Under section 2(1) of Austria's Unfair Competition Act (UWG), a commercial practice such as advertising is misleading if it contains false information or can deceive, for instance about essential features of the product, and so prompts a decision that would not otherwise have been made. AI copy likes to exaggerate: fastest delivery, best quality. Since 27 September 2026, you have to be able to substantiate generic environmental claims made to consumers in Austria, such as eco-friendly (UWG amendment, Federal Law Gazette BGBl. I No. 58/2026)."
             },
             {
               "fett": "Copyright.",
               "text": "Under section 1 of the Austrian Copyright Act (UrhG), protection covers original intellectual creations. According to the Vienna Economic Chamber, this requires a human creation, so purely AI-generated images are currently not protected. And they can easily infringe trade mark or personality rights."
             },
             {
-              "fett": "Data protection when you enter data.",
+              "fett": "Data protection in your prompts.",
               "text": "According to Austria's Data Protection Authority, whoever uses the AI system is usually the controller and needs a legal basis under Article 6 GDPR for personal data. It recommends internal rules on which data may go into which system. Customer names do not belong in a chatbot unchecked."
             },
             {
@@ -327,7 +327,7 @@ const beitrag = {
       "bloecke": [
         {
           "typ": "absatz",
-          "text": "Checklists usually leave this step out because it cannot be ticked off. A text can be correct and clean and still miss the customer. AI writes plausibly, but from the average of what is on the web. Whether a reason to buy is the right one, only your customers know, along with the people who work with them every day."
+          "text": "Checklists usually leave this step out because it cannot be ticked off. A text can be correct and clean and still miss the customer. AI writes plausibly, but from the average of what is on the web. Only your customers, and the people who work with them every day, know whether a reason to buy is the right one."
         },
         {
           "typ": "absatz",
@@ -444,7 +444,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "Your customers answer without giving their names, on their phone or computer, in about 15 to 30 minutes. People at Rittler & Co in Graz read the answers, and you receive the summary. We merge groups of fewer than six people and summarise free-text answers. Even so, recognition cannot be ruled out completely, for example with very specific projects."
+          "text": "Your customers answer without giving their names, on their phone or computer, in about 15 to 30 minutes. People at Rittler & Co in Graz read the answers, and you receive the summary. We merge groups of fewer than six people and summarise free-text answers. Even so, we cannot completely rule out that someone is recognised, for example with very specific projects."
         },
         {
           "typ": "absatz",
@@ -511,7 +511,7 @@ const beitrag = {
     },
     {
       "q": "How do I spot AI hallucinations?",
-      "a": "Check every figure, every source and every quote individually and open the source yourself. Simply reading the text, you will hardly notice hallucinations."
+      "a": "Check every figure, every source and every quote individually and open the source yourself. Hallucinations are hard to spot just by reading the text."
     },
     {
       "q": "Can I check AI copy with an AI detector?",
