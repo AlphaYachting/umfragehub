@@ -4,6 +4,19 @@ import { ArrowDown, BookOpen, Lightbulb } from "lucide-react";
 import { F } from "@/components/oeffentlich/Oeffentlich";
 import { GRAFIK_ARTEN, NUMMERIERTE_GRAFIKEN } from "@/components/oeffentlich/wissen/Grafiken";
 import { beitragNachSlug, istSichtbar } from "@/inhalte/wissen";
+import { beitragNachSlugEn, istSichtbarEn } from "@/inhalte/wissen/en";
+import { useSprache } from "@/lib/sprache";
+
+// Feste Beschriftungen je Sprache (englische Beiträge unter /en/insights, 17.11.2026)
+const L = {
+  de: { abb: "Abbildung", tab: "Tabelle", merkmal: "Merkmal", tipp: "Tipp aus der Praxis:", begriff: "Kurz erklärt:", tippAria: "Tipp", begriffAria: "Begriff",
+    ablaufWaehlen: "Ablauf wählen", annahme: "Die Annahme:", gezeigt: "Das Interview zeigte:", ergebnis: "Daraus wurde:", platzhalter: "Platzhalter, vor der Freigabe ersetzen" },
+  en: { abb: "Figure", tab: "Table", merkmal: "Feature", tipp: "Tip from practice:", begriff: "In brief:", tippAria: "Tip", begriffAria: "Definition",
+    ablaufWaehlen: "Choose a process", annahme: "The assumption:", gezeigt: "The interview showed:", ergebnis: "The result:", platzhalter: "Placeholder, replace before release" },
+};
+export function useBeschriftung() {
+  return L[useSprache()];
+}
 
 // Bausteine der Beitragsseiten im Wissensbereich. Jeder Baustein im Inhalt hat ein Feld
 // "typ"; Baustein() wählt die passende Darstellung. Aussehen wie im Prototyp
@@ -15,6 +28,7 @@ import { beitragNachSlug, istSichtbar } from "@/inhalte/wissen";
 const MUSTER = /(\*\*[^*]+\*\*|\[\[[^\]]+\]\]|\[[^\]]+\]\([^)\s]+\))/g;
 
 export function Text({ children }) {
+  const l = useBeschriftung();
   const s = String(children ?? "");
   const teile = s.split(MUSTER).filter((t) => t !== "");
   return (
@@ -27,7 +41,7 @@ export function Text({ children }) {
           return (
             <span
               key={i}
-              title="Platzhalter, vor der Freigabe ersetzen"
+              title={l.platzhalter}
               className="px-1.5 rounded-md font-semibold"
               style={{ background: F.hauch, border: "1.5px dashed #ff3764", color: F.link, boxDecorationBreak: "clone", WebkitBoxDecorationBreak: "clone" }}
             >
@@ -39,8 +53,10 @@ export function Text({ children }) {
         if (m) {
           const [, text, ziel] = m;
           // Link auf einen Beitrag, der hier noch nicht sichtbar ist (Entwurf live): nur Text zeigen
-          const zielBeitrag = ziel.startsWith("/wissen/") ? beitragNachSlug(ziel.slice(8)) : null;
-          if (zielBeitrag && !istSichtbar(zielBeitrag)) return <React.Fragment key={i}>{text}</React.Fragment>;
+          const zielBeitrag = ziel.startsWith("/wissen/") ? beitragNachSlug(ziel.slice(8))
+            : ziel.startsWith("/en/insights/") ? beitragNachSlugEn(ziel.slice(13)) : null;
+          const zielSichtbar = zielBeitrag && (ziel.startsWith("/en/") ? istSichtbarEn(zielBeitrag) : istSichtbar(zielBeitrag));
+          if (zielBeitrag && !zielSichtbar) return <React.Fragment key={i}>{text}</React.Fragment>;
           if (ziel.startsWith("/")) {
             return <Link key={i} to={ziel} className="font-semibold underline underline-offset-2 hover:no-underline" style={{ color: F.link }}>{text}</Link>;
           }
@@ -110,17 +126,18 @@ function Schritte({ b }) {
 }
 
 function Kasten({ b, art }) {
+  const l = useBeschriftung();
   const tipp = art === "tipp";
   const Icon = tipp ? Lightbulb : BookOpen;
   return (
     <aside
-      aria-label={tipp ? "Tipp" : "Begriff"}
+      aria-label={tipp ? l.tippAria : l.begriffAria}
       className="mb-[26px] px-6 py-5 rounded-2xl grid grid-cols-[32px_minmax(0,1fr)] gap-3.5"
       style={tipp ? { background: "#eef8f2" } : { border: `1.5px solid ${F.dunkel}` }}
     >
       <Icon size={28} strokeWidth={1.7} aria-hidden="true" style={{ color: tipp ? "#2f9e64" : F.dunkel }} />
       <p className="text-[17px] leading-[1.6]" style={{ color: F.text }}>
-        <strong className="font-bold">{tipp ? "Tipp aus der Praxis:" : "Kurz erklärt:"}</strong> <Text>{b.text}</Text>
+        <strong className="font-bold">{tipp ? l.tipp : l.begriff}</strong> <Text>{b.text}</Text>
       </p>
     </aside>
   );
@@ -138,15 +155,16 @@ function Zitat({ b }) {
 }
 
 function Tabelle({ b }) {
+  const l = useBeschriftung();
   return (
     <div className="mb-[22px] overflow-x-auto rounded-2xl" style={{ border: `1px solid ${F.linie}` }}>
       <table className="w-full min-w-[560px] border-collapse text-base leading-normal">
         <caption className="text-left px-4 py-3 text-sm" style={{ captionSide: "bottom", color: F.daempft }}>
-          <strong className="font-bold" style={{ color: F.text }}>Tabelle {b._nr}:</strong> <Text>{b.unterschrift}</Text>
+          <strong className="font-bold" style={{ color: F.text }}>{l.tab} {b._nr}:</strong> <Text>{b.unterschrift}</Text>
         </caption>
         <thead>
           <tr style={{ background: F.grau }}>
-            <th scope="col" className="w-[26%] px-4 py-3.5"><span className="sr-only">Merkmal</span></th>
+            <th scope="col" className="w-[26%] px-4 py-3.5"><span className="sr-only">{l.merkmal}</span></th>
             <th scope="col" className="px-4 py-3.5 text-left text-[15px] font-bold" style={{ color: F.daempft }}>{b.kopf[0]}</th>
             <th scope="col" className="px-4 py-3.5 text-left text-[15px] font-black" style={{ color: F.text, background: F.hauch }}>{b.kopf[1]}</th>
           </tr>
@@ -201,6 +219,7 @@ function Pfeil({ farbe }) {
 const ETIKETT_KLEIN = "text-xs font-semibold uppercase tracking-[0.14em]";
 
 function Schaubild({ b }) {
+  const l = useBeschriftung();
   const [andi, setAndi] = useState(true);
   const knopf = (an) => ({
     minHeight: 44, padding: "0 18px", border: 0, borderRadius: 999, fontFamily: "inherit", fontSize: 15, fontWeight: 700, cursor: "pointer",
@@ -208,7 +227,7 @@ function Schaubild({ b }) {
   });
   return (
     <figure className="mb-[30px] p-7 rounded-3xl" style={{ background: F.grau }}>
-      <div role="group" aria-label="Ablauf wählen" className="inline-flex flex-wrap p-1 rounded-full bg-white" style={{ border: `1px solid ${F.linie}` }}>
+      <div role="group" aria-label={l.ablaufWaehlen} className="inline-flex flex-wrap p-1 rounded-full bg-white" style={{ border: `1px solid ${F.linie}` }}>
         <button type="button" aria-pressed={!andi} onClick={() => setAndi(false)} style={knopf(!andi)}>{b.knopfUeblich}</button>
         <button type="button" aria-pressed={andi} onClick={() => setAndi(true)} style={knopf(andi)}>{b.knopfAndi}</button>
       </div>
@@ -273,13 +292,14 @@ function Schaubild({ b }) {
         )}
       </div>
       <figcaption className="mt-[18px] text-sm leading-normal" style={{ color: F.daempft }}>
-        <strong className="font-bold" style={{ color: F.text }}>Abbildung {b._nr}:</strong> <Text>{b.unterschrift}</Text>
+        <strong className="font-bold" style={{ color: F.text }}>{l.abb} {b._nr}:</strong> <Text>{b.unterschrift}</Text>
       </figcaption>
     </figure>
   );
 }
 
 function Fall({ b }) {
+  const l = useBeschriftung();
   const zeile = (titel, wert) => (
     <p className="mt-2.5 leading-[1.6]" style={GRAU_TEXT}>
       <strong className="font-bold" style={{ color: F.text }}>{titel}</strong> <Text>{wert}</Text>
@@ -291,7 +311,7 @@ function Fall({ b }) {
         <figure className="relative flex-[1_1_240px] min-h-[240px]" style={{ background: F.dunkel }}>
           <img src={b.bild.src} alt={b.bild.alt} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
           <figcaption className="absolute left-3 right-3 bottom-3 px-2.5 py-1.5 rounded-lg text-xs text-white" style={{ background: "rgba(45,45,45,0.8)" }}>
-            Abbildung {b._nr}: <Text>{b.bild.unterschrift}</Text>
+            {l.abb} {b._nr}: <Text>{b.bild.unterschrift}</Text>
           </figcaption>
         </figure>
       )}
@@ -305,15 +325,16 @@ function Fall({ b }) {
             </div>
           ))}
         </dl>
-        {zeile("Die Annahme:", b.annahme)}
-        {zeile("Das Interview zeigte:", b.gezeigt)}
-        {zeile("Daraus wurde:", b.ergebnis)}
+        {zeile(l.annahme, b.annahme)}
+        {zeile(l.gezeigt, b.gezeigt)}
+        {zeile(l.ergebnis, b.ergebnis)}
       </div>
     </div>
   );
 }
 
 function VorherNachher({ b }) {
+  const l = useBeschriftung();
   return (
     <figure className="mb-[22px] p-7 rounded-3xl text-white" style={{ background: F.dunkel }}>
       <div className="grid gap-5 items-center grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))]">
@@ -332,18 +353,19 @@ function VorherNachher({ b }) {
         </div>
       </div>
       <figcaption className="mt-5 pt-4 text-sm leading-normal" style={{ borderTop: "1px solid #4a4a4a", color: F.hellAufDunkel }}>
-        <strong className="font-bold text-white">Abbildung {b._nr}:</strong> <Text>{b.unterschrift}</Text>
+        <strong className="font-bold text-white">{l.abb} {b._nr}:</strong> <Text>{b.unterschrift}</Text>
       </figcaption>
     </figure>
   );
 }
 
 function Bild({ b }) {
+  const l = useBeschriftung();
   return (
     <figure className="mb-[30px]">
       <img src={b.src} alt={b.alt} loading="lazy" className="block w-full rounded-3xl object-cover" style={{ aspectRatio: b.format || "16 / 9" }} />
       <figcaption className="mt-2.5 text-sm leading-normal" style={{ color: F.daempft }}>
-        <strong className="font-bold" style={{ color: F.text }}>Abbildung {b._nr}:</strong> <Text>{b.unterschrift}</Text>
+        <strong className="font-bold" style={{ color: F.text }}>{l.abb} {b._nr}:</strong> <Text>{b.unterschrift}</Text>
       </figcaption>
     </figure>
   );
