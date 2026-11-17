@@ -24,12 +24,12 @@ const beitrag = {
   "titelAkzent": "What only your customers know",
   "titelbild": {
     "src": "/bilder/team.webp",
-    "alt": "Title graphic: three grey fields stacked, competitors A, B and C, all with the same sentence: quality, advice, experience. Below them a pink field, you: what your customers tell others.",
+    "alt": "Title graphic: three grey fields stacked, competitors A, B and C, all with the same sentence: quality, advice, experience. Below them a pink field, you: what your customers say.",
     "unterschrift": "If everyone feeds the same tool the same questions, similar copy comes out. Your customers know the difference.",
     "platzhalter": "Placeholder title image: the managing director of a business comparing several similar websites on screen, 1600 x 900 px"
   },
   "titelgrafik": true,
-  "kurzAntwort": "AI copy looks alike because many people feed the same tools similar questions, and without your knowledge the models can only write what applies to many businesses. Experiments show that with AI, each individual text often gets better, while all of them together become more uniform. You can stand out with what no AI knows: why your customers really buy, how your team works and which stories customers pass on. You gather this knowledge in interviews and give it to the AI as raw material.",
+  "kurzAntwort": "AI copy sounds alike because many people feed the same tools similar questions, and without your knowledge the models can only write what applies to many businesses. Experiments show that with AI, each individual text often gets better, while all of them together become more uniform. You can stand out with what no AI knows: why your customers really buy, how your team works and which stories customers pass on. You gather this knowledge in interviews and give it to the AI as raw material.",
   "wichtigstes": [
     {
       "fett": "Better, but more alike.",
@@ -140,7 +140,7 @@ const beitrag = {
             {
               "symbol": "sprechblase",
               "titel": "Ads",
-              "text": "Ipsos and Syracuse University compared ten commercials from major brands with commercials that AI had produced from the brief for each original, without human creative work, tested with 3,000 US consumers. According to Ipsos, the originals were 14% more effective in the short term and 17% more effective in the long term. Ipsos itself sells advertising tests."
+              "text": "Ipsos and Syracuse University compared ten commercials from major brands with versions that AI had produced from each original's brief, without human creative work, and tested them with 3,000 US consumers. According to Ipsos, the originals were 14% more effective in the short term and 17% more effective in the long term. Ipsos itself sells advertising tests."
             },
             {
               "symbol": "dokument",
@@ -194,7 +194,7 @@ const beitrag = {
         },
         {
           "typ": "schnittmenge",
-          "titel": "What makes a text that only fits you",
+          "titel": "What goes into a text that only fits you",
           "links": [
             "What the AI",
             "knows"
@@ -221,11 +221,11 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "What this can look like is shown by an example for illustration, not a real case: a metalworking business believes its new laser cutter is the reason customers stay. The customers tell a different story: the project manager calls before a deadline starts to slip. The competitor has a laser cutter too. Not the phone call."
+          "text": "Here is an example for illustration, not a real case: a metalworking business believes its new laser cutter is the reason customers stay. The customers tell a different story: the project manager calls before a deadline starts to slip. The competition has a laser cutter too. What it does not have is the phone call."
         },
         {
           "typ": "absatz",
-          "text": "The consultancy CEB (2011) gives a pointer in this direction: business customers see hardly any differences between suppliers in brand, product, service and price, but large ones in the sales experience. More than 53% of what drives their loyalty, it says, is that experience itself. This too is a vendor figure, and 15 years old. Whether it applies to you, only your customers know."
+          "text": "The consultancy CEB (2011) gives a pointer in this direction: business customers see hardly any differences between suppliers in brand, product, service and price, but large ones in the sales experience. More than 53% of what drives their loyalty, it says, is that experience itself. This too is a vendor figure, and 15 years old. Only your customers know whether it applies to you."
         },
         {
           "typ": "vierfeld",
@@ -252,11 +252,11 @@ const beitrag = {
             }
           ],
           "fazit": "If the AI writes only from leadership's picture, the bottom right field stays empty.",
-          "unterschrift": "Our own illustration, andi fragt., for illustration, not data."
+          "unterschrift": "Our own illustration, andi fragt. For illustration only, not data."
         },
         {
           "typ": "absatz",
-          "text": "For the AI, this is decisive, in our view: if you feed it leadership's picture, it writes leadership's picture, only more fluently."
+          "text": "In our view, this is what matters for the AI: if you feed it leadership's picture, it writes leadership's picture, only more fluently."
         }
       ]
     },
@@ -366,7 +366,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "First, we work out with you which questions are the right ones for your company. Then customers and team answer without giving their names, on their phone or computer, in about 15 to 30 minutes per person. People at Rittler & Co in Graz read the answers, and you receive summaries. We merge groups of fewer than six people and summarise free-text answers. Recognition cannot be ruled out completely, for example when someone describes a very specific project."
+          "text": "First, we work out with you which questions are the right ones for your company. Then customers and team answer without giving their names, on their phone or computer, in about 15 to 30 minutes per person. People at Rittler & Co in Graz read the answers, and you receive summaries. We merge groups of fewer than six people and summarise free-text answers. We cannot completely rule out that someone is recognised, for example when they describe a very specific project."
         },
         {
           "typ": "absatz",
