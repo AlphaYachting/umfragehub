@@ -38,7 +38,7 @@ const SCHRITTE = [
 const EN = {
   themen: {
     positionierung: "Positioning", team: "Team", kunden: "Customers", vertrieb: "Sales",
-    einstieg: "Just getting started", offen: "Not sure yet",
+    einstieg: "A first step for now", offen: "Not sure yet",
   },
   kanaele: { telefon: "Phone", online: "Online" },
   schritte: [
@@ -234,7 +234,7 @@ export default function Erstgespraech() {
                 )}
               </p>
               <p className="text-lg leading-[1.6]" style={{ color: F.daempft }}>
-                {tx("Lieber gleich reden?", "Rather talk right away?")}{" "}
+                {tx("Lieber gleich reden?", "Prefer to talk now?")}{" "}
                 <a href={TEL_LINK} className="font-bold whitespace-nowrap hover:underline" style={{ color: F.text }}>{KONTAKT_TEL}</a>
               </p>
               <Link
@@ -251,7 +251,7 @@ export default function Erstgespraech() {
 
               <fieldset>
                 <legend className="text-base font-bold">
-                  {tx("Worum geht es?", "What is it about?")} <span className="font-medium" style={{ color: F.daempft }}>{tx("Mehrere möglich", "Choose any")}</span>
+                  {tx("Worum geht es?", "What would you like to discuss?")} <span className="font-medium" style={{ color: F.daempft }}>{tx("Mehrere möglich", "Select all that apply")}</span>
                 </legend>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {THEMEN.map((t) => (
