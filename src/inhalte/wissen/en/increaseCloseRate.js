@@ -26,7 +26,7 @@ const beitrag = {
     "src": "/bilder/team.webp",
     "alt": "Sales conversation between a salesperson and a customer",
     "unterschrift": "Why a proposal fails often looks different to the customer than to your sales team.",
-    "platzhalter": "Placeholder title image: B2B sales conversation, 1600 x 900 px"
+    "platzhalter": "Placeholder cover image: B2B sales conversation, 1600 x 900 px"
   },
   "kurzAntwort": "You increase your close rate once you know why your proposals really fail. It is rarely just the price. More often it is an unclear benefit, uncertainty about the decision or a slow response. What tips the balance becomes clear when you ask both your sales team and your customers, and put their answers side by side.",
   "wichtigstes": [
@@ -61,13 +61,13 @@ const beitrag = {
     {
       "wert": "17",
       "einheit": "%",
-      "text": "of their buying time is all that buyers spend with all suppliers combined.",
+      "text": "of their buying time is all that buyers spend with suppliers, all of them combined.",
       "quelle": "Gartner, B2B Buying Journey"
     },
     {
       "wert": "almost 7",
       "einheit": "x",
-      "text": "as often in conversation with the decision maker if you respond within an hour.",
+      "text": "as likely to reach the decision maker if you respond within an hour.",
       "quelle": "Oldroyd, McElheran, Elkington 2011"
     }
   ],
@@ -101,7 +101,7 @@ const beitrag = {
             {
               "symbol": "gruppe",
               "titel": "Several decision makers, several reasons",
-              "text": "According to Gartner, more complex purchases typically involve 6 to 10 people. Win over only procurement and you lose with the technical team."
+              "text": "According to Gartner, more complex purchases typically involve 6 to 10 people. Win over procurement alone and you can still lose the technical team."
             },
             {
               "symbol": "uhr",
@@ -124,7 +124,7 @@ const beitrag = {
       "bloecke": [
         {
           "typ": "absatz",
-          "text": "Before you invest in a new CRM, a training course or a campaign, these five levers help."
+          "text": "Before you invest in a new CRM, sales training or a campaign, try these five levers."
         },
         {
           "typ": "schritte",
@@ -135,7 +135,7 @@ const beitrag = {
             },
             {
               "fett": "Ask about lost proposals.",
-              "text": "Not to renegotiate, but to learn. Say so, too. The answers are worth more than any statistic."
+              "text": "Not to renegotiate, but to learn. And say so. The answers are worth more than any statistic."
             },
             {
               "fett": "Write the proposal for the people who were not in the meeting.",
@@ -247,7 +247,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "Matthew Dixon and Ted McKenna analysed more than 2.5 million recorded sales conversations. Their result, published in Harvard Business Review in 2022: 40 to 60% of deals are not lost to the competition but to customers who want to buy and still do not decide. A discount does little here. A clear recommendation often does more."
+          "text": "Matthew Dixon and Ted McKenna analysed more than 2.5 million recorded sales conversations. Their result, published in Harvard Business Review in 2022: 40 to 60% of deals are not lost to the competition but to customers who want to buy but cannot make up their minds. A discount does little here. A clear recommendation often does more."
         },
         {
           "typ": "spanne",
@@ -348,14 +348,14 @@ const beitrag = {
               "text": "Your sales team knows its own experience, while customers are rarely asked. So the gap stays invisible."
             },
             {
-              "fett": "Internally, performance is being judged.",
+              "fett": "Internally, people are judged on performance.",
               "text": "Anyone who says openly where things get stuck fears it will come back to them."
             }
           ]
         },
         {
           "typ": "absatz",
-          "text": "For you as head of sales, this means: with both views you get evidence of what is really going on, instead of constantly defending the price question internally."
+          "text": "For you as head of sales, this means: with both views you get evidence of what is really going on, instead of constantly having the same price debate internally."
         },
         {
           "typ": "spiegel",
@@ -427,7 +427,7 @@ const beitrag = {
       "bloecke": [
         {
           "typ": "absatz",
-          "text": "In the goal-setting meeting at the start of the project, we write down your assumptions: what do you think your closed deals depend on? Then we ask both sides. Your sales team answers without any analysis by person, and with small sales teams we merge the answers with other groups. Your customers, including those whose proposals were lost, answer a neutral party and are therefore more open than they would be with their own salesperson."
+          "text": "In the goal-setting meeting at the start of the project, we write down your assumptions: what do you think makes or breaks your deals? Then we ask both sides. Your sales team's answers are never analysed person by person, and with small sales teams we merge the answers with other groups. Your customers, including those whose proposals were lost, answer a neutral party and are therefore more open than they would be with their own salesperson."
         },
         {
           "typ": "absatz",
@@ -435,7 +435,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "**andi fragt. is a method by Rittler & Co GmbH in Graz, Austria: it first works out the right questions for a company, then gathers honest answers from team, customers and sales.** The process has four steps."
+          "text": "**andi fragt. is a method developed by Rittler & Co GmbH in Graz, Austria: it first works out the right questions for a company and then gathers honest answers from the team, customers and sales.** The process has four steps."
         },
         {
           "typ": "ablauf",
@@ -477,11 +477,11 @@ const beitrag = {
     },
     {
       "q": "What does a sales interview show that my CRM does not?",
-      "a": "Your CRM shows that a proposal was lost, but hardly ever why. In the interview, customers tell a neutral party what tipped the balance, and your sales team says where it gets stuck itself. Only both views together reveal the lever."
+      "a": "Your CRM shows that a proposal was lost, but hardly ever why. In the interview, customers tell a neutral party what tipped the balance, and your sales team says where it gets stuck. Only both views together reveal the lever."
     },
     {
       "q": "Won't my sales team feel monitored?",
-      "a": "Hardly, because there is no analysis by person. It is about the path to a closed deal, not about the rate of individual salespeople. With small sales teams we merge answers with other groups. People who have been asked are more likely to get on board when it comes to putting things into practice."
+      "a": "Hardly, because answers are never analysed person by person. It is about the path to a closed deal, not the close rate of individual salespeople. With small sales teams we merge answers with other groups. People who have been asked are more likely to get on board when it comes to putting things into practice."
     },
     {
       "q": "How much does a sales interview with andi fragt. cost?",
