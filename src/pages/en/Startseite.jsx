@@ -73,7 +73,7 @@ const THEMEN = [
     h2: "So the good ones stay and",
     akzent: "better ones join.",
     absaetze: [
-      "Good people stay when they know what they are working for and when someone listens. The confidential team interview shows what keeps your team, what holds it back and what it wishes for.",
+      "Good people stay when they know what they are working for and when someone listens. The confidential team interview shows what keeps your team, what holds it back and what it would like to see.",
       "The result is an employer brand that rings true: your team recognises itself in it, and strong applicants can see why it is worth joining you.",
     ],
     knopf: "Request a team interview",
@@ -81,7 +81,7 @@ const THEMEN = [
     wen: ["Employees", "Managers", "Every department"],
     frage: "What keeps you here, even on the difficult days?",
     erkennen: [
-      "Mood and satisfaction, including by department",
+      "Morale and satisfaction, including by department",
       "What keeps your team and what holds it back",
       "How well goals and values come through in everyday work",
     ],
@@ -101,7 +101,7 @@ const THEMEN = [
     akzent: "than you think.",
     absaetze: [
       "Customers rarely volunteer why they buy from you, what almost drove them to a competitor or what else they would like. Ask them, and they are happy to tell you.",
-      "The customer interview delivers the outside view that everyday business lacks. Set against the views of leadership and team, it shows where your self-image and your customers' picture part ways, and where your biggest opportunities lie.",
+      "The customer interview delivers the outside view that everyday business lacks. Set against the views of leadership and team, it shows where your self-image and your customers' view of you diverge, and where your biggest opportunities lie.",
     ],
     knopf: "Request a customer interview",
     betreff: "andi fragt. Kunden-Interview",
@@ -110,7 +110,7 @@ const THEMEN = [
     erkennen: [
       "Why customers stay and when they would switch",
       "Which services they value and which they miss",
-      "Where your self-image and their view part ways",
+      "Where your self-image and their view of you diverge",
     ],
     gewinn: "Services and messages that land exactly where your customers make their decisions.",
     rechts: false,
@@ -128,7 +128,7 @@ const THEMEN = [
     akzent: "who sell.",
     absaetze: [
       "A new sales idea often sounds better in the meeting room than out in the field. Field sales, inside sales and customers know best where deals succeed and where they stall.",
-      "The sales interview captures this knowledge before you invest. So you build on what works, and your team gets behind it because they were asked.",
+      "The sales interview captures this knowledge before you invest. That way you build on what works, and your team gets behind it because they were asked.",
     ],
     knopf: "Request a sales interview",
     betreff: "andi fragt. Vertriebs-Interview",
@@ -145,7 +145,7 @@ const THEMEN = [
 ];
 
 // The four letters of the ANDI method (German: Aufmerksamkeit, Nutzen, Differenzierung, Identitaet)
-const SAEULEN = ["Attention", "Need", "Differentiation", "Identity"];
+const SAEULEN = ["Attention", "Net benefit", "Differentiation", "Identity"];
 
 const EINSTIEGSFRAGEN = [
   "Why do your customers really buy from you and not from a competitor?",
@@ -157,7 +157,7 @@ const EINSTIEGSFRAGEN = [
 const FAKTEN = [
   { zahl: "500+", text: "brand projects behind the method" },
   { zahl: "20+ years", text: "Rittler & Co, agency in Graz, Austria" },
-  { zahl: "about 2 hrs", text: "of your own time" },
+  { zahl: "about 2 hours", text: "of your own time" },
   { zahl: "No names", text: "in any result you see" },
 ];
 
@@ -165,13 +165,13 @@ const SCHRITTE = [
   {
     verb: "fragt",
     gloss: "andi asks.",
-    titel: "Interviews",
+    titel: "Online interviews",
     text: "Leadership, team, sales and, if you wish, your customers answer the interviews online: without names, on a phone or computer, whenever it suits them. Your own effort: about two hours.",
   },
   {
     verb: "weiß",
     gloss: "andi knows.",
-    titel: "Analysis",
+    titel: "Analysis and evaluation",
     text: "We condense all answers using the ANDI method, developed from more than 500 brand projects. We don't look for the average, we look for the deviations.",
   },
   {
@@ -190,7 +190,7 @@ const SCHRITTE = [
 
 const VERSPRECHEN = [
   { icon: Lock, titel: "Confidential", text: "You see no names. Results only appear once a minimum number of people have taken part." },
-  { icon: Smartphone, titel: "Any place, any time", text: "On a phone or computer, whenever it suits. Pausing and picking up later works at any point." },
+  { icon: Smartphone, titel: "Any place, any time", text: "On a phone or computer, whenever it suits. You can pause and pick up again at any point." },
   { icon: MessageCircle, titel: "Questions everyone understands", text: "Clearly worded, free of jargon and leading questions. So everyone answers honestly, from apprentice to managing director." },
   { icon: Pencil, titel: "Room for their own words", text: "Besides quick ratings there are open questions. That is often where the most valuable answer lies." },
 ];
@@ -464,7 +464,7 @@ export default function StartseiteEn() {
             </a>
           </div>
           <p className="mt-4 text-[15px]" style={{ color: F.daempft }}>
-            Rather talk right away? Call us:{" "}
+            Prefer to talk now? Call us:{" "}
             <a href={`tel:${KONTAKT_TEL.replace(/\s/g, "")}`} className="font-semibold hover:underline whitespace-nowrap" style={{ color: F.text }}>
               {KONTAKT_TEL}
             </a>
