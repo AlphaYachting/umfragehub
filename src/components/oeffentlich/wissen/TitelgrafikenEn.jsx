@@ -630,13 +630,13 @@ function MarketingKi() {
   );
   const breit = (
     <>
-      <Kopftext oben="MARKETING WITH AI" z1="AI writes." z3="Who checks" z4="whether it is true?" unter="Three levels: facts, law and your customers." />
+      <Kopftext oben="MARKETING WITH AI" z1="AI writes." z3="Who checks" z4="that it is right?" unter="Three levels: facts, law and your customers." />
       {felder.map((f, i) => feld(f, 900, 190 + i * 140, 580, 110, 17, 15, 30, 42, 86))}
     </>
   );
   const schmal = (
     <>
-      <Kopftext schmal oben="MARKETING WITH AI" z1="AI writes." z3="Who checks" z4="whether it is true?" />
+      <Kopftext schmal oben="MARKETING WITH AI" z1="AI writes." z3="Who checks" z4="that it is right?" />
       {felder.map((f, i) => feld(f, 48, 440 + i * 144, 704, 124, 24, 24, 38, 46, 100))}
     </>
   );
@@ -649,7 +649,7 @@ function KiTexte() {
     { oben: "1 FACTS", text: "Open the sources", art: "grau" },
     { oben: "2 LAW", text: "Advertising and labelling", art: "grau" },
     { oben: "3 BRAND", text: "Tone and form of address", art: "grau" },
-    { oben: "4 CUSTOMER", text: "Is the message right?", art: "pink" },
+    { oben: "4 CUSTOMER", text: "Does it hold up?", art: "pink" },
   ];
   const feld = (f, x, y, w, h, oben, gross, yo, yt) => (
     <g key={f.oben}>
@@ -670,7 +670,7 @@ function KiTexte() {
       {felder.map((f, i) => feld(f, 48, 440 + i * 104, 704, 92, 24, 34, 34, 76))}
     </>
   );
-  return <Rahmen breit={breit} schmal={schmal} label="Title graphic: four boxes one below the other with the checking steps. Facts: open the sources. Law: advertising and labelling. Brand: tone and form of address. Customer, highlighted in pink: is the message right?" />;
+  return <Rahmen breit={breit} schmal={schmal} label="Title graphic: four boxes one below the other with the checking steps. Facts: open the sources. Law: advertising and labelling. Brand: tone and form of address. Customer, highlighted in pink: does the message hold up?" />;
 }
 
 // Why AI copy sounds the same: three competitors with the same sentence, below in pink: what your customers say
