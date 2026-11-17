@@ -27,7 +27,7 @@ const beitrag = {
   "titelbild": {
     "src": "/bilder/team.webp",
     "alt": "Successor with a notebook walking through the business",
-    "unterschrift": "At the start, you see the business with the freshest eyes. Make use of it.",
+    "unterschrift": "At the start, you see the business with the freshest eyes. Make the most of it.",
     "platzhalter": "Placeholder cover image: successor walking through the business, 1600 x 900 px"
   },
   "titelgrafik": true,
@@ -97,7 +97,7 @@ const beitrag = {
       "bloecke": [
         {
           "typ": "absatz",
-          "text": "Here is a suggestion in three phases. Adapt it to your business: the order matters more than the exact days. Not taken over yet, but the handover has been announced? Then bring the second phase forward and get the honest picture together with the outgoing owner. That way you both start from the same facts."
+          "text": "Here is a suggestion in three phases. Adapt it to your business: the order matters more than the exact days. Not in charge yet, but the handover has been announced? Then bring the second phase forward and get the honest picture together with the outgoing owner. That way you both start from the same facts."
         },
         {
           "typ": "schritte",
@@ -108,7 +108,7 @@ const beitrag = {
             },
             {
               "fett": "Days 31 to 60: get an honest picture.",
-              "text": "What do customers and the team say when they can speak openly? Where do the website, the quotes and the sales conversation contradict each other? What still depends on one single person?"
+              "text": "What do customers and the team say when they can speak openly? Where do the website, the quotes and the sales conversation contradict each other? What still depends on a single person?"
             },
             {
               "fett": "Days 61 to 100: set priorities.",
@@ -144,7 +144,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "What can wait, even if your fingers are itching, is shown in this comparison:"
+          "text": "Some things can wait, however tempting it is to act now. This comparison shows which:"
         },
         {
           "typ": "aufbau",
@@ -206,7 +206,7 @@ const beitrag = {
       "bloecke": [
         {
           "typ": "absatz",
-          "text": "Often a big one. According to KMU Forschung Austria, 68% of outgoing owners in Austria stay involved after the handover, most of them as informal advisers. That is a real asset, because they know the customers, the history and the pitfalls. For them, it is often the hardest part at the same time: they are handing over what they spent decades building. Clear roles help both sides."
+          "text": "Often a big one. According to KMU Forschung Austria, 68% of outgoing owners in Austria stay involved after the handover, most of them as informal advisers. That is a real asset, because they know the customers, the history and the pitfalls. At the same time, it is often the hardest part for them: they are handing over what they spent decades building. Clear roles help both sides."
         },
         {
           "typ": "karten",
@@ -219,7 +219,7 @@ const beitrag = {
             {
               "symbol": "gruppe",
               "titel": "Agree how you appear to the outside world",
-              "text": "Together at the most important customers at first, after that the successor is clearly the point of contact."
+              "text": "Visit the most important customers together at first. After that, the successor is clearly the point of contact."
             },
             {
               "symbol": "sprechblase",
