@@ -19,7 +19,7 @@ const beitrag = {
     "Customers"
   ],
   "seitentitel": "How to find your USP in 5 steps | andi fragt.",
-  "beschreibung": "How do you find your USP? Why workshops often produce interchangeable USPs, and how customers and team show you what really sets you apart.",
+  "beschreibung": "How do you find your USP? Why workshops often produce interchangeable USPs, and how your customers and team show you what really sets you apart.",
   "teaser": "Why workshops often produce interchangeable USPs, and how your customers and your team show you what really sets you apart.",
   "kurztitel": "Find your USP",
   "titel": "Finding your USP:",
