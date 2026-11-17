@@ -22,12 +22,12 @@ const DATEN = [
 const KOSTEN = [
   { heute: "You negotiate on price", danach: "Customers pay for what makes you different.", text: "If you know your real difference and name it clearly, you don't have to replace it with discounts." },
   { heute: "Advertising that fizzles out", danach: "Every euro tells the same story.", text: "Website, ads and proposals speak the same language. That saves budget and sticks in people's minds." },
-  { heute: "The wrong enquiries", danach: "Enquiries from customers who suit you.", text: "A clear positioning attracts the right people and keeps the bargain hunters away." },
+  { heute: "The wrong enquiries", danach: "Enquiries from customers who are right for you.", text: "A clear positioning attracts the right people and keeps the bargain hunters away." },
 ];
 
 // The ANDI method: four touchstones. Only the what, not the how.
 const ANDI = [
-  { b: "A", wort: "Attention", frage: "What draws people in?", text: "Which problems and wishes of your customers you address, and where your brand creates instant relevance." },
+  { b: "A", wort: "Attention", frage: "What draws people in?", text: "Which customer problems and needs you address, and where your brand is instantly relevant." },
   { b: "N", wort: "Net benefit", frage: "What's in it for the customer?", text: "Which concrete benefits really count: time, cost, service or personal support." },
   { b: "D", wort: "Differentiation", frage: "Why choose you?", text: "What makes you unique, such as your origins, special expertise or the way you work." },
   { b: "I", wort: "Identity", frage: "What do you stand for?", text: "Which values make you unmistakable, beyond your products." },
@@ -81,7 +81,7 @@ export default function PositionierungEn() {
               customers. We bring these reasons to the surface in interviews and turn them into a positioning that
               people <strong className="font-semibold" style={{ color: F.text }}>pay more for.</strong>
             </p>
-            <Hauptknopf href={mailAn(BETREFF)}>Book a first call</Hauptknopf>
+            <Hauptknopf href={mailAn(BETREFF)}>Book an intro call</Hauptknopf>
           </div>
           <FuerDich rollen={["Owners", "Managing directors", "Marketing"]} />
         </div>
@@ -106,7 +106,7 @@ export default function PositionierungEn() {
             </div>
             <p className="flex-[1_1_380px] min-w-0" style={{ ...TEXT_STIL, color: F.daempft }}>
               Everything leadership, team and customers say in the interviews, we test against four questions. Developed
-              from more than 500 brand projects. How we weight them remains our craft.
+              from more than 500 brand projects. How we weight them is where our craft comes in.
             </p>
           </div>
           <div className="mt-12 grid gap-5 grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))]">
@@ -268,7 +268,7 @@ export default function PositionierungEn() {
               proposals, trade fair stand and job ads. So everyone tells the same story.
             </p>
             <ul className="mt-5 flex flex-col gap-2.5 font-semibold">
-              <li>Analysis handout with every gap we found</li>
+              <li>Written analysis of every gap we found</li>
               <li>Presentation at your premises, with time for discussion</li>
               <li>Your positioning on one page</li>
               <li>Recommendations for the next 90 days</li>
@@ -309,7 +309,7 @@ export default function PositionierungEn() {
         <div className="rounded-3xl px-11 py-10 flex flex-wrap items-center justify-between gap-x-12 gap-y-6" style={{ border: `2px solid ${F.dunkel}` }}>
           <div className="flex-[1_1_520px] min-w-0">
             <Etikett>The next step</Etikett>
-            <h3 className="mt-2.5 text-[28px] leading-[1.15] font-bold">Insight becomes a brand presence.</h3>
+            <h3 className="mt-2.5 text-[28px] leading-[1.15] font-bold">From insight to brand presence.</h3>
             <p className="mt-2.5 leading-[1.6]" style={{ color: F.daempft }}>
               The interview is the core of the ANDI brand check by Rittler &amp; Co. If you like, we can put the
               positioning into practice straight away, from the message to the website.

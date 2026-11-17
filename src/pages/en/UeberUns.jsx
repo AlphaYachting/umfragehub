@@ -47,18 +47,18 @@ const KURZ = [
   },
   {
     frage: "What if it's not the right fit?",
-    antwort: "Then we tell you honestly in the first call. The call is free, and you get a fixed price before anything starts.",
+    antwort: "Then we tell you honestly in the intro call. The call is free, and you get a fixed price before anything starts.",
     mehr: "Our commitments",
     ziel: "#zusagen",
   },
 ];
 
 const SCHRITTE = [
-  { nr: "0", wann: "Before the start", titel: "First call and goal-setting meeting", text: "We work out where things are stuck, which assumptions need testing and which groups to ask. Then you get a proposal with a fixed price." },
+  { nr: "0", wann: "Before the start", titel: "Intro call and kick-off meeting", text: "We work out where things are stuck, which assumptions need testing and which groups to ask. Then you get a proposal with a fixed price." },
   { nr: "1", wann: "andi fragt.", titel: "Online interviews", text: "Leadership, team, sales and, if you wish, your customers answer online, on a phone or computer, whenever it suits them. Each group gets its own interview." },
   { nr: "2", wann: "andi weiß.", titel: "Analysis and evaluation", text: "We condense all answers using the ANDI method. We don't look for the average but for the deviation, because that shows where a decision needs to go differently." },
-  { nr: "3", wann: "andi macht.", titel: "Clarity and essence", text: "The analysis becomes a few clear statements and recommendations. No mountains of data, just what you need to decide." },
-  { nr: "4", wann: "andi zeigt.", titel: "Presentation in person", text: "We present the results to you in person. The essence becomes messages for customers, team, sales and applicants." },
+  { nr: "3", wann: "andi macht.", titel: "Clarity and focus", text: "The analysis becomes a few clear statements and recommendations. No mountains of data, just what you need to decide." },
+  { nr: "4", wann: "andi zeigt.", titel: "Presentation in person", text: "We present the results to you in person. The key findings become messages for customers, team, sales and applicants." },
 ];
 
 const ZEITPLAN = [
@@ -75,9 +75,9 @@ const REGELN = [
 ];
 
 const ZUSAGEN = [
-  { titel: "A reply within 24 hours", text: "We respond to every enquiry within 24 hours, with suggested times for the first call." },
-  { titel: "An honest first call", text: "Free, about 30 minutes. If an interview won't help you, we will tell you so." },
-  { titel: "A fixed price before the start", text: "After the goal-setting meeting you get a proposal with a fixed price, before the first interview runs." },
+  { titel: "A reply within 24 hours", text: "We respond to every enquiry within 24 hours, with suggested times for the intro call." },
+  { titel: "An honest intro call", text: "Free, about 30 minutes. If an interview won't help you, we will tell you so." },
+  { titel: "A fixed price before the start", text: "After the kick-off meeting you get a proposal with a fixed price, before the first interview runs." },
   { titel: "Protection for everyone who answers", text: "Aggregated results above a minimum number. This rule applies to you as the client, too." },
   { titel: "People read every answer", text: "No automated report you have to piece together yourself. Our strategists draw the conclusions." },
   { titel: "Presentation in person", text: "We present the results to you ourselves, with clear recommendations for the next steps." },
@@ -267,7 +267,7 @@ export default function UeberUnsEn() {
             </div>
             <div className="p-7 rounded-[20px] bg-white">
               <p className="text-[19px] font-bold">Your own time</p>
-              <p className="mt-2.5 leading-[1.6]" style={{ color: F.daempft }}>About two hours for the goal-setting meeting, the sign-off and the presentation. We develop and analyse the interviews ourselves.</p>
+              <p className="mt-2.5 leading-[1.6]" style={{ color: F.daempft }}>About two hours for the kick-off meeting, the sign-off and the presentation. We develop and analyse the interviews ourselves.</p>
             </div>
           </aside>
         </div>
@@ -283,7 +283,7 @@ export default function UeberUnsEn() {
           <h3 className={H3}>Rittler &amp; Co from Graz, Austria</h3>
           <p className="mt-3" style={ABSATZ}>
             andi fragt. is run by Rittler &amp; Co GmbH, an advertising agency at Peter-Rosegger-Straße 27 in Graz. For
-            more than 20 years we have supported companies with their brand, positioning and presence.
+            more than 20 years we have supported companies with their brand, positioning and public image.
           </p>
 
           <h3 className={H3}>Why an advertising agency conducts interviews</h3>
@@ -293,7 +293,7 @@ export default function UeberUnsEn() {
             customers see things. They rarely get said out loud, because nobody asks the right questions.
           </p>
           <p className="mt-3" style={ABSATZ}>
-            A market research institute answers the questions it is given. We start one step earlier and work out with
+            A market research agency answers the questions it is given. We start one step earlier and work out with
             you which questions will move your company forward. And because we have been building brands for years, we
             can implement what follows from the answers straight away if you wish: the message, the job ad, the sales
             argument.
@@ -367,7 +367,7 @@ export default function UeberUnsEn() {
             </p>
           </div>
           <div className="flex flex-col items-start gap-3">
-            <Hauptknopf href={anfrageLinkEn("andi fragt. Erstgespräch")}>Request a first call</Hauptknopf>
+            <Hauptknopf href={anfrageLinkEn("andi fragt. Erstgespräch")}>Request an intro call</Hauptknopf>
             <a href={TEL_LINK} className="inline-flex items-center min-h-[44px] font-bold text-white hover:underline">
               or call: {KONTAKT_TEL}
             </a>

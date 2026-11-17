@@ -40,8 +40,8 @@ function Hebelrechner() {
   const basis = angebote * 12 * (quote / 100) * auftrag;
   const hebel = [
     { name: "Close rate up 5 points", wie: "One more win out of every twenty proposals", wert: angebote * 12 * 0.05 * auftrag },
-    { name: "3% less discount", wie: "Because the value is clearer than the price", wert: basis * 0.03 },
-    { name: "10% more repeat orders", wie: "From customers who buy part of their needs elsewhere today", wert: basis * 0.1 },
+    { name: "3% lower discounts", wie: "Because the value is clearer than the price", wert: basis * 0.03 },
+    { name: "10% more repeat orders", wie: "From customers who buy some of what they need elsewhere", wert: basis * 0.1 },
   ];
   const plus = hebel.reduce((s, h, i) => s + (an[i] ? h.wert : 0), 0);
   const anzahl = an.filter(Boolean).length;
@@ -51,7 +51,7 @@ function Hebelrechner() {
       runter: () => setAngebote((v) => begrenzen(v - 5, 5, 300)), rauf: () => setAngebote((v) => begrenzen(v + 5, 5, 300)) },
     { name: "Close rate", wert: `${quote}%`, weniger: "Close rate five points lower", mehr: "Close rate five points higher",
       runter: () => setQuote((v) => begrenzen(v - 5, 5, 80)), rauf: () => setQuote((v) => begrenzen(v + 5, 5, 80)) },
-    { name: "Average order value", wert: euro(auftrag), weniger: "Order 1,000 euros smaller", mehr: "Order 1,000 euros larger",
+    { name: "Average order value", wert: euro(auftrag), weniger: "Order value 1,000 euros lower", mehr: "Order value 1,000 euros higher",
       runter: () => setAuftrag((v) => begrenzen(v - 1000, 1000, 100000)), rauf: () => setAuftrag((v) => begrenzen(v + 1000, 1000, 100000)) },
   ];
 
@@ -153,14 +153,14 @@ const BLICKWINKEL = [
   },
   {
     titel: "Revenue that goes elsewhere",
-    text: "What existing customers buy from others, even though they could get it from you. Your fastest growth.",
+    text: "What existing customers buy from others, even though they could get it from you. Your fastest route to growth.",
     farbe: F.akzent,
     bild: (
       <div className="h-[84px] flex items-center gap-3">
         <span className="relative w-[72px] h-[72px] rounded-full" style={{ background: "conic-gradient(#ff3764 0 46%, #4a4a4a 46% 100%)" }}>
           <span className="absolute inset-[14px] rounded-full" style={{ background: F.dunkelKarte }} />
         </span>
-        <span className="text-[13px] font-semibold leading-[1.35]" style={{ color: F.hellAufDunkel }}>buy part of their<br />needs elsewhere</span>
+        <span className="text-[13px] font-semibold leading-[1.35]" style={{ color: F.hellAufDunkel }}>buy some of what they<br />need elsewhere</span>
       </div>
     ),
   },
@@ -192,7 +192,7 @@ const BLICKWINKEL = [
     ),
   },
   {
-    titel: "Signals before the purchase",
+    titel: "Buying signals",
     text: "How your field sales team can tell that a bigger purchase is coming. So you get there before your competitors.",
     farbe: "#45d085",
     bild: (
@@ -227,7 +227,7 @@ function Schaetzspiel() {
       text = `In the example, ${g.k}% of customers name this reason, but only ${g.v}% of the sales team. Blind spots like this cost deals.`;
     } else {
       titel = "Sales and customers see it similarly.";
-      text = "On this reason the two sides are close. In the example the biggest gap is on price: 58% in sales, 19% among customers.";
+      text = "On this one, the two sides are close. In the example the biggest gap is on price: 58% in sales, 19% among customers.";
     }
   }
 
@@ -290,7 +290,7 @@ function Schaetzspiel() {
 const TOENE = { gut: "#45d085", schlecht: "#ff3764", neutral: "#cfcbc7" };
 
 const ARGUMENTE = [
-  { text: "We've been in business for over 30 years.", urteil: "Doesn't matter", erklaerung: "Customers take experience for granted. They buy for something else.", ton: "neutral" },
+  { text: "We've been in business for over 30 years.", urteil: "Makes no difference", erklaerung: "Customers take experience for granted. They buy for something else.", ton: "neutral" },
   { text: "We offer the best value for money.", urteil: "Puts them off", erklaerung: "Sounds like a discount. Leads straight into price negotiation.", ton: "schlecht" },
   { text: "Your dedicated contact is there for you after the sale, too.", urteil: "Works", erklaerung: "The most frequently named reason to buy, yet almost never mentioned in the sales conversation.", ton: "gut" },
   { text: "We deliver everything from a single source.", urteil: "Partly works", erklaerung: "Convinces new customers, too generic for regular ones.", ton: "neutral" },
@@ -329,7 +329,7 @@ function ArgumentCheck() {
 
 const ABLAUF = [
   { titel: "Kick-off with you", text: "Your goals, your hypotheses and who in the company really knows the customers." },
-  { titel: "Interviews in sales", text: "Field sales, inside sales and service, without names and in their own words." },
+  { titel: "Sales team interviews", text: "Field sales, inside sales and service, without names and in their own words." },
   { titel: "Interviews with customers", text: "Won, lost and existing customers. The same topics, from the other side." },
   { titel: "Rating the ideas", text: "The best ideas from the team, rated by everyone without names. On customer value, not hierarchy." },
   { titel: "Workshop and plan", text: "With you and your sales team: the three strongest levers and a 90-day plan.", dunkel: true },
@@ -337,8 +337,8 @@ const ABLAUF = [
 
 const ERGEBNIS = [
   { titel: "Your three strongest levers", text: "Where the most revenue lies for you: opportunities, close rate or order value.", beispiel: "Existing customers first, then close rate.", farbe: "#ff3764" },
-  { titel: "Arguments that work", text: "Which lines convince and which ones you should drop.", beispiel: "Dedicated contact to the front, 30 years in business to the back.", farbe: "#45d085" },
-  { titel: "Answers to the no", text: "The most common objections and what customers really mean by them.", beispiel: "Too expensive often means: I can't see the difference.", farbe: "#2d2d2d" },
+  { titel: "Arguments that work", text: "Which lines convince and which ones you should drop.", beispiel: "Lead with the dedicated contact, not the 30 years in business.", farbe: "#45d085" },
+  { titel: "Answering objections", text: "The most common objections and what customers really mean by them.", beispiel: "Too expensive often means: I can't see the difference.", farbe: "#2d2d2d" },
   { titel: "90-day plan", text: "Concrete steps with your sales team, and a pulse check after six months.", beispiel: "Follow up every proposal in person after three days.", farbe: "#e02551" },
 ];
 
@@ -348,7 +348,7 @@ export default function VertriebEn() {
       <section className={`${BREITE} pt-[88px] pb-24 flex flex-wrap items-center gap-x-16 gap-y-12`}>
         <div className="flex-[3_1_560px] min-w-0">
           <h1 style={H1_STIL}>
-            <Dachzeile dunkel>Module 04: Improve sales</Dachzeile>
+            <Dachzeile dunkel>Module 04: Sales performance</Dachzeile>
             <span className="block mt-[18px]">
               Where your deals <span style={{ color: F.akzent }}>get stuck.</span>
             </span>
@@ -358,7 +358,7 @@ export default function VertriebEn() {
             you invest in your next sales initiative.
           </p>
           <div className="mt-8">
-            <Hauptknopf href={mailAn(BETREFF)}>Book a first call</Hauptknopf>
+            <Hauptknopf href={mailAn(BETREFF)}>Book an intro call</Hauptknopf>
           </div>
           <FuerDich rollen={["Heads of sales", "Managing directors", "Sales teams"]} dunkel />
         </div>
@@ -379,7 +379,7 @@ export default function VertriebEn() {
             A few per cent. <span style={{ color: F.akzent }}>Work out what they're worth.</span>
           </h2>
           <p className="mt-[18px] max-w-[680px]" style={{ ...TEXT_STIL, lineHeight: 1.6, color: F.daempft }}>
-            Set your rough figures. Then switch on the levers we work on with you.
+            Enter your rough figures. Then switch on the levers we work on with you.
           </p>
           <Hebelrechner />
           <Beispielhinweis className="mt-4 max-w-[820px]">
@@ -473,7 +473,7 @@ export default function VertriebEn() {
         <div className={`${BREITE} py-20 flex flex-wrap items-center gap-x-16 gap-y-6`}>
           <p className="flex-[1_1_560px] text-[clamp(22px,2.8vw,32px)] leading-[1.25] font-bold">
             Salespeople are not numbers in a CRM. They know why a customer hesitates. In the interview they say so openly,
-            because it is about the path to the deal, not about their quota.
+            because it is about how deals are won, not about their quota.
           </p>
           <p className="flex-[1_1_280px] leading-[1.6] text-white">
             Analysed by people, not by software. So that your whole sales team ends up telling the same story.

@@ -10,7 +10,7 @@ export const FAQ_EN = {
     etikett: "Questions about andi fragt.",
     titelA: "Good questions deserve",
     titelB: "honest answers.",
-    lead: "What managing directors, HR and sales leaders ask us before the first call. And what invited participants want to know before they answer.",
+    lead: "What managing directors, HR and sales leaders ask us before the intro call. And what invited participants want to know before they answer.",
     filter: true,
     fragen: [
       {
@@ -23,13 +23,13 @@ export const FAQ_EN = {
         g: "auftrag",
         q: "How do you know which questions are right for us?",
         kopf: "From more than 500 brand projects.",
-        text: "They taught us that companies almost always misjudge themselves in the same places, only with different content each time: why customers buy, why good people leave, which argument makes or breaks a deal. In the goal-setting meeting we find out where those places are in your company and aim the questions right at them. A proven core stays the same, so results remain comparable.",
+        text: "They taught us that companies almost always misjudge themselves in the same places, though the specifics differ each time: why customers buy, why good people leave, which argument makes or breaks a deal. In the kick-off meeting we find out where those places are in your company and aim the questions right at them. A proven core stays the same, so results remain comparable.",
       },
       {
         g: "auftrag",
         q: "Couldn't I just do this myself with AI or an online form?",
         kopf: "You can write the questions yourself, and AI will gladly help.",
-        text: "But it doesn't know which assumption in your company is wrong, so it asks the questions everyone asks. And when the boss does the asking, employees and customers answer carefully. We are the neutral party, we know where to dig deeper, and we read the answers with an eye on what they mean for your brand, your team and your sales.",
+        text: "But it doesn't know which assumption in your company is wrong, so it asks the questions everyone asks. And when the boss does the asking, employees and customers answer cautiously. We are the neutral party, we know where to dig deeper, and we read the answers with an eye on what they mean for your brand, your team and your sales.",
       },
       {
         g: "auftrag",
@@ -37,7 +37,7 @@ export const FAQ_EN = {
         kopf: "It starts with an assessment, not with a questionnaire.",
         text: "",
         schritte: [
-          { verb: "fragt", text: "In the goal-setting meeting we clarify the situation, goals and assumptions, then build a separate interview for each group, answered without names." },
+          { verb: "fragt", text: "In the kick-off meeting we clarify the situation, goals and assumptions, then build a separate interview for each group, answered without names." },
           { verb: "weiß", text: "We condense all answers using the ANDI method." },
           { verb: "macht", text: "The gaps we find become clear recommendations." },
           { verb: "zeigt", text: "We present the results to you in person and agree the next steps." },
@@ -47,13 +47,13 @@ export const FAQ_EN = {
         g: "auftrag",
         q: "How much of my own time does it take?",
         kopf: "About two hours, spread over four to six weeks.",
-        text: "The goal-setting meeting, signing off the interview and the presentation. Everything in between, from developing the questions to the analysis, is on us. For each participant an interview takes 15 to 30 minutes, with no appointment and no travel.",
+        text: "The kick-off meeting, signing off the interview and the presentation. Everything in between, from developing the questions to the analysis, is on us. For each participant an interview takes 15 to 30 minutes, with no appointment and no travel.",
       },
       {
         g: "auftrag",
         q: "What does a project with andi fragt. cost?",
-        kopf: "Less than a single wrong hire or a website relaunch that heads in the wrong direction.",
-        text: "Every module has a fixed price based on group size: from €2,900 net for small businesses with up to 6 people, €5,400 net for 21 to 50 people. All tiers are listed on the pricing page. The price covers the goal-setting meeting, developing the interview, analysis by our strategists and the presentation at your premises. More groups, customers as an additional group or several locations add to the effort. You get your fixed price after the first call.",
+        kopf: "Less than a single bad hire or a website relaunch that misses the mark.",
+        text: "Every module has a fixed price based on group size: from €2,900 net for small businesses with up to 6 people, €5,400 net for 21 to 50 people. All tiers are listed on the pricing page. The price covers the kick-off meeting, developing the interview, analysis by our strategists and the presentation at your premises. Adding groups, customers as an extra group or several locations increases the scope. You get your fixed price after the intro call.",
       },
       {
         g: "auftrag",
@@ -70,7 +70,7 @@ export const FAQ_EN = {
       {
         g: "eingeladen",
         q: "Will my boss find out what I said?",
-        kopf: "No.",
+        kopf: "Your boss won't see who said what.",
         text: "Your employer sees no names. Results are only shown in aggregated form and only once enough colleagues have taken part; small departments are merged. We quote open answers in a way that does not point to anyone. That is why you can be honest, even when the answer is uncomfortable.",
       },
       {
@@ -92,7 +92,7 @@ export const FAQ_EN = {
       {
         q: "How do we find out what customers really pay us for?",
         kopf: "By asking the people who know, with the right questions.",
-        text: "For brand positioning with andi fragt., we first test your view of the company in the goal-setting meeting and then build interviews for leadership, team and regular customers. Where the three views differ, you usually find the edge you are giving away today.",
+        text: "For brand positioning with andi fragt., we first test your view of the company in the kick-off meeting and then build interviews for leadership, team and regular customers. Where the three views differ, you usually find the edge you are giving away today.",
         beispiel: "A window manufacturer has advertised quality for years. In the interviews, almost all of his customers name something else: installation that is on time to the minute.",
       },
       {
@@ -103,22 +103,22 @@ export const FAQ_EN = {
       {
         q: "We already have a mission statement. Do we still need this?",
         kopf: "A mission statement describes who you want to be.",
-        text: "Positioning defines what customers pay you for and what sets you apart from competitors. The two often drift apart, for instance when the website talks about tradition while customers buy for the service and the speed. The interview makes that gap visible. A good mission statement stays; it simply gets evidence.",
+        text: "Positioning defines what customers pay you for and what sets you apart from competitors. The two often drift apart, for instance when the website talks about tradition while customers buy for the service and the speed. The interview makes that gap visible. A good mission statement stays; it simply gains evidence to back it up.",
       },
       {
         q: "How do I know we need a new positioning?",
         kopf: "Three signs.",
-        text: "Conversations keep ending up on price. Your team cannot tell a new customer in two sentences why they should buy from you. And your website would fit a competitor just as well with a different logo. By the time you plan a larger investment in how you present yourself, such as a website, a trade fair stand or handing over to the next generation, an outside view pays off.",
+        text: "Sales conversations keep coming back to price. Your team cannot tell a new customer in two sentences why they should buy from you. And your website would fit a competitor just as well with a different logo. Whenever you plan a larger investment in how you present yourself, such as a website, a trade fair stand or handing over to the next generation, an outside view pays off.",
       },
       {
         q: "What do I actually get at the end?",
         kopf: "A basis for decisions, not a data report.",
-        text: "An analysis handout with every gap we found, the presentation at your premises and recommendations for the next 90 days. Plus your positioning on a single page: the promise, three proof points, tone of voice and what you will stop saying. From then on it guides your website, proposals, trade fair stand and job ads.",
+        text: "A written analysis of every gap we found, the presentation at your premises and recommendations for the next 90 days. Plus your positioning on a single page: the promise, three proof points, tone of voice and what you will stop saying. From then on it guides your website, proposals, trade fair stand and job ads.",
       },
       {
         q: "Do you also implement the positioning?",
         kopf: "Yes.",
-        text: "andi fragt. is run by Rittler & Co, a brand and advertising agency in Graz. The interview is the core of the ANDI brand check, and if you wish we can implement the positioning straight away, from the core message to the website. Because analysis and implementation come from one source, nothing gets lost between insight and execution. You can just as well implement the results with your own team.",
+        text: "andi fragt. is run by Rittler & Co, a brand and advertising agency in Graz. The interview is the core of the ANDI brand check, and if you wish we can implement the positioning straight away, from the core message to the website. Because analysis and implementation come from the same team, nothing gets lost between insight and execution. You can equally implement the results with your own team.",
       },
     ],
   },
@@ -133,7 +133,7 @@ export const FAQ_EN = {
       {
         q: "Why a team interview instead of a satisfaction questionnaire?",
         kopf: "Because satisfaction doesn't explain why good people leave.",
-        text: "A questionnaire measures mood, with the same questions for every business. The team interview goes where leaders tend to misjudge things: what really keeps people, what holds them back and where money goes that nobody would miss. We also put your own assessment side by side with your team's.",
+        text: "A questionnaire measures mood, with the same questions for every business. The team interview goes where leaders tend to misjudge things: what really keeps people, what holds them back and where money goes on things nobody would miss. We also put your own assessment side by side with your team's.",
         beispiel: "A managing director estimates that 80% of his team feel well informed. In the interviews it is 48%.",
       },
       {
@@ -144,7 +144,7 @@ export const FAQ_EN = {
       {
         q: "We asked once before and nothing happened. Why would this time be different?",
         kopf: "Because we plan the follow-through from the start.",
-        text: "An interview without consequences is the most common reason nobody answers honestly the next time. In the goal-setting meeting we agree what you want to do with the results and what you will report back to the team. You get three priorities instead of a list of 40 problems, and after six months a short pulse check shows whether anything has moved.",
+        text: "An interview that leads nowhere is the most common reason nobody answers honestly the next time. In the kick-off meeting we agree what you want to do with the results and what you will report back to the team. You get three priorities instead of a list of 40 problems, and after six months a short pulse check shows whether anything has moved.",
       },
       {
         q: "How many employees do you need for the team interview to stay confidential?",
@@ -184,7 +184,7 @@ export const FAQ_EN = {
       {
         q: "What does a customer interview tell me that a satisfaction score doesn't?",
         kopf: "The why.",
-        text: "A score shows how satisfied customers are, but not why they buy from you, why they leave, and what they buy elsewhere even though they would rather buy it from you. We decide together in the goal-setting meeting which of these questions matters most to you right now. Our strategists read every answer and turn it into arguments and actions.",
+        text: "A score shows how satisfied customers are, but not why they buy from you, why they leave, and what they buy elsewhere even though they would rather buy it from you. We decide together in the kick-off meeting which of these questions matters most to you right now. Our strategists read every answer and turn it into arguments and actions.",
       },
       {
         q: "Won't this annoy our customers?",
@@ -194,17 +194,17 @@ export const FAQ_EN = {
       {
         q: "Which customers should we ask?",
         kopf: "That depends on the decision ahead, and that is exactly what we clarify first.",
-        text: "For reasons to buy we ask regular and new customers, for churn former ones, for growth those who only buy part of what they need from you today. We analyse these groups separately. Each group needs at least 6 answers; it becomes truly meaningful from 10 to 15.",
+        text: "For reasons to buy we ask regular and new customers, for churn former ones, for growth those who only buy part of what they need from you today. We analyse these groups separately. Each group needs at least 6 answers; results become truly meaningful from 10 to 15.",
       },
       {
         q: "Does this work if all our customers are businesses?",
         kopf: "Especially then.",
-        text: "In B2B, many customers depend on a handful of contacts, every customer is worth a lot, and dissatisfaction only shows when orders stop coming. If you wish, we interview several people at the same customer, for example purchasing, engineering and management, because they often buy from you for very different reasons.",
+        text: "In B2B, a customer relationship often rests on a handful of contacts, every customer is worth a lot, and dissatisfaction only shows when orders stop coming. If you wish, we interview several people at the same customer, for example purchasing, engineering and management, because they often buy from you for very different reasons.",
       },
       {
         q: "Will I find out which customer said what?",
         kopf: "No.",
-        text: "You learn what was said, not who said it. That is exactly why customers speak openly: they are not talking to you, they are talking to us. With a few large customers, we summarise answers so that nobody can be identified.",
+        text: "You learn what was said, not who said it. That is exactly why customers speak openly: they are not talking to you, they are talking to us. If you have only a few large customers, we summarise answers so they don't point to anyone.",
       },
       {
         q: "What do I do with my customers' answers?",
@@ -229,7 +229,7 @@ export const FAQ_EN = {
       {
         q: "What does the sales interview show that my CRM doesn't?",
         kopf: "Your CRM shows that a proposal was lost, but not why.",
-        text: "In the goal-setting meeting we capture your hypotheses and aim the questions where deals tend to get stuck: the argument that doesn't land, the follow-up, and the revenue from existing customers that ends up elsewhere. Then we ask both sides, sales and customers. Experts call this win-loss analysis; we add the inside view of your sales team.",
+        text: "In the kick-off meeting we capture your hypotheses and aim the questions where deals tend to get stuck: the argument that doesn't land, the follow-up, and the revenue from existing customers that ends up elsewhere. Then we ask both sides, sales and customers. Experts call this win-loss analysis; we add the inside view of your sales team.",
       },
       {
         q: "Won't my sales team feel they are being checked on?",
@@ -277,14 +277,14 @@ export const FAQ_EN = {
         text: "Technology helps to collect and sort; every answer is read and interpreted by our strategists. Software counts how often something is said. We spot the one sentence that carries your positioning, even if it only comes up three times.",
       },
       {
-        q: "Why an advertising agency and not a market research institute?",
-        kopf: "A market research institute answers the questions it is given.",
+        q: "Why an advertising agency and not a market research agency?",
+        kopf: "A market research agency answers the questions it is given.",
         text: "We start one step earlier and work out with you which questions will move your company forward. Then we deliver what follows from the answers: the message, the job ad, the sales argument. Because Rittler & Co has been building brands for years, we can implement it straight away if you wish.",
       },
       {
-        q: "Do you only work in Graz and Styria?",
+        q: "Do you only work in and around Graz?",
         kopf: "No.",
-        text: "We are based in Graz, Austria, and the interviews run online. We work with companies across the German-speaking world, and interviews are available in German, English, Italian and Croatian. We hold the goal-setting meeting and the presentation in person.",
+        text: "We are based in Graz, Austria, and the interviews run online. We work with companies across the German-speaking world, and interviews are available in German, English, Italian and Croatian. We hold the kick-off meeting and the presentation in person.",
       },
     ],
   },
@@ -293,33 +293,33 @@ export const FAQ_EN = {
     etikett: "Before you call",
     titelA: "What to know",
     titelB: "in advance.",
-    lead: "How the first call works, when you receive a proposal and what to do if your interview link doesn't work.",
+    lead: "How the intro call works, when you receive a proposal and what to do if your interview link doesn't work.",
     verweis: true,
     ohneKontaktkarte: true,
     fragen: [
       {
-        q: "What happens in the first call?",
-        kopf: "In the first call we listen and assess your situation.",
-        text: "Which decision is coming up, what do you already know, what are you only assuming? Then we tell you honestly whether an interview makes sense and which module fits. We develop the actual questions in the goal-setting meeting once you have commissioned us. The first call is free and without obligation, takes 30 minutes and runs by video or phone.",
+        q: "What happens in the intro call?",
+        kopf: "In the intro call we listen and assess your situation.",
+        text: "Which decision is coming up, what do you already know, what are you only assuming? Then we tell you honestly whether an interview makes sense and which module fits. We develop the actual questions in the kick-off meeting once you have commissioned us. The intro call is free and without obligation, takes 30 minutes and runs by video or phone.",
       },
       {
-        q: "What should I prepare for the first call?",
+        q: "What should I prepare for the intro call?",
         kopf: "Just the decision that is on your mind.",
         text: "Helpful but not essential: the rough number of employees per department, which customer groups you have and what you already suspect is behind the issue. We work out the rest together.",
       },
       {
         q: "I don't know which module fits. What now?",
-        kopf: "That is part of our assessment in the first call.",
+        kopf: "That is part of our assessment in the intro call.",
         text: "Often more than one module fits, for example team and positioning, because employees know a great deal about customers. If you don't yet know where you stand at all, the ANDI brand check from Rittler & Co is the right place to start.",
       },
       {
         q: "How quickly will I get a proposal?",
-        kopf: "You receive your proposal within three working days of the first call.",
+        kopf: "You receive your proposal within three working days of the intro call.",
         text: "It sets out the question to be answered, the groups, the number of people, the timeline and the price.",
       },
       {
         q: "How quickly can we start?",
-        kopf: "After the goal-setting meeting we develop the interview and send it to you for sign-off.",
+        kopf: "After the kick-off meeting we develop the interview and send it to you for sign-off.",
         text: "Once you have signed it off, we send the invitations within a week. We write the invitation with you and time the interview period around your calendar, for instance so it doesn't fall in the holiday season.",
       },
       {
@@ -334,11 +334,11 @@ export const FAQ_EN = {
     etikett: "Questions about pricing",
     titelA: "Quick",
     titelB: "answers.",
-    lead: "What managing directors, HR and sales leaders want to know about price and effort before the first call.",
+    lead: "What managing directors, HR and sales leaders want to know about price and effort before the intro call.",
     fragen: [
       {
         q: "What is included in the price?",
-        kopf: "Everything from the goal-setting meeting to the presentation.",
+        kopf: "Everything from the kick-off meeting to the presentation.",
         text: "Developing the questions, sending invitations and reminders, analysis and presenting in person. If you need several groups or rounds, the proposal says so up front.",
       },
       {
@@ -347,7 +347,7 @@ export const FAQ_EN = {
         text: "Understanding your company and finding the right questions: every further module builds on that. The price applies if you start the module within six months.",
       },
       {
-        q: "Is the first call a sales pitch?",
+        q: "Is the intro call a sales pitch?",
         kopf: "No. It is about your situation, not our product.",
         text: "If none of our modules fits, we will tell you.",
       },
@@ -358,7 +358,7 @@ export const FAQ_EN = {
       },
       {
         q: "How much of my time does it take?",
-        kopf: "Very little of yours: the goal-setting meeting, the sign-off and the presentation.",
+        kopf: "Very little of yours: the kick-off meeting, the sign-off and the presentation.",
         text: "About two hours in total. Your team: 15 to 30 minutes per person, on a phone or computer.",
       },
     ],

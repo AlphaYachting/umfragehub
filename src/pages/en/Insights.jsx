@@ -178,7 +178,7 @@ export default function InsightsEn() {
       )}
 
       <section aria-labelledby="h-module" className={`${BREITE} pt-[88px]`}>
-        <Etikett>From reading to acting</Etikett>
+        <Etikett>From reading to action</Etikett>
         <h2 id="h-module" className="mt-3 text-[clamp(28px,3vw,38px)] font-black uppercase leading-[1.1]">Where does it hurt?</h2>
         <div className="mt-8 grid gap-4 grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))]">
           {SCHUH.map((s) => (
@@ -200,9 +200,9 @@ export default function InsightsEn() {
         <div className={`${BREITE} py-20 flex flex-wrap items-center justify-between gap-x-12 gap-y-7`}>
           <div className="flex-[1_1_560px] min-w-0">
             <h2 id="h-abschluss" className="text-[clamp(28px,3.2vw,42px)] font-black uppercase leading-[1.1]">Prefer to talk about your company now?</h2>
-            <p className="mt-3.5 text-lg leading-[1.6]">Free first call, about 30 minutes, online or by phone. A reply within 24 hours.</p>
+            <p className="mt-3.5 text-lg leading-[1.6]">Free intro call, about 30 minutes, online or by phone. A reply within 24 hours.</p>
           </div>
-          <Hauptknopf href="/en/contact#anfrage" farbe={F.dunkel}>Request a first call</Hauptknopf>
+          <Hauptknopf href="/en/contact#anfrage" farbe={F.dunkel}>Request an intro call</Hauptknopf>
         </div>
       </section>
     </Modulseite>

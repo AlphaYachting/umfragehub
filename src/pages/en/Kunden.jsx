@@ -12,10 +12,10 @@ const BETREFF = "andi fragt. Kunden-Interview";
 const mailAn = anfrageLinkEn;
 
 const STATIONEN = [
-  { name: "Discovering", frage: "How did you first come across us?", erkenntnis: "Which channels really bring customers and which only cost money. Often it's the recommendation, not the ad.", wert: "Ad budget where your customers actually come from." },
+  { name: "Discovering", frage: "How did you first come across us?", erkenntnis: "Which channels really bring customers and which only cost money. Often it's word of mouth, not the ad.", wert: "Ad spend that goes where your customers come from." },
   { name: "Deciding", frage: "What tipped the balance in our favour in the end?", erkenntnis: "The real reason to buy. It is rarely in the brochure and is often smaller and more human than you think.", wert: "More deals closed with the right argument." },
-  { name: "Working together", frage: "When did you feel in good hands with us, and when not?", erkenntnis: "The moments that build trust, and the small annoyances nobody talks about.", wert: "Fewer complaints, more trust." },
-  { name: "Buying again", frage: "What else could we take off your hands?", erkenntnis: "Needs your customers cover elsewhere today, even though they would rather buy from you.", wert: "More revenue from existing customers." },
+  { name: "Working together", frage: "When did you feel in good hands with us, and when didn't you?", erkenntnis: "The moments that build trust, and the small annoyances nobody talks about.", wert: "Fewer complaints, more trust." },
+  { name: "Buying again", frage: "What else could we take off your hands?", erkenntnis: "Needs your customers currently meet elsewhere, even though they would rather buy from you.", wert: "More revenue from existing customers." },
   { name: "Recommending", frage: "What would have to happen for you to recommend us without hesitation?", erkenntnis: "What is missing between satisfied and delighted. That is exactly where recommendations come from.", wert: "New customers who arrive already convinced." },
 ];
 
@@ -29,7 +29,7 @@ const ERGEBNIS = [
   { nr: "01", titel: "The real reasons to buy", text: "In your customers' own words, ready for your website, proposals and sales conversations." },
   { nr: "02", titel: "Spot churn early", text: "Where customers are unhappy before they show it, and what helps." },
   { nr: "03", titel: "Self-image vs. customer view", text: "Where your team and your customers see you differently. The biggest opportunities lie in the gaps." },
-  { nr: "04", titel: "Handout and presentation", text: "Every insight in writing and explained in person at your premises, with clear next steps." },
+  { nr: "04", titel: "Written analysis and presentation", text: "Every insight in writing and explained in person at your premises, with clear next steps." },
 ];
 
 const panelLabel = { color: "#a80f39" };
@@ -116,7 +116,7 @@ export default function KundenEn() {
       <section className={`${BREITE} pt-20 pb-[88px] flex flex-wrap items-center gap-x-[72px] gap-y-12`}>
         <div className="flex-[3_1_560px] min-w-0">
           <h1 style={H1_STIL}>
-            <Dachzeile>Module 03 Customers: customer satisfaction</Dachzeile>
+            <Dachzeile>Module 03: Customer satisfaction</Dachzeile>
             <span className="block mt-[18px]">
               Your customers <span style={{ color: F.akzent }}>know</span> why they stay.
             </span>
@@ -126,7 +126,7 @@ export default function KundenEn() {
             find out where more revenue is waiting.
           </p>
           <div className="mt-8">
-            <Hauptknopf href={mailAn(BETREFF)}>Book a first call</Hauptknopf>
+            <Hauptknopf href={mailAn(BETREFF)}>Book an intro call</Hauptknopf>
           </div>
           <FuerDich rollen={["Managing directors", "Sales", "Customer service"]} />
         </div>

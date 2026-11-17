@@ -38,13 +38,13 @@ const SCHRITTE = [
 const EN = {
   themen: {
     positionierung: "Positioning", team: "Team", kunden: "Customers", vertrieb: "Sales",
-    einstieg: "A first step for now", offen: "Not sure yet",
+    einstieg: "Start small for now", offen: "Not sure yet",
   },
   kanaele: { telefon: "Phone", online: "Online" },
   schritte: [
     { titel: "You send us your request.", text: "It takes a minute." },
     { titel: "We get back to you within 24 hours.", text: "With two or three suggested times." },
-    { titel: "On the call we clarify goal, groups and effort.", text: "Then you get a fixed price, in black and white." },
+    { titel: "On the call we agree the goal, the groups and the effort involved.", text: "Then you get a fixed price, in black and white." },
   ],
 };
 
@@ -150,14 +150,14 @@ export default function Erstgespraech() {
       <div className={`${BREITE} py-24 flex flex-wrap items-start gap-x-[72px] gap-y-14`}>
         {/* Links: was passiert, wer sich meldet */}
         <div className="flex-[1_1_380px] min-w-0">
-          <Etikett>{tx("Erstgespräch", "First call")}</Etikett>
+          <Etikett>{tx("Erstgespräch", "Intro call")}</Etikett>
           <h2 id="anfrage-titel" className="mt-3" style={H2_STIL}>
             {tx("Erst reden.", "Talk first.")} <span style={{ color: F.akzent }}>{tx("Dann fragen.", "Then ask.")}</span>
           </h2>
           <p className="mt-5 text-[19px] leading-[1.6]" style={{ color: F.daempft }}>
             {tx(
               "Im Erstgespräch klären wir, wo es in deinem Unternehmen hakt und ob ein Interview dir weiterhilft. Wenn nicht, sagen wir es dir offen.",
-              "In the first call we work out where things are stuck in your company and whether an interview will help. If it won't, we will tell you so.",
+              "In the intro call we work out where things are stuck in your company and whether an interview will help. If it won't, we will tell you so.",
             )}
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
@@ -230,7 +230,7 @@ export default function Erstgespraech() {
               <p className="text-lg leading-[1.6]" style={{ color: F.daempft }}>
                 {tx(
                   "Du hörst innerhalb von 24 Stunden von uns, mit Terminvorschlägen für dein Erstgespräch.",
-                  "You will hear from us within 24 hours, with suggested times for your first call.",
+                  "You will hear from us within 24 hours, with suggested times for your intro call.",
                 )}
               </p>
               <p className="text-lg leading-[1.6]" style={{ color: F.daempft }}>
@@ -247,7 +247,7 @@ export default function Erstgespraech() {
             </div>
           ) : (
             <form onSubmit={senden} noValidate aria-labelledby="formular-titel" className="flex flex-col gap-[26px]">
-              <h3 id="formular-titel" className="text-[26px] font-black leading-[1.15]">{tx("Erstgespräch anfragen", "Request a first call")}</h3>
+              <h3 id="formular-titel" className="text-[26px] font-black leading-[1.15]">{tx("Erstgespräch anfragen", "Request an intro call")}</h3>
 
               <fieldset>
                 <legend className="text-base font-bold">
@@ -310,7 +310,7 @@ export default function Erstgespraech() {
               {(zustand === "fehler" || zustand === "zuViele") && (
                 <p role="alert" className="p-4 rounded-xl text-[15px] leading-[1.5]" style={{ background: "#fff0f3", color: F.text }}>
                   {zustand === "zuViele"
-                    ? tx("Wir haben gerade schon Anfragen von dir. Wir melden uns, versprochen.", "We already have requests from you. We'll be in touch, promise.")
+                    ? tx("Wir haben gerade schon Anfragen von dir. Wir melden uns, versprochen.", "We've already received a request from you. We'll be in touch, promise.")
                     : tx("Das hat leider nicht geklappt.", "Sorry, that didn't work.")}{" "}
                   {tx("Ruf uns einfach an:", "Just give us a call:")}{" "}
                   <a href={TEL_LINK} className="font-bold whitespace-nowrap hover:underline" style={{ color: F.text }}>{KONTAKT_TEL}</a>
@@ -324,7 +324,7 @@ export default function Erstgespraech() {
                   className="inline-flex items-center justify-center gap-2 min-h-[56px] px-7 rounded text-[15px] font-semibold uppercase tracking-[0.04em] text-white cursor-pointer disabled:opacity-70 disabled:cursor-wait"
                   style={{ background: F.akzent, border: 0, fontFamily: "inherit" }}
                 >
-                  {zustand === "sendet" ? tx("Wird gesendet", "Sending") : tx("Erstgespräch anfragen", "Request a first call")} <ArrowRight size={16} aria-hidden="true" />
+                  {zustand === "sendet" ? tx("Wird gesendet", "Sending") : tx("Erstgespräch anfragen", "Request an intro call")} <ArrowRight size={16} aria-hidden="true" />
                 </button>
                 <p className="text-[13px] leading-[1.55]" style={{ color: F.daempft }}>
                   {tx("Wir verwenden deine Angaben nur, um uns bei dir zu melden. Mehr dazu im", "We only use your details to get back to you. More in our")}{" "}

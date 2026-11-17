@@ -25,7 +25,7 @@ const BLASEN = [
 const AUSSAGEN = [
   { thema: "Openness", aussage: "I don't have to fear negative consequences when I criticise something.", team: 41, einsicht: "Where criticism feels risky, you only hear about problems once they are expensive." },
   { thema: "Information", aussage: "I get all the information I need to do my job.", team: 48, einsicht: "Missing information costs time every single day. It almost never gets reported." },
-  { thema: "Commitment", aussage: "I would apply to work here again.", team: 63, einsicht: "People who wouldn't apply again have often already left in their heads." },
+  { thema: "Commitment", aussage: "I would apply to work here again.", team: 63, einsicht: "People who wouldn't apply again have often already checked out mentally." },
 ];
 const SCHAETZWERTE = [20, 40, 60, 80];
 
@@ -39,10 +39,10 @@ const PUNKTE = [
   { name: "Training", x: 24, y: 20, feld: "verlieren", text: "Very important to your team, but they rate you poorly on it. This is where good people leave first. A clear plan for each person is the fastest lever." },
   { name: "Flexible hours", x: 30, y: 38, feld: "verlieren", text: "Often underestimated. Even a little leeway changes how your team experiences you as an employer." },
   { name: "Team spirit", x: 78, y: 14, feld: "halten", text: "Your strength. It belongs in every job ad, in your team's own words." },
-  { name: "Job security", x: 70, y: 32, feld: "halten", text: "Taken for granted. Good that it's true. On its own it won't excite anyone." },
-  { name: "Company party", x: 78, y: 62, feld: "geld", text: "Well meant, hardly wanted. The same budget does far more elsewhere." },
+  { name: "Job security", x: 70, y: 32, feld: "halten", text: "Taken for granted. Good thing it's true. On its own it won't excite anyone." },
+  { name: "Staff party", x: 78, y: 62, feld: "geld", text: "Well meant, hardly wanted. The same budget does far more elsewhere." },
   { name: "Free parking", x: 64, y: 78, feld: "geld", text: "Nice, but not a reason to stay. Review it rather than expand it." },
-  { name: "International work", x: 24, y: 72, feld: "warten", text: "Not important to your team right now. No action needed." },
+  { name: "International outlook", x: 24, y: 72, feld: "warten", text: "Not important to your team right now. No action needed." },
 ];
 
 const STILL = { grund: F.grau, text: F.dunkel };
@@ -55,8 +55,8 @@ const WEGE = [
     farbe: F.daempft,
     schritte: [
       { wann: "Month 1", was: "First frustration, swallowed.", ...STILL },
-      { wann: "Month 3", was: "Fewer ideas, more working to rule.", ...STILL },
-      { wann: "Month 6", was: "The online profile gets updated.", ...STILL },
+      { wann: "Month 3", was: "Fewer ideas, more doing the bare minimum.", ...STILL },
+      { wann: "Month 6", was: "The LinkedIn profile gets updated.", ...STILL },
       { wann: "Month 9", was: "The resignation comes as a surprise.", ...LAUT },
       { wann: "After that", was: "The role needs refilling. The knowledge is gone.", ...LAUT },
     ],
@@ -68,7 +68,7 @@ const WEGE = [
       { wann: "Week 1", was: "Confidential interview across the whole team.", ...GUT },
       { wann: "Week 4", was: "The pattern becomes visible, not the person.", ...GUT },
       { wann: "Week 6", was: "Presentation and concrete actions.", ...GUT },
-      { wann: "After 6 months", was: "Short pulse check: what has really moved?", ...GUT },
+      { wann: "After 6 months", was: "Short pulse check: what has really changed?", ...GUT },
     ],
   },
 ];
@@ -76,14 +76,14 @@ const WEGE = [
 const GEWINN = [
   { zeichen: "1", titel: "Keep your top performers", text: "You learn early what holds good people back, and can act before they leave." },
   { zeichen: "2", titel: "Budget that works", text: "You invest in what excites your team and save on what nobody would miss." },
-  { zeichen: "3", titel: "Applications that fit", text: "Job ads in your team's own words attract people who genuinely fit." },
+  { zeichen: "3", titel: "Applicants who fit", text: "Job ads in your team's own words attract people who genuinely fit." },
   { zeichen: "4", titel: "Progress you can see", text: "The first interview is your baseline. The pulse check after six months shows what has changed." },
 ];
 
 const ERGEBNIS = [
   { nr: "Blind spots", titel: "Your view and your team's", text: "Where you see things the same way and where you are far apart, by department once the minimum is reached.", beispiel: "Information: you 80%, team 48%." },
-  { nr: "Map", titel: "Where to act, where to save", text: "What matters to your team, set against what it actually gets from you.", beispiel: "Training first, rethink the company party." },
-  { nr: "Employer promise", titel: "Why people work for you", text: "An honest promise your team would sign up to themselves.", beispiel: "Here your word counts, even on day one." },
+  { nr: "Map", titel: "Where to act, where to save", text: "What matters to your team, set against what it actually gets from you.", beispiel: "Training first, rethink the staff party." },
+  { nr: "Employer promise", titel: "Why people work for you", text: "An honest promise your team would sign up to themselves.", beispiel: "Your word counts here, even on day one." },
   { nr: "Recruiting", titel: "Lines for your job ads", text: "Real answers become copy that speaks to applicants.", beispiel: "We're not looking for someone who can do everything. We're looking for someone who thinks ahead." },
 ];
 
@@ -92,20 +92,20 @@ function Einstieg() {
     <section className={`${BREITE} pt-10 pb-[88px] flex flex-wrap items-center gap-x-14 gap-y-12`}>
       <div className="flex-[1_1_460px] min-w-0">
         <h1 style={{ ...H1_STIL, fontSize: "clamp(44px, 6vw, 80px)", lineHeight: 0.96 }}>
-          <Dachzeile>Module 02 Team: employee satisfaction</Dachzeile>
+          <Dachzeile>Module 02: Employee satisfaction</Dachzeile>
           <span className="block mt-[18px]">
             How well do you really know <span style={{ color: F.akzent }}>your team?</span>
           </span>
         </h1>
         <p className="mt-[26px]" style={{ ...LEAD_STIL, maxWidth: 560, color: F.daempft }}>
-          You see what is visible day to day. Your team knows what keeps it, what holds it back and what would make
+          You see what is visible day to day. Your team knows what keeps them, what holds them back and what would make
           people leave. In a confidential interview, they say so. We put your view and theirs side by side.
         </p>
         <p className="mt-5 text-[22px] leading-[1.3] font-bold">
           So the good ones stay. <span style={{ color: F.akzent }}>And better ones join.</span>
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Hauptknopf href={mailAn(BETREFF)}>Book a first call</Hauptknopf>
+          <Hauptknopf href={mailAn(BETREFF)}>Book an intro call</Hauptknopf>
           <a
             href="#test"
             className="inline-flex items-center justify-center gap-2 min-h-[48px] rounded px-[22px] text-sm font-semibold uppercase tracking-[0.04em] box-border"
@@ -174,8 +174,8 @@ function Schaetzspiel() {
     const schnitt = Math.round(AUSSAGEN.reduce((s, a, i) => s + Math.abs(tipp[i] - a.team), 0) / AUSSAGEN.length);
     fazitTitel = `On average ${schnitt} points off`;
     fazitText = schnitt <= 10
-      ? "Strong gut feeling. Whether it holds for your own team, only the real answers will show."
-      : "That's no criticism. Things look different from the top. That gap is exactly the lever we work on with you.";
+      ? "Good instincts. Only the real answers will show whether that holds for your own team."
+      : "That's not a criticism. Things look different from the top. That gap is exactly the lever we work on with you.";
   }
 
   return (
@@ -311,7 +311,7 @@ const BLICKWINKEL = [
     ),
   },
   {
-    titel: "What really attracts",
+    titel: "What really attracts people",
     text: "Which benefits excite people, which are simply expected and which nobody would miss.",
     bild: (
       <div className="h-[92px] flex flex-wrap content-center gap-2">
@@ -333,8 +333,8 @@ const BLICKWINKEL = [
     ),
   },
   {
-    titel: "When it tips",
-    text: "Newcomers vs. long-serving staff: at which stage enthusiasm fades and what is missing then.",
+    titel: "When the mood turns",
+    text: "Newcomers vs. long-serving staff: when enthusiasm fades and what is missing at that point.",
     bild: (
       <div className="h-[92px] flex items-end gap-2.5">
         {[[84, F.dunkel], [54, F.akzent], [62, F.dunkel], [72, F.dunkel]].map(([h, farbe], i) => (
@@ -392,12 +392,12 @@ function Landkarte() {
   return (
     <section style={{ background: F.dunkel, color: "#ffffff" }}>
       <div className={`${BREITE} py-24`}>
-        <Etikett dunkel>Important vs. experienced</Etikett>
+        <Etikett dunkel>What matters vs. what they get</Etikett>
         <h2 className="mt-3 max-w-[860px]" style={{ ...H2_STIL, fontSize: "clamp(30px, 3.4vw, 44px)", lineHeight: 1.1 }}>
           Where you lose people. <span style={{ color: F.akzent }}>And where you burn money.</span>
         </h2>
         <p className="mt-[18px] max-w-[680px]" style={{ ...TEXT_STIL, lineHeight: 1.6, color: F.hellAufDunkel }}>
-          Your team tells us what matters to them in an employer and how well you deliver it. That becomes a
+          Your team tells us what matters to them in an employer and how well you deliver on it. That becomes a
           map. Tap a point.
         </p>
 
@@ -477,7 +477,7 @@ export default function TeamEn() {
             Resignations don't happen <span style={{ color: F.akzent }}>overnight.</span>
           </h2>
           <p className="mt-[18px] max-w-[680px]" style={{ ...TEXT_STIL, color: F.daempft }}>
-            Between the first frustration and the resignation there are usually months. During that time, hardly anyone
+            There are usually months between the first frustration and the resignation. During that time, hardly anyone
             says a word. Unless you ask the right way.
           </p>
           <div className="mt-12 flex flex-col gap-10">
@@ -574,7 +574,7 @@ export default function TeamEn() {
           ))}
         </div>
         <Beispielhinweis className="mt-[18px]">
-          The lines in the cards are examples. As with every module, you also get the analysis handout and a
+          The lines in the cards are examples. As with every module, you also get the written analysis and a
           presentation at your premises.
         </Beispielhinweis>
       </section>
@@ -587,7 +587,7 @@ export default function TeamEn() {
             Your gut feeling is good. <span style={{ color: F.akzent }}>Your team's answer is better.</span>
           </h2>
           <p className="mt-[18px] mx-auto max-w-[560px]" style={{ ...TEXT_STIL, color: F.hellAufDunkel }}>
-            In a free first call, with no obligation, we work out which departments to interview and how to invite your team.
+            In a free intro call, with no obligation, we work out which departments to interview and how to invite your team.
           </p>
           <div className="mt-7 flex justify-center">
             <Hauptknopf href={mailAn(BETREFF)}>Get in touch, no obligation</Hauptknopf>

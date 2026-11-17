@@ -17,7 +17,7 @@ export default function Zaehler({ titel, bereich }) {
   if (en) {
     if (n === 0) sichtbar = "Nothing yet. There are no individual answers for you to see.";
     else if (!offen) sichtbar = `Only that ${n} of the ${MINDESTZAHL} required interviews are in. No answers, no trend.`;
-    else sichtbar = `From now on, the shared picture of the ${bereich.toLowerCase()} team. Never a single answer, never a name.`;
+    else sichtbar = `From now on, the overall picture for the ${bereich.toLowerCase()} team. Never an individual answer, never a name.`;
   } else if (n === 0) sichtbar = "Noch nichts. Hier wartet niemand auf einzelne Antworten.";
   else if (!offen) sichtbar = `Nur, dass ${n} von ${MINDESTZAHL} nötigen Interviews da sind. Keine Antworten, keine Tendenz.`;
   else sichtbar = `Ab jetzt das gemeinsame Bild der ${bereich}. Nie eine einzelne Antwort, nie ein Name.`;
@@ -40,7 +40,7 @@ export default function Zaehler({ titel, bereich }) {
           <button
             type="button"
             onClick={() => setN((x) => Math.min(10, x + 1))}
-            aria-label={en ? "One interview more" : "Ein Interview mehr"}
+            aria-label={en ? "One more interview" : "Ein Interview mehr"}
             className="w-11 h-11 rounded-full inline-flex items-center justify-center text-white"
             style={{ background: F.akzent }}
           >

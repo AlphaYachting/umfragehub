@@ -31,7 +31,7 @@ const WEGE = [
     label: "Address",
     wert: "Rittler & Co GmbH, Peter-Rosegger-Straße 27, 8053 Graz, Austria",
     href: null,
-    text: "Visits by appointment, so that someone has time for you.",
+    text: "Visits by appointment only, so we can give you our full attention.",
   },
 ];
 
@@ -49,14 +49,14 @@ export default function KontaktEn() {
   }, []);
 
   return (
-    <Modulseite titel="Free first call | andi fragt. Graz" modul="Contact">
+    <Modulseite titel="Free intro call | andi fragt. Graz" modul="Contact">
       <section className={`${BREITE} pt-14 pb-6`}>
         <Etikett>Contact</Etikett>
         <h1 className="mt-4 max-w-[900px]" style={H1_STIL}>
           Let's talk about <span style={{ color: F.akzent }}>your company.</span>
         </h1>
         <p className="mt-6" style={{ ...LEAD_STIL, color: F.daempft }}>
-          Want to know what leadership, team, sales and customers really think? Request a free first call, or get in
+          Want to know what leadership, team, sales and customers really think? Request a free intro call, or get in
           touch by phone or email. We will tell you honestly whether an interview makes sense in your situation.
         </p>
       </section>

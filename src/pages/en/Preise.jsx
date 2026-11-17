@@ -202,7 +202,7 @@ function Rechner() {
           <>
             <p className="mt-4 text-[28px] font-black">Tailored</p>
             <p className="mt-2 text-[15px] leading-[1.6]" style={{ color: "#e4e4e4" }}>
-              Above 100 people we plan by department. You get the fixed price after the first call.
+              For more than 100 people we plan by department. You get the fixed price after the intro call.
             </p>
           </>
         )}
@@ -211,7 +211,7 @@ function Rechner() {
             <p aria-live="polite" className="mt-3.5 text-[56px] font-black leading-none" style={{ color: GRUEN }}>{fmt(summe)}</p>
             <p className="mt-2.5 text-[15px] leading-[1.5]" style={{ color: "#e4e4e4" }}>
               {n === 1
-                ? "1 module. Everything included, from the goal-setting meeting to the presentation."
+                ? "1 module. Everything included, from the kick-off meeting to the presentation."
                 : `${n} modules, so ${fmt(summe / n)} per module. Comparison of perspectives included.`}
             </p>
             {naechstes && (
@@ -241,7 +241,7 @@ function Rechner() {
             </div>
           ) : (
             <form onSubmit={senden} noValidate aria-labelledby="preis-anfrage-titel" className="flex flex-col gap-3.5">
-              <p id="preis-anfrage-titel" className="text-xl font-black leading-[1.25]">Request a first call at this price</p>
+              <p id="preis-anfrage-titel" className="text-xl font-black leading-[1.25]">Request an intro call at this price</p>
               <p className="-mt-1.5 text-sm" style={{ color: F.hellAufDunkel }}>30 minutes, free. We'll include your selection.</p>
               <Feld id="preis-name" label="Name" type="text" autoComplete="name" value={werte.name} onChange={setze("name")} fehler={fehler.name} />
               <Feld id="preis-firma" label="Company" type="text" autoComplete="organization" value={werte.firma} onChange={setze("firma")} fehler={fehler.firma} />
@@ -253,7 +253,7 @@ function Rechner() {
               </div>
               {(zustand === "fehler" || zustand === "zuViele") && (
                 <p role="alert" className="p-3.5 rounded-lg text-sm leading-[1.5]" style={{ background: F.dunkelKarte }}>
-                  {zustand === "zuViele" ? "We already have requests from you. We'll be in touch, promise." : "Sorry, that didn't work."}{" "}
+                  {zustand === "zuViele" ? "We've already received a request from you. We'll be in touch, promise." : "Sorry, that didn't work."}{" "}
                   Just give us a call: <a href={TEL_LINK} className="font-bold whitespace-nowrap" style={{ color: "#ffffff" }}>{KONTAKT_TEL}</a>
                 </p>
               )}
@@ -266,7 +266,7 @@ function Rechner() {
                 {zustand === "sendet" ? "Sending" : "Request a free call"} <ArrowRight size={16} aria-hidden="true" />
               </button>
               <p className="text-xs leading-[1.5]" style={{ color: F.hellAufDunkel }}>
-                We get back to you within 24 hours and use your details only for that.{" "}
+                We'll get back to you within 24 hours and only use your details for that.{" "}
                 <a href="/datenschutz#anfrage" hrefLang="de" target="_blank" rel="noopener" className="underline" style={{ color: F.hellAufDunkel }}>
                   Privacy policy (German)
                 </a>
@@ -339,12 +339,12 @@ export default function PreiseEn() {
             A questionnaire costs next to nothing. <span style={{ color: F.akzent }}>The right questions don't.</span>
           </h2>
           <p className="mt-4 max-w-[680px]" style={{ ...TEXT_STIL, color: F.daempft }}>
-            From more than 500 brand projects we know which questions carry a decision. So you pay for that knowledge, not
+            From more than 500 brand projects we know which questions really drive a decision. So you pay for that knowledge, not
             for the number of answers.
           </p>
           <div className="mt-9 grid gap-4 grid-cols-1 md:grid-cols-3">
             <article className="p-[26px] rounded-[20px] bg-white" style={{ border: `2px solid ${F.dunkel}` }}>
-              <p className="text-xs font-medium uppercase tracking-[0.18em]" style={{ color: F.daempft }}>1. First call</p>
+              <p className="text-xs font-medium uppercase tracking-[0.18em]" style={{ color: F.daempft }}>1. Intro call</p>
               <p className="mt-2.5 text-[34px] font-black leading-none" style={{ color: GRUEN_TEXT }}>€0</p>
               <p className="mt-3 text-[15px] leading-[1.55]" style={{ color: F.daempft }}>
                 30 minutes by video or phone. We tell you honestly whether we can help.
@@ -358,7 +358,7 @@ export default function PreiseEn() {
               </p>
             </article>
             <article className="p-[26px] rounded-[20px]" style={{ background: F.hauch }}>
-              <p className="text-xs font-medium uppercase tracking-[0.18em]" style={{ color: F.daempft }}>3. Follow up, if you like</p>
+              <p className="text-xs font-medium uppercase tracking-[0.18em]" style={{ color: F.daempft }}>3. Follow-up, if you like</p>
               <p className="mt-2.5 text-[34px] font-black leading-none">from €1,200</p>
               <p className="mt-3 text-[15px] leading-[1.55]" style={{ color: F.daempft }}>
                 Ask the same questions again after six months and see what is working.

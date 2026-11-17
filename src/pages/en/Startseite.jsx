@@ -96,8 +96,8 @@ const THEMEN = [
     pfad: "/en/customers",
     bild: "/bilder/kunden.webp",
     alt: "Customer talking with staff at the reception desk",
-    versprechen: "More success than you think.",
-    h2: "Your customers can contribute more to your success",
+    versprechen: "Worth more than you think.",
+    h2: "Your customers can do more for your business",
     akzent: "than you think.",
     absaetze: [
       "Customers rarely volunteer why they buy from you, what almost drove them to a competitor or what else they would like. Ask them, and they are happy to tell you.",
@@ -166,25 +166,25 @@ const SCHRITTE = [
     verb: "fragt",
     gloss: "andi asks.",
     titel: "Online interviews",
-    text: "Leadership, team, sales and, if you wish, your customers answer the interviews online: without names, on a phone or computer, whenever it suits them. Your own effort: about two hours.",
+    text: "Leadership, team, sales and, if you wish, your customers complete the interviews online: without names, on a phone or computer, whenever it suits them. Your own time: about two hours.",
   },
   {
     verb: "weiß",
     gloss: "andi knows.",
     titel: "Analysis and evaluation",
-    text: "We condense all answers using the ANDI method, developed from more than 500 brand projects. We don't look for the average, we look for the deviations.",
+    text: "We condense all answers using the ANDI method, developed from more than 500 brand projects. We don't look for the average. We look for where answers diverge.",
   },
   {
     verb: "macht",
     gloss: "andi makes it clear.",
-    titel: "Clarity and essence",
+    titel: "Clarity and focus",
     text: "The real strengths of your company become visible: honest, measurable, to the point. With clear recommendations instead of empty phrases.",
   },
   {
     verb: "zeigt",
     gloss: "andi shows.",
     titel: "Communication",
-    text: "We present the results to you in person. The essence becomes clear messages for customers, team, sales and applicants.",
+    text: "We present the results to you in person. The key findings become clear messages for customers, team, sales and applicants.",
   },
 ];
 
@@ -192,7 +192,7 @@ const VERSPRECHEN = [
   { icon: Lock, titel: "Confidential", text: "You see no names. Results only appear once a minimum number of people have taken part." },
   { icon: Smartphone, titel: "Any place, any time", text: "On a phone or computer, whenever it suits. You can pause and pick up again at any point." },
   { icon: MessageCircle, titel: "Questions everyone understands", text: "Clearly worded, free of jargon and leading questions. So everyone answers honestly, from apprentice to managing director." },
-  { icon: Pencil, titel: "Room for their own words", text: "Besides quick ratings there are open questions. That is often where the most valuable answer lies." },
+  { icon: Pencil, titel: "Room for their own words", text: "As well as quick ratings, there are open questions. That is often where the most valuable answer lies." },
 ];
 
 const ICON = { size: 28, strokeWidth: 1.5, style: { color: F.akzent }, "aria-hidden": "true" };
@@ -449,9 +449,9 @@ export default function StartseiteEn() {
             The answer is already <span style={{ color: F.akzent }}>inside your company.</span>
           </h1>
           <p className="mt-6 max-w-[680px] text-xl leading-[1.6]" style={{ color: F.daempft }}>
-            Your team and your customers have known it for a long time. It just rarely gets said out loud inside the company.
+            Your team and your customers have known it for a long time. It just rarely gets said out loud.
             Together with you, <strong className="font-semibold" style={{ color: F.text }}>andi fragt.</strong> develops the
-            right questions and turns the answers into decisions and messages. Knowledge instead of gut feeling.
+            right questions and turns the answers into decisions and messages. Evidence, not gut feeling.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Hauptknopf href={mailAn("andi fragt. Termin vereinbaren")}>Book a call</Hauptknopf>
