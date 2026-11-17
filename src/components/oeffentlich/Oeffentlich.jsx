@@ -79,7 +79,7 @@ const NAV = {
     start: "/en", startLabel: "andi fragt. Home", module: MODULE_EN, modulNav: "Modules",
     preise: ["/en/pricing", "Pricing"], wissen: ["/en/insights", "Insights"], ueber: ["/en/about", "About"], kontakt: ["/en/contact", "Contact"],
     zurStart: "Home", impressum: "Legal notice (German)", datenschutz: "Privacy policy (German)",
-    adresse: "Peter-Rosegger-Strasse 27, 8053 Graz, Austria",
+    adresse: "Peter-Rosegger-Straße 27, 8053 Graz, Austria",
     umschalten: { kurz: "DE", label: "Deutsche Fassung", hreflang: "de" },
   },
 };
