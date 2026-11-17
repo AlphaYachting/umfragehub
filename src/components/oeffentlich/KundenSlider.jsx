@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Etikett, F } from "@/components/oeffentlich/Oeffentlich";
+import { useSprache } from "@/lib/sprache";
 
 // Kundenlogos von Rittler & Co als ruhiger Slider. Aus der Startseite ausgelagert (01.11.2026),
 // damit Startseite und Über uns dieselbe Leiste zeigen.
@@ -70,7 +71,9 @@ function SliderLogo({ name, datei, kopie }) {
 const SLIDER_PAUSE = 2600;
 const SLIDER_GLEITEN = 900;
 
-export default function KundenSlider({ titel = "Kunden, die Rittler & Co vertrauen", hintergrund = F.grau }) {
+export default function KundenSlider({ titel, hintergrund = F.grau }) {
+  const en = useSprache() === "en";
+  titel = titel ?? (en ? "Clients who trust Rittler & Co" : "Kunden, die Rittler & Co vertrauen");
   const anzahl = KUNDENLOGOS.length;
   const [schritt, setSchritt] = useState(0);
   const [gleitet, setGleitet] = useState(true);
@@ -105,7 +108,7 @@ export default function KundenSlider({ titel = "Kunden, die Rittler & Co vertrau
   );
 
   return (
-    <section aria-label="Kunden von Rittler & Co" className="py-16" style={{ background: hintergrund }}>
+    <section aria-label={en ? "Clients of Rittler & Co" : "Kunden von Rittler & Co"} className="py-16" style={{ background: hintergrund }}>
       <style>{`
         .kundenslider { --platz: 210px; overflow: hidden; background: var(--farbe-grau); -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
         .kundenslider-spur { display: flex; width: max-content; background: var(--farbe-grau); will-change: transform; }
