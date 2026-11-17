@@ -38,7 +38,7 @@ const beitrag = {
       "akzent": false
     },
     {
-      "fett": "Your own picture is often wrong.",
+      "fett": "Your self-image is often misleading.",
       "text": "In a Bain study, 80% of companies believed their customer experience was superior. According to customer data from a second data set, that was true of 8% of the companies.",
       "akzent": false
     },
@@ -85,7 +85,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "The term comes from the American advertising man Rosser Reeves, who described it in 1961 in his book Reality in Advertising. What counts for you is its core: a clear benefit that competitors don't offer, strong enough for customers to buy because of it."
+          "text": "The term comes from the American advertising executive Rosser Reeves, who described it in 1961 in his book Reality in Advertising. What counts for you is its core: a clear benefit that competitors don't offer, strong enough for customers to buy because of it."
         },
         {
           "typ": "venn",
@@ -127,7 +127,7 @@ const beitrag = {
             {
               "symbol": "nein",
               "titel": "A feature nobody cares about",
-              "text": "The most modern machine in the region is only a USP if customers notice something from it."
+              "text": "The most modern machine in the region is only a USP if customers notice the difference."
             },
             {
               "symbol": "nein",
@@ -168,13 +168,13 @@ const beitrag = {
             },
             {
               "fett": "Test every candidate with three questions.",
-              "text": "Does it matter to customers? Can you prove it? Do your competitors not say it in the same way? Only when all three are answered with yes do you have a USP."
+              "text": "Does it matter to customers? Can you prove it? Is it something your competitors don't say? Only when the answer to all three is yes do you have a USP."
             }
           ]
         },
         {
           "typ": "absatz",
-          "text": "An example for illustration, not a real case: a plumber has advertised for years with quality in the third generation. His regular customers tell a different story: he is the only one who tidies up before he leaves. That is concrete, provable and easy to pass on. A sentence like that can carry a positioning."
+          "text": "An example for illustration, not a real case: a plumber has advertised third-generation quality for years. His regular customers tell a different story: he is the only one who tidies up before he leaves. That is concrete, provable and easy to pass on. That is exactly the kind of sentence a positioning can be built on."
         },
         {
           "typ": "test",
@@ -183,7 +183,7 @@ const beitrag = {
           "fragen": [
             "Does it matter to customers?",
             "Can you prove it?",
-            "Do competitors not say it in the same way?"
+            "Is it something competitors don't say?"
           ],
           "kandidaten": [
             {
@@ -204,7 +204,7 @@ const beitrag = {
                 "ja"
               ],
               "usp": false,
-              "erklaerung": "Rare and provable, but customers notice nothing of it. A feature without impact."
+              "erklaerung": "Rare and provable, but customers don't notice it. A feature without impact."
             },
             {
               "name": "The only one who tidies up before leaving",
@@ -214,7 +214,7 @@ const beitrag = {
                 "ja"
               ],
               "usp": true,
-              "erklaerung": "Concrete, confirmed by regular customers and easy to pass on. That can carry a positioning."
+              "erklaerung": "Concrete, confirmed by regular customers and easy to pass on. A positioning can be built on that."
             }
           ],
           "jaText": "USP",
@@ -223,7 +223,7 @@ const beitrag = {
         },
         {
           "typ": "tipp",
-          "text": "Read the home pages of your three strongest competitors and put your company name in. If the text still fits, it doesn't describe a USP."
+          "text": "Read the home pages of your three strongest competitors and swap in your company name. If the text still fits, it doesn't describe a USP."
         }
       ]
     },
@@ -254,7 +254,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "Add to that the competition on your doorstep. In Styria, the Austrian region where we are based, 99.8% of businesses in the commercial economy are SMEs according to the Austrian Economic Chamber, around 84,600 businesses (as of December 2025). Many offer similar things in the same region. If you don't stand out clearly, you get compared on price."
+          "text": "Add to that the competition on your doorstep. In Styria, the Austrian state where we are based, 99.8% of businesses in trade and industry are SMEs according to the Austrian Economic Chamber, around 84,600 businesses (as of December 2025). Many offer similar things in the same region. If you don't stand out clearly, you get compared on price."
         },
         {
           "typ": "absatz",
@@ -269,14 +269,14 @@ const beitrag = {
       "bloecke": [
         {
           "typ": "absatz",
-          "text": "A workshop with leadership is a good start: everyone sits at one table, and a lot gets said that is lost in day-to-day business. As the only source, though, it reaches its limits."
+          "text": "A workshop with leadership is a good start: everyone is at the same table, and a lot gets said that normally gets lost in day-to-day business. As the only source, though, it reaches its limits."
         },
         {
           "typ": "liste",
           "stil": "rand",
           "punkte": [
             {
-              "fett": "The self-image is in the room.",
+              "fett": "Only the self-image is in the room.",
               "text": "The discussion is about what leadership thinks of the company. What customers experience is missing."
             },
             {
@@ -342,7 +342,7 @@ const beitrag = {
           "schritte": [
             {
               "etikett": "What the business says",
-              "text": "Quality in the third generation",
+              "text": "Third-generation quality",
               "notiz": "True, but everyone says it.",
               "art": "alt"
             },
