@@ -40,12 +40,12 @@ const beitrag = {
     },
     {
       "fett": "In manufacturing, marketing is often invisible.",
-      "text": "It sits in quotes, sales conversations, trade fair stands and the reputation of the house.",
+      "text": "It sits in quotes, sales conversations, trade fair stands and the company's reputation.",
       "akzent": false
     },
     {
       "fett": "Contradictions cost trust.",
-      "text": "In a Gartner survey of 632 B2B buyers, 69% saw contradictions between a supplier's website and what its sales people said.",
+      "text": "In a Gartner survey of 632 B2B buyers, 69% saw contradictions between a supplier's website and what its salespeople said.",
       "akzent": false
     },
     {
@@ -70,7 +70,7 @@ const beitrag = {
     {
       "wert": "69",
       "einheit": "%",
-      "text": "of B2B buyers see contradictions between the website and what sales people say.",
+      "text": "of B2B buyers see contradictions between the website and what salespeople say.",
       "quelle": "Gartner survey 2024, 632 buyers"
     }
   ],
@@ -94,7 +94,7 @@ const beitrag = {
             {
               "symbol": "stern",
               "titel": "The reputation",
-              "text": "What customers tell others about you. It is often closely tied to the person of the outgoing owner."
+              "text": "What customers tell others about you. It is often closely tied to the outgoing owner personally."
             },
             {
               "symbol": "gruppe",
@@ -103,7 +103,7 @@ const beitrag = {
             },
             {
               "symbol": "globus",
-              "titel": "The visible material",
+              "titel": "The visible materials",
               "text": "Website, brochure, trade fair stand, vehicles, job ads. According to Statistics Austria, 92.9% of manufacturing companies with at least 10 employees have a website (2025). The question is what it says."
             },
             {
@@ -184,11 +184,11 @@ const beitrag = {
     {
       "id": "fehler",
       "toc": "Common mistakes after the takeover",
-      "frage": "Which marketing mistakes are tempting after a takeover?",
+      "frage": "Which marketing mistakes are easy to make after a takeover?",
       "bloecke": [
         {
           "typ": "absatz",
-          "text": "Successors who start with a lot of energy are the most likely to fall into one of these traps:"
+          "text": "Successors who start full of energy in particular can easily fall into one of these traps:"
         },
         {
           "typ": "liste",
