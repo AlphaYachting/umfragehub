@@ -194,13 +194,13 @@ const beitrag = {
           "titel": "Sample paragraph for the letter to regular customers",
           "stil": "rahmen",
           "anrede": "Dear Ms Berger,",
-          "text": "From 1 July, my daughter Anna will take over as managing director. For you, what matters most stays the same: the same quality, the same contacts in our technical team, the same terms. I will personally accompany the handover until the end of the year.",
+          "text": "From 1 July, my daughter Anna will take over as managing director. For you, what matters most stays the same: the same quality, the same contacts in our technical team, the same terms. I will remain personally involved in the handover until the end of the year.",
           "fazit": "First say what stays. Then who is coming.",
           "unterschrift": "Example in the formal tone usual for business letters. Names and date are invented."
         },
         {
           "typ": "tipp",
-          "text": "Put in writing who accompanies which customer until when, and what role the outgoing owner will have afterwards. That also protects the relationship between the two of you."
+          "text": "Put in writing who looks after which customer, and until when, and what role the outgoing owner will have afterwards. That also protects the relationship between the two of you."
         },
         {
           "typ": "uebergang",
@@ -241,7 +241,7 @@ const beitrag = {
             }
           ],
           "beschreibung": "Two rows over six months: the outgoing owner's responsibility for the customer relationship decreases while the successor's increases.",
-          "legende": "Darker or stronger: more responsibility for the customer relationship",
+          "legende": "Darker or bolder: more responsibility for the customer relationship",
           "fazit": "Together first, then the successor takes over step by step. What matters is an agreed end date.",
           "unterschrift": "Example for illustration. How long it takes depends on the business and the customer."
         }
@@ -311,7 +311,7 @@ const beitrag = {
     {
       "id": "andi",
       "toc": "How andi fragt. helps",
-      "frage": "How does andi fragt. help when you hand over to customers?",
+      "frage": "How does andi fragt. help you keep customers through the handover?",
       "bloecke": [
         {
           "typ": "absatz",
@@ -348,7 +348,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "The full process is shown on the page on the [customer interview](/en/customers). Why even satisfied customers leave is the subject of [Why do customers buy from competitors?](/en/insights/why-customers-buy-from-competitors) If you are the one handing over, [preparing a business handover](/en/insights/preparing-business-handover) shows how to get ready."
+          "text": "The [customer interview](/en/customers) page shows the full process. Why even satisfied customers leave is the subject of [Why do customers buy from competitors?](/en/insights/why-customers-buy-from-competitors) If you are the one handing over, [preparing a business handover](/en/insights/preparing-business-handover) shows how to get ready."
         }
       ]
     }
