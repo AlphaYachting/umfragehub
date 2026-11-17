@@ -68,6 +68,34 @@ const WissenMitarbeiterHaltenOhneGehaltserhoehung = lazy(() => import('@/pages/w
 const WissenMitarbeiterbefragungIso9001 = lazy(() => import('@/pages/wissen/beitrag/WissenMitarbeiterbefragungIso9001'));
 const WissenMitarbeiterbefragungIso45001 = lazy(() => import('@/pages/wissen/beitrag/WissenMitarbeiterbefragungIso45001'));
 
+// Englische Fassung der öffentlichen Seite unter /en (17.11.2026): Image-Seiten und freigegebene Wissensbeiträge
+const StartseiteEn = lazy(() => import("@/pages/en/Startseite"));
+const PositionierungEn = lazy(() => import("@/pages/en/Positionierung"));
+const TeamEn = lazy(() => import("@/pages/en/Team"));
+const KundenEn = lazy(() => import("@/pages/en/Kunden"));
+const VertriebEn = lazy(() => import("@/pages/en/Vertrieb"));
+const UeberUnsEn = lazy(() => import("@/pages/en/UeberUns"));
+const KontaktEn = lazy(() => import("@/pages/en/Kontakt"));
+const PreiseEn = lazy(() => import("@/pages/en/Preise"));
+const InsightsEn = lazy(() => import("@/pages/en/Insights"));
+const InsightsEnEmployeeSurveyResults = lazy(() => import('@/pages/en/insights/InsightsEnEmployeeSurveyResults'));
+const InsightsEnWhyGoodEmployeesQuit = lazy(() => import('@/pages/en/insights/InsightsEnWhyGoodEmployeesQuit'));
+const InsightsEnFindYourUsp = lazy(() => import('@/pages/en/insights/InsightsEnFindYourUsp'));
+const InsightsEnWhyCustomersBuyFromCompetitors = lazy(() => import('@/pages/en/insights/InsightsEnWhyCustomersBuyFromCompetitors'));
+const InsightsEnIncreaseCloseRate = lazy(() => import('@/pages/en/insights/InsightsEnIncreaseCloseRate'));
+const InsightsEnBusinessSuccessionMarketing = lazy(() => import('@/pages/en/insights/InsightsEnBusinessSuccessionMarketing'));
+const InsightsEnFamilyBusinessSuccessionBrand = lazy(() => import('@/pages/en/insights/InsightsEnFamilyBusinessSuccessionBrand'));
+const InsightsEnBusinessHandoverInformingCustomers = lazy(() => import('@/pages/en/insights/InsightsEnBusinessHandoverInformingCustomers'));
+const InsightsEnRetainingEmployeesAfterTakeover = lazy(() => import('@/pages/en/insights/InsightsEnRetainingEmployeesAfterTakeover'));
+const InsightsEnFirst100DaysAfterTakeover = lazy(() => import('@/pages/en/insights/InsightsEnFirst100DaysAfterTakeover'));
+const InsightsEnPreparingBusinessHandover = lazy(() => import('@/pages/en/insights/InsightsEnPreparingBusinessHandover'));
+const InsightsEnPartnersDisagreeOnMarketing = lazy(() => import('@/pages/en/insights/InsightsEnPartnersDisagreeOnMarketing'));
+const InsightsEnEmployeeSurveyIso9001 = lazy(() => import('@/pages/en/insights/InsightsEnEmployeeSurveyIso9001'));
+const InsightsEnEmployeeSurveyIso45001 = lazy(() => import('@/pages/en/insights/InsightsEnEmployeeSurveyIso45001'));
+const InsightsEnCheckingAiGeneratedCopy = lazy(() => import('@/pages/en/insights/InsightsEnCheckingAiGeneratedCopy'));
+const InsightsEnWhyAiCopySoundsTheSame = lazy(() => import('@/pages/en/insights/InsightsEnWhyAiCopySoundsTheSame'));
+const InsightsEnDiyMarketingWithAi = lazy(() => import('@/pages/en/insights/InsightsEnDiyMarketingWithAi'));
+
 const Laden = () => (
   <div className="fixed inset-0 flex items-center justify-center">
     <div className="w-8 h-8 border-4 border-border border-t-slate-800 rounded-full animate-spin"></div>
@@ -140,6 +168,34 @@ const AuthenticatedApp = () => {
       <Route path="/wissen/ki-texte-ueberpruefen" element={<WissenKiTexteUeberpruefen />} />
       <Route path="/wissen/ki-texte-klingen-gleich" element={<WissenKiTexteKlingenGleich />} />
       <Route path="/wissen/*" element={<NichtGefunden />} />
+      {/* Englisch: Image-Seiten und Wissensbeiträge (17.11.2026) */}
+      <Route path="/en" element={<StartseiteEn />} />
+      <Route path="/en/positioning" element={<PositionierungEn />} />
+      <Route path="/en/team" element={<TeamEn />} />
+      <Route path="/en/customers" element={<KundenEn />} />
+      <Route path="/en/sales" element={<VertriebEn />} />
+      <Route path="/en/about" element={<UeberUnsEn />} />
+      <Route path="/en/contact" element={<KontaktEn />} />
+      <Route path="/en/pricing" element={<PreiseEn />} />
+      <Route path="/en/insights" element={<InsightsEn />} />
+      <Route path="/en/insights/employee-survey-results" element={<InsightsEnEmployeeSurveyResults />} />
+      <Route path="/en/insights/why-good-employees-quit" element={<InsightsEnWhyGoodEmployeesQuit />} />
+      <Route path="/en/insights/find-your-usp" element={<InsightsEnFindYourUsp />} />
+      <Route path="/en/insights/why-customers-buy-from-competitors" element={<InsightsEnWhyCustomersBuyFromCompetitors />} />
+      <Route path="/en/insights/increase-close-rate" element={<InsightsEnIncreaseCloseRate />} />
+      <Route path="/en/insights/business-succession-marketing" element={<InsightsEnBusinessSuccessionMarketing />} />
+      <Route path="/en/insights/family-business-succession-brand" element={<InsightsEnFamilyBusinessSuccessionBrand />} />
+      <Route path="/en/insights/business-handover-informing-customers" element={<InsightsEnBusinessHandoverInformingCustomers />} />
+      <Route path="/en/insights/retaining-employees-after-takeover" element={<InsightsEnRetainingEmployeesAfterTakeover />} />
+      <Route path="/en/insights/first-100-days-after-takeover" element={<InsightsEnFirst100DaysAfterTakeover />} />
+      <Route path="/en/insights/preparing-business-handover" element={<InsightsEnPreparingBusinessHandover />} />
+      <Route path="/en/insights/partners-disagree-on-marketing" element={<InsightsEnPartnersDisagreeOnMarketing />} />
+      <Route path="/en/insights/employee-survey-iso-9001" element={<InsightsEnEmployeeSurveyIso9001 />} />
+      <Route path="/en/insights/employee-survey-iso-45001" element={<InsightsEnEmployeeSurveyIso45001 />} />
+      <Route path="/en/insights/checking-ai-generated-copy" element={<InsightsEnCheckingAiGeneratedCopy />} />
+      <Route path="/en/insights/why-ai-copy-sounds-the-same" element={<InsightsEnWhyAiCopySoundsTheSame />} />
+      <Route path="/en/insights/diy-marketing-with-ai" element={<InsightsEnDiyMarketingWithAi />} />
+      <Route path="/en/*" element={<NichtGefunden />} />
       <Route path="/i/:linkToken" element={<Interview />} />
       {/* Öffentlich mit Passwort: Kunden-Cockpit des Auftraggebers */}
       <Route path="/k/:code" element={<KundenCockpit />} />
