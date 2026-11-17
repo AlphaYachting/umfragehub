@@ -330,7 +330,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "Asking customers yourself has a limit: face to face, customers tend to say what you want to hear. A meta-analysis in the Journal of Applied Psychology (Richman and colleagues, 1999) shows in general terms that people gloss over their answers more in a personal interview than when answering alone and anonymously at a computer."
+          "text": "Asking customers yourself has a limit: face to face, they tend to say what you want to hear. A meta-analysis in the Journal of Applied Psychology (Richman and colleagues, 1999) shows in general terms that people gloss over their answers more in a personal interview than when answering alone and anonymously at a computer."
         }
       ]
     },
