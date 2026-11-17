@@ -32,7 +32,7 @@ const TEXTE = {
     filtern: "Filter questions",
     nichtDabei: "Can't find your question?",
     ruf: "Give us a call. We will tell you honestly whether an interview makes sense in your situation.",
-    knopf: "Book a first call",
+    knopf: "Book an intro call",
     link: anfrageLinkEn("andi fragt. Erstgespräch"),
     beispiel: "An example",
     platzhalter: "Placeholder, insert a real example",

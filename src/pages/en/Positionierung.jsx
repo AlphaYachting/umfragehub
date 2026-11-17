@@ -264,7 +264,7 @@ export default function PositionierungEn() {
               One page <span style={{ color: F.akzent }}>that steers everything.</span>
             </h2>
             <p className="mt-5" style={{ ...TEXT_STIL, color: F.daempft }}>
-              Alongside the handout and the presentation, you get your positioning on a single page. For your website,
+              Alongside the written analysis and the presentation, you get your positioning on a single page. For your website,
               proposals, trade fair stand and job ads. So everyone tells the same story.
             </p>
             <ul className="mt-5 flex flex-col gap-2.5 font-semibold">
