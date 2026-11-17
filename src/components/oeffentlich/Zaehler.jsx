@@ -15,7 +15,7 @@ export default function Zaehler({ titel, bereich }) {
   const offen = n >= MINDESTZAHL;
   let sichtbar;
   if (en) {
-    if (n === 0) sichtbar = "Nothing yet. Nobody here is waiting for individual answers.";
+    if (n === 0) sichtbar = "Nothing yet. There are no individual answers for you to see.";
     else if (!offen) sichtbar = `Only that ${n} of the ${MINDESTZAHL} required interviews are in. No answers, no trend.`;
     else sichtbar = `From now on, the shared picture of the ${bereich.toLowerCase()} team. Never a single answer, never a name.`;
   } else if (n === 0) sichtbar = "Noch nichts. Hier wartet niemand auf einzelne Antworten.";
