@@ -11,7 +11,7 @@ import {
 
 // English insights overview under /en/insights (17.11.2026), adapted from src/pages/wissen/Wissen.jsx.
 
-const TITEL = "Insights for growing companies: team, brand, sales | andi fragt.";
+const TITEL = "Insights: team, brand, customers, sales | andi fragt.";
 const BESCHREIBUNG =
   "Practical guides from Rittler & Co in Graz, Austria: employee feedback, finding your USP, customer loyalty, sales and business succession.";
 
