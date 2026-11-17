@@ -347,7 +347,7 @@ const beitrag = {
         },
         {
           "typ": "absatz",
-          "text": "Your team answers without names on a phone or computer, in about 15 to 30 minutes. We see the answers, you see only the results. We merge groups of fewer than six people so that nobody can be identified through their department. Nobody can rule this out completely, for example if someone writes something very personal in a free-text answer, which is why at our end people, not machines, read and summarise the answers."
+          "text": "Your team answers without names on a phone or computer, in about 15 to 30 minutes. We see the answers, you see only the results. We merge groups of fewer than six people so that nobody can be identified through their department. Nobody can rule this out completely, for example if someone writes something very personal in a free-text answer, which is why people at our end read and summarise the answers."
         },
         {
           "typ": "absatz",
