@@ -21,7 +21,7 @@ const beitrag = {
   ],
   "seitentitel": "Employee survey results that lead to action | andi fragt.",
   "beschreibung": "Why employee survey results end up in a drawer, what you can do about it yourself, and how the same answers become positioning and marketing.",
-  "teaser": "Why so many employee surveys change nothing, what you can do about it yourself, and how the same answers become your positioning, your employer brand and your sales arguments.",
+  "teaser": "Why so many employee surveys change nothing, what you can do about it yourself, and how the same answers become your positioning, your employer brand and your selling points.",
   "kurztitel": "Employee survey results and marketing",
   "titel": "Employee surveys: why the results end up in a drawer",
   "titelAkzent": "and how to turn them into marketing",
@@ -93,7 +93,7 @@ const beitrag = {
             },
             {
               "symbol": "archiv",
-              "titel": "The answers stay inside",
+              "titel": "The answers stay in-house",
               "text": "Hardly anyone notices that what your team says contains the reasons customers buy from you."
             }
           ]
@@ -160,7 +160,7 @@ const beitrag = {
             },
             {
               "fett": "Turn every result into an action.",
-              "text": "Three measures put into practice have more impact than thirty insights."
+              "text": "Three actions you actually take have more impact than thirty insights."
             }
           ]
         },
@@ -181,7 +181,7 @@ const beitrag = {
             "round worth it"
           ],
           "beschreibung": "A cycle with five stages: set the decision, keep it short, leave room for people's own words, present the results, act. Then the next round begins.",
-          "unterschrift": "The five steps above as a cycle. Step 5 closes the loop: without a visible measure, hardly anyone answers honestly next time."
+          "unterschrift": "The five steps above as a cycle. Step 5 closes the loop: without visible action, hardly anyone answers honestly next time."
         },
         {
           "typ": "tipp",
@@ -302,7 +302,7 @@ const beitrag = {
                 "punkte": [
                   "Positioning",
                   "Employer brand",
-                  "Sales arguments"
+                  "Selling points"
                 ],
                 "akzent": true
               }
@@ -330,7 +330,7 @@ const beitrag = {
             },
             {
               "symbol": "handschlag",
-              "titel": "Sales arguments",
+              "titel": "Selling points",
               "text": "The sentences that make customers nod, instead of brochure phrases."
             }
           ]
@@ -393,7 +393,7 @@ const beitrag = {
   "faq": [
     {
       "q": "How often should you run an employee survey?",
-      "a": "Less often and with consequences is better than every year without. A sensible rhythm is one where something visible has happened between two rounds. With andi fragt. the same core can be repeated later so you can see what has changed."
+      "a": "Better to run one less often and act on it than to run one every year and change nothing. A sensible interval is one where something visible has happened between two rounds. With andi fragt. the same core can be repeated later so you can see what has changed."
     },
     {
       "q": "How many employees do you need for it to be worthwhile?",
@@ -409,7 +409,7 @@ const beitrag = {
     },
     {
       "q": "How much does an interview with andi fragt. cost?",
-      "a": "An interview module for small businesses starts at €2,900 net, as a fixed price. You will find all levels and a calculator on the [pricing page](/en/pricing). The first call is free."
+      "a": "An interview module for small businesses starts at €2,900 net, as a fixed price. You will find all price tiers and a calculator on the [pricing page](/en/pricing). The first call is free."
     }
   ],
   "quellen": [
