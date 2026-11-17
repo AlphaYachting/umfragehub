@@ -5,9 +5,8 @@ import { useLocation } from "react-router-dom";
 // Nur Image-Seiten und freigegebene Wissensbeiträge haben eine englische Fassung.
 // Verwaltung, Interview, Cockpit und Außenblick bleiben einsprachig.
 //
-// Paare deutsch <-> englisch. Wissensbeiträge tragen ihr Gegenstück selbst
-// (Feld "de" in den englischen Inhaltsdateien) und werden in src/inhalte/wissen/en/index.js
-// in BEITRAG_PAARE gesammelt.
+// Paare deutsch <-> englisch. Neuer englischer Beitrag: Paar in BEITRAG_PAARE eintragen,
+// sonst fehlen Sprachumschalter und hreflang.
 
 export const SITE = "https://andifragt.at";
 
@@ -23,11 +22,27 @@ export const SEITEN_PAARE = [
   ["/wissen", "/en/insights"],
 ];
 
-let beitragPaare = [];
-// Wird vom englischen Wissensverzeichnis beim Laden gesetzt.
-export function setzeBeitragPaare(paare) {
-  beitragPaare = paare;
-}
+// Wissensbeiträge: deutscher Slug -> englischer Slug (nur freigegebene Beiträge mit englischer Fassung)
+export const BEITRAG_SLUGS = {
+  "mitarbeiterbefragung-ergebnisse": "employee-survey-results",
+  "warum-kuendigen-gute-mitarbeiter": "why-good-employees-quit",
+  "alleinstellungsmerkmal-finden": "find-your-usp",
+  "warum-kaufen-kunden-bei-der-konkurrenz": "why-customers-buy-from-competitors",
+  "abschlussquote-erhoehen": "increase-close-rate",
+  "unternehmensnachfolge-marketing": "business-succession-marketing",
+  "generationenwechsel-familienunternehmen-marke": "family-business-succession-brand",
+  "betriebsuebergabe-kunden-informieren": "business-handover-informing-customers",
+  "mitarbeiter-nach-betriebsuebernahme": "retaining-employees-after-takeover",
+  "betriebsuebernahme-erste-100-tage": "first-100-days-after-takeover",
+  "betriebsuebergabe-vorbereiten": "preparing-business-handover",
+  "gesellschafter-uneinig-marketing": "partners-disagree-on-marketing",
+  "mitarbeiterbefragung-iso-9001": "employee-survey-iso-9001",
+  "mitarbeiterbefragung-iso-45001": "employee-survey-iso-45001",
+  "ki-texte-ueberpruefen": "checking-ai-generated-copy",
+  "ki-texte-klingen-gleich": "why-ai-copy-sounds-the-same",
+  "marketing-mit-ki-selbst-machen": "diy-marketing-with-ai",
+};
+const beitragPaare = Object.entries(BEITRAG_SLUGS).map(([de, en]) => [`/wissen/${de}`, `/en/insights/${en}`]);
 
 export function spracheAusPfad(pfad) {
   return pfad === "/en" || String(pfad).startsWith("/en/") ? "en" : "de";
