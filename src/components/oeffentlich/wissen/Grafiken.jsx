@@ -13,7 +13,7 @@ const G = {
   de: { abb: "Abbildung", zahlen: "Zahlen zum Thema", felder: (n) => `${n} von 100 Feldern gefärbt`, rund: "rund", tausender: ".",
     kandidat: "Kandidat wählen", frage: "Frage", ja: "Ja", kaum: "Kaum", nein: "Nein", stabil: "stabil", weniger: "still weniger", weg: "gegangen", lang: "de" },
   en: { abb: "Figure", zahlen: "Key figures", felder: (n) => `${n} of 100 squares coloured`, rund: "about", tausender: ",",
-    kandidat: "Choose a candidate", frage: "Question", ja: "Yes", kaum: "Barely", nein: "No", stabil: "stable", weniger: "quietly less", weg: "gone", lang: "en" },
+    kandidat: "Choose a candidate", frage: "Question", ja: "Yes", kaum: "Barely", nein: "No", stabil: "stable", weniger: "buying less", weg: "gone", lang: "en" },
 };
 const useG = () => G[useSprache()];
 
