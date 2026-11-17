@@ -245,7 +245,7 @@ export default function BeitragSeite({ beitrag }) {
   const eintraege = useMemo(() => {
     const e = [{ id: "kurz", nr: "", label: t.kurz }];
     abschnitte.forEach((a, i) => e.push({ id: a.id, nr: String(i + 1).padStart(2, "0"), label: a.toc || nurText(a.frage) }));
-    if (b.faq?.length) e.push({ id: "faq", nr: String(abschnitte.length + 1).padStart(2, "0"), label: t.faq }));
+    if (b.faq?.length) e.push({ id: "faq", nr: String(abschnitte.length + 1).padStart(2, "0"), label: t.faq });
     return e;
   }, [abschnitte, b.faq, t]);
 
